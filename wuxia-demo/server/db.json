@@ -1,0 +1,73 @@
+[
+  {
+    "name": "ALEX",
+    "title": "⭐绝世天骄",
+    "level": 10,
+    "exp": 742,
+    "maxExp": 1546,
+    "freePoints": 0,
+    "taskCount": 0,
+    "hp": 320,
+    "maxHp": 320,
+    "attributes": {
+      "con": 7,
+      "str": 10,
+      "int": 10,
+      "agi": 10,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_taiji",
+      "s_kuihua",
+      "s_xianglong",
+      "s3",
+      "s4"
+    ],
+    "equippedSkills": [
+      "s1",
+      "s_taiji",
+      "s_kuihua"
+    ],
+    "id": "aJkoUFvYsfDaf-FhAAAJ",
+    "isBattling": false,
+    "rankIndex": 55,
+    "lastTaskDate": "Fri Mar 27 2026"
+  },
+  {
+    "name": "芙蓉女侠",
+    "title": "⭐绝世天骄",
+    "level": 15,
+    "exp": 609,
+    "maxExp": 2813,
+    "freePoints": 0,
+    "taskCount": 35,
+    "hp": 465,
+    "maxHp": 465,
+    "attributes": {
+      "con": 14,
+      "str": 0,
+      "int": 16,
+      "agi": 22,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s4",
+      "s_xianglong",
+      "s3",
+      "s_taiji",
+      "s_dugu",
+      "s_kuihua"
+    ],
+    "equippedSkills": [
+      "s1",
+      "s4",
+      "s_xianglong"
+    ],
+    "id": "DqE14zEo1J7mOYCmAAAL",
+    "isBattling": false,
+    "rankIndex": 52,
+    "lastTaskDate": "Fri Mar 27 2026"
+  }
+]
