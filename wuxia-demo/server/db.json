@@ -2,18 +2,18 @@
   {
     "name": "ALEX",
     "title": "⭐绝世天骄",
-    "level": 10,
-    "exp": 742,
-    "maxExp": 1546,
+    "level": 15,
+    "exp": 1843,
+    "maxExp": 2813,
     "freePoints": 0,
-    "taskCount": 0,
-    "hp": 320,
-    "maxHp": 320,
+    "taskCount": 35,
+    "hp": 465,
+    "maxHp": 465,
     "attributes": {
-      "con": 7,
-      "str": 10,
-      "int": 10,
-      "agi": 10,
+      "con": 14,
+      "str": 14,
+      "int": 12,
+      "agi": 12,
       "luk": 0
     },
     "skills": [
@@ -24,31 +24,36 @@
       "s3",
       "s4"
     ],
-    "equippedSkills": [
-      "s1",
-      "s_taiji",
-      "s_kuihua"
-    ],
-    "id": "aJkoUFvYsfDaf-FhAAAJ",
+    "equippedSkills": {
+      "0": "s1",
+      "1": "s_taiji",
+      "2": "s_kuihua",
+      "motion": "s4",
+      "outer": "s3",
+      "ultimate": "s_xianglong"
+    },
+    "id": "2tmo5rM2tegJ_9k7AAAR",
     "isBattling": false,
-    "rankIndex": 55,
-    "lastTaskDate": "Fri Mar 27 2026"
+    "rankIndex": 54,
+    "lastTaskDate": "Fri Apr 03 2026",
+    "treasures": [],
+    "encountersToday": 5
   },
   {
     "name": "芙蓉女侠",
     "title": "⭐绝世天骄",
-    "level": 15,
-    "exp": 609,
-    "maxExp": 2813,
+    "level": 17,
+    "exp": 631,
+    "maxExp": 3409,
     "freePoints": 0,
     "taskCount": 35,
-    "hp": 465,
-    "maxHp": 465,
+    "hp": 505,
+    "maxHp": 505,
     "attributes": {
-      "con": 14,
+      "con": 15,
       "str": 0,
-      "int": 16,
-      "agi": 22,
+      "int": 20,
+      "agi": 23,
       "luk": 0
     },
     "skills": [
@@ -60,14 +65,19 @@
       "s_dugu",
       "s_kuihua"
     ],
-    "equippedSkills": [
-      "s1",
-      "s4",
-      "s_xianglong"
-    ],
-    "id": "DqE14zEo1J7mOYCmAAAL",
+    "equippedSkills": {
+      "0": "s1",
+      "1": "s4",
+      "2": "s_xianglong",
+      "motion": "s4",
+      "ultimate": "s_kuihua",
+      "outer": "s_taiji"
+    },
+    "id": "WqZKQjCUuqZuwN29AAAP",
     "isBattling": false,
-    "rankIndex": 52,
-    "lastTaskDate": "Fri Mar 27 2026"
+    "rankIndex": 48,
+    "lastTaskDate": "Fri Apr 03 2026",
+    "treasures": [],
+    "encountersToday": 5
   }
 ]

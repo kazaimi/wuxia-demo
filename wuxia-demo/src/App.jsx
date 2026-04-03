@@ -39,7 +39,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="wuxia-title glow-effect">大乱斗武侠</h1>
+      <h1 className="wuxia-title glow-effect">大乱斗武侠 - 1.4 软猬甲</h1>
       {!hasCreatedRole ? (
         showCreate ? (
            <CreateRole initialName={inputName.trim()} />

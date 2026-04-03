@@ -4,6 +4,7 @@ import PlayerStatus from './PlayerStatus';
 import TaskHall from './TaskHall';
 import BattleArena from './BattleArena';
 import Leaderboard from './Leaderboard';
+import EncounterArena from './EncounterArena';
 
 export default function MainMenu() {
   const [activeTab, setActiveTab] = useState('tasks');
@@ -36,12 +37,19 @@ export default function MainMenu() {
             style={activeTab !== 'leader' ? {background: 'transparent', border: '1px solid var(--primary-glow)', boxShadow: 'none'} : {}}>
             风云榜
           </button>
+          <button 
+            className="btn-primary" 
+            onClick={() => setActiveTab('encounter')} 
+            style={activeTab !== 'encounter' ? {background: 'transparent', border: '1px solid var(--primary-glow)', boxShadow: 'none', color: 'var(--warn)'} : {background: 'var(--warn)', color: '#000'}}>
+            江湖奇遇
+          </button>
         </div>
       </div>
       <div>
         {activeTab === 'tasks' && <TaskHall />}
         {activeTab === 'battle' && <BattleArena />}
         {activeTab === 'leader' && <Leaderboard />}
+        {activeTab === 'encounter' && <EncounterArena />}
       </div>
     </div>
   );

@@ -4,9 +4,11 @@ import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw,
 
 export default function PlayerStatus() {
   const player = useGameStore(state => state.player);
-  const allocatePoint = useGameStore(state => state.allocatePoint);
+  const allocatePoints = useGameStore(state => state.allocatePoints);
   const resetPoints = useGameStore(state => state.resetPoints);
-  const { name, title, level, exp, maxExp, freePoints, attributes, skills, hp, maxHp } = player;
+  const equipSkill = useGameStore(state => state.equipSkill);
+  const equipTreasure = useGameStore(state => state.equipTreasure);
+  const { name, title, level, exp, maxExp, freePoints, attributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
 
   const bgStyle = {
     background: 'var(--glass-bg)',
@@ -69,9 +71,17 @@ export default function PlayerStatus() {
               </div>
               {freePoints > 0 && (
                 <button 
-                   onClick={() => allocatePoint(attr.k)} 
+                   onClick={() => {
+                      const amountStr = window.prompt(`请输入为【${attr.n}】分配的点数（最多还能分配 ${freePoints} 点）：`, '1');
+                      if (amountStr) {
+                         const amount = parseInt(amountStr, 10);
+                         if (!isNaN(amount) && amount > 0) {
+                            allocatePoints(attr.k, amount);
+                         }
+                      }
+                   }} 
                    style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 0 }}
-                   title="分配1点"
+                   title="分配点数"
                 >
                   <PlusCircle size={16} />
                 </button>
@@ -92,16 +102,41 @@ export default function PlayerStatus() {
       )}
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>已掌握绝学</h4>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {skills.map(skillId => {
-            const skillInfo = SKILLS_DB.find(s => s.id === skillId);
+        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>武学与宝具羁绊</h4>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.85rem' }}>
+          {['inner', 'outer', 'motion', 'ultimate'].map(type => {
+            const typeName = type === 'inner' ? '内功' : type === 'outer' ? '外功' : type === 'motion' ? '轻功' : '绝学';
+            const available = skills.filter(sId => SKILLS_DB.find(s => s.id === sId)?.type === type);
             return (
-              <span key={skillId} title={skillInfo?.desc} style={{ fontSize: '0.8rem', padding: '0.2rem 0.6rem', background: 'var(--glass-bg)', borderRadius: '12px', border: '1px solid var(--primary-glow)', cursor: 'help' }}>
-                {skillInfo?.name}
-              </span>
+               <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                 <span style={{ color: 'var(--text-muted)' }}>{typeName}槽位</span>
+                 <select 
+                    value={equippedSkills[type] || ''} 
+                    onChange={e => equipSkill(type, e.target.value || null)}
+                    style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px' }}
+                 >
+                   <option value="">--空--</option>
+                   {available.map(sId => <option key={sId} value={sId}>{SKILLS_DB.find(s => s.id === sId)?.name}</option>)}
+                 </select>
+               </div>
             );
           })}
+        </div>
+        
+        <div style={{ marginTop: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+           <span style={{ color: 'var(--warn)' }}>本命宝具</span>
+           <select 
+              value={equippedTreasure || ''} 
+              onChange={e => equipTreasure(e.target.value || null)}
+              style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--warn)', borderRadius: '4px', padding: '4px' }}
+           >
+              <option value="">--无羁绊--</option>
+              {(treasures || []).map(tId => {
+                 const t = TREASURES_DB?.find(tr => tr.id === tId);
+                 return <option key={tId} value={tId}>{t ? `[${t.rarity}] ${t.name}` : tId}</option>;
+              })}
+           </select>
         </div>
       </div>
     </div>

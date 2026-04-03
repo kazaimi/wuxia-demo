@@ -75,13 +75,48 @@ for (let i = 0; i < 60; i++) {
    const luk = Math.floor(level * 0.3) + 1;
    
    const finalHp = calculateMaxHp(level, con);
-   const useSkill = i % 2 === 0 ? 's_kuihua' : (i % 3 === 0 ? 's_xianglong' : (i % 5 === 0 ? 's_dugu' : 's_taiji'));
+   let eqInner = 's2';
+   let eqOuter = 's1';
+   let eqMotion = null;
+   let eqUltimate = null;
+
+   if (rankIndex <= 10) {
+      eqInner = Math.random() > 0.5 ? 's_yijin' : 's_xixing';
+      eqOuter = Math.random() > 0.5 ? 's_anran' : 's_taiji';
+      eqMotion = 's_shenxing';
+      eqUltimate = Math.random() > 0.6 ? 's_shengxin' : (Math.random() > 0.5 ? 's_liumai' : 's_dugu');
+   } else if (rankIndex <= 30) {
+      eqInner = Math.random() > 0.5 ? 's_shihou' : 's5';
+      eqOuter = Math.random() > 0.5 ? 's_du' : 's_kuangfeng';
+      eqMotion = 's_tiyun';
+      eqUltimate = Math.random() > 0.6 ? 's_dianxue' : (Math.random() > 0.5 ? 's_kuihua' : 's_xianglong');
+   } else {
+      eqInner = Math.random() > 0.5 ? 's5' : 's2';
+      eqOuter = Math.random() > 0.5 ? 's3' : 's1';
+      eqMotion = Math.random() > 0.5 ? 's4' : null;
+      eqUltimate = null;
+   }
+   
+   let equippedTreasure = null;
+   if (rankIndex <= 3) {
+      equippedTreasure = 't' + (13 + Math.floor(Math.random() * 3));
+   } else if (rankIndex <= 10) {
+      equippedTreasure = 't' + (10 + Math.floor(Math.random() * 3));
+   } else if (rankIndex <= 20) {
+      equippedTreasure = 't' + (7 + Math.floor(Math.random() * 3));
+   } else if (rankIndex <= 35) {
+      equippedTreasure = 't' + (4 + Math.floor(Math.random() * 3));
+   } else if (rankIndex <= 50) {
+      equippedTreasure = 't' + (1 + Math.floor(Math.random() * 3));
+   }
    
    MOCK_PLAYERS.push({
       id: `mock_${i}`, name, level, title: `江湖风云榜 第 ${rankIndex} 席`,
       hp: finalHp, maxHp: finalHp,
       attributes: { con, str, int, agi, luk },
-      equippedSkills: [useSkill], isBattling: false, isMock: true, signatureSkill: useSkill, rankIndex
+      equippedSkills: { inner: eqInner, outer: eqOuter, motion: eqMotion, ultimate: eqUltimate }, 
+      equippedTreasure,
+      isBattling: false, isMock: true, signatureSkill: eqUltimate || eqOuter, rankIndex
    });
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useGameStore, ATTR_MAP } from '../store/gameState';
+import { useGameStore, ATTR_MAP, SKILLS_DB } from '../store/gameState';
 import { Target, Gift, RefreshCw } from 'lucide-react';
 
 export default function TaskHall() {
@@ -44,8 +44,8 @@ export default function TaskHall() {
       let msg = `任务成功！获得了 ${task.expReward} 点经验。`;
       gainExp(task.expReward);
       
-      const rareSkills = ['s5', 's_kuihua', 's_xianglong', 's_dugu', 's_taiji'];
-      const midSkills = ['s3', 's4'];
+      const rareSkills = ['s_taiji', 's_anran', 's5', 's_yijin', 's_xixing', 's_tiyun', 's_shenxing', 's_kuihua', 's_xianglong', 's_dugu', 's_liumai'];
+      const midSkills = ['s3', 's4', 's_kuangfeng', 's_shihou'];
 
       if (task.stars === 4 && !player.title) {
         setTitle('★武林新锐');
@@ -54,17 +54,18 @@ export default function TaskHall() {
       
       if (task.stars === 4 && Math.random() > 0.75) {
          const dropId = midSkills[Math.floor(Math.random() * midSkills.length)];
+         const skillName = SKILLS_DB?.find(s => s.id === dropId)?.name || '无名残卷';
          learnSkill(dropId);
-         msg += ` 竟在一处破庙捡到了【${dropId === 's3' ? '铁砂掌' : '凌波微步'}】！`;
+         msg += ` 竟在一处破庙捡到了【${skillName}】！`;
       }
 
       if (task.stars === 5) {
         setTitle('⭐绝世天骄');
         if (Math.random() <= 0.20) {
           const dropId = rareSkills[Math.floor(Math.random() * rareSkills.length)];
-          const names = { 's5': '九阳神功', 's_kuihua': '葵花宝典', 's_xianglong': '降龙十八掌', 's_dugu': '独孤九剑', 's_taiji': '太极拳' };
+          const skillName = SKILLS_DB?.find(s => s.id === dropId)?.name || '绝世残卷';
           learnSkill(dropId);
-          msg += ` 成功触发稀世奇遇，掉落了五星级绝学【${names[dropId]}】！称号自动升级为【⭐绝世天骄】！`;
+          msg += ` 成功触发稀世奇遇，掉落了绝世武学秘籍【${skillName}】！称号自动升级为【⭐绝世天骄】！`;
         } else {
           msg += ` 称号自动升级为【⭐绝世天骄】！可惜未能触发绝学奇遇。`;
         }

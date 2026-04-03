@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGameStore } from '../store/gameState';
-import { Trophy, Medal, Star, Swords } from 'lucide-react';
+import { useGameStore, TREASURES_DB } from '../store/gameState';
+import { Trophy, Medal, Star, Swords, Gift } from 'lucide-react';
 
 export default function Leaderboard() {
   const onlinePlayers = useGameStore(state => state.onlinePlayers);
@@ -20,6 +20,7 @@ export default function Leaderboard() {
         {fullBoard.length === 0 && <p style={{color: 'var(--text-muted)'}}>当前无大侠连入江湖...</p>}
         {fullBoard.map((u, i) => {
           const isMe = u.name === player.name; 
+          const tName = u.equippedTreasure ? TREASURES_DB?.find(t => t.id === u.equippedTreasure)?.name : null;
           return (
           <div key={u.id} style={{ 
             display: 'flex', justifyContent: 'space-between', padding: '1rem', 
@@ -28,9 +29,12 @@ export default function Leaderboard() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <strong style={{ minWidth: '30px', color: i < 3 ? 'var(--warn)' : 'var(--text-muted)' }}>#{i + 1}</strong>
-              <span style={{ fontSize: '1.2rem', fontWeight: isMe ? 'bold' : 'normal', color: u.isBattling ? 'var(--text-muted)' : 'var(--text-main)' }}>
-                {u.name} {isMe && '(您)'} {u.isBattling && '[激战中]'}
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                 <span style={{ fontSize: '1.2rem', fontWeight: isMe ? 'bold' : 'normal', color: u.isBattling ? 'var(--text-muted)' : 'var(--text-main)' }}>
+                   {u.name} {isMe && '(您)'} {u.isBattling && '[激战中]'}
+                 </span>
+                 {tName && <span style={{ fontSize: '0.8rem', color: 'var(--warn)', marginTop: '2px' }}><Gift size={12} style={{marginRight: '2px', verticalAlign: 'text-top'}} /> {tName}</span>}
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', color: 'var(--text-muted)' }}>
               <span><Star size={16} color="var(--primary)" style={{verticalAlign:'text-bottom'}}/> Lv.{u.level}</span>
