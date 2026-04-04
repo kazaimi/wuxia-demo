@@ -80,6 +80,7 @@ export default function EncounterArena() {
 
   useEffect(() => {
     if (encounterState !== 'battling' || !p1 || !p2) return;
+    if (p2.hp <= 0) return; // 防止换场过渡期间，对已死亡的 p2 重复触发战斗判定（竞态 Bug 修复）
 
     const timer = setTimeout(() => {
       const isP1Turn = Math.random() < (p1.attributes.agi / (p1.attributes.agi + p2.attributes.agi + 1));
