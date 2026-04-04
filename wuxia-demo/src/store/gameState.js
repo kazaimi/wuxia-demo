@@ -74,7 +74,7 @@ export const useGameStore = create((set, get) => ({
   initSocket: () => {
     if (!socket) {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
-      const serverUrl = isLocal ? `http://${window.location.hostname}:3000` : 'https://vz316op3574.vicp.fun';
+      const serverUrl = isLocal ? `http://${window.location.hostname}:3000` : 'https://unwhiskered-manie-staringly.ngrok-free.dev';
       socket = io(serverUrl);
       socket.on('connect', () => {
         set({ socketConnected: true });
