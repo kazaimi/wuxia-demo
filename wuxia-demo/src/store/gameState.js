@@ -73,7 +73,9 @@ export const useGameStore = create((set, get) => ({
 
   initSocket: () => {
     if (!socket) {
-      socket = io(`http://${window.location.hostname}:3000`);
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+      const serverUrl = isLocal ? `http://${window.location.hostname}:3000` : 'https://vz316op3574.vicp.fun';
+      socket = io(serverUrl);
       socket.on('connect', () => {
         set({ socketConnected: true });
         const savedName = localStorage.getItem('wuxia_username');
