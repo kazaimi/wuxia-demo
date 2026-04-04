@@ -269,5 +269,5 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 1.3++ 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 1.4 已开启 (Server listen on ${PORT})`);
 });
