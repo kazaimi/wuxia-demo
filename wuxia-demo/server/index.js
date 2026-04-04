@@ -125,8 +125,10 @@ let battles = {};
 let winStreaks = {}; 
 
 io.on('connection', (socket) => {
+  console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
   
   socket.on('player_login', (username) => {
+      console.log(`[入局提醒] 大侠 【${username}】 请求连接服务端...`);
       const dbPlayer = realPlayersDB.find(p => p.name === username);
       if (dbPlayer) {
          dbPlayer.id = socket.id;
