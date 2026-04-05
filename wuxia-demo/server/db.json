@@ -7,13 +7,13 @@
     "maxExp": 5488,
     "freePoints": 0,
     "taskCount": 35,
-    "hp": 695,
-    "maxHp": 695,
+    "hp": 445,
+    "maxHp": 445,
     "attributes": {
-      "con": 25,
-      "str": 6,
-      "int": 10,
-      "agi": 35,
+      "con": 0,
+      "str": 26,
+      "int": 0,
+      "agi": 50,
       "luk": 0
     },
     "skills": [
@@ -33,17 +33,17 @@
       "0": "s1",
       "1": "s_taiji",
       "2": "s_kuihua",
-      "motion": "s4",
-      "outer": "s_anran",
-      "ultimate": "s_liumai",
+      "motion": null,
+      "outer": null,
+      "ultimate": null,
       "inner": "s_shihou"
     },
-    "id": "_VLVlTZzQ560yV9EAAAN",
+    "id": "fXuq5xj_DaTCbk0mAAAD",
     "isBattling": false,
     "rankIndex": 31,
     "lastTaskDate": "Sun Apr 05 2026",
     "treasures": [],
-    "encountersToday": 0
+    "encountersToday": 1
   },
   {
     "name": "芙蓉女侠",

@@ -180,7 +180,7 @@ export default function EncounterArena() {
               attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】！`;
             }
          } else {
-            let isDodge = aTreasure?.effect !== 'xuanTie' && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false));
+            let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false));
             
             if (isDodge) {
                actionLog = `${attacker.name} 的【${skill.name}】被闪开！`;

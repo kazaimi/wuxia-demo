@@ -141,8 +141,8 @@ export default function BattleArena() {
               actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
             }
          } else {
-            // 判定闪避
-            let canDodge = aTreasure?.effect !== 'xuanTie'; // 重剑必中
+            // 判定闪避（眩晕时无法闪避）
+            let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
             let isDodge = false;
             if (canDodge) {
                isDodge = Math.random() < (defender.attributes.agi * 0.005);
