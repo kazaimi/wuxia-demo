@@ -82,7 +82,7 @@ export default function EncounterArena() {
 
   useEffect(() => {
     if (encounterState !== 'battling' || !p1 || !p2) return;
-    if (p2.hp <= 0) return; // 防止换场过渡期间，对已死亡的 p2 重复触发战斗判定（竞态 Bug 修复）
+    if (p2.hp <= 0) return;
 
     const timer = setTimeout(() => {
       const isP1Turn = Math.random() < (p1.attributes.agi / (p1.attributes.agi + p2.attributes.agi + 1));
@@ -307,6 +307,8 @@ export default function EncounterArena() {
                const nextIdx = curIdx + 1;
                currentEnemyIndex.current = nextIdx;
                const defeatedName = isP1Turn ? defender.name : attacker.name;
+               // 先切换为换场中间态，阻断 useEffect 因 logs.length 变化重新触发
+               setEncounterState('transitioning');
                setLogs(prev => [...prev, `\n战胜 ${defeatedName}！进入下一战...`]);
                setTimeout(() => setupNextEnemy(finalP1, team, nextIdx), 2000);
             }

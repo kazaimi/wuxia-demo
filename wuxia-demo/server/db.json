@@ -2,18 +2,18 @@
   {
     "name": "ALEX",
     "title": "⭐绝世天骄",
-    "level": 21,
-    "exp": 4145,
-    "maxExp": 4748,
+    "level": 23,
+    "exp": 5317,
+    "maxExp": 5488,
     "freePoints": 0,
-    "taskCount": 0,
-    "hp": 565,
-    "maxHp": 565,
+    "taskCount": 35,
+    "hp": 695,
+    "maxHp": 695,
     "attributes": {
-      "con": 15,
-      "str": 0,
+      "con": 25,
+      "str": 6,
       "int": 10,
-      "agi": 45,
+      "agi": 35,
       "luk": 0
     },
     "skills": [
@@ -25,23 +25,25 @@
       "s4",
       "s_kuangfeng",
       "s_shihou",
-      "s_xixing"
+      "s_xixing",
+      "s_anran",
+      "s_liumai"
     ],
     "equippedSkills": {
       "0": "s1",
       "1": "s_taiji",
       "2": "s_kuihua",
       "motion": "s4",
-      "outer": "s_kuangfeng",
-      "ultimate": "s_xianglong",
-      "inner": "s_xixing"
+      "outer": "s_anran",
+      "ultimate": "s_liumai",
+      "inner": "s_shihou"
     },
-    "id": "WmvSh9LVO3XeX_WWAAAD",
+    "id": "_VLVlTZzQ560yV9EAAAN",
     "isBattling": false,
-    "rankIndex": 39,
+    "rankIndex": 31,
     "lastTaskDate": "Sun Apr 05 2026",
     "treasures": [],
-    "encountersToday": 0
+    "encountersToday": 5
   },
   {
     "name": "芙蓉女侠",
@@ -79,7 +81,7 @@
     },
     "id": "WqZKQjCUuqZuwN29AAAP",
     "isBattling": false,
-    "rankIndex": 49,
+    "rankIndex": 50,
     "lastTaskDate": "Fri Apr 03 2026",
     "treasures": [],
     "encountersToday": 5
@@ -294,39 +296,43 @@
   {
     "name": "猫十一郎",
     "title": "⭐绝世天骄",
-    "level": 13,
-    "exp": 379,
-    "maxExp": 2267,
+    "level": 17,
+    "exp": 3296,
+    "maxExp": 3409,
     "freePoints": 0,
     "taskCount": 35,
     "encountersToday": 5,
-    "lastTaskDate": "Sat Apr 04 2026",
-    "hp": 295,
-    "maxHp": 295,
+    "lastTaskDate": "Sun Apr 05 2026",
+    "hp": 355,
+    "maxHp": 355,
     "attributes": {
       "con": 0,
       "str": 0,
       "int": 0,
-      "agi": 46,
+      "agi": 58,
       "luk": 0
     },
     "skills": [
       "s1",
       "s3",
       "s4",
-      "s_xixing"
+      "s_xixing",
+      "s_anran",
+      "s_taiji",
+      "s_shihou",
+      "s_dugu"
     ],
     "treasures": [],
     "equippedSkills": {
       "inner": "s_xixing",
-      "outer": "s3",
+      "outer": "s_taiji",
       "motion": "s4",
-      "ultimate": null
+      "ultimate": "s_dugu"
     },
     "equippedTreasure": null,
-    "id": "lOcslN1ZX-SztQVMAAA2",
+    "id": "IAmU62vmkFK8KAzfAAAF",
     "isBattling": false,
-    "rankIndex": 51
+    "rankIndex": 32
   },
   {
     "name": "喵",
