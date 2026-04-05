@@ -11,7 +11,7 @@ export default function EncounterArena() {
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
-  const [currentEnemyIndex, setCurrentEnemyIndex] = useState(0);
+  const currentEnemyIndex = useRef(0);
   
   const [p1, setP1] = useState(null);
   const [p2, setP2] = useState(null);
@@ -50,10 +50,12 @@ export default function EncounterArena() {
      if (higherBots.length === 0) higherBots = r2;
      const enemy2 = higherBots[Math.floor(Math.random() * higherBots.length)];
 
-     const selectedTeam = [enemy1, enemy2, boss];
+     // 按等级升序排列：垫脚石 → 中等 → Boss（强制保证 boss 最后出场）
+     const prelimTeam = [enemy1, enemy2].sort((a, b) => a.level - b.level);
+     const selectedTeam = [...prelimTeam, boss];
      
      setTeam(selectedTeam);
-     setCurrentEnemyIndex(0);
+     currentEnemyIndex.current = 0;
      
      const myPlayer = { 
          ...player, 
@@ -281,9 +283,11 @@ export default function EncounterArena() {
       if (attacker.hp <= 0 || defender.hp <= 0) {
          const p1Won = isP1Turn ? defender.hp <= 0 : attacker.hp <= 0;
          const finalP1 = isP1Turn ? attacker : defender;
+         // 用 ref 读取，避免闭包快照陈旧问题
+         const curIdx = currentEnemyIndex.current;
 
          if (p1Won) {
-            if (currentEnemyIndex >= 2) {
+            if (curIdx >= 2) {
                // 连胜3人，胜利结算
                let expReward = 0;
                let droppedTreasure = null;
@@ -300,9 +304,11 @@ export default function EncounterArena() {
                setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
                setEncounterState('win');
             } else {
-               setLogs(prev => [...prev, `\n战胜 ${defender.name}！进入下一战...`]);
-               setTimeout(() => setupNextEnemy(finalP1, team, currentEnemyIndex + 1), 2000);
-               setCurrentEnemyIndex(currentEnemyIndex + 1);
+               const nextIdx = curIdx + 1;
+               currentEnemyIndex.current = nextIdx;
+               const defeatedName = isP1Turn ? defender.name : attacker.name;
+               setLogs(prev => [...prev, `\n战胜 ${defeatedName}！进入下一战...`]);
+               setTimeout(() => setupNextEnemy(finalP1, team, nextIdx), 2000);
             }
          } else {
             setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，大侠请重新来过...`]);
@@ -339,7 +345,7 @@ export default function EncounterArena() {
             </div>
             <div style={{ textAlign: 'center' }}>
                <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))' }}>VS</h3>
-               <span style={{ fontSize: '0.8rem', color: 'var(--warn)' }}>{currentEnemyIndex + 1} / 3</span>
+               <span style={{ fontSize: '0.8rem', color: 'var(--warn)' }}>{currentEnemyIndex.current + 1} / 3</span>
             </div>
             <div style={{ width: '42%' }}>
                <h4 style={{ color: 'var(--warn)', marginBottom: '0.5rem', textAlign: 'right' }}>{p2?.name}</h4>
