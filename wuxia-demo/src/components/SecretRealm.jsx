@@ -8,6 +8,7 @@ export default function SecretRealm() {
   const useSecretRealmAttempt = useGameStore(state => state.useSecretRealmAttempt);
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addDailyDebuff = useGameStore(state => state.addDailyDebuff);
+  const addActivity = useGameStore(state => state.addActivity);
 
   const [state, setState] = useState('idle'); // idle, exploring, result
   const [deck, setDeck] = useState([]);
@@ -29,6 +30,13 @@ export default function SecretRealm() {
       return;
     }
     useSecretRealmAttempt();
+    const upgradedTitle = addActivity(15);
+    if (upgradedTitle) {
+         setTimeout(() => {
+             alert(`你在琅嬛福地的大胆探索让你的活跃名声远扬，目前名望已晋升为【${upgradedTitle}】！`);
+         }, 800);
+    }
+    
     setDepth(0);
     setKarma(0);
     setLogs(["====== 踏入琅嬛福地 ======\n四周云雾流转，你感觉自己步入了一片遗世独立的秘境……\n"]);

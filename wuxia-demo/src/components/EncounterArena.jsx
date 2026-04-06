@@ -8,6 +8,7 @@ export default function EncounterArena() {
   const gainExp = useGameStore(state => state.gainExp);
   const incrementEncounterCount = useGameStore(state => state.incrementEncounterCount);
   const gainTreasure = useGameStore(state => state.gainTreasure);
+  const addActivity = useGameStore(state => state.addActivity);
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -35,6 +36,12 @@ export default function EncounterArena() {
      }
      
      incrementEncounterCount();
+     const upgradedTitle = addActivity(10);
+     if (upgradedTitle) {
+         setTimeout(() => {
+             alert(`随着你在武林中不断游历，近日活跃度居高不下，名望已晋升为【${upgradedTitle}】！`);
+         }, 500);
+     }
 
      const bossCands = bots.filter(b => b.rankIndex <= 10);
      const boss = bossCands[Math.floor(Math.random() * bossCands.length)] || bots[0];

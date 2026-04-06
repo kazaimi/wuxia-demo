@@ -8,7 +8,7 @@ export default function TaskHall() {
   const completeTask = useGameStore(state => state.completeTask);
   const gainExp = useGameStore(state => state.gainExp);
   const setTitle = useGameStore(state => state.setTitle);
-  const recordTaskSuccess = useGameStore(state => state.recordTaskSuccess);
+  const addActivity = useGameStore(state => state.addActivity);
   const learnSkill = useGameStore(state => state.learnSkill);
   const incrementTaskCount = useGameStore(state => state.incrementTaskCount);
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
@@ -29,6 +29,7 @@ export default function TaskHall() {
     }
     
     incrementTaskCount();
+    const upgradedTitle = addActivity(5);
     
     const pAttr = player.attributes[task.reqAttr] || 0;
     const luk = player.attributes.luk;
@@ -48,9 +49,8 @@ export default function TaskHall() {
       const rareSkills = ['s_taiji', 's_anran', 's5', 's_yijin', 's_xixing', 's_tiyun', 's_shenxing', 's_kuihua', 's_xianglong', 's_dugu', 's_liumai'];
       const midSkills = ['s3', 's4', 's_kuangfeng', 's_shihou'];
 
-      const upgradedTitle = recordTaskSuccess(task.stars);
       if (upgradedTitle) {
-         msg += ` 威望远扬，荣获全新称号【${upgradedTitle}】！`;
+         msg += ` 并且活跃度跨越门槛，名头晋升为了【${upgradedTitle}】！`;
       }
       
       if (task.stars === 4 && Math.random() > 0.75) {
@@ -70,7 +70,11 @@ export default function TaskHall() {
       }
       alert(msg);
     } else {
-      alert(`很遗憾，由于你这趟【${ATTR_MAP[task.reqAttr]}】未能突破门槛约束，任务执行失败，一无所获且消耗了一次体力！`);
+      let failMsg = `很遗憾，由于你这趟【${ATTR_MAP[task.reqAttr]}】未能突破门槛约束，任务执行失败，一无所获且消耗了一次体力！`;
+      if (upgradedTitle) {
+         failMsg += ` (但随着你四处奔波苦劳积攒，名头反而晋升为了【${upgradedTitle}】！)`;
+      }
+      alert(failMsg);
     }
   };
 
