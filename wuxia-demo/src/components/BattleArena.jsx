@@ -152,7 +152,7 @@ export default function BattleArena() {
             if (isDodge) {
                actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
             } else {
-               let finalDef = dDefBase * 0.5;
+               let finalDef = dDefBase * 1;
                if (defender.buffs.defUp > 0) finalDef *= 2;
                
                let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);

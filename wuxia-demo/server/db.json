@@ -2,18 +2,18 @@
   {
     "name": "ALEX",
     "title": "⭐绝世天骄",
-    "level": 23,
-    "exp": 5317,
-    "maxExp": 5488,
+    "level": 26,
+    "exp": 665,
+    "maxExp": 6684,
     "freePoints": 0,
     "taskCount": 35,
-    "hp": 445,
-    "maxHp": 445,
+    "hp": 690,
+    "maxHp": 690,
     "attributes": {
-      "con": 0,
-      "str": 26,
-      "int": 0,
-      "agi": 50,
+      "con": 20,
+      "str": 0,
+      "int": 5,
+      "agi": 60,
       "luk": 0
     },
     "skills": [
@@ -27,23 +27,25 @@
       "s_shihou",
       "s_xixing",
       "s_anran",
-      "s_liumai"
+      "s_liumai",
+      "s5",
+      "s_dianxue"
     ],
     "equippedSkills": {
       "0": "s1",
       "1": "s_taiji",
       "2": "s_kuihua",
-      "motion": null,
-      "outer": null,
-      "ultimate": null,
-      "inner": "s_shihou"
+      "motion": "s4",
+      "outer": "s_anran",
+      "ultimate": "s_dianxue",
+      "inner": "s_xixing"
     },
-    "id": "fXuq5xj_DaTCbk0mAAAD",
+    "id": "V-IJAbGQuaNGTvGlAAAD",
     "isBattling": false,
-    "rankIndex": 31,
-    "lastTaskDate": "Sun Apr 05 2026",
+    "rankIndex": 27,
+    "lastTaskDate": "Mon Apr 06 2026",
     "treasures": [],
-    "encountersToday": 1
+    "encountersToday": 2
   },
   {
     "name": "芙蓉女侠",

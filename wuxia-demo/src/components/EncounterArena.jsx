@@ -185,7 +185,7 @@ export default function EncounterArena() {
             if (isDodge) {
                actionLog = `${attacker.name} 的【${skill.name}】被闪开！`;
             } else {
-               let finalDef = dDefBase * 0.5 * (defender.buffs.defUp > 0 ? 2 : 1);
+               let finalDef = dDefBase * 1 * (defender.buffs.defUp > 0 ? 2 : 1);
                let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
                
                if (aTreasure?.effect === 'poShang') dmg += 50; 
