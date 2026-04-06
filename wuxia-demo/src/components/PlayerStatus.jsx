@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
-import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw, Heart } from 'lucide-react';
+import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw, Heart, AlertCircle } from 'lucide-react';
 
 export default function PlayerStatus() {
   const player = useGameStore(state => state.player);
@@ -99,6 +99,28 @@ export default function PlayerStatus() {
         >
           <RefreshCcw size={16} /> 洗髓重铸 (耗费修为修整)
         </button>
+      )}
+
+      {player.dailyDebuffs && player.dailyDebuffs.length > 0 && (
+         <div style={{ marginTop: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', padding: '0.8rem', borderRadius: '8px' }}>
+            <h4 style={{ fontSize: '1rem', color: 'var(--danger)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+               <AlertCircle size={16} /> 恶兆缠身 <span style={{fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)'}}>(今日拂晓消散)</span>
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+               {player.dailyDebuffs.map((db, i) => {
+                  let desc = "";
+                  if (db === '血枯劫') desc = "最大气血上限被强行压制衰减 20%";
+                  else if (db === '散功劫') desc = "力量与体质的基础属性各自衰减 5 点，破防抗压剧烈下降";
+                  else if (db === '心魔劫') desc = "心神失守走火入魔，任何战斗中每回合遭遇 15% 几率强制空过";
+                  return (
+                     <div key={i} style={{ fontSize: '0.85rem', color: 'var(--text-main)', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【{db}】</span>
+                        <span style={{ color: 'var(--text-muted)' }}>- {desc}</span>
+                     </div>
+                  );
+               })}
+            </div>
+         </div>
       )}
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
