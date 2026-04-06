@@ -47,7 +47,8 @@ export default function SecretRealm() {
        return;
     }
     const evtData = validEvents[0];
-    const newDeck = currentDeck.slice(1);
+    const evtIndex = currentDeck.indexOf(evtData);
+    const newDeck = [...currentDeck.slice(0, evtIndex), ...currentDeck.slice(evtIndex + 1)];
     const resolvedEvent = evtData.generator(player.level);
     
     setDeck(newDeck);

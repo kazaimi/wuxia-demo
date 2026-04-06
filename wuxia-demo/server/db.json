@@ -40,20 +40,21 @@
       "ultimate": "s_dianxue",
       "inner": "s5"
     },
-    "id": "9GSqNv9kRaVnWSoaAAAT",
+    "id": "gliKFgMFyRj6N7rWAAAi",
     "isBattling": false,
     "rankIndex": 28,
     "lastTaskDate": "Mon Apr 06 2026",
     "treasures": [
-      "t3"
+      "t3",
+      "t5"
     ],
     "encountersToday": 2,
-    "secretRealmAttempts": 4,
+    "secretRealmAttempts": 5,
     "dailyDebuffs": [
       "散功劫",
       "血枯劫"
     ],
-    "equippedTreasure": "t3"
+    "equippedTreasure": "t5"
   },
   {
     "name": "芙蓉女侠",

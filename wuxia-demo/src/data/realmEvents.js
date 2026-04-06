@@ -286,7 +286,15 @@ export function generateEventDeck() {
   // 每个类型抽1个，组成一次跑团
   EVENT_TEMPLATES.forEach(tmpl => {
     const rContent = tmpl.contents[Math.floor(Math.random() * tmpl.contents.length)];
-    deck.push({ type: tmpl.type, minDepth: tmpl.minDepth, generator: (level) => tmpl.generate(rContent, level) });
+    deck.push({ 
+       type: tmpl.type, 
+       minDepth: tmpl.minDepth, 
+       generator: (level) => {
+          const resolved = tmpl.generate(rContent, level);
+          resolved.choices.sort(() => Math.random() - 0.5);
+          return resolved;
+       } 
+    });
   });
   // 打乱
   deck.sort(() => Math.random() - 0.5);
