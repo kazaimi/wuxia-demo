@@ -39,7 +39,9 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="wuxia-title glow-effect">大乱斗武侠 - 1.4 软猬甲</h1>
+      <h1 className="wuxia-title glow-effect" style={{ fontFamily: '"STKaiti", "KaiTi", serif', fontSize: '2.5rem', letterSpacing: '4px' }}>
+         大乱斗武侠 <span style={{ fontSize: '1.4rem', color: '#c084fc', opacity: 0.9, marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '2px', textShadow: '0 0 10px rgba(192, 132, 252, 0.4)' }}>v1.5 琅嬛福地</span>
+      </h1>
       {!hasCreatedRole ? (
         showCreate ? (
            <CreateRole initialName={inputName.trim()} />
