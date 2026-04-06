@@ -314,9 +314,18 @@ export const useGameStore = create((set, get) => ({
        else if (act >= 20) nTitle = '🐎初出茅庐';
        else nTitle = '🐟摸鱼小虾';
        
+       const titleRanks = {
+          '🐟摸鱼小虾': 1, '🐎初出茅庐': 2, '💪勤勉游侠': 3, 
+          '🔥江湖劳模': 4, '⚡武林卷王': 5, '👑肝帝真仙': 6
+       };
+       const oldRank = titleRanks[oldTitle];
+       const newRank = titleRanks[nTitle] || 1;
+       
        if (nTitle !== oldTitle) {
           p.title = nTitle;
-          upgradedTitle = nTitle;
+          if (oldRank !== undefined && newRank > oldRank) {
+             upgradedTitle = nTitle;
+          }
        }
        
        if (socket) socket.emit('update_player', p);

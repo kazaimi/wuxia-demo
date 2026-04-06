@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "⭐绝世天骄",
+    "title": "🐟摸鱼小虾",
     "level": 26,
     "exp": 665,
     "maxExp": 6684,
@@ -57,11 +57,12 @@
       "血枯劫",
       "心魔劫"
     ],
-    "equippedTreasure": "t5"
+    "equippedTreasure": "t5",
+    "dailyActivity": 0
   },
   {
     "name": "芙蓉女侠",
-    "title": "⭐绝世天骄",
+    "title": "🐟摸鱼小虾",
     "level": 17,
     "exp": 631,
     "maxExp": 3409,
@@ -98,11 +99,12 @@
     "rankIndex": 50,
     "lastTaskDate": "Fri Apr 03 2026",
     "treasures": [],
-    "encountersToday": 5
+    "encountersToday": 5,
+    "dailyActivity": 0
   },
   {
     "name": "阿紫",
-    "title": "★武林新锐",
+    "title": "🐟摸鱼小虾",
     "level": 5,
     "exp": 531,
     "maxExp": 621,
@@ -135,11 +137,12 @@
     "equippedTreasure": null,
     "id": "iTHsdNyofzscTc33AAAq",
     "isBattling": false,
-    "rankIndex": 58
+    "rankIndex": 58,
+    "dailyActivity": 0
   },
   {
     "name": "隐世高手",
-    "title": "⭐绝世天骄",
+    "title": "🐟摸鱼小虾",
     "level": 3,
     "exp": 243,
     "maxExp": 358,
@@ -169,11 +172,12 @@
     "equippedTreasure": null,
     "id": "4UTej2LZNaJA9uSoAAAm",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "dailyActivity": 0
   },
   {
     "name": "nan",
-    "title": "",
+    "title": "🐟摸鱼小虾",
     "level": 4,
     "exp": 7,
     "maxExp": 481,
@@ -203,11 +207,12 @@
     "equippedTreasure": null,
     "id": "5dSeLYAeKTqCwPNxAAAg",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "dailyActivity": 0
   },
   {
     "name": "Akira",
-    "title": "",
+    "title": "🐟摸鱼小虾",
     "level": 3,
     "exp": 105,
     "maxExp": 358,
@@ -237,11 +242,12 @@
     "equippedTreasure": null,
     "id": "wUGjtyKXdPEzjKGrAAAy",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "dailyActivity": 0
   },
   {
     "name": "喵喵喵",
-    "title": "★武林新锐",
+    "title": "🐟摸鱼小虾",
     "level": 6,
     "exp": 512,
     "maxExp": 777,
@@ -271,11 +277,12 @@
     "equippedTreasure": null,
     "id": "dEIx340tfSw0hEKGAAAV",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "dailyActivity": 0
   },
   {
     "name": "董存瑞",
-    "title": "",
+    "title": "🐟摸鱼小虾",
     "level": 1,
     "exp": 0,
     "maxExp": 165,
@@ -305,11 +312,12 @@
     "equippedTreasure": null,
     "id": "uIgLALtbA9MhRlwnAAAu",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "dailyActivity": 0
   },
   {
     "name": "猫十一郎",
-    "title": "⭐绝世天骄",
+    "title": "🐟摸鱼小虾",
     "level": 20,
     "exp": 3199,
     "maxExp": 4395,
@@ -349,11 +357,12 @@
     "equippedTreasure": null,
     "id": "QP-qEbjBuL3dM6ZyAAAZ",
     "isBattling": false,
-    "rankIndex": 27
+    "rankIndex": 27,
+    "dailyActivity": 0
   },
   {
     "name": "喵",
-    "title": "⭐绝世天骄",
+    "title": "🐟摸鱼小虾",
     "level": 9,
     "exp": 921,
     "maxExp": 1332,
@@ -387,11 +396,12 @@
     "equippedTreasure": null,
     "id": "QD52LgtqmOtnXC40AAAX",
     "isBattling": false,
-    "rankIndex": 59
+    "rankIndex": 59,
+    "dailyActivity": 0
   },
   {
     "name": "粑粑柑大侠",
-    "title": "★武林新锐",
+    "title": "🐟摸鱼小虾",
     "level": 3,
     "exp": 17,
     "maxExp": 358,
@@ -421,6 +431,7 @@
     "equippedTreasure": null,
     "id": "7zoveUjj_KZM2nZkAAAF",
     "isBattling": false,
-    "rankIndex": 10062
+    "rankIndex": 10062,
+    "dailyActivity": 0
   }
 ]
