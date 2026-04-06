@@ -30,9 +30,11 @@ export default function Leaderboard() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <strong style={{ minWidth: '30px', color: i < 3 ? 'var(--warn)' : 'var(--text-muted)' }}>#{i + 1}</strong>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                 <span style={{ fontSize: '1.2rem', fontWeight: isMe ? 'bold' : 'normal', color: u.isBattling ? 'var(--text-muted)' : 'var(--text-main)' }}>
-                   {u.name} {isMe && '(您)'} {u.isBattling && '[激战中]'}
-                 </span>
+                 <div style={{ fontSize: '1.2rem', fontWeight: isMe ? 'bold' : 'normal', color: u.isBattling ? 'var(--text-muted)' : 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                   <span>{u.name} {isMe && '(您)'} {u.isBattling && '[激战中]'}</span>
+                   {u.title && <span style={{ fontSize: '0.8rem', color: '#fbbf24', border: '1px solid #fbbf24', padding: '1px 4px', borderRadius: '4px' }}>{u.title}</span>}
+                   {u.dailyDebuffs && u.dailyDebuffs.length > 0 && <span style={{ fontSize: '0.8rem', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', padding: '1px 4px', borderRadius: '4px' }}>[{u.dailyDebuffs.join(' / ')}]</span>}
+                 </div>
                  {tName && <span style={{ fontSize: '0.8rem', color: 'var(--warn)', marginTop: '2px' }}><Gift size={12} style={{marginRight: '2px', verticalAlign: 'text-top'}} /> {tName}</span>}
               </div>
             </div>

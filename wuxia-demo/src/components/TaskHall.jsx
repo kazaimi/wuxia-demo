@@ -8,6 +8,7 @@ export default function TaskHall() {
   const completeTask = useGameStore(state => state.completeTask);
   const gainExp = useGameStore(state => state.gainExp);
   const setTitle = useGameStore(state => state.setTitle);
+  const recordTaskSuccess = useGameStore(state => state.recordTaskSuccess);
   const learnSkill = useGameStore(state => state.learnSkill);
   const incrementTaskCount = useGameStore(state => state.incrementTaskCount);
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
@@ -47,9 +48,9 @@ export default function TaskHall() {
       const rareSkills = ['s_taiji', 's_anran', 's5', 's_yijin', 's_xixing', 's_tiyun', 's_shenxing', 's_kuihua', 's_xianglong', 's_dugu', 's_liumai'];
       const midSkills = ['s3', 's4', 's_kuangfeng', 's_shihou'];
 
-      if (task.stars === 4 && !player.title) {
-        setTitle('★武林新锐');
-        msg += ' 并获得了称号【★武林新锐】！';
+      const upgradedTitle = recordTaskSuccess(task.stars);
+      if (upgradedTitle) {
+         msg += ` 威望远扬，荣获全新称号【${upgradedTitle}】！`;
       }
       
       if (task.stars === 4 && Math.random() > 0.75) {
@@ -60,14 +61,11 @@ export default function TaskHall() {
       }
 
       if (task.stars === 5) {
-        setTitle('⭐绝世天骄');
         if (Math.random() <= 0.20) {
           const dropId = rareSkills[Math.floor(Math.random() * rareSkills.length)];
           const skillName = SKILLS_DB?.find(s => s.id === dropId)?.name || '绝世残卷';
           learnSkill(dropId);
-          msg += ` 成功触发稀世奇遇，掉落了绝世武学秘籍【${skillName}】！称号自动升级为【⭐绝世天骄】！`;
-        } else {
-          msg += ` 称号自动升级为【⭐绝世天骄】！可惜未能触发绝学奇遇。`;
+          msg += ` 成功触发稀世奇遇，掉落了绝世武学秘籍【${skillName}】！`;
         }
       }
       alert(msg);

@@ -297,6 +297,40 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
   
+  recordTaskSuccess: (stars) => {
+    let upgradedTitle = null;
+    set((state) => {
+       const p = { ...state.player };
+       if (!p.taskStats) p.taskStats = {};
+       p.taskStats[stars] = (p.taskStats[stars] || 0) + 1;
+       
+       let nTitle = p.title;
+       const s5 = p.taskStats[5] || 0;
+       const s4 = p.taskStats[4] || 0;
+       const s3 = p.taskStats[3] || 0;
+       const s2 = p.taskStats[2] || 0;
+       const s1 = p.taskStats[1] || 0;
+       
+       if (s5 >= 10) nTitle = '👑武林神话';
+       else if (s5 >= 3) nTitle = '🌟盖世宗师';
+       else if (s5 >= 1) nTitle = '⭐绝世天骄';
+       else if (s4 >= 10) nTitle = '🔥威震一方';
+       else if (s4 >= 3) nTitle = '⚡声名鹊起';
+       else if (s4 >= 1 || s3 >= 15) nTitle = '★武林新锐';
+       else if (s3 >= 5 || s2 >= 15) nTitle = '⚔️江湖老手';
+       else if (s2 >= 5 || s1 >= 10) nTitle = '🗡️初窥门径';
+       
+       if (nTitle !== p.title) {
+          p.title = nTitle;
+          upgradedTitle = nTitle;
+       }
+       
+       if (socket) socket.emit('update_player', p);
+       return { player: p };
+    });
+    return upgradedTitle;
+  },
+  
   learnSkill: (skillId) => set((state) => {
     if (!state.player.skills.includes(skillId)) {
       const p = { ...state.player, skills: [...state.player.skills, skillId] };

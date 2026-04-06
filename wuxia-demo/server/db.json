@@ -40,20 +40,22 @@
       "ultimate": "s_dianxue",
       "inner": "s5"
     },
-    "id": "lCtFY_9aXlj0rWstAAAq",
+    "id": "n7mLN0b8H1u5_mrZAAA3",
     "isBattling": false,
     "rankIndex": 28,
     "lastTaskDate": "Mon Apr 06 2026",
     "treasures": [
       "t3",
       "t5",
-      "t4"
+      "t4",
+      "t1"
     ],
     "encountersToday": 2,
-    "secretRealmAttempts": 12,
+    "secretRealmAttempts": 15,
     "dailyDebuffs": [
       "散功劫",
-      "血枯劫"
+      "血枯劫",
+      "心魔劫"
     ],
     "equippedTreasure": "t5"
   },
