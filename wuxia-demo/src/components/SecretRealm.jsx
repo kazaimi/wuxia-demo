@@ -170,7 +170,7 @@ export default function SecretRealm() {
               </div>
             ))}
 
-            {currentEvent && (
+            {state === 'exploring' && currentEvent && (
                <div style={{ marginTop: '2rem', animation: 'fadeIn 0.6s', borderTop: '1px dashed #444', paddingTop: '1.5rem' }}>
                   <p style={{ color: '#fff', marginBottom: '2rem', textShadow: '0 0 5px rgba(255,255,255,0.2)' }}>{currentEvent.desc}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
