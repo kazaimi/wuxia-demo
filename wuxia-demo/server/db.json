@@ -11,10 +11,10 @@
     "maxHp": 490,
     "attributes": {
       "con": 0,
-      "str": 5,
-      "int": 40,
+      "str": 40,
+      "int": 45,
       "agi": 0,
-      "luk": 40
+      "luk": 0
     },
     "skills": [
       "s1",
@@ -40,16 +40,20 @@
       "ultimate": "s_dianxue",
       "inner": "s5"
     },
-    "id": "LNDsDDdfrGPf6ctCAAAD",
+    "id": "9GSqNv9kRaVnWSoaAAAT",
     "isBattling": false,
     "rankIndex": 28,
     "lastTaskDate": "Mon Apr 06 2026",
-    "treasures": [],
+    "treasures": [
+      "t3"
+    ],
     "encountersToday": 2,
-    "secretRealmAttempts": 1,
+    "secretRealmAttempts": 4,
     "dailyDebuffs": [
-      "散功劫"
-    ]
+      "散功劫",
+      "血枯劫"
+    ],
+    "equippedTreasure": "t3"
   },
   {
     "name": "芙蓉女侠",

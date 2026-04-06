@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGameStore, SKILLS_DB } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw, Heart } from 'lucide-react';
 
 export default function PlayerStatus() {

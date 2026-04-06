@@ -212,10 +212,11 @@ export const EVENT_TEMPLATES = [
         {
           text: content.btnA,
           action: (p) => {
-             if (p.karma >= 0) {
-                return { depthDelta: 3, karmaDelta: 1, log: "你平日积善累德，道心通明，幻境应势碎裂！" };
+             const req = level * 1.2 + 8;
+             if (p.attributes.int + Math.floor(p.attributes.luk/2) >= req) {
+                return { depthDelta: 3, karmaDelta: 1, log: "你平日修心养性，大智若愚，幻境应势碎裂！" };
              } else {
-                return { depthDelta: 0, karmaDelta: 0, fail: true, failType: null, log: "你戾气太重引发了心魔暴走，大叫一声被弹出秘境！" };
+                return { depthDelta: 0, karmaDelta: 0, fail: true, failType: '心魔劫', log: "你定心不足引发了心魔暴走，大叫一声被弹出秘境！" };
              }
           }
         },
