@@ -57,12 +57,21 @@ export default function EncounterArena() {
      setTeam(selectedTeam);
      currentEnemyIndex.current = 0;
      
+     let mHp = player.maxHp * 2;
+     if (player.dailyDebuffs?.includes('血枯劫')) mHp = Math.floor(mHp * 0.8);
+     
      const myPlayer = { 
          ...player, 
-         hp: player.maxHp * 2, maxHp: player.maxHp * 2,
+         attributes: { ...player.attributes },
+         hp: mHp, maxHp: mHp,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0 }
      };
+     
+     if (player.dailyDebuffs?.includes('散功劫')) {
+         myPlayer.attributes.str = Math.max(0, myPlayer.attributes.str - 5);
+         myPlayer.attributes.con = Math.max(0, myPlayer.attributes.con - 5);
+     }
      
      setP1(myPlayer);
      setupNextEnemy(myPlayer, selectedTeam, 0);
@@ -126,6 +135,8 @@ export default function EncounterArena() {
       if (attacker.debuffs.stun > 0) {
          attacker.debuffs.stun--;
          actionLog = `${attacker.name} 晕眩无法动弹！`;
+      } else if (attacker.dailyDebuffs?.includes('心魔劫') && Math.random() < 0.15) {
+         actionLog = `[心魔发作] ${attacker.name} 突然眼神空洞，招式走形，错失了出手机会！`;
       } else {
          const eq = attacker.equippedSkills || {};
          let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);

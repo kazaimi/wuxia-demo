@@ -38,11 +38,11 @@
       "motion": "s4",
       "outer": "s_anran",
       "ultimate": "s_dianxue",
-      "inner": "s_xixing"
+      "inner": "s5"
     },
-    "id": "V-IJAbGQuaNGTvGlAAAD",
+    "id": "t-jtjS_donZIsQqyAAAR",
     "isBattling": false,
-    "rankIndex": 27,
+    "rankIndex": 28,
     "lastTaskDate": "Mon Apr 06 2026",
     "treasures": [],
     "encountersToday": 2
@@ -229,21 +229,21 @@
   },
   {
     "name": "喵喵喵",
-    "title": "",
-    "level": 2,
-    "exp": 25,
-    "maxExp": 252,
+    "title": "★武林新锐",
+    "level": 6,
+    "exp": 512,
+    "maxExp": 777,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 3,
-    "lastTaskDate": "Sat Apr 04 2026",
+    "encountersToday": 1,
+    "lastTaskDate": "Mon Apr 06 2026",
     "hp": 190,
     "maxHp": 190,
     "attributes": {
-      "con": 6,
+      "con": 0,
       "str": 0,
       "int": 0,
-      "agi": 7,
+      "agi": 25,
       "luk": 0
     },
     "skills": [
@@ -257,7 +257,7 @@
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "jABxlGaJsEJylpYVAAAk",
+    "id": "dEIx340tfSw0hEKGAAAV",
     "isBattling": false,
     "rankIndex": 10063
   },
@@ -298,21 +298,21 @@
   {
     "name": "猫十一郎",
     "title": "⭐绝世天骄",
-    "level": 17,
-    "exp": 3296,
-    "maxExp": 3409,
+    "level": 20,
+    "exp": 3199,
+    "maxExp": 4395,
     "freePoints": 0,
     "taskCount": 35,
     "encountersToday": 5,
-    "lastTaskDate": "Sun Apr 05 2026",
-    "hp": 355,
-    "maxHp": 355,
+    "lastTaskDate": "Mon Apr 06 2026",
+    "hp": 420,
+    "maxHp": 420,
     "attributes": {
-      "con": 0,
+      "con": 2,
       "str": 0,
       "int": 0,
-      "agi": 58,
-      "luk": 0
+      "agi": 60,
+      "luk": 5
     },
     "skills": [
       "s1",
@@ -322,53 +322,93 @@
       "s_anran",
       "s_taiji",
       "s_shihou",
-      "s_dugu"
+      "s_dugu",
+      "s_kuangfeng",
+      "s_kuihua",
+      "s_dianxue"
     ],
     "treasures": [],
     "equippedSkills": {
       "inner": "s_xixing",
-      "outer": "s_taiji",
+      "outer": "s_anran",
       "motion": "s4",
-      "ultimate": "s_dugu"
+      "ultimate": "s_dianxue"
     },
     "equippedTreasure": null,
-    "id": "IAmU62vmkFK8KAzfAAAF",
+    "id": "QP-qEbjBuL3dM6ZyAAAZ",
     "isBattling": false,
-    "rankIndex": 32
+    "rankIndex": 27
   },
   {
     "name": "喵",
-    "title": "★武林新锐",
-    "level": 5,
-    "exp": 517,
-    "maxExp": 621,
+    "title": "⭐绝世天骄",
+    "level": 9,
+    "exp": 921,
+    "maxExp": 1332,
     "freePoints": 0,
     "taskCount": 35,
     "encountersToday": 5,
-    "lastTaskDate": "Sat Apr 04 2026",
-    "hp": 175,
-    "maxHp": 175,
+    "lastTaskDate": "Mon Apr 06 2026",
+    "hp": 435,
+    "maxHp": 435,
     "attributes": {
-      "con": 0,
-      "str": 0,
+      "con": 20,
+      "str": 3,
       "int": 0,
-      "agi": 22,
+      "agi": 11,
       "luk": 0
     },
     "skills": [
       "s1",
-      "s_kuangfeng"
+      "s_kuangfeng",
+      "s3",
+      "s_shihou",
+      "s4"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": "s_shihou",
+      "outer": "s_kuangfeng",
+      "motion": "s4",
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "id": "QD52LgtqmOtnXC40AAAX",
+    "isBattling": false,
+    "rankIndex": 59
+  },
+  {
+    "name": "粑粑柑大侠",
+    "title": "★武林新锐",
+    "level": 3,
+    "exp": 17,
+    "maxExp": 358,
+    "freePoints": 0,
+    "taskCount": 35,
+    "encountersToday": 3,
+    "lastTaskDate": "Mon Apr 06 2026",
+    "hp": 145,
+    "maxHp": 145,
+    "attributes": {
+      "con": 0,
+      "str": 16,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
     ],
     "treasures": [],
     "equippedSkills": {
       "inner": null,
-      "outer": "s_kuangfeng",
+      "outer": "s1",
       "motion": null,
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "CIPhFUhXcvi_ohJ-AAA4",
+    "id": "7zoveUjj_KZM2nZkAAAF",
     "isBattling": false,
-    "rankIndex": 61
+    "rankIndex": 10062
   }
 ]

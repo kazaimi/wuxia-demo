@@ -59,6 +59,7 @@ export const useGameStore = create((set, get) => ({
   
   player: {
     name: '', title: '', level: 1, exp: 0, maxExp: getNextExp(1), freePoints: 0, taskCount: 0, encountersToday: 0, lastTaskDate: new Date().toDateString(),
+    secretRealmAttempts: 0, dailyDebuffs: [],
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
     attributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
     skills: ['s1'], 
@@ -101,12 +102,16 @@ export const useGameStore = create((set, get) => ({
          // Ensure properties exist for backwards compatibility with DB
          if (!playerData.treasures) playerData.treasures = [];
          if (typeof playerData.encountersToday === 'undefined') playerData.encountersToday = 0;
+         if (typeof playerData.secretRealmAttempts === 'undefined') playerData.secretRealmAttempts = 0;
+         if (!playerData.dailyDebuffs) playerData.dailyDebuffs = [];
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
             playerData.taskCount = 0;
             playerData.encountersToday = 0;
+            playerData.secretRealmAttempts = 0;
+            playerData.dailyDebuffs = [];
             playerData.lastTaskDate = today;
             socket.emit('update_player', playerData);
          }
@@ -163,7 +168,7 @@ export const useGameStore = create((set, get) => ({
      if (!state.player.name) return state;
      const today = new Date().toDateString();
      if (state.player.lastTaskDate !== today) {
-        const p = { ...state.player, taskCount: 0, encountersToday: 0, lastTaskDate: today };
+        const p = { ...state.player, taskCount: 0, encountersToday: 0, secretRealmAttempts: 0, dailyDebuffs: [], lastTaskDate: today };
         if (socket) socket.emit('update_player', p);
         return { player: p, dailyTasks: [] };
      }
@@ -174,6 +179,22 @@ export const useGameStore = create((set, get) => ({
      const p = { ...state.player, encountersToday: (state.player.encountersToday || 0) + 1 };
      if (socket) socket.emit('update_player', p);
      return { player: p };
+  }),
+
+  useSecretRealmAttempt: () => set((state) => {
+     const p = { ...state.player, secretRealmAttempts: (state.player.secretRealmAttempts || 0) + 1 };
+     if (socket) socket.emit('update_player', p);
+     return { player: p };
+  }),
+
+  addDailyDebuff: (debuffType) => set((state) => {
+     if (!state.player.dailyDebuffs) state.player.dailyDebuffs = [];
+     if (!state.player.dailyDebuffs.includes(debuffType)) {
+        const p = { ...state.player, dailyDebuffs: [...state.player.dailyDebuffs, debuffType] };
+        if (socket) socket.emit('update_player', p);
+        return { player: p };
+     }
+     return state;
   }),
 
   equipSkill: (type, skillId) => set((state) => {

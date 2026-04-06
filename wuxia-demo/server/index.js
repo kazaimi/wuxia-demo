@@ -193,14 +193,25 @@ io.on('connection', (socket) => {
      if (p1 && p2 && !p1.isBattling && !p2.isBattling) {
        p1.isBattling = true;
        p2.isBattling = true;
-       const roomId = `battle_${p1.id}_${p2.id}`;
+       const bp1 = JSON.parse(JSON.stringify(p1));
+       const bp2 = JSON.parse(JSON.stringify(p2));
+       if (bp1.dailyDebuffs && bp1.dailyDebuffs.includes('血枯劫')) {
+          bp1.maxHp = Math.floor(bp1.maxHp * 0.8);
+          bp1.hp = Math.floor(bp1.hp * 0.8);
+       }
+       if (bp2.dailyDebuffs && bp2.dailyDebuffs.includes('血枯劫')) {
+          bp2.maxHp = Math.floor(bp2.maxHp * 0.8);
+          bp2.hp = Math.floor(bp2.hp * 0.8);
+       }
+
+       const roomId = `battle_${bp1.id}_${bp2.id}`;
        socket.join(roomId);
        
        const p2Socket = io.sockets.sockets.get(p2.id);
        if (p2Socket) p2Socket.join(roomId);
        
-       battles[roomId] = { p1, p2, logs: [`[风云再起] ${p1.name} VS ${p2.name}！`] };
-       io.to(roomId).emit('battle_start', { roomId, p1, p2, logs: battles[roomId].logs });
+       battles[roomId] = { p1: bp1, p2: bp2, logs: [`[风云再起] ${bp1.name} VS ${bp2.name}！`] };
+       io.to(roomId).emit('battle_start', { roomId, p1: bp1, p2: bp2, logs: battles[roomId].logs });
        io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
      }
   });
@@ -271,5 +282,5 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 1.4 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 1.5 琅嬛福地 已开启 (Server listen on ${PORT})`);
 });

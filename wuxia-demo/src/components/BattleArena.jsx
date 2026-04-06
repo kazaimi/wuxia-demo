@@ -79,6 +79,8 @@ export default function BattleArena() {
       if (attacker.debuffs.stun > 0) {
          attacker.debuffs.stun--;
          actionLog = `${attacker.name} 处于【晕眩】中，只能呆立当场，无法动弹！`;
+      } else if (attacker.dailyDebuffs?.includes('心魔劫') && Math.random() < 0.15) {
+         actionLog = `[心魔发作] ${attacker.name} 突然心神失守，招式走形破绽大开，错失了良机！`;
       } else {
          // 选择技能
          const eq = attacker.equippedSkills || {};
@@ -110,8 +112,11 @@ export default function BattleArena() {
          };
          const skill = pickSkill();
          
-         const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
-         const dDefBase = defender.attributes.con * 2 + defender.level * 2;
+         const aStr = attacker.dailyDebuffs?.includes('散功劫') ? Math.max(0, attacker.attributes.str - 5) : attacker.attributes.str;
+         const dCon = defender.dailyDebuffs?.includes('散功劫') ? Math.max(0, defender.attributes.con - 5) : defender.attributes.con;
+
+         const pAtk = aStr * 2 + attacker.level * 5;
+         const dDefBase = dCon * 2 + defender.level * 2;
          const aMod = 1 + attacker.level * 0.05;
          const adjustedSkillPwr = skill.power * aMod;
 
