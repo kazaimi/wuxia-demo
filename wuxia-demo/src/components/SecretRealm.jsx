@@ -24,7 +24,7 @@ export default function SecretRealm() {
   }, [logs, state, currentEvent]);
 
   const startExploration = () => {
-    if ((player.secretRealmAttempts || 0) >= 3) {
+    if (player.name !== 'ALEX' && (player.secretRealmAttempts || 0) >= 3) {
       alert("今日琅嬛福地探索次数已尽，大侠请明日再来。");
       return;
     }
@@ -138,7 +138,7 @@ export default function SecretRealm() {
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: '#0a0a0a', color: '#eee', border: '1px solid #333' }}>
        <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Map /> 琅嬛福地 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>今日门票：{3 - (player.secretRealmAttempts || 0)}/3</span>
+        <Map /> 琅嬛福地 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>今日门票：{player.name === 'ALEX' ? '无限测试' : `${3 - (player.secretRealmAttempts || 0)}/3`}</span>
       </h2>
       
       {state === 'idle' ? (
