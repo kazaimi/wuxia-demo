@@ -39,8 +39,9 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1 className="wuxia-title glow-effect" style={{ fontFamily: '"STKaiti", "KaiTi", serif', fontSize: '2.5rem', letterSpacing: '4px' }}>
-         大乱斗武侠 <span style={{ fontSize: '1.4rem', color: '#c084fc', opacity: 0.9, marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '2px', textShadow: '0 0 10px rgba(192, 132, 252, 0.4)' }}>v1.5 琅嬛福地</span>
+      <h1 style={{ textAlign: 'center', marginBottom: '2rem', fontFamily: '"STKaiti", "KaiTi", serif', fontSize: '2.5rem', letterSpacing: '4px', filter: 'drop-shadow(0 0 5px rgba(0,242,254,0.3))' }}>
+         <span style={{ background: 'linear-gradient(to right, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>大乱斗武侠</span>
+         <span style={{ fontSize: '1.5rem', marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '1px', color: '#c084fc', WebkitTextFillColor: '#c084fc' }}>v1.5 琅嬛福地</span>
       </h1>
       {!hasCreatedRole ? (
         showCreate ? (

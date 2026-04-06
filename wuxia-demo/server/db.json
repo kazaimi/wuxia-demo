@@ -7,14 +7,14 @@
     "maxExp": 6684,
     "freePoints": 0,
     "taskCount": 35,
-    "hp": 690,
-    "maxHp": 690,
+    "hp": 490,
+    "maxHp": 490,
     "attributes": {
-      "con": 20,
-      "str": 0,
-      "int": 5,
-      "agi": 60,
-      "luk": 0
+      "con": 0,
+      "str": 5,
+      "int": 40,
+      "agi": 0,
+      "luk": 40
     },
     "skills": [
       "s1",
@@ -40,12 +40,16 @@
       "ultimate": "s_dianxue",
       "inner": "s5"
     },
-    "id": "t-jtjS_donZIsQqyAAAR",
+    "id": "LNDsDDdfrGPf6ctCAAAD",
     "isBattling": false,
     "rankIndex": 28,
     "lastTaskDate": "Mon Apr 06 2026",
     "treasures": [],
-    "encountersToday": 2
+    "encountersToday": 2,
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "散功劫"
+    ]
   },
   {
     "name": "芙蓉女侠",
