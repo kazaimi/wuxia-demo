@@ -266,14 +266,16 @@ export const useGameStore = create((set, get) => ({
   generateTasks: () => set((state) => {
     const tasks = [];
     const attrs = Object.keys(ATTR_MAP);
-    for(let i=0; i<8; i++) {
-       const r = Math.random();
-       let stars = 1;
-       if (r > 0.95) stars = 5;
-       else if (r > 0.75) stars = 4;
-       else if (r > 0.4) stars = 3;
-       else if (r > 0.15) stars = 2;
-       
+    
+    // 方案一：定向生成不同难度的星级配置 (总计 4 个任务)
+    const starConfigs = [
+      Math.random() > 0.3 ? 1 : 2, // 1个[低难度保底] (70%出1星，30%出2星)
+      Math.random() > 0.3 ? 3 : 4, // 1个[中等难度] (70%出3星，30%出4星)
+      Math.random() > 0.3 ? 3 : 4, // 1个[中等难度] (70%出3星，30%出4星)
+      Math.random() > 0.8 ? 5 : 4  // 1个[高难度拼脸] (20%出5星，80%出4星)
+    ];
+
+    starConfigs.forEach(stars => {
        const attr = attrs[Math.floor(Math.random()*attrs.length)];
        const difficulty = state.player.level * 2.0 + stars * 3;
        const expReward = Math.floor(stars * 20 + state.player.level * Math.random() * 15);
@@ -284,7 +286,8 @@ export const useGameStore = create((set, get) => ({
          desc: `成功率受【${ATTR_MAP[attr]}】影响。推荐门槛：${Math.floor(difficulty)}`,
          stars, reqAttr: attr, difficulty, expReward, completed: false
        });
-    }
+    });
+
     return { dailyTasks: tasks.sort((a,b)=>b.stars - a.stars) };
   }),
 
