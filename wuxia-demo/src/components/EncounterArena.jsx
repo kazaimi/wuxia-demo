@@ -19,11 +19,8 @@ export default function EncounterArena() {
   const [p2, setP2] = useState(null);
   const [logs, setLogs] = useState([]);
 
-  const logsEndRef = useRef(null);
+  // Auto-scroll removed as requested
 
-  useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [logs]);
 
   const startEncounter = () => {
      if ((player.encountersToday || 0) >= 5) {
@@ -390,7 +387,7 @@ export default function EncounterArena() {
                 {log}
               </div>
             ))}
-            <div ref={logsEndRef} />
+            {/* Removed auto-scroll anchor */}
           </div>
 
           {(encounterState === 'win' || encounterState === 'lose') && (

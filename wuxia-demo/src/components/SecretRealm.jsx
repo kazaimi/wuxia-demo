@@ -17,13 +17,8 @@ export default function SecretRealm() {
   const [depth, setDepth] = useState(0);
   const [karma, setKarma] = useState(0);
   const [logs, setLogs] = useState([]);
-  const logsEndRef = useRef(null);
+  // Auto-scroll removed as requested
 
-  useEffect(() => {
-    if (state === 'exploring' || state === 'result') {
-      setTimeout(() => logsEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-    }
-  }, [logs, state, currentEvent]);
 
   const startExploration = () => {
     if ((player.secretRealmAttempts || 0) >= 3) {
@@ -216,7 +211,7 @@ export default function SecretRealm() {
                   </div>
                </div>
             )}
-            <div ref={logsEndRef} style={{ height: '20px' }}></div>
+            <div style={{ height: '20px' }}></div>
           </div>
 
           {state === 'result' && (

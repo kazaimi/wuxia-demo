@@ -9,11 +9,8 @@ export default function BattleArena() {
   const sendBattleAction = useGameStore(state => state.sendBattleAction);
   const exitBattle = useGameStore(state => state.exitBattle);
   
-  const logsEndRef = useRef(null);
+  // Auto-scroll removed as requested
 
-  useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [logs]);
 
   useEffect(() => {
     if (!inBattle || winner || !p1 || !p2) return;
@@ -350,7 +347,7 @@ export default function BattleArena() {
                 {log}
               </div>
             ))}
-            <div ref={logsEndRef} />
+            {/* Removed auto-scroll anchor */}
           </div>
 
           {winner && (
