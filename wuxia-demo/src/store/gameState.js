@@ -106,6 +106,7 @@ export const useGameStore = create((set, get) => ({
       socket = io(serverUrl, { transports: ['websocket'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
+        socket.emit('get_auctions');
         const savedName = localStorage.getItem('wuxia_username');
         if (savedName) {
            socket.emit('player_login', savedName);
