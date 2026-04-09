@@ -112,6 +112,8 @@ export const useGameStore = create((set, get) => ({
             playerData.encountersToday = 0;
             playerData.secretRealmAttempts = 0;
             playerData.dailyDebuffs = [];
+            playerData.dailyActivity = 0;
+            playerData.title = '🐟摸鱼小虾';
             playerData.lastTaskDate = today;
             socket.emit('update_player', playerData);
          }
