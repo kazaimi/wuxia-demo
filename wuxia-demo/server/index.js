@@ -285,7 +285,7 @@ io.on('connection', (socket) => {
        const p2Socket = io.sockets.sockets.get(p2.id);
        if (p2Socket) p2Socket.join(roomId);
        
-       battles[roomId] = { p1: bp1, p2: bp2, logs: [`[风云再起] ${bp1.name} VS ${bp2.name}！`] };
+       battles[roomId] = { p1: bp1, p2: bp2, logs: [`[风云再起] ${bp1.name} VS ${bp2.name}！`], lastActionTime: Date.now() };
        io.to(roomId).emit('battle_start', { roomId, p1: bp1, p2: bp2, logs: battles[roomId].logs });
        io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
      }
@@ -293,6 +293,9 @@ io.on('connection', (socket) => {
   
   socket.on('battle_action', ({ roomId, actionData }) => {
     io.to(roomId).emit('battle_log', actionData);
+    
+    const battleForTimer = battles[roomId];
+    if (battleForTimer) battleForTimer.lastActionTime = Date.now();
     
     if (actionData.winner) {
         const battle = battles[roomId];
@@ -411,6 +414,19 @@ setInterval(() => {
        }
        return true;
    });
+   
+   // Clear stale battles
+   for (const roomId in battles) {
+      if (now - battles[roomId].lastActionTime > 15000) {
+          const { p1, p2 } = battles[roomId];
+          const realP1 = players.find(p => p.id === p1.id);
+          const realP2 = players.find(p => p.id === p2.id);
+          if (realP1) realP1.isBattling = false;
+          if (realP2) realP2.isBattling = false;
+          delete battles[roomId];
+          updated = true;
+      }
+   }
    
    if (updated) {
        io.emit('auction_update', activeAuctions);
