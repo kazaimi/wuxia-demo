@@ -9,6 +9,7 @@ export default function EncounterArena() {
   const incrementEncounterCount = useGameStore(state => state.incrementEncounterCount);
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
+  const addSilver = useGameStore(state => state.addSilver);
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -318,16 +319,18 @@ export default function EncounterArena() {
                });
                gainExp(expReward);
                if (droppedTreasure) gainTreasure(droppedTreasure);
+               
+               addSilver(3);
 
-               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
+               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
                setEncounterState('win');
             } else {
+               if (curIdx === 1) addSilver(1);
                const nextIdx = curIdx + 1;
                currentEnemyIndex.current = nextIdx;
                const defeatedName = isP1Turn ? defender.name : attacker.name;
-               // 先切换为换场中间态，阻断 useEffect 因 logs.length 变化重新触发
                setEncounterState('transitioning');
-               setLogs(prev => [...prev, `\n战胜 ${defeatedName}！进入下一战...`]);
+               setLogs(prev => [...prev, `\n战胜 ${defeatedName}！${curIdx===1 ? '额外掉落 +1 银两！' : ''}进入下一战...`]);
                setTimeout(() => setupNextEnemy(finalP1, team, nextIdx), 2000);
             }
          } else {

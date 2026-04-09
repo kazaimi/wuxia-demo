@@ -20,6 +20,7 @@ if (fs.existsSync(DB_FILE)) {
    try {
       realPlayersDB = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
       realPlayersDB.forEach(p => {
+         if (typeof p.silver === 'undefined') p.silver = 0;
          if (p.attributes && typeof p.attributes.hp !== 'undefined') {
             p.attributes.con = p.attributes.hp;
             delete p.attributes.hp;
@@ -122,7 +123,8 @@ for (let i = 0; i < 60; i++) {
 
 let players = [...MOCK_PLAYERS];
 let battles = {};
-let winStreaks = {}; 
+let winStreaks = {};
+let activeAuctions = [];
 
 io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
@@ -155,11 +157,13 @@ io.on('connection', (socket) => {
       
       if (!dbPlayer) {
          data.rankIndex = 10000 + players.length;
+         if (typeof data.silver === 'undefined') data.silver = 0;
          realPlayersDB.push(data);
          saveDB();
          players.push(data);
       } else {
          Object.assign(dbPlayer, data);
+         if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
          dbPlayer.id = socket.id;
          saveDB();
          const i = players.findIndex(p => p.name === data.name);
@@ -169,15 +173,77 @@ io.on('connection', (socket) => {
   });
 
   socket.on('update_player', (data) => {
-     const pIndex = players.findIndex(p => p.name === data.name);
+      const pIndex = players.findIndex(p => p.name === data.name);
      if (pIndex >= 0) {
        Object.assign(players[pIndex], data);
        const dbPlayer = realPlayersDB.find(db => db.name === data.name);
        if (dbPlayer) {
           Object.assign(dbPlayer, data);
           saveDB();
+          if (data.silver !== undefined && dbPlayer.silver !== data.silver) {
+              dbPlayer.silver = data.silver; 
+              saveDB();
+          }
        }
        io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+     }
+  });
+
+  socket.on('get_auctions', () => {
+      socket.emit('auction_update', activeAuctions);
+  });
+
+  socket.on('list_auction', (itemData) => {
+     const dbPlayer = realPlayersDB.find(p => p.name === itemData.sellerName);
+     if (!dbPlayer) return;
+     const auction = {
+        id: "auc_" + Date.now() + "_" + Math.floor(Math.random()*1000),
+        sellerName: itemData.sellerName,
+        type: itemData.type,
+        itemToTrade: itemData.itemToTrade, 
+        itemName: itemData.itemName,
+        price: itemData.startPrice,
+        highestBidder: null,
+        endTime: Date.now() + 4 * 60 * 60 * 1000 // 4 hours
+     };
+     if (itemData.type === 'treasure') {
+         dbPlayer.treasures = dbPlayer.treasures.filter(t => t !== itemData.itemToTrade);
+         if (dbPlayer.equippedTreasure === itemData.itemToTrade) dbPlayer.equippedTreasure = null;
+         saveDB();
+         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+     } else if (itemData.type === 'points') {
+         if(itemData.itemToTrade.item === 'task') dbPlayer.taskCount += itemData.itemToTrade.count;
+         if(itemData.itemToTrade.item === 'encounter') dbPlayer.encountersToday += itemData.itemToTrade.count;
+         if(itemData.itemToTrade.item === 'realm') dbPlayer.secretRealmAttempts += itemData.itemToTrade.count;
+         saveDB();
+         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+     }
+     activeAuctions.push(auction);
+     io.emit('auction_update', activeAuctions);
+     let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${itemData.startPrice}银两！*`;
+     io.emit('broadcast_message', msg);
+  });
+
+  socket.on('place_bid', ({ auctionId, bidderName, bidPrice }) => {
+     const auction = activeAuctions.find(a => a.id === auctionId);
+     const dbPlayer = realPlayersDB.find(p => p.name === bidderName);
+     if (auction && dbPlayer && dbPlayer.silver >= bidPrice && bidPrice > auction.price) {
+         if (auction.highestBidder) {
+            const prevBidder = realPlayersDB.find(p => p.name === auction.highestBidder);
+            if (prevBidder) prevBidder.silver += auction.price;
+         }
+         dbPlayer.silver -= bidPrice;
+         auction.highestBidder = bidderName;
+         auction.price = bidPrice;
+         saveDB();
+         io.emit('auction_update', activeAuctions);
+         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+         if (auction.highestBidder !== bidderName) {
+            io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
+         }
      }
   });
 
@@ -282,5 +348,61 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 1.5 琅嬛福地 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 1.5 一掷千金 已开启 (Server listen on ${PORT})`);
 });
+
+setInterval(() => {
+   const now = Date.now();
+   let updated = false;
+   activeAuctions = activeAuctions.filter(auction => {
+       if (now >= auction.endTime) {
+           updated = true;
+           if (auction.highestBidder) {
+               const buyer = realPlayersDB.find(p => p.name === auction.highestBidder);
+               const seller = realPlayersDB.find(p => p.name === auction.sellerName);
+               if (buyer && seller) {
+                   if (auction.type === 'skill') {
+                       if (!buyer.skills) buyer.skills = [];
+                       buyer.skills.push(auction.itemToTrade);
+                   } else if (auction.type === 'treasure') {
+                       if (!buyer.treasures) buyer.treasures = [];
+                       buyer.treasures.push(auction.itemToTrade);
+                   } else if (auction.type === 'points') {
+                       if(auction.itemToTrade.item === 'task') buyer.taskCount = Math.max(0, buyer.taskCount - auction.itemToTrade.count);
+                       if(auction.itemToTrade.item === 'encounter') buyer.encountersToday = Math.max(0, buyer.encountersToday - auction.itemToTrade.count);
+                       if(auction.itemToTrade.item === 'realm') buyer.secretRealmAttempts = Math.max(0, buyer.secretRealmAttempts - auction.itemToTrade.count);
+                   }
+                   seller.silver += auction.price;
+                   saveDB();
+                   io.emit('broadcast_message', `*【一锤定音】恭喜 [${buyer.name}] 以 ${auction.price} 银两拍得 [${auction.itemName}]！*`);
+                   const sIndex = players.findIndex(p => p.name === seller.name);
+                   if(sIndex >= 0) players[sIndex] = seller;
+                   const bIndex = players.findIndex(p => p.name === buyer.name);
+                   if(bIndex >= 0) players[bIndex] = buyer;
+               }
+           } else {
+               const seller = realPlayersDB.find(p => p.name === auction.sellerName);
+               if (seller && auction.type === 'treasure') {
+                   if (!seller.treasures) seller.treasures = [];
+                   seller.treasures.push(auction.itemToTrade);
+               } else if (seller && auction.type === 'points') {
+                   if(auction.itemToTrade.item === 'task') seller.taskCount = Math.max(0, seller.taskCount - auction.itemToTrade.count);
+                   if(auction.itemToTrade.item === 'encounter') seller.encountersToday = Math.max(0, seller.encountersToday - auction.itemToTrade.count);
+                   if(auction.itemToTrade.item === 'realm') seller.secretRealmAttempts = Math.max(0, seller.secretRealmAttempts - auction.itemToTrade.count);
+               }
+               if (seller) {
+                   saveDB();
+                   const sIndex = players.findIndex(p => p.name === seller.name);
+                   if(sIndex >= 0) players[sIndex] = seller;
+               }
+           }
+           return false;
+       }
+       return true;
+   });
+   
+   if (updated) {
+       io.emit('auction_update', activeAuctions);
+       io.emit('online_players', players.sort((a,b) => a.rankIndex - b.rankIndex));
+   }
+}, 5000);

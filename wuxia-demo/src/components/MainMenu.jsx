@@ -6,9 +6,13 @@ import BattleArena from './BattleArena';
 import Leaderboard from './Leaderboard';
 import EncounterArena from './EncounterArena';
 import SecretRealm from './SecretRealm';
+import AuctionHouse from './AuctionHouse';
+import BlackMarket from './BlackMarket';
+import { ShoppingBag } from 'lucide-react';
 
 export default function MainMenu() {
   const [activeTab, setActiveTab] = useState('tasks');
+  const [showBlackMarket, setShowBlackMarket] = useState(false);
   const inBattle = useGameStore(state => state.battleState.inBattle);
 
   useEffect(() => {
@@ -50,6 +54,12 @@ export default function MainMenu() {
             style={activeTab !== 'realm' ? {background: 'transparent', border: '1px dashed #c084fc', boxShadow: 'none', color: '#c084fc'} : {background: '#c084fc', color: '#000'}}>
             秘境寻宝
           </button>
+          <button 
+            className="btn-primary" 
+            onClick={() => setActiveTab('auction')} 
+            style={activeTab !== 'auction' ? {background: 'transparent', border: '1px solid #facc15', boxShadow: 'none', color: '#facc15'} : {background: '#facc15', color: '#000'}}>
+            拍卖风云
+          </button>
         </div>
       </div>
       <div>
@@ -58,7 +68,20 @@ export default function MainMenu() {
         {activeTab === 'leader' && <Leaderboard />}
         {activeTab === 'encounter' && <EncounterArena />}
         {activeTab === 'realm' && <SecretRealm />}
+        {activeTab === 'auction' && <AuctionHouse />}
       </div>
+      
+      {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
+      
+      <button onClick={() => setShowBlackMarket(true)} style={{
+          position: 'fixed', bottom: '30px', right: '30px', zIndex: 8000,
+          background: 'linear-gradient(45deg, #7f1d1d, #b91c1c)', color: '#fff',
+          border: '2px solid #facc15', borderRadius: '50%', width: '60px', height: '60px',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
+          boxShadow: '0 0 20px rgba(185, 28, 28, 0.8)', animation: 'pulse 2s infinite'
+      }}>
+          <ShoppingBag size={28} />
+      </button>
     </div>
   );
 }

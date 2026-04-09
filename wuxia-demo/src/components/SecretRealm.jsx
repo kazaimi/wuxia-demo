@@ -9,6 +9,7 @@ export default function SecretRealm() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addDailyDebuff = useGameStore(state => state.addDailyDebuff);
   const addActivity = useGameStore(state => state.addActivity);
+  const addSilver = useGameStore(state => state.addSilver);
 
   const [state, setState] = useState('idle'); // idle, exploring, result
   const [deck, setDeck] = useState([]);
@@ -137,6 +138,19 @@ export default function SecretRealm() {
            rewardDesc = `你在密室的一端发现了一个古玉宝匣，打开一看，内藏绝世奇珍『${t.name}』，真是好造化！`;
         }
         gainTreasure(t.id);
+     }
+     
+     let realmSilver = Math.floor(finalDepth / 5);
+     let addKarmaSilver = 0;
+     if (finalKarma > 5) addKarmaSilver = 1;
+     else if (finalKarma < -5) addKarmaSilver = 2;
+     
+     if (realmSilver > 0 || addKarmaSilver > 0) {
+        let total = realmSilver + addKarmaSilver;
+        addSilver(total);
+        rewardDesc += `\n此番历练共收获 ${total} 银两`;
+        if (addKarmaSilver === 1) rewardDesc += ` (包含好人好报额外打赏 +1)`;
+        if (addKarmaSilver === 2) rewardDesc += ` (包含杀人越货强制搜刮 +2)`;
      }
      
      newLogs.push(rewardDesc);

@@ -47,6 +47,31 @@ export const TREASURES_DB = [
 
 export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
 
+export const getSkillInfo = (skillId) => {
+    if (!skillId) return null;
+    const isDegraded = skillId.includes('_deg');
+    let baseId = skillId;
+    let degradeLvl = 0;
+    if (isDegraded) {
+       const parts = skillId.split('_deg');
+       baseId = parts[0];
+       degradeLvl = parseInt(parts[1], 10);
+    }
+    const baseSkill = SKILLS_DB.find(s => s.id === baseId);
+    if (!baseSkill) return null;
+    if (degradeLvl === 0) return baseSkill;
+    
+    const factor = Math.pow(0.7, degradeLvl); 
+    return {
+       ...baseSkill,
+       id: skillId,
+       name: `${baseSkill.name}(残卷x${degradeLvl})`,
+       power: Math.floor(baseSkill.power * factor),
+       isDegraded: true,
+       degradeLvl
+    };
+};
+
 let socket = null;
 
 const getNextExp = (level) => Math.floor(100 + level * 50 + Math.pow(level, 1.8) * 15);
@@ -59,7 +84,7 @@ export const useGameStore = create((set, get) => ({
   
   player: {
     name: '', title: '', level: 1, exp: 0, maxExp: getNextExp(1), freePoints: 0, taskCount: 0, encountersToday: 0, lastTaskDate: new Date().toDateString(),
-    secretRealmAttempts: 0, dailyDebuffs: [],
+    secretRealmAttempts: 0, dailyDebuffs: [], silver: 0,
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
     attributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
     skills: ['s1'], 
@@ -69,6 +94,8 @@ export const useGameStore = create((set, get) => ({
   },
 
   onlinePlayers: [],
+  activeAuctions: [],
+  broadcastQueue: [],
   battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null },
   dailyTasks: [],
 
@@ -104,6 +131,7 @@ export const useGameStore = create((set, get) => ({
          if (typeof playerData.encountersToday === 'undefined') playerData.encountersToday = 0;
          if (typeof playerData.secretRealmAttempts === 'undefined') playerData.secretRealmAttempts = 0;
          if (!playerData.dailyDebuffs) playerData.dailyDebuffs = [];
+         if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
          
          const today = new Date().toDateString();
@@ -138,14 +166,18 @@ export const useGameStore = create((set, get) => ({
         }
       })));
       socket.on('system_reward', ({ skillId }) => {
-         const sk = SKILLS_DB.find(s=>s.id === skillId);
+         const sk = getSkillInfo(skillId);
          if(sk) {
             get().learnSkill(skillId);
             alert(`[大奇遇] 您在挑战中，爆出了绝学【${sk.name}】！`);
          }
       });
+      socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
+      socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
     }
   },
+
+  removeBroadcast: (id) => set(state => ({ broadcastQueue: state.broadcastQueue.filter(b => b.id !== id) })),
 
   createRole: (name, attributes) => set((state) => {
     const maxHp = calculateMaxHp(1, attributes.con);
@@ -232,6 +264,12 @@ export const useGameStore = create((set, get) => ({
     }
     const finalMaxHp = calculateMaxHp(level, rest.attributes.con);
     const p = { ...rest, level, exp, maxExp, freePoints, taskCount, hp: finalMaxHp, maxHp: finalMaxHp };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
+  addSilver: (amount) => set((state) => {
+    const p = { ...state.player, silver: (state.player.silver || 0) + amount };
     if (socket) socket.emit('update_player', p);
     return { player: p };
   }),
@@ -345,7 +383,7 @@ export const useGameStore = create((set, get) => ({
   learnSkill: (skillId) => set((state) => {
     if (!state.player.skills.includes(skillId)) {
       const p = { ...state.player, skills: [...state.player.skills, skillId] };
-      const skillInfo = SKILLS_DB.find(s => s.id === skillId);
+      const skillInfo = getSkillInfo(skillId);
       if (skillInfo && !p.equippedSkills[skillInfo.type]) {
          p.equippedSkills = { ...p.equippedSkills, [skillInfo.type]: skillId };
       }
@@ -355,6 +393,12 @@ export const useGameStore = create((set, get) => ({
     return state;
   }),
 
+  listAuction: (type, itemToTrade, itemName, startPrice) => {
+      if (socket) socket.emit('list_auction', { type, itemToTrade, itemName, startPrice, sellerName: get().player.name });
+  },
+  placeBid: (auctionId, bidPrice) => {
+      if (socket) socket.emit('place_bid', { auctionId, bidderName: get().player.name, bidPrice });
+  },
   challengePlayer: (targetId) => { if (socket) socket.emit('challenge', targetId); },
   sendBattleAction: (roomId, actionData) => { if (socket) socket.emit('battle_action', { roomId, actionData }); },
   exitBattle: () => set({ battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null } })

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useGameStore } from './store/gameState';
 import CreateRole from './components/CreateRole';
 import MainMenu from './components/MainMenu';
+import BroadcastMarquee from './components/BroadcastMarquee';
 import { Target } from 'lucide-react';
 
 function App() {
@@ -39,9 +40,10 @@ function App() {
 
   return (
     <div className="app-container">
+      <BroadcastMarquee />
       <h1 style={{ textAlign: 'center', marginBottom: '2rem', fontFamily: '"STKaiti", "KaiTi", serif', fontSize: '2.5rem', letterSpacing: '4px', filter: 'drop-shadow(0 0 5px rgba(0,242,254,0.3))' }}>
          <span style={{ background: 'linear-gradient(to right, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>大乱斗武侠</span>
-         <span style={{ fontSize: '1.5rem', marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '1px', color: '#c084fc', WebkitTextFillColor: '#c084fc' }}>v1.5 琅嬛福地</span>
+         <span style={{ fontSize: '1.5rem', marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '1px', color: '#fcd34d', WebkitTextFillColor: '#fcd34d' }}>v1.5 一掷千金</span>
       </h1>
       {!hasCreatedRole ? (
         showCreate ? (

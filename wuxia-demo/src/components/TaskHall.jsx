@@ -9,6 +9,7 @@ export default function TaskHall() {
   const gainExp = useGameStore(state => state.gainExp);
   const setTitle = useGameStore(state => state.setTitle);
   const addActivity = useGameStore(state => state.addActivity);
+  const addSilver = useGameStore(state => state.addSilver);
   const learnSkill = useGameStore(state => state.learnSkill);
   const incrementTaskCount = useGameStore(state => state.incrementTaskCount);
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
@@ -45,6 +46,17 @@ export default function TaskHall() {
     if (isSuccess) {
       let msg = `任务成功！获得了 ${task.expReward} 点经验。`;
       gainExp(task.expReward);
+      
+      let gotSilver = 0;
+      if (task.stars <= 2 && Math.random() < 0.2) gotSilver = 1;
+      else if (task.stars === 3) gotSilver = 1;
+      else if (task.stars === 4) gotSilver = 2;
+      else if (task.stars === 5) gotSilver = 4;
+      
+      if (gotSilver > 0) {
+          addSilver(gotSilver);
+          msg += `并赚取了 ${gotSilver} 银两！`;
+      }
       
       const rareSkills = ['s_taiji', 's_anran', 's5', 's_yijin', 's_xixing', 's_tiyun', 's_shenxing', 's_kuihua', 's_xianglong', 's_dugu', 's_liumai'];
       const midSkills = ['s3', 's4', 's_kuangfeng', 's_shihou'];
