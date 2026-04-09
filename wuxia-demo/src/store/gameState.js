@@ -156,7 +156,23 @@ export const useGameStore = create((set, get) => ({
 
       socket.on('online_players', (playersList) => set((state) => {
         const myPlayer = playersList.find(p => p.name === state.player.name);
-        return myPlayer ? { onlinePlayers: playersList, player: { ...state.player, rankIndex: myPlayer.rankIndex } } : { onlinePlayers: playersList };
+        if (myPlayer) {
+           return {
+              onlinePlayers: playersList,
+              player: {
+                 ...state.player,
+                 rankIndex: myPlayer.rankIndex,
+                 silver: myPlayer.silver,
+                 skills: myPlayer.skills || state.player.skills,
+                 treasures: myPlayer.treasures || state.player.treasures,
+                 equippedTreasure: myPlayer.equippedTreasure !== undefined ? myPlayer.equippedTreasure : state.player.equippedTreasure,
+                 taskCount: myPlayer.taskCount !== undefined ? myPlayer.taskCount : state.player.taskCount,
+                 encountersToday: myPlayer.encountersToday !== undefined ? myPlayer.encountersToday : state.player.encountersToday,
+                 secretRealmAttempts: myPlayer.secretRealmAttempts !== undefined ? myPlayer.secretRealmAttempts : state.player.secretRealmAttempts
+              }
+           };
+        }
+        return { onlinePlayers: playersList };
       }));
       socket.on('battle_start', (data) => set({ battleState: { inBattle: true, roomId: data.roomId, p1: data.p1, p2: data.p2, logs: data.logs, winner: null } }));
       socket.on('battle_log', (actionData) => set(state => ({

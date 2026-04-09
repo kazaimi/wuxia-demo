@@ -249,6 +249,15 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     players = players.filter(p => p.id !== socket.id || p.isMock);
+    for (const roomId in battles) {
+       const battle = battles[roomId];
+       if (battle.p1.id === socket.id || battle.p2.id === socket.id) {
+          const otherId = battle.p1.id === socket.id ? battle.p2.id : battle.p1.id;
+          const otherPlayer = players.find(p => p.id === otherId);
+          if (otherPlayer) otherPlayer.isBattling = false;
+          delete battles[roomId];
+       }
+    }
     io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
   });
 
@@ -289,8 +298,10 @@ io.on('connection', (socket) => {
         const battle = battles[roomId];
         if (battle) {
            const { p1, p2 } = battle;
-           p1.isBattling = false;
-           p2.isBattling = false;
+           const realP1 = players.find(p => p.id === p1.id);
+           const realP2 = players.find(p => p.id === p2.id);
+           if (realP1) realP1.isBattling = false;
+           if (realP2) realP2.isBattling = false;
            
            const winnerId = actionData.winner === 'p1' ? p1.id : p2.id;
            const loserId = actionData.winner === 'p1' ? p2.id : p1.id;
