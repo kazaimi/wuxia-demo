@@ -277,7 +277,7 @@ export const useGameStore = create((set, get) => ({
 
     starConfigs.forEach(stars => {
        const attr = attrs[Math.floor(Math.random()*attrs.length)];
-       const difficulty = state.player.level * 2.0 + stars * 3;
+       const difficulty = state.player.level * (1.2 + stars * 0.2) + stars * 2;
        const expReward = Math.floor(stars * 20 + state.player.level * Math.random() * 15);
        
        tasks.push({
