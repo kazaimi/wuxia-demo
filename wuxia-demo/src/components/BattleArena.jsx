@@ -68,7 +68,7 @@ export default function BattleArena() {
       if (attacker.debuffs.poison > 0) {
          const poisonPct = attacker.debuffs.poisonPercent || 0.03;
          const pDmg = Math.max(1, Math.floor(attacker.maxHp * poisonPct));
-         attacker.hp = Math.max(1, attacker.hp - pDmg);
+         attacker.hp = Math.max(0, attacker.hp - pDmg);
          attacker.debuffs.poison--;
          if (attacker.debuffs.poison === 0) {
              attacker.debuffs.poisonPercent = 0.03;
