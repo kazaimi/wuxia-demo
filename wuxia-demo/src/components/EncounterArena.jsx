@@ -176,25 +176,25 @@ export default function EncounterArena() {
          const aMod = 1 + attacker.level * 0.05;
          const adjustedSkillPwr = skill.power * aMod;
 
-         if (skill.type === 'heal') {
+         if (skill.id === 's5' || skill.id === 's_yijin') {
+            attacker.buffs.defUp = 3;
+            actionLog = `${attacker.name} 【${skill.name}】真气护体防御大增！`;
+            if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
+                attacker.debuffs.poison = 0;
+                actionLog += ` 猛然逼出全部毒素！`;
+            }
+         } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
+            attacker.buffs.dodge = 3; actionLog = `${attacker.name} 【${skill.name}】闪避大增！`;
+         } else if (skill.id === 's_shenxing') {
+            attacker.buffs.dodge = 99; actionLog = `${attacker.name} 施出【${skill.name}】身法鬼魅！`;
+         } else if (skill.id === 's_shengxin') {
+            attacker.buffs.revive = 1; actionLog = `${attacker.name} 运转【${skill.name}】获得涅槃重生状态！`;
+         } else if (skill.type === 'heal') {
             const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
             attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
             actionLog = `${attacker.name} 使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
-         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0 || skill.id === 's5') {
-            if (skill.id === 's4' || skill.id === 's_tiyun') { 
-              attacker.buffs.dodge = 3; actionLog = `${attacker.name} 【${skill.name}】闪避大增！`;
-            } else if (skill.id === 's_shenxing') {
-              attacker.buffs.dodge = 99; actionLog = `${attacker.name} 施出【${skill.name}】身法鬼魅！`;
-            } else if (skill.id === 's5' || skill.id === 's_yijin') { 
-              attacker.buffs.defUp = 3; actionLog = `${attacker.name} 【${skill.name}】真气护体防御大增！`;
-              if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
-                  attacker.debuffs.poison = 0; actionLog += ` 猛然逼出全部毒素！`;
-              }
-            } else if (skill.id === 's_shengxin') {
-              attacker.buffs.revive = 1; actionLog = `${attacker.name} 运转【${skill.name}】获得涅槃重生状态！`;
-            } else {
-              attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】！`;
-            }
+         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+            attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】！`;
          } else {
             let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false));
             

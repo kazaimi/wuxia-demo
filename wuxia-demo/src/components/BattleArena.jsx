@@ -117,31 +117,29 @@ export default function BattleArena() {
          const aMod = 1 + attacker.level * 0.05;
          const adjustedSkillPwr = skill.power * aMod;
 
-         if (skill.type === 'heal') {
+         if (skill.id === 's5' || skill.id === 's_yijin') {
+            attacker.buffs.defUp = 3;
+            actionLog = `${attacker.name} 催动【${skill.name}】，真气护体，防御力大增！`;
+            if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
+                attacker.debuffs.poison = 0;
+                actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
+            }
+         } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
+            attacker.buffs.dodge = 3;
+            actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
+         } else if (skill.id === 's_shenxing') {
+            attacker.buffs.dodge = 99;
+            actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
+         } else if (skill.id === 's_shengxin') {
+            attacker.buffs.revive = 1;
+            actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉（获得涅槃重生状态）！`;
+         } else if (skill.type === 'heal') {
             const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
             attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
             actionLog = `${attacker.name} 运转内力使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
-         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0 || skill.id === 's5') {
-            if (skill.id === 's4' || skill.id === 's_tiyun') { 
-              attacker.buffs.dodge = 3;
-              actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
-            } else if (skill.id === 's_shenxing') {
-              attacker.buffs.dodge = 99;
-              actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
-            } else if (skill.id === 's5' || skill.id === 's_yijin') { 
-              attacker.buffs.defUp = 3;
-              actionLog = `${attacker.name} 催动【${skill.name}】，真气护体，防御力大增！`;
-              if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
-                  attacker.debuffs.poison = 0;
-                  actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
-              }
-            } else if (skill.id === 's_shengxin') {
-              attacker.buffs.revive = 1;
-              actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉（获得涅槃重生状态）！`;
-            } else {
-              attacker.buffs.dodge = 2;
-              actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
-            }
+         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+            attacker.buffs.dodge = 2;
+            actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
          } else {
             // 判定闪避（眩晕时无法闪避）
             let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
