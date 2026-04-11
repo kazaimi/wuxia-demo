@@ -27,8 +27,8 @@ export default function BattleArena() {
 
       if (!attacker.buffs) attacker.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
       if (!defender.buffs) defender.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
-      if (!attacker.debuffs) attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
-      if (!defender.debuffs) defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
+      if (!attacker.debuffs) attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
+      if (!defender.debuffs) defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
 
       const getTreasure = (id) => typeof TREASURES_DB !== 'undefined' ? TREASURES_DB.find(t=>t.id===id) : null;
       const aTreasure = getTreasure(attacker.equippedTreasure);
@@ -66,9 +66,13 @@ export default function BattleArena() {
 
       // 中毒结算
       if (attacker.debuffs.poison > 0) {
-         const pDmg = Math.max(1, Math.floor(attacker.maxHp * 0.03));
+         const poisonPct = attacker.debuffs.poisonPercent || 0.03;
+         const pDmg = Math.max(1, Math.floor(attacker.maxHp * poisonPct));
          attacker.hp = Math.max(1, attacker.hp - pDmg);
          attacker.debuffs.poison--;
+         if (attacker.debuffs.poison === 0) {
+             attacker.debuffs.poisonPercent = 0.03;
+         }
          logPrefix += `[中毒] ${attacker.name} 毒发，丧失了 ${pDmg} 气血！\n`;
       }
 
@@ -223,6 +227,7 @@ export default function BattleArena() {
                if (defender.hp > 0) {
                   if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
                       defender.debuffs.poison = 999;
+                      defender.debuffs.poisonPercent = 0.07;
                       actionLog += ` \n[万毒] ${defender.name} 身中奇毒，骨髓俱损！`;
                   }
                   if (skill.id === 's_shihou' && Math.random() <= 0.6 && !checkImmune(defender, dTreasure, 'stun')) {
@@ -265,24 +270,24 @@ export default function BattleArena() {
       // 达摩舍利与圣心诀复活判定
       if (attacker.hp <= 0 && aTreasure?.effect === 'niePan' && !attacker.hasRevived) {
           attacker.hp = Math.floor(attacker.maxHp * 0.5);
-          attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
+          attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           attacker.hasRevived = true;
           actionLog += `\n[涅槃] ${attacker.name} 达摩舍利碎裂，原地满血复活！`;
       } else if (attacker.hp <= 0 && attacker.buffs.revive > 0) {
           attacker.hp = Math.floor(attacker.maxHp * 0.5);
-          attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
+          attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           attacker.buffs.revive--;
           actionLog += `\n[圣心涅槃] ${attacker.name} 凭借圣心诀真气，强行起死回生！`;
       }
 
       if (defender.hp <= 0 && dTreasure?.effect === 'niePan' && !defender.hasRevived) {
           defender.hp = Math.floor(defender.maxHp * 0.5);
-          defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
+          defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           defender.hasRevived = true;
           actionLog += `\n[涅槃] ${defender.name} 达摩舍利碎裂，奇迹般续命！`;
       } else if (defender.hp <= 0 && defender.buffs.revive > 0) {
           defender.hp = Math.floor(defender.maxHp * 0.5);
-          defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0 };
+          defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           defender.buffs.revive--;
           actionLog += `\n[圣心涅槃] ${defender.name} 凭借圣心诀真气，强行起死回生！`;
       }
