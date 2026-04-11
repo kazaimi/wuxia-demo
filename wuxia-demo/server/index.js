@@ -12,7 +12,9 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
 const DB_FILE = path.join(process.cwd(), 'db.json');
+const AUCTION_HISTORY_FILE = path.join(process.cwd(), 'auction_history.json');
 let realPlayersDB = [];
+let auctionHistory = [];
 
 const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (conAttr || 0) * 10);
 
@@ -36,6 +38,19 @@ if (fs.existsSync(DB_FILE)) {
       console.warn("DB file damaged or unreadable, starting fresh.");
    }
 }
+
+if (fs.existsSync(AUCTION_HISTORY_FILE)) {
+   try {
+      auctionHistory = JSON.parse(fs.readFileSync(AUCTION_HISTORY_FILE, 'utf-8'));
+   } catch(e) {
+      console.warn("Auction history file damaged or unreadable, starting fresh.");
+      auctionHistory = [];
+   }
+}
+
+const saveAuctionHistory = () => {
+   fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
+};
 
 const saveDB = () => {
    fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2));
@@ -191,6 +206,10 @@ io.on('connection', (socket) => {
 
   socket.on('get_auctions', () => {
       socket.emit('auction_update', activeAuctions);
+  });
+  
+  socket.on('get_auction_history', () => {
+      socket.emit('auction_history', auctionHistory);
   });
 
   socket.on('list_auction', (itemData) => {
@@ -371,6 +390,17 @@ setInterval(() => {
    activeAuctions = activeAuctions.filter(auction => {
        if (now >= auction.endTime) {
            updated = true;
+           let historyRecord = {
+               id: auction.id,
+               itemName: auction.itemName,
+               type: auction.type,
+               sellerName: auction.sellerName,
+               endTime: auction.endTime,
+               status: auction.highestBidder ? 'success' : 'failed',
+               buyerName: auction.highestBidder || null,
+               finalPrice: auction.highestBidder ? auction.price : 0
+           };
+           
            if (auction.highestBidder) {
                const buyer = realPlayersDB.find(p => p.name === auction.highestBidder);
                const seller = realPlayersDB.find(p => p.name === auction.sellerName);
@@ -410,6 +440,13 @@ setInterval(() => {
                    if(sIndex >= 0) players[sIndex] = seller;
                }
            }
+           
+           auctionHistory.unshift(historyRecord);
+           if (auctionHistory.length > 100) {
+               auctionHistory = auctionHistory.slice(0, 100);
+           }
+           saveAuctionHistory();
+           
            return false;
        }
        return true;

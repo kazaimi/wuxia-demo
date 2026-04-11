@@ -155,7 +155,7 @@ export default function BattleArena() {
                actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
             } else {
                let finalDef = dDefBase * 1;
-               if (defender.buffs.defUp > 0) finalDef *= 2;
+               if (defender.buffs.defUp > 0) finalDef *= 3;
                
                let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
                
@@ -234,6 +234,10 @@ export default function BattleArena() {
                   if (skill.id === 's_dianxue' && Math.random() <= 0.8 && !checkImmune(defender, dTreasure, 'silence')) {
                       defender.debuffs.silence = 2;
                       actionLog += ` \n[点穴] ${defender.name} 要穴被封，无法动用武学！`;
+                  }
+                  if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
+                      defender.debuffs.internalWound = 2;
+                      actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损，难以催动内力！`;
                   }
 
                   if (aTreasure?.effect === 'dianXue' && Math.random() <= 0.10 && !checkImmune(defender, dTreasure, 'silence')) {

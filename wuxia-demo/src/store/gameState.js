@@ -95,6 +95,7 @@ export const useGameStore = create((set, get) => ({
 
   onlinePlayers: [],
   activeAuctions: [],
+  auctionHistory: [],
   broadcastQueue: [],
   battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null },
   dailyTasks: [],
@@ -107,6 +108,7 @@ export const useGameStore = create((set, get) => ({
       socket.on('connect', () => {
         set({ socketConnected: true });
         socket.emit('get_auctions');
+        socket.emit('get_auction_history');
         const savedName = localStorage.getItem('wuxia_username');
         if (savedName) {
            socket.emit('player_login', savedName);
@@ -190,6 +192,7 @@ export const useGameStore = create((set, get) => ({
          }
       });
       socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
+      socket.on('auction_history', (history) => set({ auctionHistory: history }));
       socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
     }
   },

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, getSkillInfo, TREASURES_DB } from '../store/gameState';
-import { Gavel, Clock, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { Gavel, Clock, ArrowRight, ArrowUpRight, CheckCircle2, XCircle } from 'lucide-react';
 
 export default function AuctionHouse() {
   const player = useGameStore(state => state.player);
   const activeAuctions = useGameStore(state => state.activeAuctions);
+  const auctionHistory = useGameStore(state => state.auctionHistory);
   const listAuction = useGameStore(state => state.listAuction);
   const placeBid = useGameStore(state => state.placeBid);
 
-  const [tab, setTab] = useState('market'); // market, sell
+  const [tab, setTab] = useState('market'); // market, sell, history
   const [sellType, setSellType] = useState('skill');
   const [selectedItem, setSelectedItem] = useState('');
   const [startPrice, setStartPrice] = useState(1);
@@ -86,6 +87,7 @@ export default function AuctionHouse() {
        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>
           <button onClick={()=>setTab('market')} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? '#facc15' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>竞拍大厅</button>
           <button onClick={()=>setTab('sell')} style={{ background: 'transparent', border: 'none', color: tab === 'sell' ? '#facc15' : '#888', fontWeight: tab === 'sell'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>上架拍卖</button>
+          <button onClick={()=>setTab('history')} style={{ background: 'transparent', border: 'none', color: tab === 'history' ? '#facc15' : '#888', fontWeight: tab === 'history'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>拍卖记录</button>
           <div style={{ marginLeft: 'auto', color: '#bbb' }}>我的银两: <span style={{ color: '#fff', fontWeight: 'bold' }}>{player.silver || 0}</span></div>
        </div>
 
@@ -155,6 +157,62 @@ export default function AuctionHouse() {
              <button className="btn-primary" onClick={handleList} style={{ padding: '1rem', background: '#854d0e', marginTop: '1rem', fontSize: '1.1rem' }}>
                  <Gavel size={18} style={{display:'inline', marginRight:'8px', verticalAlign:'text-bottom'}} />一锤定音 · 去竞拍
              </button>
+          </div>
+       )}
+
+       {tab === 'history' && (
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {auctionHistory.length === 0 ? (
+               <div style={{ textAlign: 'center', color: '#555', marginTop: '4rem' }}>暂无拍卖记录。</div>
+            ) : (
+               auctionHistory.map(record => {
+                  const isSuccess = record.status === 'success';
+                  const endDate = new Date(record.endTime);
+                  const dateStr = endDate.toLocaleDateString() + ' ' + endDate.toLocaleTimeString();
+                  return (
+                     <div key={record.id} style={{ 
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                        background: record.sellerName === player.name || record.buyerName === player.name ? 'rgba(250, 204, 21, 0.05)' : '#111', 
+                        border: '1px solid #444', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' 
+                     }}>
+                        <div>
+                           <h4 style={{ 
+                              color: isSuccess ? '#fcd34d' : '#666', 
+                              fontSize: '1.1rem', marginBottom: '4px',
+                              display: 'flex', alignItems: 'center', gap: '6px'
+                           }}>
+                              {isSuccess ? <CheckCircle2 size={16} color="#fcd34d" /> : <XCircle size={16} color="#666" />}
+                              {record.itemName}
+                           </h4>
+                           <div style={{ fontSize: '0.8rem', color: '#888', display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+                              <span>卖家: {record.sellerName}</span>
+                              {isSuccess && <span>买家: {record.buyerName}</span>}
+                              <span>成交价: <strong style={{ color: isSuccess ? '#fff' : '#666' }}>
+                                 {isSuccess ? `${record.finalPrice} 银两` : '流拍'}
+                              </strong></span>
+                              <span style={{ color: '#555' }}>{dateStr}</span>
+                           </div>
+                        </div>
+                        {record.sellerName === player.name && (
+                           <div style={{ 
+                              padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', 
+                              background: 'rgba(250, 204, 21, 0.1)', color: '#fcd34d'
+                           }}>
+                              我是卖家
+                           </div>
+                        )}
+                        {record.buyerName === player.name && (
+                           <div style={{ 
+                              padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', 
+                              background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e'
+                           }}>
+                              我是买家
+                           </div>
+                        )}
+                     </div>
+                  );
+               })
+            )}
           </div>
        )}
     </div>

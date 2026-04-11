@@ -257,6 +257,9 @@ export default function EncounterArena() {
                   if (skill.id === 's_dianxue' && Math.random() <= 0.8 && !checkImmune(defender, dTreasure, 'silence')) {
                       defender.debuffs.silence = 2; actionLog += ` [点穴] 封印定身！`;
                   }
+                  if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
+                      defender.debuffs.internalWound = 2; actionLog += ` [六脉] 无形剑气震伤内腑！`;
+                  }
 
                   if (aTreasure?.effect === 'dianXue' && Math.random() <= 0.10 && !checkImmune(defender, dTreasure, 'silence')) defender.debuffs.silence = 1;
                   if (aTreasure?.effect === 'juDu' && Math.random() <= 0.15 && !checkImmune(defender, dTreasure, 'poison')) defender.debuffs.poison = 3;
