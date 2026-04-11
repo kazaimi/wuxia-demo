@@ -121,7 +121,7 @@ export default function BattleArena() {
             const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
             attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
             actionLog = `${attacker.name} 运转内力使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
-         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0 || skill.id === 's5') {
             if (skill.id === 's4' || skill.id === 's_tiyun') { 
               attacker.buffs.dodge = 3;
               actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;

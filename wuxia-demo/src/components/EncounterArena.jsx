@@ -180,7 +180,7 @@ export default function EncounterArena() {
             const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
             attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
             actionLog = `${attacker.name} 使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
-         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0 || skill.id === 's5') {
             if (skill.id === 's4' || skill.id === 's_tiyun') { 
               attacker.buffs.dodge = 3; actionLog = `${attacker.name} 【${skill.name}】闪避大增！`;
             } else if (skill.id === 's_shenxing') {
