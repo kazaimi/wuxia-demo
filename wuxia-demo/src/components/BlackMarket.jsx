@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB, ATTR_MAP } from '../store/gameState';
 import { ShoppingBag, Coffee, Package, X } from 'lucide-react';
 
 export default function BlackMarket({ onClose }) {
@@ -7,6 +7,7 @@ export default function BlackMarket({ onClose }) {
   const addSilver = useGameStore(state => state.addSilver);
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const learnSkill = useGameStore(state => state.learnSkill);
+  const addAttributes = useGameStore(state => state.addAttributes);
 
   const [shopItems, setShopItems] = useState([]);
 
@@ -15,7 +16,7 @@ export default function BlackMarket({ onClose }) {
      const items = [
        { id: 'item_coffee', name: '【特供】橙C美式', price: 29, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee />, type: 'coffee' },
        { id: 'item_box1', name: '破旧的残卷箱', price: 8, desc: '随机获得一本入门外功或内功(必定非绝学)。', icon: <Package />, type: 'skill_box1' },
-       { id: 'item_drug', name: '十全大补贴', price: 10, desc: '随机获得基础属性点。', icon: <ShoppingBag />, type: 'attr_drug' },
+       { id: 'item_drug', name: '十全大补丸', price: 10, desc: '仙人秘制，随机永久增加3~5项基础属性各1~3点，立竿见影！', icon: <ShoppingBag />, type: 'attr_drug' },
        { id: 'item_box2', name: '传说的盲盒', price: 50, desc: '随机获得一件史诗或传说宝具！', icon: <Package color="var(--primary)" />, type: 'treasure_box' },
      ];
      setShopItems(items);
@@ -45,8 +46,22 @@ export default function BlackMarket({ onClose }) {
          addSilver(-item.price);
          alert(`你打开破旧箱子，里面竟然是【${sk.name}】！`);
      } else if (item.type === 'attr_drug') {
+         // 随机选 3~5 个属性，每个加 1~3 点
+         const allAttrs = Object.keys(ATTR_MAP);
+         const shuffled = [...allAttrs].sort(() => Math.random() - 0.5);
+         const count = 3 + Math.floor(Math.random() * 3); // 3, 4, or 5
+         const chosen = shuffled.slice(0, count);
+         const boosts = {};
+         const lines = [];
+         chosen.forEach(attr => {
+             const val = 1 + Math.floor(Math.random() * 3);
+             boosts[attr] = val;
+             lines.push(`${ATTR_MAP[attr]} +${val}`);
+         });
          addSilver(-item.price);
-         alert("你吞下十全大补贴... 但目前并未实现加属性效果...(暂未接驳属性)");
+         addAttributes(boosts);
+         alert(`你一口吞下十全大补丸，顿觉真气涌动！\n\n永久获得：\n${lines.join('\n')}`);
+
      } else if (item.type === 'treasure_box') {
          const pool = TREASURES_DB.filter(t => t.rarity === '史诗' || t.rarity === '传说');
          const t = pool[Math.floor(Math.random()*pool.length)];

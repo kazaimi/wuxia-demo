@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillInfoWithMastery, getSkillMastery, MASTERY_TIERS } from '../store/gameState';
 import { Skull, Swords, Gift } from 'lucide-react';
 
 export default function EncounterArena() {
@@ -10,6 +10,7 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
+  const addSkillMastery = useGameStore(state => state.addSkillMastery);
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -160,8 +161,10 @@ export default function EncounterArena() {
          const pickSkill = () => {
             if (skillIds.length === 0) return SKILLS_DB[0];
             let totalWeight = 0;
+            const masteryMap = attacker.skillMastery || {};
             const weighted = skillIds.map(sId => {
-               const sk = SKILLS_DB.find(s=>s.id===sId) || SKILLS_DB[0];
+               // 使用带熟练度加成的功法信息
+               const sk = getSkillInfoWithMastery(sId, masteryMap) || SKILLS_DB[0];
                const weight = 100 + (sk.power / 10) * (attacker.attributes.int || 0) * 1.5;
                totalWeight += weight;
                return { skill: sk, weight };
@@ -326,9 +329,15 @@ export default function EncounterArena() {
                gainExp(expReward);
                if (droppedTreasure) gainTreasure(droppedTreasure);
                
+               // 熟练度：3连胜才增加，为装备的全部功法 +1 胜
+               const equippedSkillIds = Object.values(player.equippedSkills || {}).filter(Boolean);
+               if (equippedSkillIds.length > 0) {
+                   addSkillMastery(equippedSkillIds);
+               }
+
                addSilver(3);
 
-               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
+               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '') + (equippedSkillIds.length > 0 ? `\n📖 功法熟练度已增加！` : '')]);
                setEncounterState('win');
             } else {
                if (curIdx === 1) addSilver(1);

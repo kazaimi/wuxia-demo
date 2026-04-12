@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS } from '../store/gameState';
 import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw, Heart, AlertCircle } from 'lucide-react';
 
 export default function PlayerStatus() {
@@ -130,6 +130,9 @@ export default function PlayerStatus() {
           {['inner', 'outer', 'motion', 'ultimate'].map(type => {
             const typeName = type === 'inner' ? '内功' : type === 'outer' ? '外功' : type === 'motion' ? '轻功' : '绝学';
             const available = skills.filter(sId => SKILLS_DB.find(s => s.id === sId)?.type === type);
+            const equippedId = equippedSkills[type];
+            const masteryInfo = equippedId ? getSkillMastery(equippedId, player.skillMastery) : null;
+            const nextTier = masteryInfo ? MASTERY_TIERS.find(t => t.minWins > masteryInfo.wins) : null;
             return (
                <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                  <span style={{ color: 'var(--text-muted)' }}>{typeName}槽位</span>
@@ -139,8 +142,26 @@ export default function PlayerStatus() {
                     style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px' }}
                  >
                    <option value="">--空--</option>
-                   {available.map(sId => <option key={sId} value={sId}>{SKILLS_DB.find(s => s.id === sId)?.name}</option>)}
+                   {available.map(sId => {
+                     const sk = getSkillInfo(sId);
+                     const { wins, label } = getSkillMastery(sId, player.skillMastery);
+                     const suffix = label ? ` [${label}]` : wins > 0 ? ` (${wins}胜)` : '';
+                     return <option key={sId} value={sId}>{sk?.name}{suffix}</option>;
+                   })}
                  </select>
+                 {masteryInfo && masteryInfo.wins > 0 && (
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                     <span style={{
+                       fontSize: '0.72rem', padding: '1px 5px', borderRadius: '3px',
+                       background: masteryInfo.label ? 'rgba(250,204,21,0.15)' : 'rgba(255,255,255,0.07)',
+                       color: masteryInfo.label ? '#facc15' : '#888',
+                       border: `1px solid ${masteryInfo.label ? '#facc15' : '#444'}`
+                     }}>
+                       {masteryInfo.label ? `【${masteryInfo.label}】` : '初习'} {masteryInfo.wins}胜
+                       {nextTier ? ` / 下阶 ${nextTier.minWins}胜` : ' (满级)'}
+                     </span>
+                   </div>
+                 )}
                </div>
             );
           })}

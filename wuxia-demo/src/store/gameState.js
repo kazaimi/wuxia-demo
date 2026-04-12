@@ -47,6 +47,50 @@ export const TREASURES_DB = [
 
 export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
 
+// 功法熟练度段位表（每 10 局胜利 +20%，上限 200%）
+export const MASTERY_TIERS = [
+  { minWins: 0,   bonus: 0,   label: '' },
+  { minWins: 10,  bonus: 0.20, label: '略有小成' },
+  { minWins: 20,  bonus: 0.40, label: '初窥门径' },
+  { minWins: 30,  bonus: 0.60, label: '渐入佳境' },
+  { minWins: 40,  bonus: 0.80, label: '融会贯通' },
+  { minWins: 50,  bonus: 1.00, label: '炉火纯青' },
+  { minWins: 60,  bonus: 1.20, label: '登峰造极' },
+  { minWins: 70,  bonus: 1.40, label: '出神入化' },
+  { minWins: 80,  bonus: 1.60, label: '化境归真' },
+  { minWins: 90,  bonus: 1.80, label: '天人合一' },
+  { minWins: 100, bonus: 2.00, label: '无上至境' },
+];
+
+// 根据当前胜场数返回熟练度信息
+export const getSkillMastery = (skillId, masteryMap = {}) => {
+  const baseId = skillId?.includes('_deg') ? skillId.split('_deg')[0] : skillId;
+  const wins = masteryMap?.[baseId] || 0;
+  let tier = MASTERY_TIERS[0];
+  for (const t of MASTERY_TIERS) {
+    if (wins >= t.minWins) tier = t;
+  }
+  return { wins, bonus: tier.bonus, label: tier.label };
+};
+
+// 返回含熟练度加成后的功法信息（power 按段位加成，复活类效果不加）
+export const getSkillInfoWithMastery = (skillId, masteryMap = {}) => {
+  const base = getSkillInfo(skillId);
+  if (!base) return null;
+  const { bonus, label } = getSkillMastery(skillId, masteryMap);
+  if (bonus === 0) return base;
+  // 不对复活屢性功法加成（s_shengxin 的 power=0，无影响）
+  const boostedPower = Math.floor(base.power * (1 + bonus));
+  const suffix = `《${base.name.split('》')[0].replace('《', '')}》【${label}】`;
+  return {
+    ...base,
+    power: boostedPower,
+    name: suffix,
+    masteryLabel: label,
+    masteryBonus: bonus,
+  };
+};
+
 export const getSkillInfo = (skillId) => {
     if (!skillId) return null;
     const isDegraded = skillId.includes('_deg');
@@ -136,6 +180,7 @@ export const useGameStore = create((set, get) => ({
          if (!playerData.dailyDebuffs) playerData.dailyDebuffs = [];
          if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
+         if (!playerData.skillMastery) playerData.skillMastery = {};
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
@@ -294,6 +339,23 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
+  // 直接增加属性（黑市大补丸等奖励，不消耗 freePoints）
+  addAttributes: (attrBoosts) => set((state) => {
+    const newAttrs = { ...state.player.attributes };
+    Object.entries(attrBoosts).forEach(([key, val]) => {
+      newAttrs[key] = (newAttrs[key] || 0) + val;
+    });
+    const newMaxHp = calculateMaxHp(state.player.level, newAttrs.con);
+    const p = {
+      ...state.player,
+      attributes: newAttrs,
+      maxHp: newMaxHp,
+      hp: newMaxHp,
+    };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
   resetPoints: () => set((state) => {
     const p = { ...state.player };
     const totalPoints = INITIAL_POINTS + (p.level - 1) * POINTS_PER_LEVEL;
@@ -411,6 +473,21 @@ export const useGameStore = create((set, get) => ({
       return { player: p };
     }
     return state;
+  }),
+
+  // 降胜后增加指定功法的熟练度（每个 +1）
+  addSkillMastery: (skillIds) => set((state) => {
+    if (!skillIds || skillIds.length === 0) return state;
+    const mastery = { ...(state.player.skillMastery || {}) };
+    skillIds.forEach(id => {
+      if (!id) return;
+      // 取基础 id（去掉劣化后缀）
+      const baseId = id.includes('_deg') ? id.split('_deg')[0] : id;
+      mastery[baseId] = (mastery[baseId] || 0) + 1;
+    });
+    const p = { ...state.player, skillMastery: mastery };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
   }),
 
   listAuction: (type, itemToTrade, itemName, startPrice) => {
