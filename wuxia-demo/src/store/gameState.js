@@ -49,7 +49,7 @@ export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏
 
 // 功法熟练度段位表（每 10 局胜利 +20%，上限 200%）
 export const MASTERY_TIERS = [
-  { minWins: 0,   bonus: 0,   label: '' },
+  { minWins: 0,   bonus: 0,   label: '初习入门' },
   { minWins: 10,  bonus: 0.20, label: '略有小成' },
   { minWins: 20,  bonus: 0.40, label: '初窥门径' },
   { minWins: 30,  bonus: 0.60, label: '渐入佳境' },
@@ -78,10 +78,11 @@ export const getSkillInfoWithMastery = (skillId, masteryMap = {}) => {
   const base = getSkillInfo(skillId);
   if (!base) return null;
   const { bonus, label } = getSkillMastery(skillId, masteryMap);
-  if (bonus === 0) return base;
-  // 不对复活屢性功法加成（s_shengxin 的 power=0，无影响）
-  const boostedPower = Math.floor(base.power * (1 + bonus));
+  
+  // 即使加成为0也执行后缀逻辑，但只有 bonus > 0 才实际提升 power
+  const boostedPower = bonus > 0 ? Math.floor(base.power * (1 + bonus)) : base.power;
   const suffix = `《${base.name.split('》')[0].replace('《', '')}》【${label}】`;
+  
   return {
     ...base,
     power: boostedPower,

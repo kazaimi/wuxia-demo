@@ -42,7 +42,7 @@ export default function EncounterArena() {
          }, 500);
      }
 
-     const bossCands = bots.filter(b => b.rankIndex <= 10);
+     const bossCands = bots.filter(b => b.rankIndex <= 30);
      const boss = bossCands[Math.floor(Math.random() * bossCands.length)] || bots[0];
 
      const remainingBots = bots.filter(b => b.id !== boss.id);
