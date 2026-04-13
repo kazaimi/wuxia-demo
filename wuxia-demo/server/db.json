@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "🐟摸鱼小虾",
+    "title": "🐎初出茅庐",
     "level": 32,
     "exp": 6646,
     "maxExp": 9380,
@@ -43,7 +43,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "n3xNmJq-Pk8EhmfQAAAB",
+    "id": "04DfewjP3LKKNzDfAAAP",
     "isBattling": false,
     "rankIndex": 27,
     "lastTaskDate": "Mon Apr 13 2026",
@@ -54,17 +54,17 @@
       "t1",
       "t9"
     ],
-    "encountersToday": 0,
+    "encountersToday": 5,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t9",
-    "dailyActivity": 0,
-    "silver": 59,
+    "dailyActivity": 50,
+    "silver": 64,
     "skillMastery": {}
   },
   {
     "name": "芙蓉女侠",
-    "title": "🔥江湖劳模",
+    "title": "👑肝帝真仙",
     "level": 23,
     "exp": 430,
     "maxExp": 5488,
@@ -101,18 +101,18 @@
       "outer": "s_taiji",
       "inner": "s_yijin"
     },
-    "id": "cnPZDwOpuVBqFIssAAAL",
+    "id": "5PHoMra1TBqf0gJmAAAN",
     "isBattling": false,
     "rankIndex": 45,
     "lastTaskDate": "Mon Apr 13 2026",
     "treasures": [
       "t8"
     ],
-    "encountersToday": 1,
-    "dailyActivity": 190,
-    "secretRealmAttempts": 0,
+    "encountersToday": 5,
+    "dailyActivity": 275,
+    "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 5,
+    "silver": 9,
     "skillMastery": {},
     "equippedTreasure": "t8"
   },
