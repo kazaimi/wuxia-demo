@@ -53,7 +53,7 @@ if (fs.existsSync(AUCTION_HISTORY_FILE)) {
 if (fs.existsSync(ACTIVE_AUCTIONS_FILE)) {
    try {
       const loaded = JSON.parse(fs.readFileSync(ACTIVE_AUCTIONS_FILE, 'utf-8'));
-      // 过滤掉已过期的拍卖（服务器停机期间到期的�?
+      // 过滤掉已过期的拍卖（服务器停机期间到期的拍卖）
       const now = Date.now();
       const expired = loaded.filter(a => now >= a.endTime);
       activeAuctions = loaded.filter(a => now < a.endTime);
@@ -62,7 +62,7 @@ if (fs.existsSync(ACTIVE_AUCTIONS_FILE)) {
          // 把过期的也加回来，让定时任务统一结算
          activeAuctions = loaded;
       }
-      console.log(`[拍卖行] 从磁盘恢�?${activeAuctions.length} 条进行中拍卖。`);
+      console.log(`[拍卖行] 从磁盘恢复 ${activeAuctions.length} 条进行中拍卖。`);
    } catch(e) {
       console.warn("Active auctions file damaged or unreadable, starting fresh.");
       activeAuctions = [];
@@ -82,12 +82,12 @@ const saveDB = () => {
 };
 
 const MOCK_NAMES = [
-  '扫地�?, '东方不败', '乔峰', '虚竹', '段誉', '无崖�?, '张三�?, '张无�?, '独孤求败', '王重�?, 
-  '周伯�?, '洪七�?, '金轮法王', '郭靖', '黄药�?, '欧阳�?, '令狐�?, '风清�?, '任我�?, '邀�?, 
-  '燕南�?, '西门吹雪', '叶孤�?, '绝无�?, '雄霸', '步惊�?, '聂风', '天山童姥', '李寻�?, '阿飞', 
-  '左冷�?, '岳不�?, '丁春�?, '鸠摩�?, '游坦�?, '慕容�?, '段延�?, '天机老人', '楚留�?, '陆小�?, 
-  '胡铁�?, '花无�?, '小鱼�?, '成昆', '谢�?, '灭绝师太', '林平�?, '陈家�?, '袁承�?, '狄云', 
-  '石破�?, '丁典', '白自�?, '胡一刀', '玄慈大师', '神雕大侠', '玉面飞龙', '血刀老祖', '苗人�?, '四大恶人'
+  '扫地僧', '东方不败', '乔峰', '虚竹', '段誉', '无崖子', '张三丰', '张无忌', '独孤求败', '王重阳', 
+  '周伯通', '洪七公', '金轮法王', '郭靖', '黄药师', '欧阳锋', '令狐冲', '风清扬', '任我行', '邀月', 
+  '燕南天', '西门吹雪', '叶孤城', '绝无神', '雄霸', '步惊云', '聂风', '天山童姥', '李寻欢', '阿飞', 
+  '左冷禅', '岳不群', '丁春秋', '鸠摩智', '游坦之', '慕容复', '段延庆', '天机老人', '楚留香', '陆小凤', 
+  '胡铁花', '花无缺', '小鱼儿', '成昆', '谢逊', '灭绝师太', '林平之', '陈家洛', '袁承志', '狄云', 
+  '石破天', '丁典', '白自在', '胡一刀', '玄慈大师', '神雕大侠', '玉面飞龙', '血刀老祖', '苗人凤', '四大恶人'
 ];
 
 const MOCK_PLAYERS = [];
@@ -108,7 +108,7 @@ for (let i = 0; i < 60; i++) {
    const rankIndex = availableRank;
    availableRank++;
    
-   // 从原本每�?.3点的大魔王系数，砍到正常玩家�?3�?�?(外加初始10点分�?
+   // 从原本每级9.3点的大魔王系数，砍到正常玩家的3点/级（外加初始10点分配）
    const con = Math.floor(level * 0.6) + 2;
    const str = Math.floor(level * 0.8) + 3;
    const int = Math.floor(level * 0.6) + 2;
@@ -152,7 +152,7 @@ for (let i = 0; i < 60; i++) {
    }
    
    MOCK_PLAYERS.push({
-      id: `mock_${i}`, name, level, title: `江湖风云�?�?${rankIndex} 席`,
+      id: `mock_${i}`, name, level, title: `江湖风云榜 第 ${rankIndex} 席`,
       hp: finalHp, maxHp: finalHp,
       attributes: { con, str, int, agi, luk },
       equippedSkills: { inner: eqInner, outer: eqOuter, motion: eqMotion, ultimate: eqUltimate }, 
@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
   
   socket.on('player_login', (username) => {
-      console.log(`[入局提醒] 大侠 �?{username}�?请求连接服务�?..`);
+      console.log(`[入局提醒] 大侠 【${username}】 请求连接服务端...`);
       const dbPlayer = realPlayersDB.find(p => p.name === username);
       if (dbPlayer) {
          dbPlayer.id = socket.id;
@@ -185,7 +185,7 @@ io.on('connection', (socket) => {
          socket.emit('login_success', dbPlayer);
          io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
       } else {
-         socket.emit('login_failed', { reason: '户籍未登�? });
+         socket.emit('login_failed', { reason: '户籍未登记' });
       }
   });
 
@@ -266,7 +266,7 @@ io.on('connection', (socket) => {
      activeAuctions.push(auction);
      saveActiveAuctions();
      io.emit('auction_update', activeAuctions);
-     let msg = `*【破劫公告】玩�?[${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价�?{itemData.startPrice}银两�?`;
+     let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${itemData.startPrice}银两！`;
      io.emit('broadcast_message', msg);
   });
 
@@ -369,7 +369,7 @@ io.on('connection', (socket) => {
                players.forEach(p => {
                  if (p.isMock && p.rankIndex >= newRank && p.rankIndex < oldRank) {
                    p.rankIndex += 1;
-                   p.title = `江湖风云�?�?${p.rankIndex} 席`;
+                   p.title = `江湖风云榜 第 ${p.rankIndex} 席`;
                  }
                });
                
@@ -386,7 +386,7 @@ io.on('connection', (socket) => {
                if (dbAttacker) { dbAttacker.rankIndex = newRank; }
                saveDB();
                
-               actionData.log += `\n[系统广播] 震古烁今�?{attacker.name} 战胜�?${target.name}，成功夺取了江湖�?${newRank} 席！`;
+               actionData.log += `\n[系统广播] 震古烁今！${attacker.name} 战胜了 ${target.name}，成功夺取了江湖第 ${newRank} 席！`;
              }
              
              if (target.isMock && target.signatureSkill && Math.random() > 0.50) {
@@ -407,7 +407,7 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 1.5 一掷千�?已开�?(Server listen on ${PORT})`);
+  console.log(`江湖信使局 1.5 一掷千金 已开启 (Server listen on ${PORT})`);
 });
 
 setInterval(() => {
@@ -444,7 +444,7 @@ setInterval(() => {
                    }
                    seller.silver += auction.price;
                    saveDB();
-                   io.emit('broadcast_message', `*【一锤定音】恭�?[${buyer.name}] �?${auction.price} 银两拍得 [${auction.itemName}]�?`);
+                   io.emit('broadcast_message', `*【一锤定音】恭喜 [${buyer.name}] 以 ${auction.price} 银两拍得 [${auction.itemName}]！`);
                    const sIndex = players.findIndex(p => p.name === seller.name);
                    if(sIndex >= 0) players[sIndex] = seller;
                    const bIndex = players.findIndex(p => p.name === buyer.name);

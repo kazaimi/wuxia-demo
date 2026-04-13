@@ -1,12 +1,12 @@
 [
   {
     "name": "ALEX",
-    "title": "🔥江湖劳模",
+    "title": "🐟摸鱼小虾",
     "level": 32,
     "exp": 6646,
     "maxExp": 9380,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 0,
     "hp": 980,
     "maxHp": 980,
     "attributes": {
@@ -43,10 +43,10 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "xYmpt5nO6pPjofJPAAAF",
+    "id": "n3xNmJq-Pk8EhmfQAAAB",
     "isBattling": false,
     "rankIndex": 27,
-    "lastTaskDate": "Sun Apr 12 2026",
+    "lastTaskDate": "Mon Apr 13 2026",
     "treasures": [
       "t3",
       "t5",
@@ -54,30 +54,30 @@
       "t1",
       "t9"
     ],
-    "encountersToday": 1,
+    "encountersToday": 0,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t9",
-    "dailyActivity": 185,
+    "dailyActivity": 0,
     "silver": 59,
     "skillMastery": {}
   },
   {
     "name": "芙蓉女侠",
-    "title": "👑肝帝真仙",
-    "level": 21,
-    "exp": 362,
-    "maxExp": 4748,
+    "title": "🔥江湖劳模",
+    "level": 23,
+    "exp": 430,
+    "maxExp": 5488,
     "freePoints": 0,
     "taskCount": 35,
-    "hp": 415,
-    "maxHp": 415,
+    "hp": 465,
+    "maxHp": 465,
     "attributes": {
-      "con": 0,
-      "str": 20,
-      "int": 20,
-      "agi": 30,
-      "luk": 0
+      "con": 2,
+      "str": 29,
+      "int": 29,
+      "agi": 35,
+      "luk": 4
     },
     "skills": [
       "s1",
@@ -89,7 +89,8 @@
       "s_kuihua",
       "s_kuangfeng",
       "s_shihou",
-      "s_yijin"
+      "s_yijin",
+      "s5"
     ],
     "equippedSkills": {
       "0": "s1",
@@ -100,19 +101,20 @@
       "outer": "s_taiji",
       "inner": "s_yijin"
     },
-    "id": "wGgBw0IxW5rjT9NfAABC",
+    "id": "cnPZDwOpuVBqFIssAAAL",
     "isBattling": false,
-    "rankIndex": 46,
-    "lastTaskDate": "Thu Apr 09 2026",
-    "treasures": [],
-    "encountersToday": 5,
-    "dailyActivity": 270,
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "血枯劫",
-      "心魔劫"
+    "rankIndex": 45,
+    "lastTaskDate": "Mon Apr 13 2026",
+    "treasures": [
+      "t8"
     ],
-    "silver": 0
+    "encountersToday": 1,
+    "dailyActivity": 190,
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 5,
+    "skillMastery": {},
+    "equippedTreasure": "t8"
   },
   {
     "name": "阿紫",
@@ -474,27 +476,24 @@
   },
   {
     "name": "马云",
-    "title": "⚡武林卷王",
-    "level": 9,
-    "exp": 533,
-    "maxExp": 1332,
+    "title": "🐎初出茅庐",
+    "level": 10,
+    "exp": 404,
+    "maxExp": 1546,
     "freePoints": 0,
-    "taskCount": 35,
-    "encountersToday": 1,
-    "lastTaskDate": "Sat Apr 11 2026",
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "心魔劫",
-      "血枯劫"
-    ],
-    "hp": 305,
-    "maxHp": 305,
+    "taskCount": 10,
+    "encountersToday": 0,
+    "lastTaskDate": "Mon Apr 13 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "hp": 250,
+    "maxHp": 250,
     "attributes": {
-      "con": 7,
-      "str": 7,
-      "int": 7,
-      "agi": 7,
-      "luk": 6
+      "con": 0,
+      "str": 0,
+      "int": 37,
+      "agi": 0,
+      "luk": 0
     },
     "skills": [
       "s1",
@@ -508,11 +507,12 @@
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "ksy5zvxSTQonbLueAAAN",
+    "id": "j-JRfYwm8YFk4AM7AAAl",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 230,
-    "silver": 26
+    "dailyActivity": 50,
+    "silver": 38,
+    "skillMastery": {}
   },
   {
     "name": "月影",
