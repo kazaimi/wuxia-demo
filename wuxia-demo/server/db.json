@@ -64,20 +64,20 @@
   },
   {
     "name": "芙蓉女侠",
-    "title": "👑肝帝真仙",
-    "level": 23,
-    "exp": 430,
-    "maxExp": 5488,
-    "freePoints": 0,
-    "taskCount": 35,
-    "hp": 465,
-    "maxHp": 465,
+    "title": "🔥江湖劳模",
+    "level": 26,
+    "exp": 3829,
+    "maxExp": 6684,
+    "freePoints": 3,
+    "taskCount": 31,
+    "hp": 490,
+    "maxHp": 490,
     "attributes": {
-      "con": 2,
-      "str": 29,
-      "int": 29,
-      "agi": 35,
-      "luk": 4
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 82
     },
     "skills": [
       "s1",
@@ -101,20 +101,22 @@
       "outer": "s_taiji",
       "inner": "s_yijin"
     },
-    "id": "5PHoMra1TBqf0gJmAAAN",
+    "id": "rhYazkDBTVtno3kTAAAB",
     "isBattling": false,
-    "rankIndex": 45,
-    "lastTaskDate": "Mon Apr 13 2026",
+    "rankIndex": 44,
+    "lastTaskDate": "Thu Apr 16 2026",
     "treasures": [
-      "t8"
+      "t8",
+      "t10",
+      "t3"
     ],
-    "encountersToday": 5,
-    "dailyActivity": 275,
-    "secretRealmAttempts": 3,
+    "encountersToday": 0,
+    "dailyActivity": 155,
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "silver": 9,
+    "silver": 92,
     "skillMastery": {},
-    "equippedTreasure": "t8"
+    "equippedTreasure": "t10"
   },
   {
     "name": "阿紫",
