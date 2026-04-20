@@ -9,7 +9,7 @@ export default function PlayerStatus() {
   const resetPoints = useGameStore(state => state.resetPoints);
   const equipSkill = useGameStore(state => state.equipSkill);
   const equipTreasure = useGameStore(state => state.equipTreasure);
-  const { name, title, level, exp, maxExp, freePoints, attributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
+  const { name, title, level, exp, maxExp, freePoints, attributes, permanentAttributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
 
   const bgStyle = {
     background: 'var(--glass-bg)',
@@ -62,6 +62,7 @@ export default function PlayerStatus() {
       <div style={{ marginTop: '0.5rem' }}>
         <AttributeRadar
           attributes={attributes}
+          permanentAttributes={permanentAttributes}
           freePoints={freePoints}
           onAllocate={allocatePoints}
         />
