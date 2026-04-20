@@ -10,11 +10,12 @@ const ATTR_CONFIG = [
   { k: 'luk', n: '幸运', icon: Clover, color: '#10b981' },
 ];
 
-export default function AttributeRadar({ attributes, freePoints, permanentAttributes, onAllocate }) {
+export default function AttributeRadar({ attributes, permanentAttributes, freePoints, inBattle, onSetAttribute }) {
   const [inputValues, setInputValues] = useState({});
 
-  // 计算滑块的最大值：当前属性 + 剩余点数
-  const sliderMax = Math.max(100, ...Object.values(attributes) + freePoints + 20);
+  // 计算滑块的最大值
+  const totalPoints = Object.values(attributes).reduce((a, b) => a + b, 0) + freePoints;
+  const sliderMax = Math.max(100, totalPoints + 20);
 
   const radarData = ATTR_CONFIG.map(attr => ({
     attribute: attr.n,
@@ -27,19 +28,17 @@ export default function AttributeRadar({ attributes, freePoints, permanentAttrib
   };
 
   const handleInputSubmit = (attrKey) => {
-    const amount = parseInt(inputValues[attrKey], 10);
-    if (!isNaN(amount) && amount > 0 && amount <= freePoints) {
-      onAllocate(attrKey, amount);
+    if (inBattle) return;
+    const newValue = parseInt(inputValues[attrKey], 10);
+    if (!isNaN(newValue) && newValue >= 0) {
+      onSetAttribute(attrKey, newValue);
       setInputValues(prev => ({ ...prev, [attrKey]: '' }));
     }
   };
 
   const handleSliderChange = (attrKey, newValue) => {
-    const currentValue = attributes[attrKey] || 0;
-    const diff = newValue - currentValue;
-    if (diff > 0 && diff <= freePoints) {
-      onAllocate(attrKey, diff);
-    }
+    if (inBattle) return;
+    onSetAttribute(attrKey, newValue);
   };
 
   return (
@@ -93,14 +92,14 @@ export default function AttributeRadar({ attributes, freePoints, permanentAttrib
                   max={maxVal}
                   value={currentVal}
                   onChange={(e) => handleSliderChange(attr.k, parseInt(e.target.value, 10))}
-                  disabled={freePoints === 0}
+                  disabled={inBattle}
                   style={{
                     flex: 1,
                     height: '6px',
                     background: `linear-gradient(to right, ${attr.color} ${(currentVal / sliderMax) * 100}%, rgba(255,255,255,0.1) ${(currentVal / sliderMax) * 100}%)`,
                     borderRadius: '3px',
-                    cursor: freePoints > 0 ? 'pointer' : 'not-allowed',
-                    opacity: freePoints > 0 ? 1 : 0.5,
+                    cursor: inBattle ? 'not-allowed' : 'pointer',
+                    opacity: inBattle ? 0.5 : 1,
                   }}
                 />
               </div>
@@ -122,12 +121,12 @@ export default function AttributeRadar({ attributes, freePoints, permanentAttrib
               </span>
 
               {/* 输入框 */}
-              {freePoints > 0 && (
+              {!inBattle && (
                 <input
                   type="number"
-                  min="1"
-                  max={freePoints}
-                  placeholder="+"
+                  min={minVal}
+                  max={maxVal}
+                  placeholder="设"
                   value={inputValues[attr.k] || ''}
                   onChange={(e) => handleInputChange(attr.k, e.target.value)}
                   onKeyDown={(e) => {
@@ -155,7 +154,7 @@ export default function AttributeRadar({ attributes, freePoints, permanentAttrib
       {/* 图例说明 */}
       {Object.values(permanentAttributes || {}).some(v => v > 0) && (
         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-          括号内 (+X) 为永久属性加成，重铸后保留
+          括号内 (+X) 为永久属性加成
         </div>
       )}
     </div>

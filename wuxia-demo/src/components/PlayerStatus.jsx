@@ -1,14 +1,14 @@
 import React from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS } from '../store/gameState';
-import { User, Star, RefreshCcw, AlertCircle } from 'lucide-react';
+import { User, Star, AlertCircle } from 'lucide-react';
 import AttributeRadar from './AttributeRadar';
 
 export default function PlayerStatus() {
   const player = useGameStore(state => state.player);
-  const allocatePoints = useGameStore(state => state.allocatePoints);
-  const resetPoints = useGameStore(state => state.resetPoints);
+  const setAttribute = useGameStore(state => state.setAttribute);
   const equipSkill = useGameStore(state => state.equipSkill);
   const equipTreasure = useGameStore(state => state.equipTreasure);
+  const inBattle = useGameStore(state => state.battleState.inBattle);
   const { name, title, level, exp, maxExp, freePoints, attributes, permanentAttributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
 
   const bgStyle = {
@@ -34,9 +34,9 @@ export default function PlayerStatus() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
              <Star size={18} color="var(--warn)" /> Lv.{level}
           </div>
-          {freePoints > 0 && (
-             <span className="glow-effect" style={{ fontSize: '0.8rem', color: 'var(--danger)', background: 'rgba(239, 68, 68, 0.2)', padding:'2px 4px', borderRadius: '4px' }}>可用潜能: {freePoints}</span>
-          )}
+          <span className="glow-effect" style={{ fontSize: '0.8rem', color: freePoints > 0 ? 'var(--danger)' : 'var(--text-muted)', background: freePoints > 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)', padding:'2px 4px', borderRadius: '4px' }}>
+            {freePoints > 0 ? `可用潜能: ${freePoints}` : freePoints < 0 ? `超支: ${-freePoints}` : '潜能已分配完毕'}
+          </span>
         </div>
       </div>
       
@@ -64,19 +64,23 @@ export default function PlayerStatus() {
           attributes={attributes}
           permanentAttributes={permanentAttributes}
           freePoints={freePoints}
-          onAllocate={allocatePoints}
+          inBattle={inBattle}
+          onSetAttribute={setAttribute}
         />
       </div>
       
-      {player.level > 1 && (
-        <button 
-           onClick={() => { if(window.confirm('洗髓重铸将清空加点并返还所有潜能点数，是否继续？')) resetPoints() }} 
-           style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', padding: '0.5rem', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer', transition: 'all 0.3s' }}
-           onMouseEnter={(e)=>e.target.style.background='rgba(239, 68, 68, 0.3)'}
-           onMouseLeave={(e)=>e.target.style.background='rgba(239, 68, 68, 0.1)'}
-        >
-          <RefreshCcw size={16} /> 洗髓重铸 (耗费修为修整)
-        </button>
+      {inBattle && (
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid var(--danger)',
+          padding: '0.5rem',
+          borderRadius: '8px',
+          fontSize: '0.85rem',
+          color: 'var(--danger)',
+          textAlign: 'center'
+        }}>
+          激战中，属性点已锁定
+        </div>
       )}
 
       {player.dailyDebuffs && player.dailyDebuffs.length > 0 && (

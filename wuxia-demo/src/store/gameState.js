@@ -362,33 +362,58 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
-  resetPoints: () => set((state) => {
-    const p = { ...state.player };
-    const totalPoints = INITIAL_POINTS + (p.level - 1) * POINTS_PER_LEVEL;
-    p.freePoints = totalPoints;
-    // 保留永久属性加成
-    const permAttrs = p.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
-    p.attributes = { ...permAttrs };
-    p.maxHp = calculateMaxHp(p.level, permAttrs.con);
-    p.hp = p.maxHp;
+  // 调整属性点（可增可减），战斗中不可用
+  adjustAttribute: (attrKey, delta) => set((state) => {
+    // 战斗中锁定
+    if (state.battleState.inBattle) return state;
+
+    let p = { ...state.player, attributes: { ...state.player.attributes } };
+    const permVal = (p.permanentAttributes?.[attrKey]) || 0;
+    const currentVal = p.attributes[attrKey];
+    const newVal = currentVal + delta;
+
+    // 不能低于永久属性加成
+    if (newVal < permVal) return state;
+
+    // 检查 freePoints
+    if (delta > 0 && p.freePoints < delta) return state;
+
+    p.attributes[attrKey] = newVal;
+    p.freePoints -= delta;
+
+    if (attrKey === 'con') {
+       p.maxHp = calculateMaxHp(p.level, p.attributes.con);
+       p.hp = p.maxHp;
+    }
     if (socket) socket.emit('update_player', p);
     return { player: p };
   }),
 
-  allocatePoints: (attrKey, amount) => set((state) => {
+  // 直接设置属性值（战斗中不可用）
+  setAttribute: (attrKey, newValue) => set((state) => {
+    // 战斗中锁定
+    if (state.battleState.inBattle) return state;
+
     let p = { ...state.player, attributes: { ...state.player.attributes } };
-    const addAmt = Math.min(Math.max(1, amount), p.freePoints);
-    if (p.freePoints >= addAmt) {
-      p.freePoints -= addAmt;
-      p.attributes[attrKey] += addAmt;
-      if (attrKey === 'con') {
-         p.maxHp = calculateMaxHp(p.level, p.attributes.con);
-         p.hp = p.maxHp;
-      }
-      if (socket) socket.emit('update_player', p);
-      return { player: p };
+    const permVal = (p.permanentAttributes?.[attrKey]) || 0;
+    const currentVal = p.attributes[attrKey];
+    const delta = newValue - currentVal;
+
+    // 不能低于永久属性加成
+    if (newValue < permVal) return state;
+
+    // 检查 freePoints
+    if (delta > 0 && p.freePoints < delta) return state;
+
+    p.attributes[attrKey] = newValue;
+    p.freePoints -= delta;
+
+    if (attrKey === 'con') {
+       p.maxHp = calculateMaxHp(p.level, p.attributes.con);
+       p.hp = p.maxHp;
     }
-    return state;
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
   }),
 
   generateTasks: () => set((state) => {
