@@ -1,20 +1,20 @@
 [
   {
     "name": "ALEX",
-    "title": "🐎初出茅庐",
-    "level": 32,
-    "exp": 6646,
-    "maxExp": 9380,
+    "title": "👑肝帝真仙",
+    "level": 35,
+    "exp": 2396,
+    "maxExp": 10874,
     "freePoints": 0,
-    "taskCount": 0,
-    "hp": 980,
-    "maxHp": 980,
+    "taskCount": 35,
+    "hp": 855,
+    "maxHp": 855,
     "attributes": {
-      "con": 40,
-      "str": 0,
-      "int": 18,
-      "agi": 45,
-      "luk": 0
+      "con": 23,
+      "str": 9,
+      "int": 40,
+      "agi": 29,
+      "luk": 22
     },
     "skills": [
       "s1",
@@ -43,24 +43,43 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "04DfewjP3LKKNzDfAAAP",
+    "id": "IUfA-4V4mEwRbKt2AAAX",
     "isBattling": false,
-    "rankIndex": 27,
-    "lastTaskDate": "Mon Apr 13 2026",
+    "rankIndex": 25,
+    "lastTaskDate": "Mon Apr 20 2026",
     "treasures": [
       "t3",
       "t5",
       "t4",
       "t1",
-      "t9"
+      "t9",
+      "t11"
     ],
     "encountersToday": 5,
-    "secretRealmAttempts": 0,
-    "dailyDebuffs": [],
-    "equippedTreasure": "t9",
-    "dailyActivity": 50,
-    "silver": 64,
-    "skillMastery": {}
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "血枯劫",
+      "心魔劫"
+    ],
+    "equippedTreasure": "t11",
+    "dailyActivity": 270,
+    "silver": 67,
+    "skillMastery": {
+      "s1": 2,
+      "s_taiji": 2,
+      "s_kuihua": 2,
+      "s_shenxing": 2,
+      "s_du": 2,
+      "s_liumai": 2,
+      "s5": 2
+    },
+    "permanentAttributes": {
+      "con": 3,
+      "str": 1,
+      "int": 4,
+      "agi": 1,
+      "luk": 2
+    }
   },
   {
     "name": "芙蓉女侠",
