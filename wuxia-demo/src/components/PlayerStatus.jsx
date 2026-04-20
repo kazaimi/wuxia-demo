@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS } from '../store/gameState';
-import { Shield, Swords, Brain, Zap, Clover, User, Star, PlusCircle, RefreshCcw, Heart, AlertCircle } from 'lucide-react';
+import { User, Star, RefreshCcw, AlertCircle } from 'lucide-react';
+import AttributeRadar from './AttributeRadar';
 
 export default function PlayerStatus() {
   const player = useGameStore(state => state.player);
@@ -57,37 +58,13 @@ export default function PlayerStatus() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '0.5rem' }}>
-        { [
-            { k: 'con', i: <Shield size={16} color="var(--success)" />, n: '体质' },
-            { k: 'str', i: <Swords size={16} color="var(--danger)" />, n: '力量' },
-            { k: 'int', i: <Brain size={16} color="var(--primary)" />, n: '智慧' },
-            { k: 'agi', i: <Zap size={16} color="var(--warn)" />, n: '敏捷' },
-            { k: 'luk', i: <Clover size={16} color="#10b981" />, n: '幸运' },
-          ].map(attr => (
-            <div key={attr.k} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {attr.i} {attr.n}: {attributes[attr.k]}
-              </div>
-              {freePoints > 0 && (
-                <button 
-                   onClick={() => {
-                      const amountStr = window.prompt(`请输入为【${attr.n}】分配的点数（最多还能分配 ${freePoints} 点）：`, '1');
-                      if (amountStr) {
-                         const amount = parseInt(amountStr, 10);
-                         if (!isNaN(amount) && amount > 0) {
-                            allocatePoints(attr.k, amount);
-                         }
-                      }
-                   }} 
-                   style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 0 }}
-                   title="分配点数"
-                >
-                  <PlusCircle size={16} />
-                </button>
-              )}
-            </div>
-        ))}
+      {/* 属性雷达图 */}
+      <div style={{ marginTop: '0.5rem' }}>
+        <AttributeRadar
+          attributes={attributes}
+          freePoints={freePoints}
+          onAllocate={allocatePoints}
+        />
       </div>
       
       {player.level > 1 && (
@@ -125,8 +102,8 @@ export default function PlayerStatus() {
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
         <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>武学与宝具羁绊</h4>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.85rem' }}>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
           {['inner', 'outer', 'motion', 'ultimate'].map(type => {
             const typeName = type === 'inner' ? '内功' : type === 'outer' ? '外功' : type === 'motion' ? '轻功' : '绝学';
             const available = skills.filter(sId => SKILLS_DB.find(s => s.id === sId)?.type === type);
@@ -134,12 +111,12 @@ export default function PlayerStatus() {
             const masteryInfo = equippedId ? getSkillMastery(equippedId, player.skillMastery) : null;
             const nextTier = masteryInfo ? MASTERY_TIERS.find(t => t.minWins > masteryInfo.wins) : null;
             return (
-               <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                 <span style={{ color: 'var(--text-muted)' }}>{typeName}槽位</span>
-                 <select 
-                    value={equippedSkills[type] || ''} 
+               <div key={type} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                 <span style={{ color: 'var(--text-muted)', minWidth: '50px' }}>{typeName}</span>
+                 <select
+                    value={equippedSkills[type] || ''}
                     onChange={e => equipSkill(type, e.target.value || null)}
-                    style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px' }}
+                    style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px', minWidth: 0 }}
                  >
                    <option value="">--空--</option>
                    {available.map(sId => {
@@ -150,17 +127,14 @@ export default function PlayerStatus() {
                    })}
                  </select>
                  {masteryInfo && masteryInfo.wins > 0 && (
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                     <span style={{
-                       fontSize: '0.72rem', padding: '1px 5px', borderRadius: '3px',
-                       background: masteryInfo.label ? 'rgba(250,204,21,0.15)' : 'rgba(255,255,255,0.07)',
-                       color: masteryInfo.label ? '#facc15' : '#888',
-                       border: `1px solid ${masteryInfo.label ? '#facc15' : '#444'}`
-                     }}>
-                       {masteryInfo.label ? `【${masteryInfo.label}】` : '初习'} {masteryInfo.wins}胜
-                       {nextTier ? ` / 下阶 ${nextTier.minWins}胜` : ' (满级)'}
-                     </span>
-                   </div>
+                   <span style={{
+                     fontSize: '0.7rem', padding: '2px 6px', borderRadius: '3px', whiteSpace: 'nowrap',
+                     background: masteryInfo.label ? 'rgba(250,204,21,0.15)' : 'rgba(255,255,255,0.07)',
+                     color: masteryInfo.label ? '#facc15' : '#888',
+                     border: `1px solid ${masteryInfo.label ? '#facc15' : '#444'}`
+                   }}>
+                     {masteryInfo.wins}胜{nextTier ? `/下${nextTier.minWins}` : '满'}
+                   </span>
                  )}
                </div>
             );

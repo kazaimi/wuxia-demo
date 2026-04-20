@@ -132,7 +132,8 @@ export const useGameStore = create((set, get) => ({
     secretRealmAttempts: 0, dailyDebuffs: [], silver: 0,
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
     attributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
-    skills: ['s1'], 
+    permanentAttributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
+    skills: ['s1'],
     treasures: [],
     equippedSkills: { inner: null, outer: 's1', motion: null, ultimate: null },
     equippedTreasure: null
@@ -182,6 +183,7 @@ export const useGameStore = create((set, get) => ({
          if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
          if (!playerData.skillMastery) playerData.skillMastery = {};
+         if (!playerData.permanentAttributes) playerData.permanentAttributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
@@ -343,13 +345,16 @@ export const useGameStore = create((set, get) => ({
   // 直接增加属性（黑市大补丸等奖励，不消耗 freePoints）
   addAttributes: (attrBoosts) => set((state) => {
     const newAttrs = { ...state.player.attributes };
+    const newPermAttrs = { ...(state.player.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 }) };
     Object.entries(attrBoosts).forEach(([key, val]) => {
       newAttrs[key] = (newAttrs[key] || 0) + val;
+      newPermAttrs[key] = (newPermAttrs[key] || 0) + val;
     });
     const newMaxHp = calculateMaxHp(state.player.level, newAttrs.con);
     const p = {
       ...state.player,
       attributes: newAttrs,
+      permanentAttributes: newPermAttrs,
       maxHp: newMaxHp,
       hp: newMaxHp,
     };
@@ -361,8 +366,10 @@ export const useGameStore = create((set, get) => ({
     const p = { ...state.player };
     const totalPoints = INITIAL_POINTS + (p.level - 1) * POINTS_PER_LEVEL;
     p.freePoints = totalPoints;
-    p.attributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
-    p.maxHp = calculateMaxHp(p.level, 0);
+    // 保留永久属性加成
+    const permAttrs = p.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+    p.attributes = { ...permAttrs };
+    p.maxHp = calculateMaxHp(p.level, permAttrs.con);
     p.hp = p.maxHp;
     if (socket) socket.emit('update_player', p);
     return { player: p };
@@ -387,12 +394,14 @@ export const useGameStore = create((set, get) => ({
   generateTasks: () => set((state) => {
     const tasks = [];
     const attrs = Object.keys(ATTR_MAP);
-    
-    // 方案一：定向生成不同难度的星级配置 (总计 4 个任务)
+
+    // 定向生成不同难度的星级配置 (总计 6 个任务)
     const starConfigs = [
+      Math.random() > 0.5 ? 1 : 2, // 1个[低星数] (1~2星随机)
       Math.random() > 0.5 ? 1 : 2, // 1个[低星数] (1~2星随机)
       3,                           // 第1个[中等星数] (固定3星)
       3,                           // 第2个[中等星数] (固定3星)
+      Math.random() > 0.8 ? 5 : 4, // 1个[高星数] (80%出4星，20%拼脸出5星)
       Math.random() > 0.8 ? 5 : 4  // 1个[高星数] (80%出4星，20%拼脸出5星)
     ];
 
