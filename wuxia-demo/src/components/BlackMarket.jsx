@@ -15,8 +15,8 @@ export default function BlackMarket({ onClose }) {
   useEffect(() => {
      // Generate random items for today
      const items = [
-       { id: 'item_coffee', name: '【特供】橙C美式', price: 29, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee />, type: 'coffee' },
-       { id: 'item_purify', name: '【圣物】净心符', price: 15, desc: '焚香沐浴，驱散所有恶兆缠身，恢复清明心智！', icon: <Sparkles color="#a855f7" />, type: 'purify' },
+       { id: 'item_coffee', name: '【特供】橙C美式', price: 99, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee />, type: 'coffee' },
+       { id: 'item_purify', name: '【圣物】净心符', price: 55, desc: '焚香沐浴，驱散所有恶兆缠身，恢复清明心智！', icon: <Sparkles color="#a855f7" />, type: 'purify' },
        { id: 'item_box1', name: '破旧的残卷箱', price: 8, desc: '随机获得一本入门外功或内功(必定非绝学)。', icon: <Package />, type: 'skill_box1' },
        { id: 'item_drug', name: '十全大补丸', price: 10, desc: '仙人秘制，随机永久增加3~5项基础属性各1~3点，立竿见影！', icon: <ShoppingBag />, type: 'attr_drug' },
        { id: 'item_box2', name: '传说的盲盒', price: 50, desc: '随机获得一件史诗或传说宝具！', icon: <Package color="var(--primary)" />, type: 'treasure_box' },
