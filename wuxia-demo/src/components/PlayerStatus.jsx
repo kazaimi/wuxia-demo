@@ -110,61 +110,82 @@ export default function PlayerStatus() {
       )}
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>✦ 武学与宝具羁绊 ✦</h4>
+        <h4 style={{ fontSize: '1rem', marginBottom: '0.8rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>✦ 武学与宝具羁绊 ✦</h4>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9rem' }}>
           {['inner', 'outer', 'motion', 'ultimate'].map(type => {
             const typeName = type === 'inner' ? '内功' : type === 'outer' ? '外功' : type === 'motion' ? '轻功' : '绝学';
+            const typeIcon = type === 'inner' ? '☯' : type === 'outer' ? '⚔' : type === 'motion' ? '💨' : '⚡';
+            const typeColor = type === 'inner' ? 'var(--jade)' : type === 'outer' ? 'var(--crimson)' : type === 'motion' ? 'var(--primary)' : 'var(--gold)';
             const available = skills.filter(sId => SKILLS_DB.find(s => s.id === sId)?.type === type);
             const equippedId = equippedSkills[type];
             const masteryInfo = equippedId ? getSkillMastery(equippedId, player.skillMastery) : null;
             const nextTier = masteryInfo ? MASTERY_TIERS.find(t => t.minWins > masteryInfo.wins) : null;
+            const equippedSkill = equippedId ? getSkillInfo(equippedId) : null;
             return (
-               <div key={type} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                 <span style={{ color: 'var(--text-muted)', minWidth: '50px' }}>{typeName}</span>
+               <div key={type} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', border: equippedId ? `1px solid ${typeColor}` : '1px solid transparent' }}>
+                 <span style={{ color: typeColor, minWidth: '65px', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                   <span style={{ fontSize: '1rem' }}>{typeIcon}</span> {typeName}
+                 </span>
                  <select
                     value={equippedSkills[type] || ''}
                     onChange={e => equipSkill(type, e.target.value || null)}
                     className="wuxia-select"
-                    style={{ flex: 1, minWidth: 0 }}
+                    style={{ flex: 1, minWidth: 0, fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}
                  >
-                   <option value="">--空--</option>
+                   <option value="">── 空缺 ──</option>
                    {available.map(sId => {
                      const sk = getSkillInfo(sId);
                      const { wins, label } = getSkillMastery(sId, player.skillMastery);
-                     const suffix = label ? ` [${label}]` : wins > 0 ? ` (${wins}胜)` : '';
-                     return <option key={sId} value={sId}>{sk?.name}{suffix}</option>;
+                     const suffix = label ? `「${label}」` : wins > 0 ? `(${wins}胜)` : '';
+                     return <option key={sId} value={sId}>{sk?.name} {suffix}</option>;
                    })}
                  </select>
-                 {masteryInfo && masteryInfo.wins > 0 && (
+                 {equippedSkill && (
                    <span style={{
-                     fontSize: '0.7rem', padding: '2px 6px', borderRadius: '3px', whiteSpace: 'nowrap',
-                     background: masteryInfo.label ? 'rgba(250,204,21,0.15)' : 'rgba(255,255,255,0.07)',
-                     color: masteryInfo.label ? '#facc15' : '#888',
-                     border: `1px solid ${masteryInfo.label ? '#facc15' : '#444'}`
+                     fontSize: '0.75rem', padding: '3px 8px', borderRadius: '4px', whiteSpace: 'nowrap',
+                     background: `${typeColor}20`,
+                     color: typeColor,
+                     border: `1px solid ${typeColor}50`,
+                     fontFamily: '"Ma Shan Zheng", cursive'
                    }}>
-                     {masteryInfo.wins}胜{nextTier ? `/下${nextTier.minWins}` : '满'}
+                     {masteryInfo?.wins || 0}胜
                    </span>
                  )}
                </div>
             );
           })}
         </div>
-        
-        <div style={{ marginTop: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-           <span style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive' }}>✦ 本命宝具 ✦</span>
+
+        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
+           <span style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+             <span style={{ fontSize: '1.1rem' }}>💎</span> ✦ 本命宝具 ✦
+           </span>
            <select
               value={equippedTreasure || ''}
               onChange={e => equipTreasure(e.target.value || null)}
               className="wuxia-select"
-              style={{ border: '1px solid var(--gold)' }}
+              style={{ border: '1px solid var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px', padding: '10px 12px' }}
            >
-              <option value="">--无羁绊--</option>
+              <option value="">── 无羁绊 ──</option>
               {(treasures || []).map(tId => {
                  const t = TREASURES_DB?.find(tr => tr.id === tId);
-                 return <option key={tId} value={tId}>{t ? `[${t.rarity}] ${t.name}` : tId}</option>;
+                 const rarityIcon = t?.rarity === '神话' ? '🌟' : t?.rarity === '传说' ? '✨' : t?.rarity === '史诗' ? '💜' : t?.rarity === '稀有' ? '💙' : '🤍';
+                 return <option key={tId} value={tId}>{t ? `${rarityIcon} ${t.name}` : tId}</option>;
               })}
            </select>
+           {equippedTreasure && (() => {
+              const t = TREASURES_DB?.find(tr => tr.id === equippedTreasure);
+              if (!t) return null;
+              const rarityColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#7c3aed', '稀有': '#3b82f6', '普通': '#9ca3af' };
+              return (
+                <div style={{ marginTop: '4px', padding: '8px 12px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '6px', border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+                  <span style={{ fontSize: '0.8rem', color: rarityColors[t.rarity] || 'var(--text-muted)', fontFamily: '"Ma Shan Zheng", cursive' }}>
+                    「{t.rarity}」{t.name}
+                  </span>
+                </div>
+              );
+           })()}
         </div>
       </div>
     </div>
