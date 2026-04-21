@@ -49,8 +49,8 @@ function App() {
       <div style={{ textAlign: 'center', marginBottom: '2rem', position: 'relative' }}>
         <div style={{
           fontFamily: '"Ma Shan Zheng", "Zhi Mang Xing", cursive',
-          fontSize: '3.2rem',
-          letterSpacing: '12px',
+          fontSize: 'clamp(1.8rem, 5vw, 3.2rem)',
+          letterSpacing: 'clamp(4px, 2vw, 12px)',
           background: 'linear-gradient(135deg, #d4af37 0%, #fff5d4 50%, #d4af37 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -60,16 +60,16 @@ function App() {
           大乱斗武侠
         </div>
         <div style={{
-          fontSize: '1rem',
-          letterSpacing: '4px',
+          fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
+          letterSpacing: 'clamp(2px, 1vw, 4px)',
           color: '#d4af37',
           fontFamily: '"Ma Shan Zheng", cursive',
           opacity: 0.8
         }}>
           ═══ v1.5 一掷千金 ═══
         </div>
-        {/* 装饰性剑纹 */}
-        <div style={{
+        {/* 装饰性剑纹 - 仅PC端显示 */}
+        <div className="sword-decoration-left" style={{
           position: 'absolute',
           top: '50%',
           left: '10%',
@@ -77,9 +77,10 @@ function App() {
           width: '60px',
           height: '2px',
           background: 'linear-gradient(90deg, transparent, var(--gold))',
-          opacity: 0.5
+          opacity: 0.5,
+          display: 'none'
         }} />
-        <div style={{
+        <div className="sword-decoration-right" style={{
           position: 'absolute',
           top: '50%',
           right: '10%',
@@ -87,7 +88,8 @@ function App() {
           width: '60px',
           height: '2px',
           background: 'linear-gradient(90deg, var(--gold), transparent)',
-          opacity: 0.5
+          opacity: 0.5,
+          display: 'none'
         }} />
       </div>
 

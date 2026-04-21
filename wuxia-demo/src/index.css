@@ -395,6 +395,111 @@ select.wuxia-select:focus {
     0 0 20px rgba(212, 175, 55, 0.2);
 }
 
+/* 响应式设计 - 移动端适配 */
+@media screen and (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  /* 标题缩小 */
+  .wuxia-title {
+    font-size: 2rem;
+    letter-spacing: 4px;
+  }
+
+  .wuxia-title::before,
+  .wuxia-title::after {
+    display: none;
+  }
+
+  /* 玻璃面板调整 */
+  .glass-panel {
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  /* 按钮调整 */
+  button.btn-primary {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+  }
+
+  /* 输入框调整 */
+  input.wuxia-input,
+  select.wuxia-select {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* 隐藏角落装饰 */
+  .corner-decoration {
+    display: none;
+  }
+
+  /* 标签调整 */
+  .wuxia-tag {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  /* 移动端进度条 */
+  .wuxia-progress {
+    height: 6px;
+  }
+
+  /* 移动端卡片 */
+  .wuxia-card {
+    padding: 0.8rem !important;
+  }
+
+  /* 移动端字体 */
+  body {
+    font-size: 14px;
+  }
+
+  /* 折叠面板样式 */
+  details summary {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[open] summary::after {
+    content: ' ▼';
+    font-size: 0.7rem;
+  }
+
+  details:not([open]) summary::after {
+    content: ' ▶';
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-container {
+    padding: 0.8rem;
+  }
+
+  .wuxia-title {
+    font-size: 1.6rem;
+  }
+
+  button.btn-primary {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* 超小屏幕隐藏装饰线 */
+  .sword-decoration-left,
+  .sword-decoration-right {
+    display: none !important;
+  }
+}
+
 /* 装饰性角标 */
 .corner-decoration {
   position: absolute;
