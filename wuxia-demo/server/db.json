@@ -564,9 +564,10 @@
     "taskCount": 35,
     "encountersToday": 1,
     "lastTaskDate": "Tue Apr 21 2026",
-    "secretRealmAttempts": 1,
+    "secretRealmAttempts": 2,
     "dailyDebuffs": [
-      "血枯劫"
+      "血枯劫",
+      "心魔劫"
     ],
     "hp": 430,
     "maxHp": 430,
@@ -597,11 +598,11 @@
       "ultimate": "s_kuihua"
     },
     "equippedTreasure": "t11",
-    "id": "SATaGAxKixKZuaELAAAv",
+    "id": "FI5uiHNEJY63Vx_FAAAD",
     "isBattling": false,
     "rankIndex": 61,
-    "dailyActivity": 215,
-    "silver": 68,
+    "dailyActivity": 230,
+    "silver": 47,
     "skillMastery": {},
     "permanentAttributes": {
       "con": 0,
