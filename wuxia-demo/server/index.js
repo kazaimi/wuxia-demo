@@ -4,6 +4,10 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -11,8 +15,9 @@ app.use(cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } });
 
-const DB_FILE = path.join(process.cwd(), 'db.json');
-const AUCTION_HISTORY_FILE = path.join(process.cwd(), 'auction_history.json');
+// 使用 __dirname 获取 server 目录的绝对路径
+const DB_FILE = path.join(__dirname, 'db.json');
+const AUCTION_HISTORY_FILE = path.join(__dirname, 'auction_history.json');
 let realPlayersDB = [];
 let auctionHistory = [];
 
@@ -147,21 +152,25 @@ io.on('connection', (socket) => {
   socket.on('player_login', (username) => {
       console.log(`[入局提醒] 大侠 【${username}】 请求连接服务端...`);
       const dbPlayer = realPlayersDB.find(p => p.name === username);
+      console.log(`[调试] 数据库中查找玩家: ${username}, 结果: ${dbPlayer ? '找到 - ' + dbPlayer.level + '级' : '未找到'}`);
+      console.log(`[调试] 数据库中共有 ${realPlayersDB.length} 个玩家记录`);
       if (dbPlayer) {
          dbPlayer.id = socket.id;
-         dbPlayer.isBattling = false; 
-         
+         dbPlayer.isBattling = false;
+
          const existingIndex = players.findIndex(p => p.name === username);
          if (existingIndex >= 0) {
             players[existingIndex] = dbPlayer;
          } else {
             players.push(dbPlayer);
          }
-         
+
          socket.emit('login_success', dbPlayer);
+         console.log(`[调试] 已发送 login_success 给 ${username}`);
          io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
       } else {
          socket.emit('login_failed', { reason: '户籍未登入' });
+         console.log(`[调试] 已发送 login_failed, 玩家不存在`);
       }
   });
 
