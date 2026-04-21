@@ -60,13 +60,20 @@ export default function AuctionHouse() {
      if (auction.sellerName === player.name) {
         alert("你不能竞拍自己的物品！"); return;
      }
-     const bidPrice = parseInt(window.prompt(`当前最高价：${auction.price} 银两，出价人：${auction.highestBidder || '无'}\n你想出价多少银两？\n(你的余额：${player.silver || 0})`, auction.price + 1), 10);
-     if (!isNaN(bidPrice) && bidPrice > auction.price) {
-         if ((player.silver || 0) < bidPrice) {
-             alert("银两不足！"); return;
-         }
-         placeBid(auction.id, bidPrice);
+     if (auction.highestBidder === player.name) {
+        alert("你已经是当前最高出价者，无需重复出价！"); return;
      }
+     const minBid = auction.price + 1;
+     const bidPrice = parseInt(window.prompt(`当前最高价：${auction.price} 银两，出价人：${auction.highestBidder || '无'}\n你想出价多少银两？\n(最低出价：${minBid} 银两，你的余额：${player.silver || 0})`, minBid), 10);
+     if (isNaN(bidPrice)) return; // 用户取消
+     if (bidPrice <= auction.price) {
+        alert(`出价必须高于当前最高价 ${auction.price} 银两！`); return;
+     }
+     if ((player.silver || 0) < bidPrice) {
+        alert(`银两不足！你只有 ${player.silver || 0} 银两。`); return;
+     }
+     if (!window.confirm(`确认出价 ${bidPrice} 银两竞拍【${auction.itemName}】？\n注意：银两将暂时锁定，若被他人超出则退还。`)) return;
+     placeBid(auction.id, bidPrice);
   };
 
   const formatTime = (endTime) => {

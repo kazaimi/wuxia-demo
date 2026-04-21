@@ -13,10 +13,8 @@ const io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"
 
 const DB_FILE = path.join(process.cwd(), 'db.json');
 const AUCTION_HISTORY_FILE = path.join(process.cwd(), 'auction_history.json');
-const ACTIVE_AUCTIONS_FILE = path.join(process.cwd(), 'active_auctions.json');
 let realPlayersDB = [];
 let auctionHistory = [];
-let activeAuctions = [];
 
 const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (conAttr || 0) * 10);
 
@@ -50,31 +48,8 @@ if (fs.existsSync(AUCTION_HISTORY_FILE)) {
    }
 }
 
-if (fs.existsSync(ACTIVE_AUCTIONS_FILE)) {
-   try {
-      const loaded = JSON.parse(fs.readFileSync(ACTIVE_AUCTIONS_FILE, 'utf-8'));
-      // 过滤掉已过期的拍卖（服务器停机期间到期的拍卖）
-      const now = Date.now();
-      const expired = loaded.filter(a => now >= a.endTime);
-      activeAuctions = loaded.filter(a => now < a.endTime);
-      if (expired.length > 0) {
-         console.log(`[拍卖行] 服务器停机期间有 ${expired.length} 场拍卖已到期，将在首次心跳时结算。`);
-         // 把过期的也加回来，让定时任务统一结算
-         activeAuctions = loaded;
-      }
-      console.log(`[拍卖行] 从磁盘恢复 ${activeAuctions.length} 条进行中拍卖。`);
-   } catch(e) {
-      console.warn("Active auctions file damaged or unreadable, starting fresh.");
-      activeAuctions = [];
-   }
-}
-
 const saveAuctionHistory = () => {
    fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
-};
-
-const saveActiveAuctions = () => {
-   fs.writeFileSync(ACTIVE_AUCTIONS_FILE, JSON.stringify(activeAuctions, null, 2));
 };
 
 const saveDB = () => {
@@ -108,7 +83,7 @@ for (let i = 0; i < 60; i++) {
    const rankIndex = availableRank;
    availableRank++;
    
-   // 从原本每级9.3点的大魔王系数，砍到正常玩家的3点/级（外加初始10点分配）
+   // 从原本每级9.3点的大魔王系数，砍到正常玩家的 3点/级 (外加初始10点分配)
    const con = Math.floor(level * 0.6) + 2;
    const str = Math.floor(level * 0.8) + 3;
    const int = Math.floor(level * 0.6) + 2;
@@ -164,6 +139,7 @@ for (let i = 0; i < 60; i++) {
 let players = [...MOCK_PLAYERS];
 let battles = {};
 let winStreaks = {};
+let activeAuctions = [];
 
 io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
@@ -185,7 +161,7 @@ io.on('connection', (socket) => {
          socket.emit('login_success', dbPlayer);
          io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
       } else {
-         socket.emit('login_failed', { reason: '户籍未登记' });
+         socket.emit('login_failed', { reason: '户籍未登入' });
       }
   });
 
@@ -264,32 +240,46 @@ io.on('connection', (socket) => {
          if (existingIndex >= 0) players[existingIndex] = dbPlayer;
      }
      activeAuctions.push(auction);
-     saveActiveAuctions();
      io.emit('auction_update', activeAuctions);
-     let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${itemData.startPrice}银两！`;
+     let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${itemData.startPrice}银两！*`;
      io.emit('broadcast_message', msg);
   });
 
   socket.on('place_bid', ({ auctionId, bidderName, bidPrice }) => {
      const auction = activeAuctions.find(a => a.id === auctionId);
      const dbPlayer = realPlayersDB.find(p => p.name === bidderName);
-     if (auction && dbPlayer && dbPlayer.silver >= bidPrice && bidPrice > auction.price) {
-         if (auction.highestBidder) {
-            const prevBidder = realPlayersDB.find(p => p.name === auction.highestBidder);
-            if (prevBidder) prevBidder.silver += auction.price;
-         }
-         dbPlayer.silver -= bidPrice;
-         auction.highestBidder = bidderName;
-         auction.price = bidPrice;
-         saveDB();
-         saveActiveAuctions();
-         io.emit('auction_update', activeAuctions);
-         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
-         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
-         if (auction.highestBidder !== bidderName) {
-            io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
-         }
+
+     // 基本验证
+     if (!auction) return;
+     if (!dbPlayer) return;
+     if (auction.sellerName === bidderName) return; // 不能竞拍自己的物品
+     if (auction.highestBidder === bidderName) return; // 已经是最高出价者
+     if (bidPrice <= auction.price) return; // 出价必须高于当前价格
+     if (dbPlayer.silver < bidPrice) return; // 银两不足
+
+     // 退还前一个出价者的银两
+     if (auction.highestBidder) {
+        const prevBidder = realPlayersDB.find(p => p.name === auction.highestBidder);
+        if (prevBidder) {
+           prevBidder.silver += auction.price;
+           const prevIndex = players.findIndex(p => p.name === prevBidder.name);
+           if (prevIndex >= 0) players[prevIndex] = prevBidder;
+        }
      }
+
+     // 扣除当前出价者的银两
+     dbPlayer.silver -= bidPrice;
+
+     // 更新拍卖信息
+     auction.highestBidder = bidderName;
+     auction.price = bidPrice;
+
+     saveDB();
+     io.emit('auction_update', activeAuctions);
+
+     const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+     if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+     io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
   });
 
   socket.on('disconnect', () => {
@@ -444,24 +434,39 @@ setInterval(() => {
                    }
                    seller.silver += auction.price;
                    saveDB();
-                   io.emit('broadcast_message', `*【一锤定音】恭喜 [${buyer.name}] 以 ${auction.price} 银两拍得 [${auction.itemName}]！`);
+
+                   // 发送个人通知
+                   const buyerSocket = io.sockets.sockets.get(players.find(p => p.name === buyer.name)?.id);
+                   const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
+                   if (buyerSocket) buyerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'buyer' });
+                   if (sellerSocket) sellerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'seller' });
+
+                   io.emit('broadcast_message', `*【一锤定音】恭喜 [${buyer.name}] 以 ${auction.price} 银两拍得 [${auction.itemName}]！*`);
                    const sIndex = players.findIndex(p => p.name === seller.name);
                    if(sIndex >= 0) players[sIndex] = seller;
                    const bIndex = players.findIndex(p => p.name === buyer.name);
                    if(bIndex >= 0) players[bIndex] = buyer;
                }
            } else {
+               // 流拍处理
                const seller = realPlayersDB.find(p => p.name === auction.sellerName);
-               if (seller && auction.type === 'treasure') {
-                   if (!seller.treasures) seller.treasures = [];
-                   seller.treasures.push(auction.itemToTrade);
-               } else if (seller && auction.type === 'points') {
-                   if(auction.itemToTrade.item === 'task') seller.taskCount = Math.max(0, seller.taskCount - auction.itemToTrade.count);
-                   if(auction.itemToTrade.item === 'encounter') seller.encountersToday = Math.max(0, seller.encountersToday - auction.itemToTrade.count);
-                   if(auction.itemToTrade.item === 'realm') seller.secretRealmAttempts = Math.max(0, seller.secretRealmAttempts - auction.itemToTrade.count);
-               }
                if (seller) {
+                   if (auction.type === 'treasure') {
+                       if (!seller.treasures) seller.treasures = [];
+                       seller.treasures.push(auction.itemToTrade);
+                   } else if (auction.type === 'points') {
+                       // 归还疲劳点数：减少已使用计数
+                       if(auction.itemToTrade.item === 'task') seller.taskCount = Math.max(0, seller.taskCount - auction.itemToTrade.count);
+                       if(auction.itemToTrade.item === 'encounter') seller.encountersToday = Math.max(0, seller.encountersToday - auction.itemToTrade.count);
+                       if(auction.itemToTrade.item === 'realm') seller.secretRealmAttempts = Math.max(0, seller.secretRealmAttempts - auction.itemToTrade.count);
+                   }
+                   // 功法流拍不需要处理，因为原典保留在卖家手中
+
                    saveDB();
+                   // 发送流拍通知给卖家
+                   const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
+                   if (sellerSocket) sellerSocket.emit('auction_result', { success: false, itemName: auction.itemName, type: 'seller' });
+
                    const sIndex = players.findIndex(p => p.name === seller.name);
                    if(sIndex >= 0) players[sIndex] = seller;
                }
@@ -477,7 +482,6 @@ setInterval(() => {
        }
        return true;
    });
-   saveActiveAuctions();
    
    // Clear stale battles
    for (const roomId in battles) {

@@ -241,6 +241,17 @@ export const useGameStore = create((set, get) => ({
       });
       socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
       socket.on('auction_history', (history) => set({ auctionHistory: history }));
+      socket.on('auction_result', ({ success, itemName, price, type }) => {
+         if (success) {
+            if (type === 'buyer') {
+               alert(`🎉 恭喜！您以 ${price} 银两成功拍得【${itemName}】！`);
+            } else {
+               alert(`💰 成交！您的【${itemName}】以 ${price} 银两售出！`);
+            }
+         } else {
+            alert(`😔 遗憾！您的【${itemName}】流拍了，物品已退还。`);
+         }
+      });
       socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
     }
   },
