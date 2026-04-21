@@ -299,6 +299,12 @@ export const useGameStore = create((set, get) => ({
      return state;
   }),
 
+  clearDailyDebuffs: () => set((state) => {
+     const p = { ...state.player, dailyDebuffs: [] };
+     if (socket) socket.emit('update_player', p);
+     return { player: p };
+  }),
+
   equipSkill: (type, skillId) => set((state) => {
      const p = { ...state.player, equippedSkills: { ...state.player.equippedSkills, [type]: skillId } };
      if (socket) socket.emit('update_player', p);
