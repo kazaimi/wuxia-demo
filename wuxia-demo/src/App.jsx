@@ -40,29 +40,95 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* 顶部装饰线 */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)' }} />
+
       <BroadcastMarquee />
-      <h1 style={{ textAlign: 'center', marginBottom: '2rem', fontFamily: '"STKaiti", "KaiTi", serif', fontSize: '2.5rem', letterSpacing: '4px', filter: 'drop-shadow(0 0 5px rgba(0,242,254,0.3))' }}>
-         <span style={{ background: 'linear-gradient(to right, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>大乱斗武侠</span>
-         <span style={{ fontSize: '1.5rem', marginLeft: '15px', verticalAlign: 'middle', letterSpacing: '1px', color: '#fcd34d', WebkitTextFillColor: '#fcd34d' }}>v1.5 一掷千金</span>
-      </h1>
+
+      {/* 武侠风标题 */}
+      <div style={{ textAlign: 'center', marginBottom: '2rem', position: 'relative' }}>
+        <div style={{
+          fontFamily: '"Ma Shan Zheng", "Zhi Mang Xing", cursive',
+          fontSize: '3.2rem',
+          letterSpacing: '12px',
+          background: 'linear-gradient(135deg, #d4af37 0%, #fff5d4 50%, #d4af37 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.5))',
+          marginBottom: '0.5rem'
+        }}>
+          大乱斗武侠
+        </div>
+        <div style={{
+          fontSize: '1rem',
+          letterSpacing: '4px',
+          color: '#d4af37',
+          fontFamily: '"Ma Shan Zheng", cursive',
+          opacity: 0.8
+        }}>
+          ═══ v1.5 一掷千金 ═══
+        </div>
+        {/* 装饰性剑纹 */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '10%',
+          transform: 'translateY(-50%)',
+          width: '60px',
+          height: '2px',
+          background: 'linear-gradient(90deg, transparent, var(--gold))',
+          opacity: 0.5
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          right: '10%',
+          transform: 'translateY(-50%)',
+          width: '60px',
+          height: '2px',
+          background: 'linear-gradient(90deg, var(--gold), transparent)',
+          opacity: 0.5
+        }} />
+      </div>
+
       {!hasCreatedRole ? (
         showCreate ? (
            <CreateRole initialName={inputName.trim()} />
         ) : (
-           <div className="glass-panel animate-slide-up" style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', textAlign: 'center' }}>
-              <Target size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
-              <h2 style={{ marginBottom: '1.5rem', color: 'var(--text-main)', fontSize: '1.6rem' }}>武林户籍管属</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>输入尊姓大名。若您是隐世高手将自动读取您的深厚修为；若是新星即可入世扬名。</p>
+           <div className="glass-panel animate-slide-up" style={{ maxWidth: '420px', margin: '4rem auto', padding: '2.5rem', textAlign: 'center', position: 'relative' }}>
+              {/* 角落装饰 */}
+              <div className="corner-decoration top-left" />
+              <div className="corner-decoration top-right" />
+              <div className="corner-decoration bottom-left" />
+              <div className="corner-decoration bottom-right" />
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <Target size={56} color="var(--gold)" style={{ filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.5))' }} />
+              </div>
+              <h2 style={{
+                marginBottom: '1rem',
+                color: 'var(--gold)',
+                fontSize: '1.8rem',
+                fontFamily: '"Ma Shan Zheng", cursive',
+                letterSpacing: '4px'
+              }}>武林户籍管属</h2>
+              <div style={{ width: '60px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0 auto 1rem' }} />
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+                输入尊姓大名，若您是隐世高手将自动读取您的深厚修为；若是新星即可入世扬名。
+              </p>
               <form onSubmit={handleLogin}>
-                 <input 
-                   type="text" 
+                 <input
+                   type="text"
                    value={inputName}
                    onChange={e => setInputName(e.target.value)}
-                   placeholder="输入江湖名号..." 
+                   placeholder="请输入江湖名号..."
                    maxLength={12}
-                   style={{ width: '100%', padding: '1rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: '1.1rem', marginBottom: '1rem', textAlign: 'center' }}
+                   className="wuxia-input"
+                   style={{ width: '100%', marginBottom: '1rem', textAlign: 'center', fontSize: '1.1rem' }}
                  />
-                 <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.8rem', fontSize: '1.1rem' }}>踏入江湖 (Login / Join)</button>
+                 <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.9rem', fontSize: '1.2rem' }}>
+                   踏入江湖
+                 </button>
               </form>
            </div>
         )

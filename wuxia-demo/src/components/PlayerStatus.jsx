@@ -18,43 +18,47 @@ export default function PlayerStatus() {
     padding: '1.5rem',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem'
+    gap: '1rem',
+    position: 'relative'
   };
 
   return (
     <div style={bgStyle} className="glass-panel">
+      {/* 顶部金线装饰 */}
+      <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
+          <h3 style={{ fontSize: '1.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>
             <User size={24} /> {name}
           </h3>
-          {title && <span style={{ fontSize: '0.8rem', color: 'var(--warn)', border: '1px solid var(--warn)', padding: '2px 6px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>{title}</span>}
+          {title && <span className="wuxia-tag" style={{ marginTop: '6px' }}>{title}</span>}
         </div>
         <div style={{ fontWeight: 'bold', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-             <Star size={18} color="var(--warn)" /> Lv.{level}
+             <Star size={18} color="var(--gold)" /> <span style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive' }}>Lv.{level}</span>
           </div>
           <span className="glow-effect" style={{ fontSize: '0.8rem', color: freePoints > 0 ? 'var(--danger)' : 'var(--text-muted)', background: freePoints > 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.1)', padding:'2px 4px', borderRadius: '4px' }}>
             {freePoints > 0 ? `可用潜能: ${freePoints}` : freePoints < 0 ? `超支: ${-freePoints}` : '潜能已分配完毕'}
           </span>
         </div>
       </div>
-      
+
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-muted)' }}>
-          <span>状态生命</span>
+          <span>❖ 状态生命</span>
           <span>{hp} / {maxHp}</span>
         </div>
-        <div style={{ height: '8px', background: 'rgba(0,0,0,0.5)', borderRadius: '4px', overflow: 'hidden', marginBottom: '0.5rem' }}>
-          <div style={{ height: '100%', width: `${(hp / maxHp) * 100}%`, background: 'var(--success)' }} />
+        <div className="wuxia-progress" style={{ marginBottom: '0.5rem' }}>
+          <div className="wuxia-progress-bar" style={{ width: `${(hp / maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--crimson), #ff6b6b)' }} />
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px', color: 'var(--text-muted)' }}>
-          <span>修为阅历</span>
+          <span>❖ 修为阅历</span>
           <span>{Math.floor(exp)} / {maxExp}</span>
         </div>
-        <div style={{ height: '8px', background: 'rgba(0,0,0,0.5)', borderRadius: '4px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${Math.min(100, (exp / maxExp) * 100)}%`, background: 'linear-gradient(90deg, var(--primary), var(--secondary))', transition: 'width 0.3s ease' }} />
+        <div className="wuxia-progress">
+          <div className="wuxia-progress-bar" style={{ width: `${Math.min(100, (exp / maxExp) * 100)}%` }} />
         </div>
       </div>
 
@@ -106,7 +110,7 @@ export default function PlayerStatus() {
       )}
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>武学与宝具羁绊</h4>
+        <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>✦ 武学与宝具羁绊 ✦</h4>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
           {['inner', 'outer', 'motion', 'ultimate'].map(type => {
@@ -121,7 +125,8 @@ export default function PlayerStatus() {
                  <select
                     value={equippedSkills[type] || ''}
                     onChange={e => equipSkill(type, e.target.value || null)}
-                    style={{ flex: 1, background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--glass-border)', borderRadius: '4px', padding: '4px', minWidth: 0 }}
+                    className="wuxia-select"
+                    style={{ flex: 1, minWidth: 0 }}
                  >
                    <option value="">--空--</option>
                    {available.map(sId => {
@@ -147,11 +152,12 @@ export default function PlayerStatus() {
         </div>
         
         <div style={{ marginTop: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-           <span style={{ color: 'var(--warn)' }}>本命宝具</span>
-           <select 
-              value={equippedTreasure || ''} 
+           <span style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive' }}>✦ 本命宝具 ✦</span>
+           <select
+              value={equippedTreasure || ''}
               onChange={e => equipTreasure(e.target.value || null)}
-              style={{ background: 'rgba(0,0,0,0.5)', color: '#fff', border: '1px solid var(--warn)', borderRadius: '4px', padding: '4px' }}
+              className="wuxia-select"
+              style={{ border: '1px solid var(--gold)' }}
            >
               <option value="">--无羁绊--</option>
               {(treasures || []).map(tId => {

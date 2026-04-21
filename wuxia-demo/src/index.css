@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Zhi+Mang+Xing&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=swap');
 
 :root {
-  --bg-color: #0b0f19;
-  --glass-bg: rgba(18, 25, 43, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --bg-color: #0a0d14;
+  --glass-bg: rgba(18, 25, 43, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
   --primary: #00f2fe;
   --primary-glow: rgba(0, 242, 254, 0.4);
   --secondary: #4facfe;
@@ -12,6 +12,11 @@
   --danger: #ef4444;
   --success: #10b981;
   --warn: #f59e0b;
+  --gold: #d4af37;
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  --ink: #1a1a2e;
+  --jade: #00a86b;
+  --crimson: #dc143c;
 }
 
 * {
@@ -23,12 +28,57 @@
 
 body {
   background-color: var(--bg-color);
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(79, 172, 254, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.15), transparent 25%);
+  background-image:
+    /* 水墨晕染效果 */
+    radial-gradient(ellipse at 10% 20%, rgba(0, 168, 107, 0.08), transparent 40%),
+    radial-gradient(ellipse at 90% 80%, rgba(220, 20, 60, 0.06), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05), transparent 50%),
+    /* 原有渐变 */
+    radial-gradient(circle at 15% 50%, rgba(79, 172, 254, 0.12), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.12), transparent 25%);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* 武侠风背景纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L30 60M0 30L60 30' stroke='%23ffffff' stroke-opacity='0.02' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 浮动粒子效果 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(212, 175, 55, 0.4), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(0, 242, 254, 0.3), transparent),
+    radial-gradient(1px 1px at 60% 20%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 80% 60%, rgba(212, 175, 55, 0.3), transparent),
+    radial-gradient(1px 1px at 10% 80%, rgba(0, 168, 107, 0.4), transparent),
+    radial-gradient(2px 2px at 90% 10%, rgba(220, 20, 60, 0.3), transparent);
+  background-size: 200px 200px;
+  animation: floatParticles 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatParticles {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(-100px) translateX(50px); }
 }
 
 .app-container {
@@ -38,45 +88,138 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
-/* Glassmorphism utility */
+/* 武侠风装饰边框 */
+.wuxia-border {
+  position: relative;
+}
+
+.wuxia-border::before,
+.wuxia-border::after {
+  content: '❖';
+  position: absolute;
+  font-size: 1.2rem;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+.wuxia-border::before {
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.wuxia-border::after {
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 玻璃面板增强 - 武侠风 */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
+/* 玻璃面板角落装饰 */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
+}
+
+/* 武侠风标题 */
 .wuxia-title {
-  font-family: 'Zhi Mang Xing', cursive;
+  font-family: 'Ma Shan Zheng', 'Zhi Mang Xing', cursive;
   font-size: 3.5rem;
-  background: linear-gradient(to right, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--gold) 0%, #fff5d4 50%, var(--gold) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 8px var(--primary-glow));
+  filter: drop-shadow(0 0 12px var(--gold-glow));
   text-align: center;
   margin-bottom: 2rem;
+  letter-spacing: 8px;
+  position: relative;
 }
 
+/* 标题装饰线 */
+.wuxia-title::before,
+.wuxia-title::after {
+  content: '═══';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.5;
+  letter-spacing: 0;
+}
+
+.wuxia-title::before {
+  left: -80px;
+}
+
+.wuxia-title::after {
+  right: -80px;
+}
+
+/* 武侠风按钮 */
 button.btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(180, 140, 40, 0.9) 100%);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  color: #1a1a2e;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+  box-shadow:
+    0 4px 15px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+button.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+button.btn-primary:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 button.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
+  box-shadow:
+    0 6px 25px rgba(212, 175, 55, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 button.btn-primary:disabled {
@@ -85,7 +228,27 @@ button.btn-primary:disabled {
   box-shadow: none;
 }
 
-/* Animations */
+/* 次要按钮样式 */
+button.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  color: var(--gold);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+button.btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+/* 动画效果 */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -96,11 +259,175 @@ button.btn-primary:disabled {
 }
 
 @keyframes pulse-glow {
-  0% { box-shadow: 0 0 0 0 var(--primary-glow); }
-  70% { box-shadow: 0 0 20px 10px rgba(0, 242, 254, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+  0% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  70% { box-shadow: 0 0 25px 12px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
 }
 
 .glow-effect {
   animation: pulse-glow 2s infinite;
+}
+
+/* 剑气闪烁效果 */
+@keyframes swordQi {
+  0%, 100% { opacity: 0.3; transform: scaleX(1); }
+  50% { opacity: 0.8; transform: scaleX(1.1); }
+}
+
+.sword-qi {
+  animation: swordQi 3s ease-in-out infinite;
+}
+
+/* 水墨流动效果 */
+@keyframes inkFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.ink-flow {
+  background-size: 200% 200%;
+  animation: inkFlow 8s ease infinite;
+}
+
+/* 金光闪烁 */
+@keyframes goldShimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+.gold-shimmer {
+  animation: goldShimmer 2s ease-in-out infinite;
+}
+
+/* 武侠风分割线 */
+.wuxia-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.wuxia-divider::before {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  background: var(--bg-color);
+  padding: 0 0.5rem;
+}
+
+/* 武侠风标签 */
+.wuxia-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-family: 'Ma Shan Zheng', cursive;
+  letter-spacing: 1px;
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* 武侠风输入框 */
+input.wuxia-input,
+select.wuxia-select {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input.wuxia-input:focus,
+select.wuxia-select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* 进度条武侠风 */
+.wuxia-progress {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wuxia-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--jade), var(--gold));
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.wuxia-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 卡片悬浮效果 */
+.wuxia-card {
+  transition: all 0.3s ease;
+}
+
+.wuxia-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* 装饰性角标 */
+.corner-decoration {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  opacity: 0.5;
+}
+
+.corner-decoration.top-left {
+  top: 8px;
+  left: 8px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-decoration.top-right {
+  top: 8px;
+  right: 8px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-decoration.bottom-left {
+  bottom: 8px;
+  left: 8px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-decoration.bottom-right {
+  bottom: 8px;
+  right: 8px;
+  border-left: none;
+  border-top: none;
 }
