@@ -83,20 +83,20 @@
   },
   {
     "name": "芙蓉女侠",
-    "title": "🔥江湖劳模",
-    "level": 26,
-    "exp": 3829,
-    "maxExp": 6684,
-    "freePoints": 3,
-    "taskCount": 31,
-    "hp": 490,
-    "maxHp": 490,
+    "title": "⚡武林卷王",
+    "level": 28,
+    "exp": 1616,
+    "maxExp": 7539,
+    "freePoints": 0,
+    "taskCount": 35,
+    "hp": 630,
+    "maxHp": 630,
     "attributes": {
-      "con": 0,
-      "str": 0,
-      "int": 0,
-      "agi": 0,
-      "luk": 82
+      "con": 11,
+      "str": 20,
+      "int": 30,
+      "agi": 30,
+      "luk": 0
     },
     "skills": [
       "s1",
@@ -109,33 +109,41 @@
       "s_kuangfeng",
       "s_shihou",
       "s_yijin",
-      "s5"
+      "s5",
+      "s_shenxing"
     ],
     "equippedSkills": {
       "0": "s1",
       "1": "s4",
       "2": "s_xianglong",
-      "motion": "s4",
+      "motion": "s_shenxing",
       "ultimate": "s_kuihua",
       "outer": "s_taiji",
       "inner": "s_yijin"
     },
-    "id": "rhYazkDBTVtno3kTAAAB",
+    "id": "HnkvFiFnx8RZUwp3AAAX",
     "isBattling": false,
-    "rankIndex": 44,
-    "lastTaskDate": "Thu Apr 16 2026",
+    "rankIndex": 41,
+    "lastTaskDate": "Tue Apr 21 2026",
     "treasures": [
       "t8",
       "t10",
       "t3"
     ],
-    "encountersToday": 0,
-    "dailyActivity": 155,
-    "secretRealmAttempts": 0,
+    "encountersToday": 5,
+    "dailyActivity": 240,
+    "secretRealmAttempts": 1,
     "dailyDebuffs": [],
-    "silver": 92,
+    "silver": 168,
     "skillMastery": {},
-    "equippedTreasure": "t10"
+    "equippedTreasure": "t10",
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    }
   },
   {
     "name": "阿紫",
