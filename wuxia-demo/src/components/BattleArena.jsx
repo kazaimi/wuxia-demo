@@ -314,47 +314,52 @@ export default function BattleArena() {
   }, [inBattle, p1, p2, winner, player.name, roomId, sendBattleAction]);
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
-       <h2 style={{ fontSize: '1.8rem', color: 'var(--danger)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Swords /> 竞技对决
+    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+       {/* 顶部装饰 */}
+       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--crimson), transparent)', opacity: 0.5 }} />
+
+       <h2 style={{ fontSize: '1.8rem', color: 'var(--crimson)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
+        <Swords /> ✦ 竞技对决 ✦
       </h2>
       
       {!inBattle ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.1rem' }}>当前并未在切磋回合中。<br/>请前往【风云榜】中向真实的在线高手下发战书！</p>
+         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.8' }}>当前并未在切磋回合中。<br/>请前往【风云榜】中向真实的在线高手下发战书！</p>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
             <div style={{ width: '42%' }}>
-              <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>{p1?.name}</h4>
-              <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'var(--success)', transition: 'width 0.3s' }}></div>
+              <h4 style={{ color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p1?.name}</h4>
+              <div className="wuxia-progress">
+                <div className="wuxia-progress-bar" style={{ width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--jade), #22c55e)' }} />
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 7000)}</div>
+              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 7000)}</div>
             </div>
-            <h3 style={{ color: 'var(--danger)', alignSelf: 'center', filter: 'drop-shadow(0 0 5px var(--danger))' }}>VS</h3>
+            <h3 style={{ color: 'var(--crimson)', alignSelf: 'center', filter: 'drop-shadow(0 0 8px var(--crimson))', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.5rem' }}>⚔ VS ⚔</h3>
             <div style={{ width: '42%' }}>
-               <h4 style={{ color: 'var(--warn)', marginBottom: '0.5rem', textAlign: 'right' }}>{p2?.name}</h4>
-               <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden', transform: 'rotate(180deg)' }}>
-                <div style={{ height: '100%', width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'var(--danger)', transition: 'width 0.3s' }}></div>
+               <h4 style={{ color: 'var(--crimson)', marginBottom: '0.5rem', textAlign: 'right', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p2?.name}</h4>
+               <div className="wuxia-progress" style={{ transform: 'rotate(180deg)' }}>
+                <div className="wuxia-progress-bar" style={{ width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--crimson), #ef4444)' }} />
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 7000)}</div>
+              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 7000)}</div>
             </div>
           </div>
 
-          <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: 'monospace', fontSize: '1.1rem' }}>
+          <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem' }}>
             {logs.map((log, i) => (
-              <div key={i} style={{ 
-                color: log.includes('系统') ? 'var(--warn)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--danger)', 
+              <div key={i} style={{
+                color: log.includes('系统') ? 'var(--gold)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--crimson)',
                 fontWeight: log.includes('系统') ? 'bold' : 'normal',
                 whiteSpace: 'pre-line',
-                animation: 'slideUp 0.3s' 
+                animation: 'slideUp 0.3s',
+                padding: log.includes('系统') ? '8px' : '0',
+                background: log.includes('系统') ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                borderRadius: '4px'
               }}>
                 {log}
               </div>
             ))}
-            {/* Removed auto-scroll anchor */}
           </div>
 
           {winner && (

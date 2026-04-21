@@ -154,11 +154,14 @@ export default function SecretRealm() {
   };
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: '#0a0a0a', color: '#eee', border: '1px solid #333' }}>
-       <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Map /> 琅嬛福地 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>今日门票：{3 - (player.secretRealmAttempts || 0)}/3</span>
+    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, rgba(10,10,20,0.95), rgba(5,5,15,0.98))', color: '#eee', border: '1px solid rgba(192, 132, 252, 0.3)', position: 'relative' }}>
+       {/* 顶部装饰 */}
+       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, #c084fc, transparent)', opacity: 0.5 }} />
+
+       <h2 style={{ fontSize: '1.8rem', color: '#c084fc', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
+        <Map /> ✦ 琅嬛福地 ✦ <span style={{fontSize: '1rem', color: 'var(--text-muted)', letterSpacing: '1px'}}>今日门票：{3 - (player.secretRealmAttempts || 0)}/3</span>
       </h2>
-      
+
       {state === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
          <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '2' }}>
@@ -167,45 +170,45 @@ export default function SecretRealm() {
             你的每一次选择，都将深刻影响最终的因果与你能到达的深度。<br/>
             切记，见好就收方能全身而退；一味贪念造化，恐有万劫不复之厄！
          </p>
-         <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: '#fff', color: '#000', boxShadow: '0 0 15px rgba(255,255,255,0.3)' }}>踏入秘境</button>
+         <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff', boxShadow: '0 0 20px rgba(192, 132, 252, 0.4)' }}>✦ 踏入秘境 ✦</button>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(20,20,20,0.8)', padding: '1rem', borderRadius: '8px', border: '1px solid #333' }}>
-            <div>深径残尺：<span style={{color: 'var(--warn)', fontWeight: 'bold'}}>{depth}</span> 层</div>
-            <div>尘世因果：<span style={{color: karma > 0 ? 'var(--success)' : karma < 0 ? 'var(--danger)' : 'var(--text-main)', fontWeight: 'bold'}}>{karma > 0 ? '+'+karma : karma}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(20,20,30,0.8)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
+            <div>深径残尺：<span style={{color: 'var(--gold)', fontWeight: 'bold', fontFamily: '"Ma Shan Zheng", cursive'}}>{depth}</span> 层</div>
+            <div>尘世因果：<span style={{color: karma > 0 ? 'var(--jade)' : karma < 0 ? 'var(--crimson)' : 'var(--text-main)', fontWeight: 'bold'}}>{karma > 0 ? '+'+karma : karma}</span></div>
           </div>
 
-          <div style={{ flex: 1, background: '#050505', border: '1px solid #222', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: '"Courier New", Courier, monospace', fontSize: '1.1rem', lineHeight: '1.7', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)' }}>
+          <div style={{ flex: 1, background: 'rgba(5,5,10,0.9)', border: '1px solid rgba(192, 132, 252, 0.15)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px', fontFamily: '"Courier New", monospace', fontSize: '1rem', lineHeight: '1.7', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8)' }}>
             {logs.map((log, i) => (
-              <div key={i} style={{ 
-                color: log.startsWith('>') ? 'var(--warn)' : log.includes('【探险失败】') ? 'var(--danger)' : (log.includes('『') || log.includes('【退隐结算】')) ? 'var(--primary)' : '#ccc', 
+              <div key={i} style={{
+                color: log.startsWith('>') ? 'var(--gold)' : log.includes('【探险失败】') ? 'var(--crimson)' : (log.includes('『') || log.includes('【退隐结算】')) ? '#c084fc' : '#aaa',
                 whiteSpace: 'pre-line',
-                animation: 'fadeIn 0.4s' 
+                animation: 'fadeIn 0.4s'
               }}>
                 {log}
               </div>
             ))}
 
             {state === 'exploring' && currentEvent && (
-               <div style={{ marginTop: '2rem', animation: 'fadeIn 0.6s', borderTop: '1px dashed #444', paddingTop: '1.5rem' }}>
-                  <p style={{ color: '#fff', marginBottom: '2rem', textShadow: '0 0 5px rgba(255,255,255,0.2)' }}>{currentEvent.desc}</p>
+               <div style={{ marginTop: '2rem', animation: 'fadeIn 0.6s', borderTop: '1px dashed rgba(192, 132, 252, 0.3)', paddingTop: '1.5rem' }}>
+                  <p style={{ color: '#fff', marginBottom: '2rem', textShadow: '0 0 8px rgba(192, 132, 252, 0.3)', lineHeight: '1.8' }}>{currentEvent.desc}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                      {currentEvent.choices.map((c, i) => {
                         if (c.isHidden && c.isHidden(player)) return null;
                         return (
                            <button key={i} onClick={() => handleChoice(c)} style={{
-                              background: '#1a1a1a', border: '1px solid #444', color: '#ddd', padding: '1rem', textAlign: 'left', cursor: 'pointer', borderRadius: '4px',
-                              fontFamily: '"Courier New", Courier, monospace', transition: 'all 0.2s', fontSize: '1rem'
-                           }} onMouseOver={(e)=>e.target.style.background='#2a2a2a'} onMouseOut={(e)=>e.target.style.background='#1a1a1a'}>
+                              background: 'rgba(30,30,50,0.8)', border: '1px solid rgba(192, 132, 252, 0.3)', color: '#ddd', padding: '1rem', textAlign: 'left', cursor: 'pointer', borderRadius: '6px',
+                              fontFamily: '"Ma Shan Zheng", cursive', transition: 'all 0.2s', fontSize: '1rem', letterSpacing: '1px'
+                           }} onMouseOver={(e)=>{e.target.style.background='rgba(50,50,80,0.9)'; e.target.style.borderColor='#c084fc'}} onMouseOut={(e)=>{e.target.style.background='rgba(30,30,50,0.8)'; e.target.style.borderColor='rgba(192, 132, 252, 0.3)'}}>
                               {c.text}
                            </button>
                         );
                      })}
                      <button onClick={() => endExploration(depth, karma, false)} style={{
-                        background: 'transparent', border: '1px dashed var(--warn)', color: 'var(--warn)', padding: '1rem', textAlign: 'center', cursor: 'pointer', borderRadius: '4px',
-                        fontFamily: '"Courier New", Courier, monospace', marginTop: '1.5rem', fontSize: '0.9rem'
-                     }} onMouseOver={(e)=>e.target.style.background='rgba(250, 204, 21, 0.1)'} onMouseOut={(e)=>e.target.style.background='transparent'}>
+                        background: 'transparent', border: '1px dashed var(--gold)', color: 'var(--gold)', padding: '1rem', textAlign: 'center', cursor: 'pointer', borderRadius: '6px',
+                        fontFamily: '"Ma Shan Zheng", cursive', marginTop: '1.5rem', fontSize: '0.9rem', letterSpacing: '1px'
+                     }} onMouseOver={(e)=>e.target.style.background='rgba(212, 175, 55, 0.1)'} onMouseOut={(e)=>e.target.style.background='transparent'}>
                         <DoorOpen size={16} style={{display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px'}}/> [见好就收，遁出秘境]
                      </button>
                   </div>
@@ -215,7 +218,7 @@ export default function SecretRealm() {
           </div>
 
           {state === 'result' && (
-            <button className="btn-primary" style={{ marginTop: '1.5rem', alignSelf: 'center', padding: '1rem 3rem', background: '#ccc', color: '#000' }} onClick={() => { setState('idle'); setLogs([]); }}>离开福地</button>
+            <button className="btn-primary" style={{ marginTop: '1.5rem', alignSelf: 'center', padding: '1rem 3rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff' }} onClick={() => { setState('idle'); setLogs([]); }}>离开福地</button>
           )}
         </div>
       )}

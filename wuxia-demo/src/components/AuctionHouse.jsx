@@ -79,34 +79,37 @@ export default function AuctionHouse() {
   };
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
-       <h2 style={{ fontSize: '1.8rem', color: '#facc15', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-         <Gavel /> 玩家拍卖行 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>万金散尽还复来</span>
+    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+       {/* 顶部装饰 */}
+       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
+
+       <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
+         <Gavel /> ✦ 玩家拍卖行 ✦ <span style={{fontSize: '0.9rem', color: 'var(--text-muted)', letterSpacing: '1px'}}>万金散尽还复来</span>
        </h2>
-       
-       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>
-          <button onClick={()=>setTab('market')} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? '#facc15' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>竞拍大厅</button>
-          <button onClick={()=>setTab('sell')} style={{ background: 'transparent', border: 'none', color: tab === 'sell' ? '#facc15' : '#888', fontWeight: tab === 'sell'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>上架拍卖</button>
-          <button onClick={()=>setTab('history')} style={{ background: 'transparent', border: 'none', color: tab === 'history' ? '#facc15' : '#888', fontWeight: tab === 'history'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>拍卖记录</button>
-          <div style={{ marginLeft: 'auto', color: '#bbb' }}>我的银两: <span style={{ color: '#fff', fontWeight: 'bold' }}>{player.silver || 0}</span></div>
+
+       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(212, 175, 55, 0.3)', paddingBottom: '0.5rem' }}>
+          <button onClick={()=>setTab('market')} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? 'var(--gold)' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>竞拍大厅</button>
+          <button onClick={()=>setTab('sell')} style={{ background: 'transparent', border: 'none', color: tab === 'sell' ? 'var(--gold)' : '#888', fontWeight: tab === 'sell'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>上架拍卖</button>
+          <button onClick={()=>setTab('history')} style={{ background: 'transparent', border: 'none', color: tab === 'history' ? 'var(--gold)' : '#888', fontWeight: tab === 'history'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>拍卖记录</button>
+          <div style={{ marginLeft: 'auto', color: '#bbb', fontFamily: '"Ma Shan Zheng", cursive' }}>我的银两: <span style={{ color: 'var(--gold)', fontWeight: 'bold', fontSize: '1.2rem' }}>{player.silver || 0}</span></div>
        </div>
 
        {tab === 'market' && (
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {activeAuctions.length === 0 ? (
-               <div style={{ textAlign: 'center', color: '#555', marginTop: '4rem' }}>当前没有正在拍卖的物品。</div>
+               <div style={{ textAlign: 'center', color: '#555', marginTop: '4rem', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.1rem' }}>当前没有正在拍卖的物品。</div>
             ) : (
                activeAuctions.map(auc => (
-                  <div key={auc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#111', border: '1px solid #444', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+                  <div key={auc.id} className="wuxia-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(10,10,15,0.8)', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
                      <div>
-                        <h4 style={{ color: '#fcd34d', fontSize: '1.2rem', marginBottom: '4px' }}>{auc.itemName}</h4>
-                        <div style={{ fontSize: '0.85rem', color: '#888', display: 'flex', gap: '15px' }}>
-                           <span>卖家: {auc.sellerName}</span>
-                           <span>最新出价: <strong style={{ color: '#fff' }}>{auc.price} 银两</strong> ({auc.highestBidder || '暂无出价'})</span>
-                           <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12}/> {formatTime(auc.endTime)}</span>
+                        <h4 style={{ color: 'var(--gold)', fontSize: '1.2rem', marginBottom: '4px', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>{auc.itemName}</h4>
+                        <div style={{ fontSize: '0.85rem', color: '#888', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                           <span>卖家: <span style={{color: 'var(--text-main)'}}>{auc.sellerName}</span></span>
+                           <span>最新出价: <strong style={{ color: 'var(--gold)' }}>{auc.price} 银两</strong> ({auc.highestBidder || '暂无出价'})</span>
+                           <span style={{ color: 'var(--crimson)', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12}/> {formatTime(auc.endTime)}</span>
                         </div>
                      </div>
-                     <button className="btn-primary" onClick={() => handleBid(auc)} disabled={auc.sellerName === player.name} style={{ background: auc.sellerName === player.name ? '#333' : '#b45309', padding: '0.5rem 1rem' }}>
+                     <button className="btn-primary" onClick={() => handleBid(auc)} disabled={auc.sellerName === player.name} style={{ background: auc.sellerName === player.name ? '#333' : 'linear-gradient(135deg, var(--gold), #b45309)', padding: '0.5rem 1rem' }}>
                          竞拍
                      </button>
                   </div>
@@ -117,19 +120,19 @@ export default function AuctionHouse() {
 
        {tab === 'sell' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px' }}>
-             <p style={{ color: '#888', fontSize: '0.9rem' }}>说明: 上架后倒计时4小时。功法卖出后买家习得的为劣化xN版，原典保留在您手中；宝具与疲劳点数上架将立刻从你身上扣除，一旦流拍则退还。</p>
+             <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: '1.6' }}>说明: 上架后倒计时4小时。功法卖出后买家习得的为劣化xN版，原典保留在您手中；宝具与疲劳点数上架将立刻从你身上扣除，一旦流拍则退还。</p>
              <div>
-                <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem' }}>类别</label>
-                <select value={sellType} onChange={(e) => { setSellType(e.target.value); setSelectedItem(''); }} style={{ width: '100%', padding: '0.5rem', background: '#000', color: '#fff', border: '1px solid #555', borderRadius:'4px' }}>
+                <label style={{ display: 'block', color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive' }}>类别</label>
+                <select value={sellType} onChange={(e) => { setSellType(e.target.value); setSelectedItem(''); }} className="wuxia-select" style={{ width: '100%' }}>
                    <option value="skill">功法手抄本 (买方劣化削弱)</option>
                    <option value="treasure">罕世宝具 (失去该宝具)</option>
                    <option value="points">今日未用疲劳点数凭证</option>
                 </select>
              </div>
-             
+
              <div>
-                <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem' }}>选择物品</label>
-                <select value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#000', color: '#fff', border: '1px solid #555', borderRadius:'4px' }}>
+                <label style={{ display: 'block', color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive' }}>选择物品</label>
+                <select value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} className="wuxia-select" style={{ width: '100%' }}>
                    <option value="">请选择...</option>
                    {sellType === 'skill' && player.skills.map(s => {
                        const sk = getSkillInfo(s);
@@ -148,13 +151,13 @@ export default function AuctionHouse() {
                    )}
                 </select>
              </div>
-             
+
              <div>
-                <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem' }}>设置起拍价 (银两)</label>
-                <input type="number" min="1" value={startPrice} onChange={e => setStartPrice(e.target.value)} style={{ width: '100%', padding: '0.5rem', background: '#000', color: '#fff', border: '1px solid #555', borderRadius:'4px' }} />
+                <label style={{ display: 'block', color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive' }}>设置起拍价 (银两)</label>
+                <input type="number" min="1" value={startPrice} onChange={e => setStartPrice(e.target.value)} className="wuxia-input" style={{ width: '100%' }} />
              </div>
-             
-             <button className="btn-primary" onClick={handleList} style={{ padding: '1rem', background: '#854d0e', marginTop: '1rem', fontSize: '1.1rem' }}>
+
+             <button className="btn-primary" onClick={handleList} style={{ padding: '1rem', marginTop: '1rem', fontSize: '1.1rem' }}>
                  <Gavel size={18} style={{display:'inline', marginRight:'8px', verticalAlign:'text-bottom'}} />一锤定音 · 去竞拍
              </button>
           </div>
@@ -163,49 +166,42 @@ export default function AuctionHouse() {
        {tab === 'history' && (
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {auctionHistory.length === 0 ? (
-               <div style={{ textAlign: 'center', color: '#555', marginTop: '4rem' }}>暂无拍卖记录。</div>
+               <div style={{ textAlign: 'center', color: '#555', marginTop: '4rem', fontFamily: '"Ma Shan Zheng", cursive' }}>暂无拍卖记录。</div>
             ) : (
                auctionHistory.map(record => {
                   const isSuccess = record.status === 'success';
                   const endDate = new Date(record.endTime);
                   const dateStr = endDate.toLocaleDateString() + ' ' + endDate.toLocaleTimeString();
                   return (
-                     <div key={record.id} style={{ 
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                        background: record.sellerName === player.name || record.buyerName === player.name ? 'rgba(250, 204, 21, 0.05)' : '#111', 
-                        border: '1px solid #444', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' 
+                     <div key={record.id} style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        background: record.sellerName === player.name || record.buyerName === player.name ? 'rgba(212, 175, 55, 0.05)' : 'rgba(10,10,15,0.8)',
+                        border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem'
                      }}>
                         <div>
-                           <h4 style={{ 
-                              color: isSuccess ? '#fcd34d' : '#666', 
+                           <h4 style={{
+                              color: isSuccess ? 'var(--gold)' : '#666',
                               fontSize: '1.1rem', marginBottom: '4px',
-                              display: 'flex', alignItems: 'center', gap: '6px'
+                              display: 'flex', alignItems: 'center', gap: '6px',
+                              fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px'
                            }}>
-                              {isSuccess ? <CheckCircle2 size={16} color="#fcd34d" /> : <XCircle size={16} color="#666" />}
+                              {isSuccess ? <CheckCircle2 size={16} color="var(--gold)" /> : <XCircle size={16} color="#666" />}
                               {record.itemName}
                            </h4>
                            <div style={{ fontSize: '0.8rem', color: '#888', display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
                               <span>卖家: {record.sellerName}</span>
                               {isSuccess && <span>买家: {record.buyerName}</span>}
-                              <span>成交价: <strong style={{ color: isSuccess ? '#fff' : '#666' }}>
+                              <span>成交价: <strong style={{ color: isSuccess ? 'var(--gold)' : '#666' }}>
                                  {isSuccess ? `${record.finalPrice} 银两` : '流拍'}
                               </strong></span>
                               <span style={{ color: '#555' }}>{dateStr}</span>
                            </div>
                         </div>
                         {record.sellerName === player.name && (
-                           <div style={{ 
-                              padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', 
-                              background: 'rgba(250, 204, 21, 0.1)', color: '#fcd34d'
-                           }}>
-                              我是卖家
-                           </div>
+                           <div className="wuxia-tag">我是卖家</div>
                         )}
                         {record.buyerName === player.name && (
-                           <div style={{ 
-                              padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', 
-                              background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e'
-                           }}>
+                           <div style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', border: '1px solid #22c55e' }}>
                               我是买家
                            </div>
                         )}

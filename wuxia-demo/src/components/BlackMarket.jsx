@@ -74,38 +74,44 @@ export default function BlackMarket({ onClose }) {
   return (
     <div style={{
        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-       background: 'rgba(0,0,0,0.85)', zIndex: 9000,
+       background: 'rgba(0,0,0,0.9)', zIndex: 9000,
        display: 'flex', justifyContent: 'center', alignItems: 'center'
     }}>
       <div className="glass-panel" style={{
-         width: '90%', maxWidth: '600px', background: '#111', 
-         border: '1px solid var(--danger)', padding: '2rem', position: 'relative'
+         width: '90%', maxWidth: '600px', background: 'linear-gradient(180deg, rgba(30,10,10,0.95), rgba(15,5,5,0.98))',
+         border: '2px solid var(--crimson)', padding: '2rem', position: 'relative', borderRadius: '12px'
       }}>
-         <button onClick={onClose} style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
-             <X size={24} />
+         {/* 角落装饰 */}
+         <div className="corner-decoration top-left" style={{ borderColor: 'var(--crimson)' }} />
+         <div className="corner-decoration top-right" style={{ borderColor: 'var(--crimson)' }} />
+         <div className="corner-decoration bottom-left" style={{ borderColor: 'var(--crimson)' }} />
+         <div className="corner-decoration bottom-right" style={{ borderColor: 'var(--crimson)' }} />
+
+         <button onClick={onClose} style={{ position: 'absolute', top: '15px', right: '15px', background: 'transparent', border: '1px solid var(--crimson)', borderRadius: '50%', color: 'var(--crimson)', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <X size={20} />
          </button>
-         
-         <h2 style={{ color: 'var(--danger)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-             深渊黑市 <span style={{fontSize:'1rem', color:'#888'}}>一分钱难倒英雄汉</span>
+
+         <h2 style={{ color: 'var(--crimson)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
+             <ShoppingBag /> ✦ 深渊黑市 ✦ <span style={{fontSize:'1rem', color:'#888', letterSpacing: '1px'}}>一分钱难倒英雄汉</span>
          </h2>
-         <div style={{ marginBottom: '1.5rem', color: 'var(--warn)' }}>
-             当前携带银两：{player.silver || 0} 两
+         <div style={{ marginBottom: '1.5rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.1rem' }}>
+             当前携带银两：<span style={{ fontWeight: 'bold', fontSize: '1.3rem' }}>{player.silver || 0}</span> 两
          </div>
-         
+
          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '60vh', overflowY: 'auto' }}>
             {shopItems.map(item => (
-                <div key={item.id} style={{
-                    border: '1px dotted var(--glass-border)', padding: '1rem',
+                <div key={item.id} className="wuxia-card" style={{
+                    border: '1px solid rgba(220, 20, 60, 0.3)', padding: '1rem',
                     borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    background: 'linear-gradient(90deg, rgba(20,20,20,1) 0%, rgba(40,0,0,0.4) 100%)'
+                    background: 'linear-gradient(90deg, rgba(30,10,10,1) 0%, rgba(50,0,0,0.4) 100%)'
                 }}>
                     <div style={{ width: '70%' }}>
-                       <h4 style={{ color: item.type === 'coffee' ? '#f97316' : '#eee', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                       <h4 style={{ color: item.type === 'coffee' ? '#f97316' : 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>
                            {item.icon} {item.name}
                        </h4>
-                       <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '6px' }}>{item.desc}</p>
+                       <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '6px', lineHeight: '1.5' }}>{item.desc}</p>
                     </div>
-                    <button className="btn-primary" onClick={() => handleBuy(item)} style={{ background: 'var(--danger)', color: '#fff', padding: '0.6rem 1rem' }}>
+                    <button className="btn-primary" onClick={() => handleBuy(item)} style={{ background: 'linear-gradient(135deg, var(--crimson), #991b1b)', color: '#fff', padding: '0.6rem 1rem' }}>
                        {item.price} 银两
                     </button>
                 </div>

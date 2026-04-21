@@ -91,22 +91,25 @@ export default function TaskHall() {
   };
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* 顶部装饰 */}
+      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.8rem', color: 'var(--secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Target /> 悬赏大厅
+        <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
+          <Target /> ✦ 悬赏大厅 ✦
         </h2>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: player.taskCount >= 35 ? 'var(--danger)' : 'var(--warn)' }}>
+          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: player.taskCount >= 35 ? 'var(--danger)' : 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive' }}>
              [当日活跃: {player.taskCount} / 35 次]
           </span>
           <button className="btn-primary" onClick={generateTasks} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={16} /> 刷新榜单
+            <RefreshCw size={16} 刷新榜单 />
           </button>
         </div>
       </div>
-      
-      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+
+      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.6' }}>
         领取委托需要面对失败的风险，成功率与指定属性倾向强挂钩。不论成功失败都会扣除每日次数。
       </p>
       
@@ -119,32 +122,40 @@ export default function TaskHall() {
           showRate = Math.floor(Math.max(0.1, Math.min(0.95, showRate)) * 100);
 
           return (
-          <div key={task.id} style={{
+          <div key={task.id} className="wuxia-card" style={{
             padding: '1rem',
             background: task.completed ? 'rgba(0,0,0,0.5)' : 'var(--glass-bg)',
-            border: `1px solid ${task.completed ? 'var(--glass-border)' : (task.stars >= 4 ? 'var(--danger)' : 'var(--primary-glow)')}`,
-            borderRadius: '12px',
+            border: `1px solid ${task.completed ? 'var(--glass-border)' : (task.stars >= 4 ? 'var(--crimson)' : 'rgba(212, 175, 55, 0.3)')}`,
+            borderRadius: '8px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            transition: 'all 0.3s'
+            transition: 'all 0.3s',
+            position: 'relative'
           }}>
+            {/* 星级装饰 */}
+            {task.stars >= 4 && !task.completed && (
+              <div style={{ position: 'absolute', top: '-8px', right: '10px', background: 'var(--bg-color)', padding: '0 6px', color: 'var(--crimson)', fontSize: '0.8rem' }}>
+                {'★'.repeat(task.stars)}
+              </div>
+            )}
+
             <div>
-              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--danger)' : 'var(--text-main)') }}>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--crimson)' : 'var(--text-main)'), fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>
                 {task.title}
               </h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{task.desc}</p>
-              
+
               <div style={{ fontSize: '0.8rem', marginTop: '0.6rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ color: 'var(--warn)' }}><Gift size={14} style={{ verticalAlign: 'sub' }}/> +{task.expReward} EXP</span>
-                <span title="预估成功率" style={{ color: showRate > 60 ? 'var(--success)' : 'var(--danger)' }}>
+                <span style={{ color: 'var(--gold)' }}><Gift size={14} style={{ verticalAlign: 'sub' }}/> +{task.expReward} 修为</span>
+                <span title="预估成功率" style={{ color: showRate > 60 ? 'var(--jade)' : 'var(--crimson)' }}>
                   成功率: {showRate}%
                 </span>
               </div>
             </div>
-            
-            <button 
-              className="btn-primary" 
+
+            <button
+              className="btn-primary"
               onClick={() => handleAction(task)}
               disabled={task.completed || player.taskCount >= 35}
               style={{ padding: '0.5rem 1rem', filter: task.completed ? 'grayscale(1)' : 'none' }}
