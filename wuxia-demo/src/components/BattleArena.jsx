@@ -4,463 +4,297 @@ import { Swords } from 'lucide-react';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
-  const femaleKeywords = ['邀月', '灭绝', '童姥', '月', '仙', '姬', '娘', '姑', '妹', '姐', '女', '芳', '莲', '梅', '兰', '竹', '菊', '雪', '霜', '云', '霞', '玉', '珠', '翠', '红', '燕', '莺', '凤', '鸾', '娟', '婷', '婉', '柔', '嫣', '瑶', '薇', '蕾', '露', '涵', '晴', '雨', '烟', '琳', '瑾', '颖', '萱', '蕊', '黛', '芷', '芸', '梦', '舞', '琴'];
-  const maleKeywords = ['僧', '道', '侠', '峰', '靖', '过', '冲', '虚竹', '三丰', '重阳', '七公', '欧阳', '药师', '伯通', '鸠摩', '慕容', '春秋', '延庆', '不群', '冷禅', '平之', '青书', '我行', '东方', '清扬', '莫大', '正风', '曲洋', '向问天'];
+  const femaleEndings = ['月', '雪', '霜', '云', '霞', '玉', '珠', '翠', '红', '燕', '莺', '凤', '鸾', '娟', '婷', '婉', '柔', '嫣', '瑶', '薇', '蕾', '露', '涵', '晴', '雨', '烟', '琳', '瑾', '颖', '萱', '蕊', '黛', '芷', '芸', '梦', '舞', '琴', '仙', '姬', '娘', '姑', '妹', '姐', '女', '芳', '莲', '梅', '兰', '竹', '菊'];
+  const lastChar = name?.slice(-1) || '';
+  if (femaleEndings.includes(lastChar)) return 'female';
 
+  const femaleKeywords = ['邀月', '灭绝', '童姥', '小龙女', '黄蓉', '赵敏', '周芷若', '王语嫣', '阿朱', '阿紫', '任盈盈', '岳灵珊', '李莫愁', '郭芙', '郭襄', '穆念慈'];
   for (const keyword of femaleKeywords) {
     if (name?.includes(keyword)) return 'female';
   }
-  for (const keyword of maleKeywords) {
-    if (name?.includes(keyword)) return 'male';
-  }
-
-  const lastChar = name?.slice(-1) || '';
-  const femaleEndings = ['月', '雪', '霜', '云', '霞', '玉', '珠', '翠', '红', '燕', '莺', '凤', '鸾', '娟', '婷', '婉', '柔', '嫣', '瑶', '薇', '蕾', '露', '涵', '晴', '雨', '烟', '琳', '瑾', '颖', '萱', '蕊', '黛', '芷', '芸', '梦', '舞', '琴', '仙', '姬', '娘', '姑', '妹', '姐', '女', '芳', '莲', '梅', '兰', '竹', '菊'];
-  if (femaleEndings.includes(lastChar)) return 'female';
-
   return 'male';
 };
 
-// 精美武侠角色形象组件 - 参考剑网3/天刀风格
+// 太吾绘卷/鬼谷八荒风格角色卡片
 const WarriorAvatar = ({ player, isLeft }) => {
   if (!player) return null;
 
   const gender = useMemo(() => guessGenderByName(player.name), [player.name]);
   const isFemale = gender === 'female';
 
-  // 根据装备的宝物决定武器样式
+  // 武器信息
   const treasure = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
   const treasureEffect = treasure?.effect || '';
 
-  // 武器样式映射
-  const getWeaponStyle = () => {
+  const getWeaponInfo = () => {
     const weapons = {
-      'yiTian': { type: 'sword', name: '倚天剑', color: '#c9a227' },
-      'tuLong': { type: 'blade', name: '屠龙刀', color: '#8b0000' },
-      'xuanTie': { type: 'heavySword', name: '玄铁重剑', color: '#2d3748' },
-      'jinShe': { type: 'snakeSword', name: '金蛇剑', color: '#d4af37' },
-      'daGou': { type: 'staff', name: '打狗棒', color: '#8b4513' },
-      'dianXue': { type: 'pen', name: '判官笔', color: '#4a5568' },
-      'shengHuo': { type: 'token', name: '圣火令', color: '#dc2626' },
-      'jiMie': { type: 'darkSword', name: '绝世好剑', color: '#1a1a2e' },
-      'niePan': { type: 'relic', name: '达摩舍利', color: '#fbbf24' },
-      'ruanWei': { type: 'whip', name: '软猬甲', color: '#78350f' },
+      'yiTian': { name: '倚天剑', icon: '🗡️', color: '#c9a227' },
+      'tuLong': { name: '屠龙刀', icon: '⚔️', color: '#8b0000' },
+      'xuanTie': { name: '玄铁重剑', icon: '🗡️', color: '#4a5568' },
+      'jinShe': { name: '金蛇剑', icon: '🐍', color: '#d4af37' },
+      'daGou': { name: '打狗棒', icon: '🪄', color: '#8b4513' },
+      'dianXue': { name: '判官笔', icon: '✒️', color: '#4a5568' },
+      'shengHuo': { name: '圣火令', icon: '🔥', color: '#dc2626' },
+      'jiMie': { name: '绝世好剑', icon: '⚔️', color: '#6366f1' },
+      'niePan': { name: '达摩舍利', icon: '📿', color: '#fbbf24' },
+      'ruanWei': { name: '软猬甲', icon: '🛡️', color: '#78350f' },
     };
-    return weapons[treasureEffect] || { type: 'fist', name: '拳脚', color: '#d4af37' };
+    return weapons[treasureEffect] || { name: '拳脚', icon: '👊', color: '#d4af37' };
   };
 
-  const weapon = getWeaponStyle();
+  const weapon = getWeaponInfo();
 
-  // 根据等级决定服装颜色
-  const getRobeColors = () => {
+  // 等级决定边框和背景颜色
+  const getLevelStyle = () => {
     const level = player.level || 1;
-    if (level >= 90) return { primary: '#0f0f1a', secondary: '#1a1a2e', accent: '#ffd700', trim: '#c9a227', name: '神装' };
-    if (level >= 70) return { primary: '#1a365d', secondary: '#2c5282', accent: '#e2e8f0', trim: '#a0aec0', name: '锦衣' };
-    if (level >= 50) return { primary: '#1a202c', secondary: '#2d3748', accent: '#fc8181', trim: '#e53e3e', name: '战袍' };
-    if (level >= 30) return { primary: '#1d4044', secondary: '#234e52', accent: '#81e6d9', trim: '#38b2ac', name: '劲装' };
-    if (level >= 15) return { primary: '#2d2250', secondary: '#3c2a6e', accent: '#b794f4', trim: '#9f7aea', name: '道袍' };
-    return { primary: '#2d2d2d', secondary: '#3d3d3d', accent: '#a0a0a0', trim: '#808080', name: '布衣' };
+    if (level >= 90) return { border: '#ffd700', bg: 'linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)', rank: '神话' };
+    if (level >= 70) return { border: '#a855f7', bg: 'linear-gradient(180deg, #1e1a3d 0%, #0f0d1f 100%)', rank: '传说' };
+    if (level >= 50) return { border: '#f97316', bg: 'linear-gradient(180deg, #2d1f1a 0%, #1a120d 100%)', rank: '史诗' };
+    if (level >= 30) return { border: '#3b82f6', bg: 'linear-gradient(180deg, #1a2d3d 0%, #0d1a24 100%)', rank: '稀有' };
+    if (level >= 15) return { border: '#22c55e', bg: 'linear-gradient(180deg, #1a2d24 0%, #0d1a12 100%)', rank: '优秀' };
+    return { border: '#6b7280', bg: 'linear-gradient(180deg, #1f1f1f 0%, #0f0f0f 100%)', rank: '普通' };
   };
 
-  const robeColors = getRobeColors();
+  const levelStyle = getLevelStyle();
 
-  // 内功气场颜色
+  // 内功气场
   const innerSkill = player.equippedSkills?.inner;
-  let auraColor = 'rgba(212, 175, 55, 0.2)';
-  if (innerSkill === 's_yijin') auraColor = 'rgba(139, 92, 246, 0.25)';
-  else if (innerSkill === 's5') auraColor = 'rgba(251, 191, 36, 0.25)';
-  else if (innerSkill === 's_xixing') auraColor = 'rgba(220, 38, 38, 0.25)';
-  else if (innerSkill === 's_shihou') auraColor = 'rgba(234, 88, 12, 0.25)';
+  let auraStyle = {};
+  if (innerSkill === 's_yijin') auraStyle = { shadow: '0 0 30px rgba(139, 92, 246, 0.5)', glow: 'rgba(139, 92, 246, 0.3)' };
+  else if (innerSkill === 's5') auraStyle = { shadow: '0 0 30px rgba(251, 191, 36, 0.5)', glow: 'rgba(251, 191, 36, 0.3)' };
+  else if (innerSkill === 's_xixing') auraStyle = { shadow: '0 0 30px rgba(220, 38, 38, 0.5)', glow: 'rgba(220, 38, 38, 0.3)' };
+  else if (innerSkill === 's_shihou') auraStyle = { shadow: '0 0 30px rgba(234, 88, 12, 0.5)', glow: 'rgba(234, 88, 12, 0.3)' };
+  else auraStyle = { shadow: '0 0 20px rgba(212, 175, 55, 0.3)', glow: 'rgba(212, 175, 55, 0.2)' };
+
+  // 气血比例
+  const hpRatio = (player.hp || 0) / (player.maxHp || 7000);
 
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: '8px',
+      gap: '10px',
       transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
-      position: 'relative',
     }}>
-      {/* 气场光晕 */}
+      {/* 角色卡片 - 太吾绘卷风格 */}
       <div style={{
-        position: 'absolute',
-        width: '200px',
-        height: '280px',
-        top: '-30px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: `radial-gradient(ellipse at 50% 40%, ${auraColor}, transparent 70%)`,
-        filter: 'blur(20px)',
-        animation: 'auraPulse 3s ease-in-out infinite',
-        pointerEvents: 'none',
-      }} />
-
-      {/* 角色SVG - 参考剑网3风格 */}
-      <svg width="160" height="240" viewBox="0 0 160 240" style={{
-        filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.4))',
+        position: 'relative',
+        width: '180px',
+        height: '240px',
+        borderRadius: '8px',
+        background: levelStyle.bg,
+        border: `2px solid ${levelStyle.border}`,
+        boxShadow: auraStyle.shadow,
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
       }}>
-        <defs>
-          {/* 皮肤渐变 */}
-          <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f8e8d8" />
-            <stop offset="100%" stopColor="#e8d0b8" />
-          </linearGradient>
-
-          {/* 头发渐变 */}
-          <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1a1a2e" />
-            <stop offset="100%" stopColor="#0d0d1a" />
-          </linearGradient>
-
-          {/* 服装渐变 */}
-          <linearGradient id="robeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={robeColors.primary} />
-            <stop offset="50%" stopColor={robeColors.secondary} />
-            <stop offset="100%" stopColor={robeColors.primary} />
-          </linearGradient>
-
-          {/* 服装高光 */}
-          <linearGradient id="robeShine" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="transparent" />
-            <stop offset="40%" stopColor={robeColors.accent} stopOpacity="0.1" />
-            <stop offset="60%" stopColor={robeColors.accent} stopOpacity="0.05" />
-            <stop offset="100%" stopColor="transparent" />
-          </linearGradient>
-
-          {/* 内衬渐变 */}
-          <linearGradient id="innerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1a1a2e" />
-            <stop offset="100%" stopColor="#0d0d1a" />
-          </linearGradient>
-
-          {/* 腰带渐变 */}
-          <linearGradient id="beltGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={robeColors.trim} />
-            <stop offset="50%" stopColor={robeColors.accent} />
-            <stop offset="100%" stopColor={robeColors.trim} />
-          </linearGradient>
-
-          {/* 武器光效 */}
-          <filter id="weaponGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-
-          {/* 眼睛渐变 */}
-          <radialGradient id="eyeGrad" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="#3d2817" />
-            <stop offset="100%" stopColor="#1a1a2e" />
-          </radialGradient>
-        </defs>
-
-        {/* ========== 身体主体 ========== */}
-        <g>
-          {/* 后摆/披风 */}
-          <path
-            d={`M80 85
-                Q40 95 30 230
-                L130 230
-                Q120 95 80 85`}
-            fill="url(#robeGrad)"
-            opacity="0.9"
-          />
-
-          {/* 前摆 */}
-          <path
-            d={`M80 85
-                Q50 100 40 225
-                L120 225
-                Q110 100 80 85`}
-            fill="url(#robeGrad)"
-          />
-
-          {/* 衣服褶皱 */}
-          <path d="M50 120 Q55 160 45 220" stroke={robeColors.accent} strokeWidth="0.8" fill="none" opacity="0.2" />
-          <path d="M110 120 Q105 160 115 220" stroke={robeColors.accent} strokeWidth="0.8" fill="none" opacity="0.2" />
-          <path d="M80 90 L80 220" stroke={robeColors.trim} strokeWidth="0.5" opacity="0.3" />
-
-          {/* 领口 */}
-          <path
-            d={`M68 70 Q75 80 80 82 Q85 80 92 70
-                L88 65 Q80 72 72 65 Z`}
-            fill="url(#innerGrad)"
-            stroke={robeColors.trim}
-            strokeWidth="0.5"
-          />
-
-          {/* 肩部装饰 */}
-          <ellipse cx="50" cy="75" rx="12" ry="6" fill={robeColors.trim} opacity="0.6" />
-          <ellipse cx="110" cy="75" rx="12" ry="6" fill={robeColors.trim} opacity="0.6" />
-        </g>
-
-        {/* 腰带 */}
-        <g>
-          <rect x="45" y="135" width="70" height="14" fill="url(#beltGrad)" rx="2" />
-          {/* 腰饰 */}
-          <circle cx="80" cy="142" r="6" fill={robeColors.accent} stroke={robeColors.trim} strokeWidth="1" />
-          <rect x="76" y="138" width="8" height="8" fill={robeColors.trim} rx="1" />
-        </g>
-
-        {/* ========== 手臂 ========== */}
-        <g>
-          {/* 左臂 */}
-          <path
-            d={`M45 80 Q25 100 20 130 Q18 150 25 160`}
-            fill="url(#robeGrad)"
-            stroke={robeColors.trim}
-            strokeWidth="0.5"
-          />
-          {/* 左手 */}
-          <ellipse cx="25" cy="165" rx="8" ry="10" fill="url(#skinGrad)" />
-
-          {/* 右臂 - 持武器 */}
-          <path
-            d={`M115 80 Q135 90 140 75 Q145 60 150 50`}
-            fill="url(#robeGrad)"
-            stroke={robeColors.trim}
-            strokeWidth="0.5"
-          />
-          {/* 右手 */}
-          <ellipse cx="152" cy="48" rx="7" ry="9" fill="url(#skinGrad)" transform="rotate(-15, 150, 50)" />
-        </g>
-
-        {/* ========== 头部 ========== */}
-        <g>
-          {/* 脖子 */}
-          <rect x="72" y="58" width="16" height="14" fill="url(#skinGrad)" rx="3" />
-
-          {/* 头部 */}
-          <ellipse cx="80" cy="38" rx="22" ry={isFemale ? "26" : "24"} fill="url(#skinGrad)" />
-
-          {/* 耳朵 */}
-          <ellipse cx="58" cy="38" rx="4" ry="6" fill="url(#skinGrad)" />
-          <ellipse cx="102" cy="38" rx="4" ry="6" fill="url(#skinGrad)" />
-
-          {/* ========== 头发 ========== */}
-          {isFemale ? (
-            <g>
-              {/* 女性长发 */}
-              <path
-                d={`M58 20 Q45 25 42 50 Q40 80 50 110 Q55 120 60 115
-                     M102 20 Q115 25 118 50 Q120 80 110 110 Q105 120 100 115`}
-                fill="url(#hairGrad)"
-              />
-              {/* 刘海 */}
-              <path
-                d={`M58 15 Q80 0 102 15 Q108 25 105 35 Q80 28 55 35 Q52 25 58 15`}
-                fill="url(#hairGrad)"
-              />
-              {/* 发髻 */}
-              <ellipse cx="80" cy="8" rx="14" ry="10" fill="url(#hairGrad)" />
-              {/* 发簪 */}
-              <line x1="68" y1="8" x2="92" y2="8" stroke={robeColors.accent} strokeWidth="2" />
-              <circle cx="68" cy="8" r="3" fill={robeColors.accent} />
-              <circle cx="92" cy="8" r="3" fill={robeColors.accent} />
-            </g>
-          ) : (
-            <g>
-              {/* 男性发型 */}
-              <ellipse cx="80" cy="18" rx="20" ry="14" fill="url(#hairGrad)" />
-              {/* 发髻 */}
-              <ellipse cx="80" cy="6" rx="10" ry="8" fill="url(#hairGrad)" />
-              {/* 发带 */}
-              <path d="M62 14 Q80 10 98 14" stroke={robeColors.accent} strokeWidth="2.5" fill="none" />
-              {/* 鬓角 */}
-              <path d="M60 20 Q55 30 58 40" fill="url(#hairGrad)" />
-              <path d="M100 20 Q105 30 102 40" fill="url(#hairGrad)" />
-            </g>
-          )}
-
-          {/* ========== 面部 ========== */}
-          {/* 眉毛 */}
-          <path
-            d={isFemale ? "M66 30 Q72 28 78 30" : "M66 29 Q72 27 78 29"}
-            stroke="#1a1a2e"
-            strokeWidth={isFemale ? "1.2" : "1.8"}
-            fill="none"
-          />
-          <path
-            d={isFemale ? "M82 30 Q88 28 94 30" : "M82 29 Q88 27 94 29"}
-            stroke="#1a1a2e"
-            strokeWidth={isFemale ? "1.2" : "1.8"}
-            fill="none"
-          />
-
-          {/* 眼睛 */}
-          <ellipse cx="72" cy="36" rx="5" ry={isFemale ? "3.5" : "3"} fill="white" />
-          <ellipse cx="72" cy="36" rx="3" ry="2.5" fill="url(#eyeGrad)" />
-          <ellipse cx="71" cy="35" rx="1" ry="1" fill="white" opacity="0.9" />
-
-          <ellipse cx="88" cy="36" rx="5" ry={isFemale ? "3.5" : "3"} fill="white" />
-          <ellipse cx="88" cy="36" rx="3" ry="2.5" fill="url(#eyeGrad)" />
-          <ellipse cx="87" cy="35" rx="1" ry="1" fill="white" opacity="0.9" />
-
-          {/* 女性眼线 */}
-          {isFemale && (
-            <>
-              <path d="M67 36 Q72 34 77 36" stroke="#1a1a2e" strokeWidth="0.5" fill="none" />
-              <path d="M83 36 Q88 34 93 36" stroke="#1a1a2e" strokeWidth="0.5" fill="none" />
-            </>
-          )}
-
-          {/* 鼻子 */}
-          <path
-            d={isFemale ? "M80 38 Q79 42 80 44" : "M80 38 L79 44 L81 44"}
-            stroke="#c4a882"
-            strokeWidth="0.8"
-            fill="none"
-          />
-
-          {/* 嘴唇 */}
-          <path
-            d={isFemale ? "M75 50 Q80 48 85 50 Q80 52 75 50" : "M76 50 Q80 49 84 50"}
-            fill={isFemale ? "#c9a0a0" : "#b89a8a"}
-          />
-
-          {/* 女性腮红 */}
-          {isFemale && (
-            <>
-              <ellipse cx="66" cy="42" rx="5" ry="2.5" fill="#e8b4b4" opacity="0.25" />
-              <ellipse cx="94" cy="42" rx="5" ry="2.5" fill="#e8b4b4" opacity="0.25" />
-            </>
-          )}
-        </g>
-
-        {/* ========== 武器 ========== */}
-        <g filter="url(#weaponGlow)">
-          {weapon.type === 'sword' && (
-            <g transform="translate(145, 20) rotate(25)">
-              <path d="M3 0 L3 -70 L5 -70 L5 0" fill={weapon.color} />
-              <path d="M3 -70 L4 -80 L5 -70" fill={weapon.color} opacity="0.8" />
-              <rect x="0" y="2" width="8" height="5" fill="#c9a227" rx="1" />
-              <rect x="2" y="7" width="4" height="18" fill="#3d2817" rx="1" />
-              <circle cx="4" cy="27" r="3" fill="#c9a227" />
-            </g>
-          )}
-
-          {weapon.type === 'blade' && (
-            <g transform="translate(140, 15) rotate(20)">
-              <path d="M0 0 Q12 -50 8 -85 L4 -85 Q0 -50 0 0" fill={weapon.color} />
-              <path d="M4 -85 L4 -10" stroke="white" strokeWidth="0.5" opacity="0.3" />
-              <path d="M-2 0 Q6 -2 12 2" stroke="#c9a227" strokeWidth="3" fill="none" />
-              <rect x="2" y="5" width="4" height="20" fill="#3d2817" rx="1" />
-            </g>
-          )}
-
-          {weapon.type === 'heavySword' && (
-            <g transform="translate(135, 5) rotate(10)">
-              <rect x="0" y="0" width="16" height="90" fill={weapon.color} rx="2" />
-              <rect x="2" y="5" width="3" height="80" fill="white" opacity="0.1" />
-              <rect x="-3" y="88" width="22" height="10" fill="#1a1a2e" rx="2" />
-              <rect x="4" y="98" width="8" height="25" fill="#0d0d1a" rx="2" />
-            </g>
-          )}
-
-          {weapon.type === 'snakeSword' && (
-            <g transform="translate(142, 15) rotate(15)">
-              <path d="M0 0 Q15 -25 0 -50 Q-15 -75 0 -95" stroke={weapon.color} strokeWidth="6" fill="none" strokeLinecap="round" />
-              <rect x="-2" y="2" width="6" height="18" fill="#3d2817" rx="1" />
-            </g>
-          )}
-
-          {weapon.type === 'staff' && (
-            <g transform="translate(148, -10) rotate(5)">
-              <rect x="0" y="0" width="7" height="110" fill={weapon.color} rx="3" />
-              <circle cx="3.5" cy="8" r="6" fill="#22c55e" />
-              <circle cx="3.5" cy="8" r="4" fill="#16a34a" />
-              <rect x="-1" y="102" width="9" height="10" fill="#c9a227" rx="2" />
-            </g>
-          )}
-
-          {weapon.type === 'pen' && (
-            <g transform="translate(148, 30) rotate(20)">
-              <rect x="0" y="0" width="5" height="50" fill={weapon.color} rx="1" />
-              <polygon points="0,50 2.5,62 5,50" fill="#1a1a2e" />
-              <rect x="-1" y="-4" width="7" height="6" fill="#c9a227" rx="1" />
-            </g>
-          )}
-
-          {weapon.type === 'token' && (
-            <g transform="translate(148, 40)">
-              <ellipse cx="0" cy="0" rx="18" ry="12" fill={weapon.color} />
-              <ellipse cx="0" cy="0" rx="14" ry="9" fill="#991b1b" />
-              <text x="0" y="4" textAnchor="middle" fontSize="12" fill="#fbbf24" fontFamily="serif">火</text>
-              <path d="M-8 -16 Q0 -28 8 -16 Q0 -10 -8 -16" fill="#f97316" opacity="0.7" />
-            </g>
-          )}
-
-          {weapon.type === 'darkSword' && (
-            <g transform="translate(140, 10) rotate(15)">
-              <rect x="0" y="0" width="7" height="85" fill="#1a1a2e" rx="1" />
-              <rect x="0" y="0" width="7" height="85" fill="#4c1d95" opacity="0.3">
-                <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite" />
-              </rect>
-              <path d="M3.5 0 L3.5 -15" stroke="#8b5cf6" strokeWidth="3" opacity="0.8">
-                <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite" />
-              </path>
-              <rect x="-5" y="85" width="17" height="8" fill="#1f2937" rx="1" />
-              <rect x="1" y="93" width="5" height="18" fill="#0d0d1a" rx="1" />
-            </g>
-          )}
-
-          {weapon.type === 'relic' && (
-            <g transform="translate(148, 45)">
-              <circle cx="0" cy="0" r="15" fill={weapon.color} />
-              <circle cx="0" cy="0" r="10" fill="#f59e0b" />
-              <circle cx="0" cy="0" r="5" fill="#fbbf24" />
-              <circle cx="0" cy="0" r="22" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.4">
-                <animate attributeName="r" values="18;24;18" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.4;0.15;0.4" dur="2s" repeatCount="indefinite" />
-              </circle>
-            </g>
-          )}
-
-          {weapon.type === 'whip' && (
-            <g transform="translate(145, 35) rotate(10)">
-              <path d="M0 0 Q20 15 15 40 Q10 65 20 90 Q25 105 15 115" stroke={weapon.color} strokeWidth="5" fill="none" strokeLinecap="round" />
-              <circle cx="15" cy="115" r="4" fill="#78350f" />
-            </g>
-          )}
-
-          {weapon.type === 'fist' && (
-            <g>
-              <ellipse cx="25" cy="165" rx="10" ry="12" fill="url(#skinGrad)" stroke="#c9a227" strokeWidth="0.5" />
-              <ellipse cx="152" cy="48" rx="10" ry="12" fill="url(#skinGrad)" stroke="#c9a227" strokeWidth="0.5" transform="rotate(-15, 150, 50)" />
-            </g>
-          )}
-        </g>
-      </svg>
-
-      {/* 名字和等级 */}
-      <div style={{
-        transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
-        textAlign: 'center',
-        marginTop: '0px',
-      }}>
+        {/* 顶部装饰边框 */}
         <div style={{
-          fontSize: '1.1rem',
-          color: 'var(--gold)',
-          fontFamily: '"Ma Shan Zheng", cursive',
-          letterSpacing: '2px',
-          textShadow: '0 0 15px rgba(212, 175, 55, 0.6)',
-          fontWeight: 'bold',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '3px',
+          background: `linear-gradient(90deg, transparent, ${levelStyle.border}, transparent)`,
+        }} />
+
+        {/* 角落装饰 */}
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          left: '8px',
+          width: '20px',
+          height: '20px',
+          borderLeft: `2px solid ${levelStyle.border}`,
+          borderTop: `2px solid ${levelStyle.border}`,
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          width: '20px',
+          height: '20px',
+          borderRight: `2px solid ${levelStyle.border}`,
+          borderTop: `2px solid ${levelStyle.border}`,
+        }} />
+
+        {/* 性别图标 */}
+        <div style={{
+          position: 'absolute',
+          top: '12px',
+          left: '12px',
+          fontSize: '1.2rem',
+          opacity: 0.8,
         }}>
-          {player.name}
+          {isFemale ? '👤' : '👤'}
         </div>
+
+        {/* 等级标签 */}
         <div style={{
-          fontSize: '0.8rem',
-          color: 'var(--text-muted)',
-          marginTop: '2px',
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          padding: '2px 8px',
+          background: 'rgba(0,0,0,0.6)',
+          borderRadius: '4px',
+          fontSize: '0.75rem',
+          color: levelStyle.border,
+          fontFamily: '"Ma Shan Zheng", cursive',
+          border: `1px solid ${levelStyle.border}40`,
+        }}>
+          Lv.{player.level}
+        </div>
+
+        {/* 角色立绘区域 - 简化的像素风格人物 */}
+        <div style={{
+          position: 'absolute',
+          top: '40px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '120px',
+          height: '140px',
           display: 'flex',
-          gap: '10px',
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          <span>Lv.{player.level}</span>
-          <span style={{ color: 'var(--gold)' }}>⚔ {weapon.name}</span>
+          {/* 像素风格角色 - 太吾绘卷风格 */}
+          <svg width="100" height="130" viewBox="0 0 100 130">
+            <defs>
+              <linearGradient id="robe" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={isFemale ? '#4a3f5c' : '#2d3a4a'} />
+                <stop offset="100%" stopColor={isFemale ? '#2d2538' : '#1a2530'} />
+              </linearGradient>
+              <linearGradient id="skin" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#f5e6d3" />
+                <stop offset="100%" stopColor="#e8d4be" />
+              </linearGradient>
+              <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1a1a2e" />
+                <stop offset="100%" stopColor="#0d0d1a" />
+              </linearGradient>
+            </defs>
+
+            {/* 身体 - 简化的像素风格 */}
+            <rect x="35" y="55" width="30" height="50" fill="url(#robe)" rx="3" />
+
+            {/* 腿部 */}
+            <rect x="38" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
+            <rect x="52" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
+
+            {/* 腰带 */}
+            <rect x="35" y="75" width="30" height="6" fill={levelStyle.border} opacity="0.8" rx="1" />
+
+            {/* 手臂 */}
+            <rect x="25" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
+            <rect x="63" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
+
+            {/* 手 */}
+            <rect x="27" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
+            <rect x="65" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
+
+            {/* 头部 */}
+            <ellipse cx="50" cy="35" rx="18" ry="20" fill="url(#skin)" />
+
+            {/* 头发 */}
+            {isFemale ? (
+              <g>
+                <ellipse cx="50" cy="25" rx="18" ry="14" fill="url(#hair)" />
+                <rect x="32" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
+                <rect x="60" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
+                <ellipse cx="50" cy="15" rx="10" ry="8" fill="url(#hair)" />
+              </g>
+            ) : (
+              <g>
+                <ellipse cx="50" cy="25" rx="18" ry="12" fill="url(#hair)" />
+                <ellipse cx="50" cy="15" rx="8" ry="6" fill="url(#hair)" />
+                <rect x="46" y="12" width="8" height="4" fill={levelStyle.border} rx="1" />
+              </g>
+            )}
+
+            {/* 眼睛 */}
+            <rect x="42" y="32" width="4" height="3" fill="#1a1a2e" rx="1" />
+            <rect x="54" y="32" width="4" height="3" fill="#1a1a2e" rx="1" />
+
+            {/* 嘴巴 */}
+            <rect x="47" y="42" width="6" height="2" fill="#c9a0a0" rx="1" />
+
+            {/* 武器图标 */}
+            <text x="75" y="60" fontSize="20" textAnchor="middle">{weapon.icon}</text>
+          </svg>
+        </div>
+
+        {/* 底部信息栏 */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '10px',
+          background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.8))',
+        }}>
+          {/* 名字 */}
+          <div style={{
+            textAlign: 'center',
+            fontSize: '1.1rem',
+            color: '#f0f0f0',
+            fontFamily: '"Ma Shan Zheng", cursive',
+            letterSpacing: '2px',
+            marginBottom: '6px',
+            textShadow: '0 0 10px rgba(0,0,0,0.8)',
+          }}>
+            {player.name}
+          </div>
+
+          {/* 武器 */}
+          <div style={{
+            textAlign: 'center',
+            fontSize: '0.8rem',
+            color: weapon.color,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+          }}>
+            <span>{weapon.icon}</span>
+            <span>{weapon.name}</span>
+          </div>
+        </div>
+
+        {/* 气血条 */}
+        <div style={{
+          position: 'absolute',
+          bottom: '55px',
+          left: '15px',
+          right: '15px',
+          height: '6px',
+          background: 'rgba(0,0,0,0.5)',
+          borderRadius: '3px',
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}>
+          <div style={{
+            width: `${hpRatio * 100}%`,
+            height: '100%',
+            background: isLeft
+              ? 'linear-gradient(90deg, #059669, #10b981)'
+              : 'linear-gradient(90deg, #dc2626, #ef4444)',
+            transition: 'width 0.3s ease',
+          }} />
+        </div>
+
+        {/* 气血数值 */}
+        <div style={{
+          position: 'absolute',
+          bottom: '62px',
+          left: '0',
+          right: '0',
+          textAlign: 'center',
+          fontSize: '0.7rem',
+          color: '#a0a0a0',
+          fontFamily: 'monospace',
+        }}>
+          {Math.floor(player.hp || 0)} / {Math.floor(player.maxHp || 7000)}
         </div>
       </div>
     </div>
@@ -793,120 +627,41 @@ export default function BattleArena() {
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* 战斗角色形象区域 */}
+          {/* 战斗角色形象区域 - 太吾绘卷风格 */}
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             alignItems: 'center',
+            gap: '40px',
             marginBottom: '1rem',
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%)',
-            padding: '1.5rem 2rem',
-            borderRadius: '12px',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
+            padding: '1.5rem',
             position: 'relative',
-            overflow: 'hidden',
-            minHeight: '280px',
           }}>
-            {/* 背景装饰 - 战场氛围 */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: `
-                radial-gradient(ellipse at 20% 50%, rgba(0, 168, 107, 0.15), transparent 45%),
-                radial-gradient(ellipse at 80% 50%, rgba(220, 20, 60, 0.15), transparent 45%),
-                radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.1), transparent 50%)
-              `,
-              pointerEvents: 'none',
-            }} />
-
-            {/* 剑气装饰线 */}
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '30%',
-              right: '30%',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, var(--crimson), var(--gold), var(--crimson), transparent)',
-              opacity: 0.4,
-              transform: 'translateY(-50%)',
-              filter: 'blur(1px)',
-            }} />
-
-            {/* 玩家1区域 */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '0.5rem',
-              zIndex: 1,
-              flex: 1,
-            }}>
-              <WarriorAvatar player={p1} isLeft={true} />
-              <div style={{ width: '160px', marginTop: '5px' }}>
-                <div className="wuxia-progress" style={{ height: '10px' }}>
-                  <div className="wuxia-progress-bar" style={{
-                    width: `${(p1?.hp / p1?.maxHp) * 100}%`,
-                    background: 'linear-gradient(90deg, #059669, #10b981, #34d399)'
-                  }} />
-                </div>
-                <div style={{
-                  fontSize: '0.85rem',
-                  textAlign: 'center',
-                  marginTop: '6px',
-                  color: '#10b981',
-                  fontFamily: '"Ma Shan Zheng", cursive',
-                  letterSpacing: '1px',
-                }}>
-                  {Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 7000)}
-                </div>
-              </div>
-            </div>
+            {/* 玩家1 */}
+            <WarriorAvatar player={p1} isLeft={true} />
 
             {/* VS标志 */}
             <div style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              zIndex: 1,
-              padding: '0 1rem',
+              gap: '10px',
             }}>
               <div style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                fontSize: '2.5rem',
+                color: 'var(--crimson)',
+                fontFamily: '"Ma Shan Zheng", cursive',
+                textShadow: '0 0 20px rgba(220, 20, 60, 0.6)',
+                letterSpacing: '8px',
               }}>
-                {/* 剑交叉背景 */}
-                <div style={{
-                  position: 'absolute',
-                  fontSize: '4rem',
-                  opacity: 0.1,
-                  color: 'var(--gold)',
-                }}>⚔</div>
-                <h3 style={{
-                  color: 'var(--crimson)',
-                  filter: 'drop-shadow(0 0 15px var(--crimson)) drop-shadow(0 0 30px rgba(220, 20, 60, 0.5))',
-                  fontFamily: '"Ma Shan Zheng", cursive',
-                  fontSize: '2.2rem',
-                  letterSpacing: '6px',
-                  animation: 'pulse 1.5s ease-in-out infinite',
-                  position: 'relative',
-                  zIndex: 1,
-                }}>
-                  VS
-                </h3>
+                VS
               </div>
               <div style={{
                 fontSize: '0.9rem',
                 color: 'var(--gold)',
-                marginTop: '0.8rem',
                 fontFamily: '"Ma Shan Zheng", cursive',
-                letterSpacing: '2px',
-                background: 'rgba(0,0,0,0.4)',
-                padding: '4px 12px',
+                background: 'rgba(0,0,0,0.6)',
+                padding: '4px 16px',
                 borderRadius: '4px',
                 border: '1px solid rgba(212, 175, 55, 0.3)',
               }}>
@@ -914,35 +669,8 @@ export default function BattleArena() {
               </div>
             </div>
 
-            {/* 玩家2区域 */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '0.5rem',
-              zIndex: 1,
-              flex: 1,
-            }}>
-              <WarriorAvatar player={p2} isLeft={false} />
-              <div style={{ width: '160px', marginTop: '5px' }}>
-                <div className="wuxia-progress" style={{ height: '10px' }}>
-                  <div className="wuxia-progress-bar" style={{
-                    width: `${(p2?.hp / p2?.maxHp) * 100}%`,
-                    background: 'linear-gradient(90deg, #dc2626, #ef4444, #f87171)'
-                  }} />
-                </div>
-                <div style={{
-                  fontSize: '0.85rem',
-                  textAlign: 'center',
-                  marginTop: '6px',
-                  color: '#ef4444',
-                  fontFamily: '"Ma Shan Zheng", cursive',
-                  letterSpacing: '1px',
-                }}>
-                  {Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 7000)}
-                </div>
-              </div>
-            </div>
+            {/* 玩家2 */}
+            <WarriorAvatar player={p2} isLeft={false} />
           </div>
 
           <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem' }}>
