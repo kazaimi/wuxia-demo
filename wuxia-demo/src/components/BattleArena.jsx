@@ -354,7 +354,7 @@ const WarriorAvatar = ({ player, isLeft }) => {
                   <path d="M94 70 Q92 80 94 90 Q96 100 92 110" stroke="url(#hairGrad)" strokeWidth="4" fill="none" />
                 </>
               )}
-            </>
+            </g>
           ) : (
             // 男性发型
             <g>
@@ -389,7 +389,7 @@ const WarriorAvatar = ({ player, isLeft }) => {
                   <path d="M52 20 Q55 15 60 18 Q70 12 80 18 Q85 15 88 20" fill="url(#hairGrad)" />
                 </>
               )}
-            </>
+            </g>
           )}
 
           {/* ========== 面部特征 ========== */}

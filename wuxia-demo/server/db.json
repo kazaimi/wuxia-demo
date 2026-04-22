@@ -1,12 +1,12 @@
 [
   {
     "name": "ALEX",
-    "title": "👑肝帝真仙",
+    "title": "🐟摸鱼小虾",
     "level": 37,
     "exp": 10524,
     "maxExp": 11923,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 0,
     "hp": 875,
     "maxHp": 875,
     "attributes": {
@@ -44,10 +44,10 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "pO92GZoTuajakUb0AAAB",
+    "id": "7_cleMnAICk42b4_AAAB",
     "isBattling": false,
     "rankIndex": 25,
-    "lastTaskDate": "Tue Apr 21 2026",
+    "lastTaskDate": "Wed Apr 22 2026",
     "treasures": [
       "t3",
       "t5",
@@ -55,13 +55,11 @@
       "t1",
       "t11"
     ],
-    "encountersToday": 5,
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "血枯劫"
-    ],
+    "encountersToday": 0,
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 270,
+    "dailyActivity": 0,
     "silver": 132,
     "skillMastery": {
       "s1": 5,

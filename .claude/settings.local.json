@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git pull *)",
+      "Bash(git checkout *)",
+      "Bash(npm run *)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(node index.js)",
+      "Bash(tasklist)",
+      "Bash(findstr node *)",
+      "Bash(taskkill *)",
+      "Bash(node *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(curl *)"
+    ]
+  }
+}

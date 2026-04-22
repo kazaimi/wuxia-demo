@@ -47,22 +47,22 @@ export const TREASURES_DB = [
 
 export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
 
-// 功法熟练度段位表（每 10 局胜利 +20%，上限 200%）
+// 功法熟练度段位表
 export const MASTERY_TIERS = [
-  { minWins: 0,   bonus: 0,   label: '初习入门' },
-  { minWins: 10,  bonus: 0.20, label: '略有小成' },
-  { minWins: 20,  bonus: 0.40, label: '初窥门径' },
-  { minWins: 30,  bonus: 0.60, label: '渐入佳境' },
-  { minWins: 40,  bonus: 0.80, label: '融会贯通' },
-  { minWins: 50,  bonus: 1.00, label: '炉火纯青' },
-  { minWins: 60,  bonus: 1.20, label: '登峰造极' },
-  { minWins: 70,  bonus: 1.40, label: '出神入化' },
-  { minWins: 80,  bonus: 1.60, label: '化境归真' },
-  { minWins: 90,  bonus: 1.80, label: '天人合一' },
+  { minWins: 0, bonus: 0, label: '初习入门' },
+  { minWins: 10, bonus: 0.20, label: '略有小成' },
+  { minWins: 20, bonus: 0.40, label: '初窥门径' },
+  { minWins: 30, bonus: 0.60, label: '渐入佳境' },
+  { minWins: 40, bonus: 0.80, label: '融会贯通' },
+  { minWins: 50, bonus: 1.00, label: '炉火纯青' },
+  { minWins: 60, bonus: 1.20, label: '登峰造极' },
+  { minWins: 70, bonus: 1.40, label: '出神入化' },
+  { minWins: 80, bonus: 1.60, label: '化境归真' },
+  { minWins: 90, bonus: 1.80, label: '天人合一' },
   { minWins: 100, bonus: 2.00, label: '无上至境' },
 ];
 
-// 根据当前胜场数返回熟练度信息
+// 根据胜场数获取熟练度信息
 export const getSkillMastery = (skillId, masteryMap = {}) => {
   const baseId = skillId?.includes('_deg') ? skillId.split('_deg')[0] : skillId;
   const wins = masteryMap?.[baseId] || 0;
@@ -71,25 +71,6 @@ export const getSkillMastery = (skillId, masteryMap = {}) => {
     if (wins >= t.minWins) tier = t;
   }
   return { wins, bonus: tier.bonus, label: tier.label };
-};
-
-// 返回含熟练度加成后的功法信息（power 按段位加成，复活类效果不加）
-export const getSkillInfoWithMastery = (skillId, masteryMap = {}) => {
-  const base = getSkillInfo(skillId);
-  if (!base) return null;
-  const { bonus, label } = getSkillMastery(skillId, masteryMap);
-  
-  // 即使加成为0也执行后缀逻辑，但只有 bonus > 0 才实际提升 power
-  const boostedPower = bonus > 0 ? Math.floor(base.power * (1 + bonus)) : base.power;
-  const suffix = `《${base.name.split('》')[0].replace('《', '')}》【${label}】`;
-  
-  return {
-    ...base,
-    power: boostedPower,
-    name: suffix,
-    masteryLabel: label,
-    masteryBonus: bonus,
-  };
 };
 
 export const getSkillInfo = (skillId) => {
@@ -132,8 +113,7 @@ export const useGameStore = create((set, get) => ({
     secretRealmAttempts: 0, dailyDebuffs: [], silver: 0,
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
     attributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
-    permanentAttributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
-    skills: ['s1'],
+    skills: ['s1'], 
     treasures: [],
     equippedSkills: { inner: null, outer: 's1', motion: null, ultimate: null },
     equippedTreasure: null
@@ -182,8 +162,6 @@ export const useGameStore = create((set, get) => ({
          if (!playerData.dailyDebuffs) playerData.dailyDebuffs = [];
          if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
-         if (!playerData.skillMastery) playerData.skillMastery = {};
-         if (!playerData.permanentAttributes) playerData.permanentAttributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
@@ -241,17 +219,6 @@ export const useGameStore = create((set, get) => ({
       });
       socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
       socket.on('auction_history', (history) => set({ auctionHistory: history }));
-      socket.on('auction_result', ({ success, itemName, price, type }) => {
-         if (success) {
-            if (type === 'buyer') {
-               alert(`🎉 恭喜！您以 ${price} 银两成功拍得【${itemName}】！`);
-            } else {
-               alert(`💰 成交！您的【${itemName}】以 ${price} 银两售出！`);
-            }
-         } else {
-            alert(`😔 遗憾！您的【${itemName}】流拍了，物品已退还。`);
-         }
-      });
       socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
     }
   },
@@ -310,12 +277,6 @@ export const useGameStore = create((set, get) => ({
      return state;
   }),
 
-  clearDailyDebuffs: () => set((state) => {
-     const p = { ...state.player, dailyDebuffs: [] };
-     if (socket) socket.emit('update_player', p);
-     return { player: p };
-  }),
-
   equipSkill: (type, skillId) => set((state) => {
      const p = { ...state.player, equippedSkills: { ...state.player.equippedSkills, [type]: skillId } };
      if (socket) socket.emit('update_player', p);
@@ -359,91 +320,42 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
-  // 直接增加属性（黑市大补丸等奖励，不消耗 freePoints）
-  addAttributes: (attrBoosts) => set((state) => {
-    const newAttrs = { ...state.player.attributes };
-    const newPermAttrs = { ...(state.player.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 }) };
-    Object.entries(attrBoosts).forEach(([key, val]) => {
-      newAttrs[key] = (newAttrs[key] || 0) + val;
-      newPermAttrs[key] = (newPermAttrs[key] || 0) + val;
-    });
-    const newMaxHp = calculateMaxHp(state.player.level, newAttrs.con);
-    const p = {
-      ...state.player,
-      attributes: newAttrs,
-      permanentAttributes: newPermAttrs,
-      maxHp: newMaxHp,
-      hp: newMaxHp,
-    };
+  resetPoints: () => set((state) => {
+    const p = { ...state.player };
+    const totalPoints = INITIAL_POINTS + (p.level - 1) * POINTS_PER_LEVEL;
+    p.freePoints = totalPoints;
+    p.attributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+    p.maxHp = calculateMaxHp(p.level, 0);
+    p.hp = p.maxHp;
     if (socket) socket.emit('update_player', p);
     return { player: p };
   }),
 
-  // 调整属性点（可增可减），战斗中不可用
-  adjustAttribute: (attrKey, delta) => set((state) => {
-    // 战斗中锁定
-    if (state.battleState.inBattle) return state;
-
+  allocatePoints: (attrKey, amount) => set((state) => {
     let p = { ...state.player, attributes: { ...state.player.attributes } };
-    const permVal = (p.permanentAttributes?.[attrKey]) || 0;
-    const currentVal = p.attributes[attrKey];
-    const newVal = currentVal + delta;
-
-    // 不能低于永久属性加成
-    if (newVal < permVal) return state;
-
-    // 检查 freePoints
-    if (delta > 0 && p.freePoints < delta) return state;
-
-    p.attributes[attrKey] = newVal;
-    p.freePoints -= delta;
-
-    if (attrKey === 'con') {
-       p.maxHp = calculateMaxHp(p.level, p.attributes.con);
-       p.hp = p.maxHp;
+    const addAmt = Math.min(Math.max(1, amount), p.freePoints);
+    if (p.freePoints >= addAmt) {
+      p.freePoints -= addAmt;
+      p.attributes[attrKey] += addAmt;
+      if (attrKey === 'con') {
+         p.maxHp = calculateMaxHp(p.level, p.attributes.con);
+         p.hp = p.maxHp;
+      }
+      if (socket) socket.emit('update_player', p);
+      return { player: p };
     }
-    if (socket) socket.emit('update_player', p);
-    return { player: p };
-  }),
-
-  // 直接设置属性值（战斗中不可用）
-  setAttribute: (attrKey, newValue) => set((state) => {
-    // 战斗中锁定
-    if (state.battleState.inBattle) return state;
-
-    let p = { ...state.player, attributes: { ...state.player.attributes } };
-    const permVal = (p.permanentAttributes?.[attrKey]) || 0;
-    const currentVal = p.attributes[attrKey];
-    const delta = newValue - currentVal;
-
-    // 不能低于永久属性加成
-    if (newValue < permVal) return state;
-
-    // 检查 freePoints
-    if (delta > 0 && p.freePoints < delta) return state;
-
-    p.attributes[attrKey] = newValue;
-    p.freePoints -= delta;
-
-    if (attrKey === 'con') {
-       p.maxHp = calculateMaxHp(p.level, p.attributes.con);
-       p.hp = p.maxHp;
-    }
-    if (socket) socket.emit('update_player', p);
-    return { player: p };
+    return state;
   }),
 
   generateTasks: () => set((state) => {
     const tasks = [];
     const attrs = Object.keys(ATTR_MAP);
-
-    // 定向生成不同难度的星级配置 (总计 6 个任务)
+    
+    // 方案一：定向生成不同难度的星级配置 (总计 4 个任务)
     const starConfigs = [
-      Math.random() > 0.5 ? 1 : 2, // 1个[低星数] (1~2星随机)
       Math.random() > 0.5 ? 1 : 2, // 1个[低星数] (1~2星随机)
       3,                           // 第1个[中等星数] (固定3星)
       3,                           // 第2个[中等星数] (固定3星)
-      Math.random() > 0.8 ? 5 : 4, // 1个[高星数] (80%出4星，20%拼脸出5星)
       Math.random() > 0.8 ? 5 : 4  // 1个[高星数] (80%出4星，20%拼脸出5星)
     ];
 
@@ -525,21 +437,6 @@ export const useGameStore = create((set, get) => ({
       return { player: p };
     }
     return state;
-  }),
-
-  // 降胜后增加指定功法的熟练度（每个 +1）
-  addSkillMastery: (skillIds) => set((state) => {
-    if (!skillIds || skillIds.length === 0) return state;
-    const mastery = { ...(state.player.skillMastery || {}) };
-    skillIds.forEach(id => {
-      if (!id) return;
-      // 取基础 id（去掉劣化后缀）
-      const baseId = id.includes('_deg') ? id.split('_deg')[0] : id;
-      mastery[baseId] = (mastery[baseId] || 0) + 1;
-    });
-    const p = { ...state.player, skillMastery: mastery };
-    if (socket) socket.emit('update_player', p);
-    return { player: p };
   }),
 
   listAuction: (type, itemToTrade, itemName, startPrice) => {

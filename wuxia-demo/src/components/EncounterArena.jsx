@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillInfoWithMastery, getSkillMastery, MASTERY_TIERS } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Skull, Swords, Gift } from 'lucide-react';
 
 export default function EncounterArena() {
@@ -10,7 +10,6 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
-  const addSkillMastery = useGameStore(state => state.addSkillMastery);
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -42,7 +41,7 @@ export default function EncounterArena() {
          }, 500);
      }
 
-     const bossCands = bots.filter(b => b.rankIndex <= 40);
+     const bossCands = bots.filter(b => b.rankIndex <= 10);
      const boss = bossCands[Math.floor(Math.random() * bossCands.length)] || bots[0];
 
      const remainingBots = bots.filter(b => b.id !== boss.id);
@@ -161,10 +160,8 @@ export default function EncounterArena() {
          const pickSkill = () => {
             if (skillIds.length === 0) return SKILLS_DB[0];
             let totalWeight = 0;
-            const masteryMap = attacker.skillMastery || {};
             const weighted = skillIds.map(sId => {
-               // 使用带熟练度加成的功法信息
-               const sk = getSkillInfoWithMastery(sId, masteryMap) || SKILLS_DB[0];
+               const sk = SKILLS_DB.find(s=>s.id===sId) || SKILLS_DB[0];
                const weight = 100 + (sk.power / 10) * (attacker.attributes.int || 0) * 1.5;
                totalWeight += weight;
                return { skill: sk, weight };
@@ -329,15 +326,9 @@ export default function EncounterArena() {
                gainExp(expReward);
                if (droppedTreasure) gainTreasure(droppedTreasure);
                
-               // 熟练度：3连胜才增加，为装备的全部功法 +1 胜
-               const equippedSkillIds = Object.values(player.equippedSkills || {}).filter(Boolean);
-               if (equippedSkillIds.length > 0) {
-                   addSkillMastery(equippedSkillIds);
-               }
-
                addSilver(3);
 
-               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '') + (equippedSkillIds.length > 0 ? `\n📖 功法熟练度已增加！` : '')]);
+               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
                setEncounterState('win');
             } else {
                if (curIdx === 1) addSilver(1);
@@ -361,53 +352,51 @@ export default function EncounterArena() {
   }, [encounterState, p1, p2, logs.length]);
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-       {/* 顶部装饰 */}
-       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
-
-       <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
-        <Skull /> ✦ 江湖奇遇 ✦ <span style={{fontSize: '1rem', color: 'var(--text-muted)', letterSpacing: '1px'}}>今日剩余：{5 - (player.encountersToday || 0)} 次</span>
+    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
+       <h2 style={{ fontSize: '1.8rem', color: 'var(--warn)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <Skull /> 江湖奇遇 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>今日剩余：{5 - (player.encountersToday || 0)} 次</span>
       </h2>
-
+      
       {encounterState === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '2' }}>你将连续挑战来自《江湖风云榜》的三人小队。<br/>血气虽会翻倍但在车轮战中绝不恢复！<br/>若能连胜，将有机会缴获敌方宝具。</p>
-         <button className="btn-primary" onClick={startEncounter} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, var(--gold), #b45309)', color: '#1a1a2e' }}>⚔ 开启奇遇连战 ⚔</button>
+         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem' }}>你将连续挑战来自《江湖风云榜》的三人小队。<br/>血气虽会翻倍但在车轮战中绝不恢复！<br/>若能连胜，将有机会缴获敌方宝具。</p>
+         <button className="btn-primary" onClick={startEncounter} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'var(--warn)', color: '#000' }}>开启奇遇连战</button>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px' }}>
             <div style={{ width: '42%' }}>
-              <h4 style={{ color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p1?.name} <span style={{fontSize: '0.8rem', color: 'var(--jade)'}}>(双倍气血)</span></h4>
-              <div className="wuxia-progress">
-                <div className="wuxia-progress-bar" style={{ width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--jade), #22c55e)' }} />
+              <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>{p1?.name} (双倍气血)</h4>
+              <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'var(--success)', transition: 'width 0.3s' }}></div>
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 0)}</div>
+              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 0)}</div>
             </div>
             <div style={{ textAlign: 'center' }}>
-               <h3 style={{ color: 'var(--crimson)', filter: 'drop-shadow(0 0 8px var(--crimson))', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.5rem' }}>⚔ VS ⚔</h3>
-               <span style={{ fontSize: '0.8rem', color: 'var(--gold)' }}>{currentEnemyIndex.current + 1} / 3</span>
+               <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))' }}>VS</h3>
+               <span style={{ fontSize: '0.8rem', color: 'var(--warn)' }}>{currentEnemyIndex.current + 1} / 3</span>
             </div>
             <div style={{ width: '42%' }}>
-               <h4 style={{ color: 'var(--crimson)', marginBottom: '0.5rem', textAlign: 'right', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p2?.name}</h4>
-               <div className="wuxia-progress" style={{ transform: 'rotate(180deg)' }}>
-                <div className="wuxia-progress-bar" style={{ width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--crimson), #ef4444)' }} />
+               <h4 style={{ color: 'var(--warn)', marginBottom: '0.5rem', textAlign: 'right' }}>{p2?.name}</h4>
+               <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden', transform: 'rotate(180deg)' }}>
+                <div style={{ height: '100%', width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'var(--danger)', transition: 'width 0.3s' }}></div>
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 0)}</div>
+              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 0)}</div>
             </div>
           </div>
 
-          <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: '"Courier New", monospace', fontSize: '1rem' }}>
+          <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'monospace', fontSize: '1rem' }}>
             {logs.map((log, i) => (
-              <div key={i} style={{
-                color: log.includes('宝物') ? 'var(--gold)' : log.includes('===') ? 'var(--jade)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--crimson)',
+              <div key={i} style={{ 
+                color: log.includes('宝物') ? '#facc15' : log.includes('===') ? 'var(--primary)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--danger)', 
                 fontWeight: log.includes('宝物') || log.includes('===') ? 'bold' : 'normal',
                 whiteSpace: 'pre-line',
-                animation: 'slideUp 0.3s'
+                animation: 'slideUp 0.3s' 
               }}>
                 {log}
               </div>
             ))}
+            {/* Removed auto-scroll anchor */}
           </div>
 
           {(encounterState === 'win' || encounterState === 'lose') && (
