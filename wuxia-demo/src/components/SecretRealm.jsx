@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore, TREASURES_DB } from '../store/gameState';
 import { generateEventDeck } from '../data/realmEvents';
 import { Map, DoorOpen } from 'lucide-react';
+import EventIllustration from './EventIllustration';
 
 export default function SecretRealm() {
   const player = useGameStore(state => state.player);
@@ -192,6 +193,10 @@ export default function SecretRealm() {
 
             {state === 'exploring' && currentEvent && (
                <div style={{ marginTop: '2rem', animation: 'fadeIn 0.6s', borderTop: '1px dashed rgba(192, 132, 252, 0.3)', paddingTop: '1.5rem' }}>
+                  {/* 事件插画 */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                     <EventIllustration type={currentEvent.type} event={currentEvent} />
+                  </div>
                   <p style={{ color: '#fff', marginBottom: '2rem', textShadow: '0 0 8px rgba(192, 132, 252, 0.3)', lineHeight: '1.8' }}>{currentEvent.desc}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                      {currentEvent.choices.map((c, i) => {
