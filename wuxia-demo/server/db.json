@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "🐟摸鱼小虾",
+    "title": "🐎初出茅庐",
     "level": 37,
     "exp": 10524,
     "maxExp": 11923,
@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "NTWEBv4mYD4WtSA1AABH",
+    "id": "4Jw0WKByUDDmTY6GAABP",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Wed Apr 22 2026",
@@ -56,12 +56,12 @@
       "t11"
     ],
     "encountersToday": 0,
-    "secretRealmAttempts": 1,
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [
       "血枯劫"
     ],
     "equippedTreasure": "t11",
-    "dailyActivity": 15,
+    "dailyActivity": 45,
     "silver": 132,
     "skillMastery": {
       "s1": 5,
