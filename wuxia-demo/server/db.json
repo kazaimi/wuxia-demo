@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "7_cleMnAICk42b4_AAAB",
+    "id": "NTWEBv4mYD4WtSA1AABH",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Wed Apr 22 2026",
@@ -56,10 +56,12 @@
       "t11"
     ],
     "encountersToday": 0,
-    "secretRealmAttempts": 0,
-    "dailyDebuffs": [],
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "血枯劫"
+    ],
     "equippedTreasure": "t11",
-    "dailyActivity": 0,
+    "dailyActivity": 15,
     "silver": 132,
     "skillMastery": {
       "s1": 5,
@@ -554,19 +556,16 @@
   },
   {
     "name": "月影",
-    "title": "⚡武林卷王",
+    "title": "🐟摸鱼小虾",
     "level": 16,
     "exp": 2953,
     "maxExp": 3105,
     "freePoints": 0,
-    "taskCount": 35,
-    "encountersToday": 1,
-    "lastTaskDate": "Tue Apr 21 2026",
-    "secretRealmAttempts": 2,
-    "dailyDebuffs": [
-      "血枯劫",
-      "心魔劫"
-    ],
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Wed Apr 22 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "hp": 430,
     "maxHp": 430,
     "attributes": {
@@ -596,10 +595,10 @@
       "ultimate": "s_kuihua"
     },
     "equippedTreasure": "t11",
-    "id": "FI5uiHNEJY63Vx_FAAAD",
+    "id": "4JhDimrURQGAMAu-AABB",
     "isBattling": false,
     "rankIndex": 61,
-    "dailyActivity": 230,
+    "dailyActivity": 0,
     "silver": 47,
     "skillMastery": {},
     "permanentAttributes": {

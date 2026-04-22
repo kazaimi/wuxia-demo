@@ -1,14 +1,14 @@
 import React from 'react';
 
 // 秘境事件插画组件 - 为每种事件类型绘制精美场景
-const EventIllustration = ({ eventType, content }) => {
+const EventIllustration = ({ type, event }) => {
   // 根据事件类型和内容选择插画
   const getIllustration = () => {
     // 残局博弈 - 石亭棋阵
-    if (eventType === 'puzzle') {
-      if (content?.desc?.includes('棋阵')) {
+    if (type === 'puzzle') {
+      if (event?.desc?.includes('棋阵')) {
         return <ChessPuzzleIllustration />;
-      } else if (content?.desc?.includes('八卦')) {
+      } else if (event?.desc?.includes('八卦')) {
         return <BaguaIllustration />;
       } else {
         return <ScrollIllustration />;
@@ -16,10 +16,10 @@ const EventIllustration = ({ eventType, content }) => {
     }
 
     // 献祭流
-    if (eventType === 'sacrifice') {
-      if (content?.desc?.includes('猿猴')) {
+    if (type === 'sacrifice') {
+      if (event?.desc?.includes('猿猴')) {
         return <InjuredMonkeyIllustration />;
-      } else if (content?.desc?.includes('高僧')) {
+      } else if (event?.desc?.includes('高僧')) {
         return <PoisonedMonkIllustration />;
       } else {
         return <FemaleCorpseIllustration />;
@@ -27,10 +27,10 @@ const EventIllustration = ({ eventType, content }) => {
     }
 
     // 蛮力破除
-    if (eventType === 'brute_force') {
-      if (content?.desc?.includes('古寺') || content?.desc?.includes('佛像')) {
+    if (type === 'brute_force') {
+      if (event?.desc?.includes('古寺') || event?.desc?.includes('佛像')) {
         return <AncientTempleIllustration />;
-      } else if (content?.desc?.includes('断龙石')) {
+      } else if (event?.desc?.includes('断龙石')) {
         return <DragonStoneIllustration />;
       } else {
         return <CrabSwarmIllustration />;
@@ -38,10 +38,10 @@ const EventIllustration = ({ eventType, content }) => {
     }
 
     // 古迹遗留
-    if (eventType === 'relic') {
-      if (content?.desc?.includes('枯骨') || content?.desc?.includes('重剑')) {
+    if (type === 'relic') {
+      if (event?.desc?.includes('枯骨') || event?.desc?.includes('重剑')) {
         return <SwordMasterGraveIllustration />;
-      } else if (content?.desc?.includes('寒泉') || content?.desc?.includes('仙女')) {
+      } else if (event?.desc?.includes('寒泉') || event?.desc?.includes('仙女')) {
         return <FairySpringIllustration />;
       } else {
         return <IncenseBurnerIllustration />;
@@ -49,10 +49,10 @@ const EventIllustration = ({ eventType, content }) => {
     }
 
     // 幻境审视
-    if (eventType === 'illusion') {
-      if (content?.desc?.includes('冰窟') || content?.desc?.includes('镜')) {
+    if (type === 'illusion') {
+      if (event?.desc?.includes('冰窟') || event?.desc?.includes('镜')) {
         return <IceMirrorIllustration />;
-      } else if (content?.desc?.includes('桃花')) {
+      } else if (event?.desc?.includes('桃花')) {
         return <PeachBlossomIllustration />;
       } else {
         return <BloodSeaIllustration />;
@@ -60,10 +60,10 @@ const EventIllustration = ({ eventType, content }) => {
     }
 
     // 身法机关
-    if (eventType === 'trap') {
-      if (content?.desc?.includes('弩') || content?.desc?.includes('甬道')) {
+    if (type === 'trap') {
+      if (event?.desc?.includes('弩') || event?.desc?.includes('甬道')) {
         return <CrossbowTrapIllustration />;
-      } else if (content?.desc?.includes('独木桥') || content?.desc?.includes('断崖')) {
+      } else if (event?.desc?.includes('独木桥') || event?.desc?.includes('断崖')) {
         return <BridgeAbyssIllustration />;
       } else {
         return <QuicksandRoomIllustration />;
