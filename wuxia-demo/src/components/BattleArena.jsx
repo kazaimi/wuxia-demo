@@ -2,6 +2,206 @@ import React, { useEffect, useRef } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Swords } from 'lucide-react';
 
+// 武侠角色形象组件
+const WarriorAvatar = ({ player, isLeft }) => {
+  if (!player) return null;
+
+  // 根据属性计算外观特征
+  const strRatio = (player.attributes?.str || 0) / 100;
+  const agiRatio = (player.attributes?.agi || 0) / 100;
+  const conRatio = (player.attributes?.con || 0) / 100;
+  const intRatio = (player.attributes?.int || 0) / 100;
+
+  // 根据装备的宝物决定武器样式
+  const treasure = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
+  const treasureEffect = treasure?.effect || '';
+
+  // 武器样式映射
+  const getWeaponStyle = () => {
+    if (treasureEffect === 'yiTian') return { type: 'sword', color: '#d4af37', name: '倚天剑' };
+    if (treasureEffect === 'tuLong') return { type: 'blade', color: '#dc143c', name: '屠龙刀' };
+    if (treasureEffect === 'xuanTie') return { type: 'heavySword', color: '#4a5568', name: '玄铁重剑' };
+    if (treasureEffect === 'jinShe') return { type: 'snakeSword', color: '#fbbf24', name: '金蛇剑' };
+    if (treasureEffect === 'daGou') return { type: 'staff', color: '#a0522d', name: '打狗棒' };
+    if (treasureEffect === 'dianXue') return { type: 'pen', color: '#6b7280', name: '判官笔' };
+    if (treasureEffect === 'shengHuo') return { type: 'token', color: '#ef4444', name: '圣火令' };
+    if (treasureEffect === 'jiMie') return { type: 'darkSword', color: '#1f2937', name: '绝世好剑' };
+    // 默认武器
+    return { type: 'fist', color: '#d4af37', name: '拳脚' };
+  };
+
+  const weapon = getWeaponStyle();
+
+  // 根据等级决定服装颜色深浅
+  const levelHue = Math.min(60, player.level || 1);
+
+  // 根据装备的内功决定气场颜色
+  const innerSkill = player.equippedSkills?.inner;
+  let auraColor = 'rgba(212, 175, 55, 0.3)';
+  if (innerSkill === 's_yijin') auraColor = 'rgba(139, 92, 246, 0.4)';
+  else if (innerSkill === 's5') auraColor = 'rgba(251, 191, 36, 0.4)';
+  else if (innerSkill === 's_xixing') auraColor = 'rgba(139, 0, 0, 0.4)';
+  else if (innerSkill === 's_shihou') auraColor = 'rgba(220, 38, 38, 0.4)';
+
+  // 体型：力量影响肩宽，体质影响身宽
+  const shoulderWidth = 35 + strRatio * 15;
+  const bodyWidth = 25 + conRatio * 8;
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '8px',
+      transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
+    }}>
+      {/* 气场光晕 */}
+      <div style={{
+        position: 'absolute',
+        width: '120px',
+        height: '150px',
+        background: `radial-gradient(ellipse at center, ${auraColor}, transparent 70%)`,
+        filter: 'blur(20px)',
+        animation: 'pulse 2s ease-in-out infinite',
+      }} />
+
+      {/* 角色SVG */}
+      <svg width="100" height="130" viewBox="0 0 100 130" style={{ filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))' }}>
+        {/* 定义渐变 */}
+        <defs>
+          <linearGradient id="robeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={`hsl(${levelHue}, 30%, 25%)`} />
+            <stop offset="100%" stopColor={`hsl(${levelHue}, 30%, 15%)`} />
+          </linearGradient>
+          <linearGradient id="skinGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#e8d4b8" />
+            <stop offset="100%" stopColor="#d4c4a8" />
+          </linearGradient>
+          <linearGradient id="hairGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#1a1a2e" />
+            <stop offset="100%" stopColor="#0a0a14" />
+          </linearGradient>
+        </defs>
+
+        {/* 身体/长袍 */}
+        <path
+          d={`M50 45 L${50 - shoulderWidth/2} 50 L${50 - bodyWidth} 110 L${50 + bodyWidth} 110 L${50 + shoulderWidth/2} 50 Z`}
+          fill="url(#robeGradient)"
+          stroke="#d4af37"
+          strokeWidth="0.5"
+          opacity="0.9"
+        />
+
+        {/* 腰带 */}
+        <rect x={50 - bodyWidth + 5} y="75" width={bodyWidth * 2 - 10} height="6" fill="#d4af37" opacity="0.8" />
+
+        {/* 头部 */}
+        <ellipse cx="50" cy="30" rx="18" ry="20" fill="url(#skinGradient)" />
+
+        {/* 头发/发髻 */}
+        <ellipse cx="50" cy="18" rx="16" ry="12" fill="url(#hairGradient)" />
+        <ellipse cx="50" cy="10" rx="6" ry="6" fill="url(#hairGradient)" />
+
+        {/* 眼睛 */}
+        <ellipse cx="44" cy="28" rx="3" ry="2" fill="#1a1a2e" />
+        <ellipse cx="56" cy="28" rx="3" ry="2" fill="#1a1a2e" />
+
+        {/* 眉毛 */}
+        <path d="M40 24 Q44 22 48 24" stroke="#1a1a2e" strokeWidth="1.5" fill="none" />
+        <path d="M52 24 Q56 22 60 24" stroke="#1a1a2e" strokeWidth="1.5" fill="none" />
+
+        {/* 武器 - 根据类型绘制 */}
+        {weapon.type === 'sword' && (
+          <g transform="translate(75, 50) rotate(30)">
+            <rect x="0" y="0" width="4" height="60" fill={weapon.color} />
+            <rect x="-3" y="55" width="10" height="8" fill="#d4af37" rx="2" />
+            <path d="M0 0 L2 -15 L4 0" fill={weapon.color} opacity="0.8" />
+          </g>
+        )}
+        {weapon.type === 'blade' && (
+          <g transform="translate(72, 45) rotate(25)">
+            <path d="M0 0 Q8 30 6 70 L2 70 Q0 30 0 0" fill={weapon.color} />
+            <rect x="-2" y="68" width="12" height="10" fill="#d4af37" rx="2" />
+          </g>
+        )}
+        {weapon.type === 'heavySword' && (
+          <g transform="translate(70, 40) rotate(20)">
+            <rect x="0" y="0" width="12" height="70" fill={weapon.color} rx="2" />
+            <rect x="-2" y="68" width="16" height="12" fill="#4a5568" rx="2" />
+          </g>
+        )}
+        {weapon.type === 'staff' && (
+          <g transform="translate(78, 30) rotate(15)">
+            <rect x="0" y="0" width="5" height="80" fill={weapon.color} rx="2" />
+            <circle cx="2.5" cy="5" r="4" fill="#22c55e" />
+          </g>
+        )}
+        {weapon.type === 'fist' && (
+          <g>
+            <ellipse cx="30" cy="65" rx="8" ry="6" fill="url(#skinGradient)" stroke="#d4af37" strokeWidth="0.5" />
+            <ellipse cx="70" cy="65" rx="8" ry="6" fill="url(#skinGradient)" stroke="#d4af37" strokeWidth="0.5" />
+          </g>
+        )}
+        {weapon.type === 'pen' && (
+          <g transform="translate(75, 55) rotate(40)">
+            <rect x="0" y="0" width="3" height="40" fill={weapon.color} />
+            <polygon points="0,0 1.5,-8 3,0" fill="#1a1a2e" />
+          </g>
+        )}
+        {weapon.type === 'token' && (
+          <g transform="translate(75, 60)">
+            <ellipse cx="0" cy="0" rx="12" ry="8" fill={weapon.color} />
+            <text x="0" y="3" textAnchor="middle" fontSize="8" fill="#d4af37">火</text>
+          </g>
+        )}
+        {weapon.type === 'snakeSword' && (
+          <g transform="translate(75, 50) rotate(30)">
+            <path d="M0 0 Q10 20 0 40 Q-10 60 0 80" stroke={weapon.color} strokeWidth="4" fill="none" />
+            <rect x="-3" y="78" width="10" height="8" fill="#d4af37" rx="2" />
+          </g>
+        )}
+        {weapon.type === 'darkSword' && (
+          <g transform="translate(75, 45) rotate(30)">
+            <rect x="0" y="0" width="5" height="65" fill={weapon.color} />
+            <rect x="0" y="0" width="5" height="65" fill="url(#darkAura)" opacity="0.5" />
+            <rect x="-4" y="60" width="13" height="10" fill="#1f2937" rx="2" />
+            {/* 剑身黑芒 */}
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite" />
+          </g>
+        )}
+
+        {/* 手臂 */}
+        <path d={`M${50 - shoulderWidth/2} 50 Q${50 - shoulderWidth/2 - 10} 60 ${50 - shoulderWidth/2 - 5} 70`}
+              stroke="url(#skinGradient)" strokeWidth="8" fill="none" strokeLinecap="round" />
+        <path d={`M${50 + shoulderWidth/2} 50 Q${50 + shoulderWidth/2 + 10} 60 ${50 + shoulderWidth/2 + 5} 70`}
+              stroke="url(#skinGradient)" strokeWidth="8" fill="none" strokeLinecap="round" />
+      </svg>
+
+      {/* 名字标签（不受翻转影响） */}
+      <div style={{
+        transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
+        textAlign: 'center',
+      }}>
+        <div style={{
+          fontSize: '0.9rem',
+          color: 'var(--gold)',
+          fontFamily: '"Ma Shan Zheng", cursive',
+          letterSpacing: '2px',
+          textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
+        }}>
+          {player.name}
+        </div>
+        <div style={{
+          fontSize: '0.7rem',
+          color: 'var(--text-muted)',
+        }}>
+          Lv.{player.level} | {weapon.name}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function BattleArena() {
   const player = useGameStore(state => state.player);
   const battleState = useGameStore(state => state.battleState);
@@ -328,21 +528,80 @@ export default function BattleArena() {
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-            <div style={{ width: '42%' }}>
-              <h4 style={{ color: 'var(--gold)', marginBottom: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p1?.name}</h4>
-              <div className="wuxia-progress">
-                <div className="wuxia-progress-bar" style={{ width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--jade), #22c55e)' }} />
+          {/* 战斗角色形象区域 */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+            background: 'rgba(0,0,0,0.4)',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(212, 175, 55, 0.2)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+            {/* 背景装饰 */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(ellipse at 25% 50%, rgba(0, 168, 107, 0.1), transparent 50%), radial-gradient(ellipse at 75% 50%, rgba(220, 20, 60, 0.1), transparent 50%)',
+              pointerEvents: 'none',
+            }} />
+
+            {/* 玩家1区域 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', zIndex: 1 }}>
+              <WarriorAvatar player={p1} isLeft={true} />
+              <div style={{ width: '140px' }}>
+                <div className="wuxia-progress">
+                  <div className="wuxia-progress-bar" style={{ width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--jade), #22c55e)' }} />
+                </div>
+                <div style={{ fontSize: '0.75rem', textAlign: 'center', marginTop: '4px', color: 'var(--text-muted)' }}>
+                  {Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 7000)}
+                </div>
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 7000)}</div>
             </div>
-            <h3 style={{ color: 'var(--crimson)', alignSelf: 'center', filter: 'drop-shadow(0 0 8px var(--crimson))', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.5rem' }}>⚔ VS ⚔</h3>
-            <div style={{ width: '42%' }}>
-               <h4 style={{ color: 'var(--crimson)', marginBottom: '0.5rem', textAlign: 'right', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>{p2?.name}</h4>
-               <div className="wuxia-progress" style={{ transform: 'rotate(180deg)' }}>
-                <div className="wuxia-progress-bar" style={{ width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--crimson), #ef4444)' }} />
+
+            {/* VS标志 */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              zIndex: 1,
+            }}>
+              <h3 style={{
+                color: 'var(--crimson)',
+                filter: 'drop-shadow(0 0 8px var(--crimson))',
+                fontFamily: '"Ma Shan Zheng", cursive',
+                fontSize: '1.8rem',
+                letterSpacing: '4px',
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}>
+                ⚔ VS ⚔
+              </h3>
+              <div style={{
+                fontSize: '0.8rem',
+                color: 'var(--text-muted)',
+                marginTop: '0.5rem',
+              }}>
+                第 {logs?.length || 1} 回合
               </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px', color: 'var(--text-muted)' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 7000)}</div>
+            </div>
+
+            {/* 玩家2区域 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', zIndex: 1 }}>
+              <WarriorAvatar player={p2} isLeft={false} />
+              <div style={{ width: '140px' }}>
+                <div className="wuxia-progress" style={{ transform: 'rotate(180deg)' }}>
+                  <div className="wuxia-progress-bar" style={{ width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'linear-gradient(90deg, var(--crimson), #ef4444)' }} />
+                </div>
+                <div style={{ fontSize: '0.75rem', textAlign: 'center', marginTop: '4px', color: 'var(--text-muted)' }}>
+                  {Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 7000)}
+                </div>
+              </div>
             </div>
           </div>
 
