@@ -388,6 +388,11 @@ select.wuxia-select:focus {
   50% { opacity: 0.8; transform: scale(1.05); }
 }
 
+@keyframes auraPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
+}
+
 /* 卡片悬浮效果 */
 .wuxia-card {
   transition: all 0.3s ease;
