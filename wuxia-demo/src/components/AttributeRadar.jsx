@@ -17,14 +17,10 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
   const totalPoints = Object.values(attributes).reduce((a, b) => a + b, 0) + freePoints;
   const sliderMax = Math.max(100, totalPoints + 20);
 
-  // 计算每个属性的最大可分配值
+  // 计算每个属性的最大可分配值 = 当前值 + 剩余潜能点
   const getAttrMax = (attrKey) => {
-    // 其他属性的最小值之和（永久加成）
-    const otherMinsSum = ATTR_CONFIG
-      .filter(a => a.k !== attrKey)
-      .reduce((sum, a) => sum + (permanentAttributes?.[a.k] || 0), 0);
-    // 最大值 = 总点数 - 其他属性的最小值之和
-    return totalPoints - otherMinsSum;
+    const currentVal = attributes[attrKey] || 0;
+    return currentVal + freePoints;
   };
 
   const radarData = ATTR_CONFIG.map(attr => ({

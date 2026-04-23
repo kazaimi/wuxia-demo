@@ -337,18 +337,22 @@ export const useGameStore = create((set, get) => ({
     const oldVal = state.player.attributes[attrKey] || 0;
     const diff = newValue - oldVal;
 
-    // 计算总点数
-    const totalPoints = Object.values(state.player.attributes).reduce((a, b) => a + b, 0) + state.player.freePoints;
+    // 新值不能小于永久加成
+    if (newValue < permVal) return state;
 
-    // 新值不能小于永久加成，不能超过总点数减去其他属性的最小值
-    const otherMinsSum = Object.entries(state.player.permanentAttributes || {})
+    // 检查是否有足够的freePoints来增加属性
+    if (diff > 0 && state.player.freePoints < diff) return state;
+
+    // 计算其他属性的当前值之和
+    const otherAttrsSum = Object.entries(state.player.attributes)
       .filter(([k]) => k !== attrKey)
       .reduce((sum, [, v]) => sum + v, 0);
 
-    const minVal = permVal;
-    const maxVal = totalPoints - otherMinsSum;
-
-    if (newValue < minVal || newValue > maxVal) return state;
+    // 新值不能导致总属性超过 (初始点数 + 等级奖励点数)
+    const INITIAL_POINTS = 0;
+    const POINTS_PER_LEVEL = 5;
+    const maxTotal = INITIAL_POINTS + (state.player.level - 1) * POINTS_PER_LEVEL;
+    if (newValue + otherAttrsSum > maxTotal) return state;
 
     let p = { ...state.player, attributes: { ...state.player.attributes }, freePoints: state.player.freePoints - diff };
     p.attributes[attrKey] = newValue;
