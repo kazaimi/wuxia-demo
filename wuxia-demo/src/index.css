@@ -546,3 +546,252 @@ select.wuxia-select:focus {
   border-left: none;
   border-top: none;
 }
+
+/* ========== 战斗动效样式 ========== */
+
+/* 剑气划过动画 */
+@keyframes slashDraw {
+  0% { stroke-dasharray: 0 600; stroke-dashoffset: 0; }
+  100% { stroke-dasharray: 600 0; stroke-dashoffset: -600; }
+}
+
+@keyframes slashFade {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(50px); }
+}
+
+/* 重击震动 */
+@keyframes heavyShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-10px); }
+  20% { transform: translateX(10px); }
+  30% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  50% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+}
+
+/* 暴击爆发 */
+@keyframes burstExpand {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes criticalPop {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.5) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 0; transform: translateY(-30px); }
+}
+
+@keyframes rayShoot {
+  0% { transform: scaleX(0); opacity: 1; }
+  100% { transform: scaleX(2); opacity: 0; }
+}
+
+/* 闪避效果 */
+@keyframes dodgeFade {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes dodgeText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+/* 治愈效果 */
+@keyframes healPulse {
+  0% { transform: scale(0); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes healFloat {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-50px); opacity: 0; }
+}
+
+@keyframes healNumber {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1); opacity: 0; }
+}
+
+/* 增益效果 */
+@keyframes buffRing {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes buffRise {
+  0% { transform: translateY(50px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+/* 减益效果 */
+@keyframes debuffPulse {
+  0% { transform: scale(0); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes debuffFall {
+  0% { transform: translateY(-30px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(30px); opacity: 0; }
+}
+
+/* 复活效果 */
+@keyframes reviveGlow {
+  0% { transform: scale(0); opacity: 0; }
+  30% { transform: scale(1); opacity: 0.8; }
+  60% { transform: scale(1.5); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes reviveRay {
+  0% { transform: scaleY(0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scaleY(1.5); opacity: 0; }
+}
+
+@keyframes reviveText {
+  0% { transform: scale(0) translateY(20px); opacity: 0; }
+  30% { transform: scale(1.2) translateY(0); opacity: 1; }
+  70% { transform: scale(1) translateY(-10px); opacity: 1; }
+  100% { transform: scale(0.8) translateY(-30px); opacity: 0; }
+}
+
+/* 气劲爆发 */
+@keyframes inkExpand {
+  0% { r: 5; opacity: 1; }
+  100% { r: 80; opacity: 0; }
+}
+
+@keyframes inkSpread {
+  0% { r: 10; opacity: 0.8; }
+  100% { r: 100; opacity: 0; }
+}
+
+@keyframes inkSplash {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  100% { transform: scale(0.3); opacity: 0; }
+}
+
+/* 中毒效果 */
+@keyframes poisonCloud {
+  0% { transform: scale(0.5); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes poisonBubble {
+  0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+  50% { transform: translateY(-20px) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+@keyframes poisonText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+/* 眩晕效果 */
+@keyframes stunStar {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+  50% { transform: rotate(180deg) scale(1.5); opacity: 1; }
+}
+
+@keyframes stunText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-10px); opacity: 0; }
+}
+
+/* 内伤效果 */
+@keyframes internalText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-15px); opacity: 0; }
+}
+
+/* 打击停顿 */
+@keyframes hitStop {
+  0% { transform: scale(1); }
+  10% { transform: scale(0.98); }
+  30% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* 角色受击震动 */
+@keyframes characterHit {
+  0%, 100% { transform: translateX(0); filter: brightness(1); }
+  20% { transform: translateX(-5px); filter: brightness(1.5) saturate(1.2); }
+  40% { transform: translateX(5px); filter: brightness(1.2); }
+  60% { transform: translateX(-3px); filter: brightness(1); }
+}
+
+/* 角色出招发光 */
+@keyframes characterAttack {
+  0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+  30% { filter: brightness(1.3) drop-shadow(0 0 15px var(--gold)); }
+  60% { filter: brightness(1.1) drop-shadow(0 0 8px var(--gold)); }
+  100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+
+/* 角色闪避残影 */
+@keyframes characterDodge {
+  0% { opacity: 1; transform: translateX(0); }
+  30% { opacity: 0.5; transform: translateX(-10px); }
+  60% { opacity: 0.3; transform: translateX(5px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* 角色重伤灰化 */
+@keyframes characterWounded {
+  0% { filter: grayscale(0) brightness(1); }
+  100% { filter: grayscale(0.5) brightness(0.7); }
+}
+
+/* 角色死亡 */
+@keyframes characterDeath {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  50% { opacity: 0.5; transform: translateY(10px) rotate(-5deg); }
+  100% { opacity: 0; transform: translateY(20px) rotate(-10deg); }
+}
+
+/* 伤害飘字 */
+@keyframes damageFloat {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+  50% { transform: translateY(-30px) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+}
+
+/* 气血条变化动画 */
+@keyframes hpBarChange {
+  0% { transition: width 0.1s ease-out; }
+  50% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+/* 护盾效果 */
+@keyframes shieldGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(79, 172, 254, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(79, 172, 254, 0.6); }
+}
+
+/* Buff 状态指示器 */
+@keyframes buffIndicator {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Debuff 状态指示器 */
+@keyframes debuffIndicator {
+  0%, 100% { opacity: 0.5; transform: rotate(0deg); }
+  50% { opacity: 0.8; transform: rotate(5deg); }
+}
