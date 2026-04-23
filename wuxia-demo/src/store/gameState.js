@@ -331,6 +331,36 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
+  // 设置单个属性值（用于滑块调整）
+  setAttribute: (attrKey, newValue) => set((state) => {
+    const permVal = state.player.permanentAttributes?.[attrKey] || 0;
+    const oldVal = state.player.attributes[attrKey] || 0;
+    const diff = newValue - oldVal;
+
+    // 计算总点数
+    const totalPoints = Object.values(state.player.attributes).reduce((a, b) => a + b, 0) + state.player.freePoints;
+
+    // 新值不能小于永久加成，不能超过总点数减去其他属性的最小值
+    const otherMinsSum = Object.entries(state.player.permanentAttributes || {})
+      .filter(([k]) => k !== attrKey)
+      .reduce((sum, [, v]) => sum + v, 0);
+
+    const minVal = permVal;
+    const maxVal = totalPoints - otherMinsSum;
+
+    if (newValue < minVal || newValue > maxVal) return state;
+
+    let p = { ...state.player, attributes: { ...state.player.attributes }, freePoints: state.player.freePoints - diff };
+    p.attributes[attrKey] = newValue;
+
+    if (attrKey === 'con') {
+      p.maxHp = calculateMaxHp(p.level, p.attributes.con);
+      p.hp = p.maxHp;
+    }
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
   allocatePoints: (attrKey, amount) => set((state) => {
     let p = { ...state.player, attributes: { ...state.player.attributes } };
     const addAmt = Math.min(Math.max(1, amount), p.freePoints);
