@@ -1,6 +1,105 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Skull, Swords, Gift } from 'lucide-react';
+import DynamicPortrait from './DynamicPortrait';
+import BattleEffects, { DamageFloatNumber } from './BattleEffects';
+
+// 根据名字判断性别
+const guessGenderByName = (name) => {
+  const femaleEndings = ['月', '雪', '霜', '云', '霞', '玉', '珠', '翠', '红', '燕', '莺', '凤', '鸾', '娟', '婷', '婉', '柔', '嫣', '瑶', '薇', '蕾', '露', '涵', '晴', '雨', '烟', '琳', '瑾', '颖', '萱', '蕊', '黛', '芷', '芸', '梦', '舞', '琴', '仙', '姬', '娘', '姑', '妹', '姐', '女', '芳', '莲', '梅', '兰', '竹', '菊'];
+  const lastChar = name?.slice(-1) || '';
+  if (femaleEndings.includes(lastChar)) return 'female';
+  return 'male';
+};
+
+// 获取武器类型
+const getWeaponType = (player) => {
+  const treasure = TREASURES_DB?.find(t => t.id === player?.equippedTreasure);
+  const effect = treasure?.effect || '';
+  const weaponMap = {
+    'yiTian': 'sword', 'tuLong': 'blade', 'xuanTie': 'sword', 'jinShe': 'sword',
+    'daGou': 'fist', 'dianXue': 'fist', 'shengHuo': 'blade', 'jiMie': 'sword',
+  };
+  return weaponMap[effect] || 'sword';
+};
+
+// 获取气劲颜色
+const getAuraColor = (player) => {
+  const innerSkill = player?.equippedSkills?.inner;
+  const colorMap = {
+    's_yijin': '#8b5cf6',
+    's5': '#fbbf24',
+    's_xixing': '#ef4444',
+    's_shihou': '#f97316',
+  };
+  return colorMap[innerSkill] || '#4facfe';
+};
+
+// 战斗角色卡片（简化版）
+const EncounterCharacter = ({ player, isPlayer }) => {
+  if (!player) return null;
+
+  const gender = useMemo(() => guessGenderByName(player.name), [player.name]);
+  const weaponType = getWeaponType(player);
+  const auraColor = getAuraColor(player);
+  const hpRatio = (player.hp || 0) / (player.maxHp || 7000);
+  const portraitState = hpRatio <= 0 ? 'critical' : hpRatio <= 0.3 ? 'critical' : 'idle';
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '8px',
+    }}>
+      {/* 名字和等级 */}
+      <div style={{
+        textAlign: 'center',
+        color: isPlayer ? '#4facfe' : '#f59e0b',
+        fontFamily: '"Ma Shan Zheng", cursive',
+        letterSpacing: '2px',
+      }}>
+        <span style={{ fontSize: '1rem' }}>{player.name}</span>
+        {isPlayer && <span style={{ fontSize: '0.7rem', opacity: 0.7 }}> (双倍气血)</span>}
+      </div>
+
+      {/* 动态立绘 */}
+      <DynamicPortrait
+        gender={gender}
+        state={portraitState}
+        silhouette={false}
+        weaponType={weaponType}
+        auraColor={auraColor}
+        size={100}
+      />
+
+      {/* 气血条 */}
+      <div style={{ width: '120px' }}>
+        <div style={{
+          height: '8px',
+          background: 'rgba(0,0,0,0.5)',
+          borderRadius: '4px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${hpRatio * 100}%`,
+            height: '100%',
+            background: isPlayer ? 'linear-gradient(90deg, #22c55e, #10b981)' : 'linear-gradient(90deg, #ef4444, #dc2626)',
+            transition: 'width 0.3s ease',
+          }} />
+        </div>
+        <div style={{
+          fontSize: '0.75rem',
+          textAlign: 'center',
+          color: '#888',
+          marginTop: '4px',
+        }}>
+          {Math.floor(player.hp)} / {Math.floor(player.maxHp)}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function EncounterArena() {
   const player = useGameStore(state => state.player);
@@ -364,25 +463,25 @@ export default function EncounterArena() {
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px' }}>
-            <div style={{ width: '42%' }}>
-              <h4 style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>{p1?.name} (双倍气血)</h4>
-              <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${(p1?.hp / p1?.maxHp) * 100}%`, background: 'var(--success)', transition: 'width 0.3s' }}></div>
-              </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'right', marginTop: '4px' }}>{Math.floor(p1?.hp || 0)} / {Math.floor(p1?.maxHp || 0)}</div>
-            </div>
+          {/* 角色立绘区域 */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '40px',
+            marginBottom: '1rem',
+            padding: '1rem',
+            background: 'rgba(0,0,0,0.3)',
+            borderRadius: '12px',
+          }}>
+            <EncounterCharacter player={p1} isPlayer={true} />
+
             <div style={{ textAlign: 'center' }}>
-               <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))' }}>VS</h3>
-               <span style={{ fontSize: '0.8rem', color: 'var(--warn)' }}>{currentEnemyIndex.current + 1} / 3</span>
+               <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))', fontFamily: '"Ma Shan Zheng", cursive' }}>VS</h3>
+               <span style={{ fontSize: '0.9rem', color: 'var(--warn)', fontFamily: '"Ma Shan Zheng", cursive' }}>第 {currentEnemyIndex.current + 1} / 3 战</span>
             </div>
-            <div style={{ width: '42%' }}>
-               <h4 style={{ color: 'var(--warn)', marginBottom: '0.5rem', textAlign: 'right' }}>{p2?.name}</h4>
-               <div style={{ height: '12px', background: 'var(--glass-border)', borderRadius: '6px', overflow: 'hidden', transform: 'rotate(180deg)' }}>
-                <div style={{ height: '100%', width: `${(p2?.hp / p2?.maxHp) * 100}%`, background: 'var(--danger)', transition: 'width 0.3s' }}></div>
-              </div>
-              <div style={{ fontSize: '0.8rem', textAlign: 'left', marginTop: '4px' }}>{Math.floor(p2?.hp || 0)} / {Math.floor(p2?.maxHp || 0)}</div>
-            </div>
+
+            <EncounterCharacter player={p2} isPlayer={false} />
           </div>
 
           <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'monospace', fontSize: '1rem' }}>

@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Swords } from 'lucide-react';
+import DynamicPortrait from './DynamicPortrait';
+import BattleEffects, { DamageFloatNumber } from './BattleEffects';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
@@ -15,287 +17,200 @@ const guessGenderByName = (name) => {
   return 'male';
 };
 
-// 太吾绘卷/鬼谷八荒风格角色卡片
-const WarriorAvatar = ({ player, isLeft }) => {
+// 获取武器类型
+const getWeaponType = (player) => {
+  const treasure = TREASURES_DB?.find(t => t.id === player?.equippedTreasure);
+  const effect = treasure?.effect || '';
+  const weaponMap = {
+    'yiTian': 'sword', 'tuLong': 'blade', 'xuanTie': 'sword', 'jinShe': 'sword',
+    'daGou': 'fist', 'dianXue': 'fist', 'shengHuo': 'blade', 'jiMie': 'sword',
+  };
+  return weaponMap[effect] || 'sword';
+};
+
+// 获取气劲颜色
+const getAuraColor = (player) => {
+  const innerSkill = player?.equippedSkills?.inner;
+  const colorMap = {
+    's_yijin': '#8b5cf6', // 易筋经 - 紫色
+    's5': '#fbbf24',      // 九阳 - 金色
+    's_xixing': '#ef4444', // 吸星 - 红色
+    's_shihou': '#f97316', // 狮吼 - 橙色
+  };
+  return colorMap[innerSkill] || '#4facfe';
+};
+
+// 战斗角色卡片（使用动态立绘）
+const BattleCharacter = ({ player, isLeft, battleState }) => {
   if (!player) return null;
 
   const gender = useMemo(() => guessGenderByName(player.name), [player.name]);
-  const isFemale = gender === 'female';
+  const weaponType = getWeaponType(player);
+  const auraColor = getAuraColor(player);
+
+  // 根据战斗状态决定立绘状态
+  const getPortraitState = () => {
+    if (!battleState) return 'idle';
+    if (player.hp <= 0) return 'critical';
+    if (battleState.lastHit === player.name) return 'hit';
+    if (battleState.attacker === player.name) return 'attacking';
+    return 'idle';
+  };
+
+  // 等级决定边框颜色
+  const getLevelStyle = () => {
+    const level = player.level || 1;
+    if (level >= 90) return { border: '#ffd700', rank: '神话' };
+    if (level >= 70) return { border: '#a855f7', rank: '传说' };
+    if (level >= 50) return { border: '#f97316', rank: '史诗' };
+    if (level >= 30) return { border: '#3b82f6', rank: '稀有' };
+    if (level >= 15) return { border: '#22c55e', rank: '优秀' };
+    return { border: '#6b7280', rank: '普通' };
+  };
+
+  const levelStyle = getLevelStyle();
+  const hpRatio = (player.hp || 0) / (player.maxHp || 7000);
 
   // 武器信息
   const treasure = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
   const treasureEffect = treasure?.effect || '';
-
   const getWeaponInfo = () => {
     const weapons = {
-      'yiTian': { name: '倚天剑', icon: '🗡️', color: '#c9a227' },
-      'tuLong': { name: '屠龙刀', icon: '⚔️', color: '#8b0000' },
-      'xuanTie': { name: '玄铁重剑', icon: '🗡️', color: '#4a5568' },
-      'jinShe': { name: '金蛇剑', icon: '🐍', color: '#d4af37' },
-      'daGou': { name: '打狗棒', icon: '🪄', color: '#8b4513' },
-      'dianXue': { name: '判官笔', icon: '✒️', color: '#4a5568' },
-      'shengHuo': { name: '圣火令', icon: '🔥', color: '#dc2626' },
-      'jiMie': { name: '绝世好剑', icon: '⚔️', color: '#6366f1' },
-      'niePan': { name: '达摩舍利', icon: '📿', color: '#fbbf24' },
-      'ruanWei': { name: '软猬甲', icon: '🛡️', color: '#78350f' },
+      'yiTian': { name: '倚天剑', icon: '🗡️' },
+      'tuLong': { name: '屠龙刀', icon: '⚔️' },
+      'xuanTie': { name: '玄铁重剑', icon: '🗡️' },
+      'jinShe': { name: '金蛇剑', icon: '🐍' },
+      'daGou': { name: '打狗棒', icon: '🪄' },
+      'dianXue': { name: '判官笔', icon: '✒️' },
+      'shengHuo': { name: '圣火令', icon: '🔥' },
+      'jiMie': { name: '绝世好剑', icon: '⚔️' },
+      'niePan': { name: '达摩舍利', icon: '📿' },
+      'ruanWei': { name: '软猬甲', icon: '🛡️' },
     };
-    return weapons[treasureEffect] || { name: '拳脚', icon: '👊', color: '#d4af37' };
+    return weapons[treasureEffect] || { name: '拳脚', icon: '👊' };
   };
-
   const weapon = getWeaponInfo();
-
-  // 等级决定边框和背景颜色
-  const getLevelStyle = () => {
-    const level = player.level || 1;
-    if (level >= 90) return { border: '#ffd700', bg: 'linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)', rank: '神话' };
-    if (level >= 70) return { border: '#a855f7', bg: 'linear-gradient(180deg, #1e1a3d 0%, #0f0d1f 100%)', rank: '传说' };
-    if (level >= 50) return { border: '#f97316', bg: 'linear-gradient(180deg, #2d1f1a 0%, #1a120d 100%)', rank: '史诗' };
-    if (level >= 30) return { border: '#3b82f6', bg: 'linear-gradient(180deg, #1a2d3d 0%, #0d1a24 100%)', rank: '稀有' };
-    if (level >= 15) return { border: '#22c55e', bg: 'linear-gradient(180deg, #1a2d24 0%, #0d1a12 100%)', rank: '优秀' };
-    return { border: '#6b7280', bg: 'linear-gradient(180deg, #1f1f1f 0%, #0f0f0f 100%)', rank: '普通' };
-  };
-
-  const levelStyle = getLevelStyle();
-
-  // 内功气场
-  const innerSkill = player.equippedSkills?.inner;
-  let auraStyle = {};
-  if (innerSkill === 's_yijin') auraStyle = { shadow: '0 0 30px rgba(139, 92, 246, 0.5)', glow: 'rgba(139, 92, 246, 0.3)' };
-  else if (innerSkill === 's5') auraStyle = { shadow: '0 0 30px rgba(251, 191, 36, 0.5)', glow: 'rgba(251, 191, 36, 0.3)' };
-  else if (innerSkill === 's_xixing') auraStyle = { shadow: '0 0 30px rgba(220, 38, 38, 0.5)', glow: 'rgba(220, 38, 38, 0.3)' };
-  else if (innerSkill === 's_shihou') auraStyle = { shadow: '0 0 30px rgba(234, 88, 12, 0.5)', glow: 'rgba(234, 88, 12, 0.3)' };
-  else auraStyle = { shadow: '0 0 20px rgba(212, 175, 55, 0.3)', glow: 'rgba(212, 175, 55, 0.2)' };
-
-  // 气血比例
-  const hpRatio = (player.hp || 0) / (player.maxHp || 7000);
 
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: '10px',
-      transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
+      gap: '8px',
     }}>
-      {/* 角色卡片 - 太吾绘卷风格 */}
+      {/* 角色卡片 */}
       <div style={{
         position: 'relative',
-        width: '180px',
-        height: '240px',
-        borderRadius: '8px',
-        background: levelStyle.bg,
+        padding: '15px',
+        background: 'linear-gradient(180deg, rgba(20,15,25,0.95), rgba(10,5,15,0.98))',
+        borderRadius: '12px',
         border: `2px solid ${levelStyle.border}`,
-        boxShadow: auraStyle.shadow,
-        overflow: 'hidden',
-        transition: 'all 0.3s ease',
+        boxShadow: `0 0 20px ${levelStyle.border}40`,
       }}>
-        {/* 顶部装饰边框 */}
+        {/* 等级和名字 */}
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '3px',
-          background: `linear-gradient(90deg, transparent, ${levelStyle.border}, transparent)`,
-        }} />
-
-        {/* 角落装饰 */}
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          left: '8px',
-          width: '20px',
-          height: '20px',
-          borderLeft: `2px solid ${levelStyle.border}`,
-          borderTop: `2px solid ${levelStyle.border}`,
-        }} />
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          width: '20px',
-          height: '20px',
-          borderRight: `2px solid ${levelStyle.border}`,
-          borderTop: `2px solid ${levelStyle.border}`,
-        }} />
-
-        {/* 性别图标 */}
-        <div style={{
-          position: 'absolute',
-          top: '12px',
-          left: '12px',
-          fontSize: '1.2rem',
-          opacity: 0.8,
-        }}>
-          {isFemale ? '👤' : '👤'}
-        </div>
-
-        {/* 等级标签 */}
-        <div style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          padding: '2px 8px',
-          background: 'rgba(0,0,0,0.6)',
-          borderRadius: '4px',
-          fontSize: '0.75rem',
-          color: levelStyle.border,
-          fontFamily: '"Ma Shan Zheng", cursive',
-          border: `1px solid ${levelStyle.border}40`,
-        }}>
-          Lv.{player.level}
-        </div>
-
-        {/* 角色立绘区域 - 简化的像素风格人物 */}
-        <div style={{
-          position: 'absolute',
-          top: '40px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '140px',
           display: 'flex',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignItems: 'center',
+          marginBottom: '8px',
+          padding: '0 5px',
         }}>
-          {/* 像素风格角色 - 太吾绘卷风格 */}
-          <svg width="100" height="130" viewBox="0 0 100 130">
-            <defs>
-              <linearGradient id="robe" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={isFemale ? '#4a3f5c' : '#2d3a4a'} />
-                <stop offset="100%" stopColor={isFemale ? '#2d2538' : '#1a2530'} />
-              </linearGradient>
-              <linearGradient id="skin" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#f5e6d3" />
-                <stop offset="100%" stopColor="#e8d4be" />
-              </linearGradient>
-              <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#1a1a2e" />
-                <stop offset="100%" stopColor="#0d0d1a" />
-              </linearGradient>
-            </defs>
-
-            {/* 身体 - 简化的像素风格 */}
-            <rect x="35" y="55" width="30" height="50" fill="url(#robe)" rx="3" />
-
-            {/* 腿部 */}
-            <rect x="38" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
-            <rect x="52" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
-
-            {/* 腰带 */}
-            <rect x="35" y="75" width="30" height="6" fill={levelStyle.border} opacity="0.8" rx="1" />
-
-            {/* 手臂 */}
-            <rect x="25" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
-            <rect x="63" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
-
-            {/* 手 */}
-            <rect x="27" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
-            <rect x="65" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
-
-            {/* 头部 */}
-            <ellipse cx="50" cy="35" rx="18" ry="20" fill="url(#skin)" />
-
-            {/* 头发 */}
-            {isFemale ? (
-              <g>
-                <ellipse cx="50" cy="25" rx="18" ry="14" fill="url(#hair)" />
-                <rect x="32" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
-                <rect x="60" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
-                <ellipse cx="50" cy="15" rx="10" ry="8" fill="url(#hair)" />
-              </g>
-            ) : (
-              <g>
-                <ellipse cx="50" cy="25" rx="18" ry="12" fill="url(#hair)" />
-                <ellipse cx="50" cy="15" rx="8" ry="6" fill="url(#hair)" />
-                <rect x="46" y="12" width="8" height="4" fill={levelStyle.border} rx="1" />
-              </g>
-            )}
-
-            {/* 眼睛 */}
-            <rect x="42" y="32" width="4" height="3" fill="#1a1a2e" rx="1" />
-            <rect x="54" y="32" width="4" height="3" fill="#1a1a2e" rx="1" />
-
-            {/* 嘴巴 */}
-            <rect x="47" y="42" width="6" height="2" fill="#c9a0a0" rx="1" />
-
-            {/* 武器图标 */}
-            <text x="75" y="60" fontSize="20" textAnchor="middle">{weapon.icon}</text>
-          </svg>
-        </div>
-
-        {/* 底部信息栏 */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '10px',
-          background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.8))',
-        }}>
-          {/* 名字 */}
-          <div style={{
-            textAlign: 'center',
-            fontSize: '1.1rem',
+          <span style={{
+            fontSize: '1rem',
             color: '#f0f0f0',
             fontFamily: '"Ma Shan Zheng", cursive',
             letterSpacing: '2px',
-            marginBottom: '6px',
-            textShadow: '0 0 10px rgba(0,0,0,0.8)',
           }}>
             {player.name}
-          </div>
-
-          {/* 武器 */}
-          <div style={{
-            textAlign: 'center',
+          </span>
+          <span style={{
             fontSize: '0.8rem',
-            color: weapon.color,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '4px',
+            color: levelStyle.border,
+            background: 'rgba(0,0,0,0.5)',
+            padding: '2px 8px',
+            borderRadius: '4px',
           }}>
-            <span>{weapon.icon}</span>
-            <span>{weapon.name}</span>
-          </div>
+            Lv.{player.level}
+          </span>
+        </div>
+
+        {/* 动态立绘 */}
+        <div style={{
+          position: 'relative',
+          transform: isLeft ? 'scaleX(1)' : 'scaleX(-1)',
+        }}>
+          <DynamicPortrait
+            gender={gender}
+            state={getPortraitState()}
+            silhouette={false}
+            weaponType={weaponType}
+            auraColor={auraColor}
+            size={120}
+          />
+        </div>
+
+        {/* 武器 */}
+        <div style={{
+          textAlign: 'center',
+          fontSize: '0.85rem',
+          color: '#c9a227',
+          marginTop: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '4px',
+        }}>
+          <span>{weapon.icon}</span>
+          <span>{weapon.name}</span>
         </div>
 
         {/* 气血条 */}
         <div style={{
-          position: 'absolute',
-          bottom: '55px',
-          left: '15px',
-          right: '15px',
-          height: '6px',
-          background: 'rgba(0,0,0,0.5)',
-          borderRadius: '3px',
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.1)',
+          marginTop: '8px',
+          width: '100%',
         }}>
           <div style={{
-            width: `${hpRatio * 100}%`,
-            height: '100%',
-            background: isLeft
-              ? 'linear-gradient(90deg, #059669, #10b981)'
-              : 'linear-gradient(90deg, #dc2626, #ef4444)',
-            transition: 'width 0.3s ease',
-          }} />
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: '0.75rem',
+            color: '#888',
+            marginBottom: '4px',
+          }}>
+            <span>气血</span>
+            <span>{Math.floor(player.hp)} / {Math.floor(player.maxHp)}</span>
+          </div>
+          <div style={{
+            height: '8px',
+            background: 'rgba(0,0,0,0.5)',
+            borderRadius: '4px',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              width: `${hpRatio * 100}%`,
+              height: '100%',
+              background: hpRatio > 0.5 ? 'linear-gradient(90deg, #22c55e, #10b981)'
+                         : hpRatio > 0.25 ? 'linear-gradient(90deg, #f59e0b, #d97706)'
+                         : 'linear-gradient(90deg, #ef4444, #dc2626)',
+              transition: 'width 0.3s ease',
+            }} />
+          </div>
         </div>
 
-        {/* 气血数值 */}
-        <div style={{
-          position: 'absolute',
-          bottom: '62px',
-          left: '0',
-          right: '0',
-          textAlign: 'center',
-          fontSize: '0.7rem',
-          color: '#a0a0a0',
-          fontFamily: 'monospace',
-        }}>
-          {Math.floor(player.hp || 0)} / {Math.floor(player.maxHp || 7000)}
-        </div>
+        {/* 状态效果 */}
+        {player.buffs?.shield > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: '-10px',
+            right: '-10px',
+            background: '#3b82f6',
+            color: '#fff',
+            fontSize: '0.7rem',
+            padding: '2px 6px',
+            borderRadius: '10px',
+          }}>
+            🛡️ {player.buffs.shield}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -307,9 +222,90 @@ export default function BattleArena() {
   const { inBattle, p1, p2, logs, winner, roomId } = battleState;
   const sendBattleAction = useGameStore(state => state.sendBattleAction);
   const exitBattle = useGameStore(state => state.exitBattle);
-  
-  // Auto-scroll removed as requested
 
+  // 战斗动效状态
+  const [effects, setEffects] = useState([]);
+  const [damageNumbers, setDamageNumbers] = useState([]);
+  const [currentBattleState, setCurrentBattleState] = useState({});
+
+  // 添加动效
+  const addEffect = (type, position, intensity = 1) => {
+    const id = Date.now() + Math.random();
+    setEffects(prev => [...prev, { id, type, position, intensity }]);
+  };
+
+  // 添加伤害数字
+  const addDamageNumber = (damage, position, isHeal = false) => {
+    const id = Date.now() + Math.random();
+    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal }]);
+  };
+
+  // 移除动效
+  const removeEffect = (id) => {
+    setEffects(prev => prev.filter(e => e.id !== id));
+  };
+
+  // 移除伤害数字
+  const removeDamageNumber = (id) => {
+    setDamageNumbers(prev => prev.filter(d => d.id !== id));
+  };
+
+  // 解析战斗日志，触发动效
+  useEffect(() => {
+    if (!logs || logs.length === 0) return;
+    const lastLog = logs[logs.length - 1];
+
+    // 检测攻击
+    if (lastLog.includes('造成了') || lastLog.includes('斩去')) {
+      const damageMatch = lastLog.match(/(\d+)\s*点/);
+      if (damageMatch) {
+        const damage = parseInt(damageMatch[1]);
+        addEffect('swordSlash', 'center', damage > 100 ? 2 : 1);
+        addDamageNumber(damage, p1?.name === player.name ? 'right' : 'left');
+        setCurrentBattleState({ attacker: p1?.name === player.name ? p1?.name : p2?.name });
+      }
+    }
+
+    // 检测闪避
+    if (lastLog.includes('躲开') || lastLog.includes('闪避')) {
+      addEffect('dodge', 'center');
+    }
+
+    // 检测治疗
+    if (lastLog.includes('恢复了') || lastLog.includes('回春')) {
+      const healMatch = lastLog.match(/恢复了?\s*(\d+)/);
+      if (healMatch) {
+        addEffect('heal', 'center');
+        addDamageNumber(parseInt(healMatch[1]), p1?.name === player.name ? 'left' : 'right', true);
+      }
+    }
+
+    // 检测暴击/重击
+    if (lastLog.includes('暴击') || lastLog.includes('重创')) {
+      addEffect('criticalHit', 'center', 2);
+    }
+
+    // 检测中毒
+    if (lastLog.includes('毒') || lastLog.includes('中毒')) {
+      addEffect('poison', 'center');
+    }
+
+    // 检测晕眩
+    if (lastLog.includes('晕') || lastLog.includes('震晕')) {
+      addEffect('stun', 'center');
+    }
+
+    // 检测复活
+    if (lastLog.includes('复活') || lastLog.includes('涅槃')) {
+      addEffect('revive', 'center');
+    }
+
+    // 清除战斗状态
+    const timer = setTimeout(() => {
+      setCurrentBattleState({});
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [logs]);
 
   useEffect(() => {
     if (!inBattle || winner || !p1 || !p2) return;
@@ -334,7 +330,7 @@ export default function BattleArena() {
       const dTreasure = getTreasure(defender.equippedTreasure);
 
       const checkImmune = (playerObj, tObj, debuffType) => {
-         if (tObj?.effect === 'jiMie') return true; // 绝世好剑全免疫
+         if (tObj?.effect === 'jiMie') return true;
          if (tObj?.effect === 'ruanWei' && (debuffType==='stun'||debuffType==='poison')) return true;
          if (tObj?.effect === 'jinShe' && debuffType==='poison') return true;
          return false;
@@ -343,8 +339,7 @@ export default function BattleArena() {
       let logCount = logs.length;
       let logPrefix = "";
 
-      // 开局特效判定 (木质佛珠, 圣火令)
-      if (logCount === 1) { 
+      if (logCount === 1) {
          if (aTreasure?.effect === 'ningShen') {
              attacker.buffs.shield += Math.floor(attacker.maxHp * 0.05);
              logPrefix += `[开局] ${attacker.name} 的【木质佛珠】泛起佛光，获得了护盾！\n`;
@@ -363,7 +358,6 @@ export default function BattleArena() {
          }
       }
 
-      // 中毒结算
       if (attacker.debuffs.poison > 0) {
          const poisonPct = attacker.debuffs.poisonPercent || 0.03;
          const pDmg = Math.max(1, Math.floor(attacker.maxHp * poisonPct));
@@ -382,14 +376,13 @@ export default function BattleArena() {
       } else if (attacker.dailyDebuffs?.includes('心魔劫') && Math.random() < 0.15) {
          actionLog = `[心魔发作] ${attacker.name} 突然心神失守，招式走形破绽大开，错失了良机！`;
       } else {
-         // 选择技能
          const eq = attacker.equippedSkills || {};
          let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
          if (attacker.debuffs.silence > 0) {
-             skillIds = ['s1']; // 被封穴或威压，只能平A基本拳脚
+             skillIds = ['s1'];
              attacker.debuffs.silence--;
          } else if (attacker.debuffs.internalWound > 0) {
-             skillIds = [eq.outer].filter(Boolean); // 内伤只能外功
+             skillIds = [eq.outer].filter(Boolean);
              if (skillIds.length===0) skillIds = ['s1'];
              attacker.debuffs.internalWound--;
          }
@@ -411,7 +404,7 @@ export default function BattleArena() {
             return weighted[weighted.length - 1].skill;
          };
          const skill = pickSkill();
-         
+
          const aStr = attacker.dailyDebuffs?.includes('散功劫') ? Math.max(0, attacker.attributes.str - 5) : attacker.attributes.str;
          const dCon = defender.dailyDebuffs?.includes('散功劫') ? Math.max(0, defender.attributes.con - 5) : defender.attributes.con;
 
@@ -427,7 +420,7 @@ export default function BattleArena() {
                 attacker.debuffs.poison = 0;
                 actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
             }
-         } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
+         } else if (skill.id === 's4' || skill.id === 's_tiyun') {
             attacker.buffs.dodge = 3;
             actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
          } else if (skill.id === 's_shenxing') {
@@ -435,7 +428,7 @@ export default function BattleArena() {
             actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
          } else if (skill.id === 's_shengxin') {
             attacker.buffs.revive = 1;
-            actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉（获得涅槃重生状态）！`;
+            actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉！`;
          } else if (skill.type === 'heal') {
             const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
             attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
@@ -444,41 +437,36 @@ export default function BattleArena() {
             attacker.buffs.dodge = 2;
             actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
          } else {
-            // 判定闪避（眩晕时无法闪避）
             let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
             let isDodge = false;
             if (canDodge) {
                isDodge = Math.random() < (defender.attributes.agi * 0.005);
                if (defender.buffs.dodge > 0) isDodge = Math.random() < 0.45;
             }
-            
+
             if (isDodge) {
                actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
             } else {
                let finalDef = dDefBase * 1;
                if (defender.buffs.defUp > 0) finalDef *= 3;
-               
+
                let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
-               
-               // 攻击者宝具特化加成
-               if (aTreasure?.effect === 'poShang') dmg += 50; 
+
+               if (aTreasure?.effect === 'poShang') dmg += 50;
                if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * 1.2);
                if (aTreasure?.effect === 'tuLong' && (attacker.hp / attacker.maxHp) < 0.4) dmg = Math.floor(dmg * 1.5);
                if (aTreasure?.effect === 'shengHuo') dmg += Math.floor(defender.hp * 0.05);
 
-               // 防御者宝具特化减伤
                if (dTreasure?.effect === 'qingQiao') dmg -= 30;
                if (dTreasure?.effect === 'tuLong' && (defender.hp / defender.maxHp) < 0.4) dmg = Math.floor(dmg * 0.8);
-               
+
                dmg = Math.max(1, dmg);
 
-               // 绝世好剑判定
                if (aTreasure?.effect === 'jiMie' && Math.random() < 0.05) {
                    dmg = Math.floor(defender.hp * 0.5);
                    actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
                }
 
-               // 扣盾
                if (defender.buffs.shield > 0) {
                    if (defender.buffs.shield >= dmg) {
                       defender.buffs.shield -= dmg;
@@ -489,8 +477,7 @@ export default function BattleArena() {
                    }
                }
                defender.hp = Math.max(0, defender.hp - dmg);
-               
-               // 吸血/回春判定
+
                if (dmg > 0 && aTreasure?.effect === 'huiChun') {
                    attacker.hp = Math.min(attacker.maxHp, attacker.hp + Math.floor(attacker.maxHp * 0.02));
                }
@@ -509,7 +496,6 @@ export default function BattleArena() {
                   actionLog += `\n[软猬荆棘] 尖刺反伤，${attacker.name} 受到了 ${rDmg} 点伤害！`;
                }
 
-               // 连击判定
                if (aTreasure?.effect === 'jinShe' && defender.hp > 0 && Math.random() <= 0.20) {
                    const comboDmg = Math.max(1, Math.floor(dmg * 0.5));
                    defender.hp = Math.max(0, defender.hp - comboDmg);
@@ -522,7 +508,6 @@ export default function BattleArena() {
                    actionLog += ` \n[吸星大法] 夺取了 ${drainAmt} 点气血化为己用！`;
                }
 
-               // 特效施加判定
                if (defender.hp > 0) {
                   if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
                       defender.debuffs.poison = 999;
@@ -539,12 +524,12 @@ export default function BattleArena() {
                   }
                   if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
                       defender.debuffs.internalWound = 2;
-                      actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损，难以催动内力！`;
+                      actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损！`;
                   }
 
                   if (aTreasure?.effect === 'dianXue' && Math.random() <= 0.10 && !checkImmune(defender, dTreasure, 'silence')) {
                      defender.debuffs.silence = 1;
-                     actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴，下回合被封印！`;
+                     actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴！`;
                   }
                   if (aTreasure?.effect === 'juDu' && Math.random() <= 0.15 && !checkImmune(defender, dTreasure, 'poison')) {
                      defender.debuffs.poison = 3;
@@ -566,7 +551,6 @@ export default function BattleArena() {
       if (attacker.buffs.dodge > 0) attacker.buffs.dodge--;
       if (attacker.buffs.defUp > 0) attacker.buffs.defUp--;
 
-      // 达摩舍利与圣心诀复活判定
       if (attacker.hp <= 0 && aTreasure?.effect === 'niePan' && !attacker.hasRevived) {
           attacker.hp = Math.floor(attacker.maxHp * 0.5);
           attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
@@ -597,15 +581,15 @@ export default function BattleArena() {
       actionData[defenderKey] = defender;
 
       if (attacker.hp <= 0) {
-        actionData.winner = defenderKey; 
+        actionData.winner = defenderKey;
         actionData.log += `\n[系统] 决斗结束！大侠 ${defender.name} 绝地反击，赢得了胜利！`;
-      } else if (defender.hp <= 0) { 
-        actionData.winner = attackerKey; 
-        actionData.log += isP1Turn 
+      } else if (defender.hp <= 0) {
+        actionData.winner = attackerKey;
+        actionData.log += isP1Turn
           ? `\n[系统] 决斗结束！大侠 ${attacker.name} 击落苍穹，取得了胜利！`
           : `\n[系统] 决斗结束！很遗憾，${defender.name} 血战不敌，含恨败北！`;
       }
-      
+
       sendBattleAction(roomId, actionData);
     }, 1500);
 
@@ -614,31 +598,30 @@ export default function BattleArena() {
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-       {/* 顶部装饰 */}
        <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--crimson), transparent)', opacity: 0.5 }} />
 
        <h2 style={{ fontSize: '1.8rem', color: 'var(--crimson)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
         <Swords /> ✦ 竞技对决 ✦
       </h2>
-      
+
       {!inBattle ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.8' }}>当前并未在切磋回合中。<br/>请前往【风云榜】中向真实的在线高手下发战书！</p>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* 战斗角色形象区域 - 太吾绘卷风格 */}
+          {/* 战斗角色区域 */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: '40px',
+            gap: '60px',
             marginBottom: '1rem',
             padding: '1.5rem',
             position: 'relative',
           }}>
             {/* 玩家1 */}
-            <WarriorAvatar player={p1} isLeft={true} />
+            <BattleCharacter player={p1} isLeft={true} battleState={currentBattleState} />
 
             {/* VS标志 */}
             <div style={{
@@ -670,7 +653,29 @@ export default function BattleArena() {
             </div>
 
             {/* 玩家2 */}
-            <WarriorAvatar player={p2} isLeft={false} />
+            <BattleCharacter player={p2} isLeft={false} battleState={currentBattleState} />
+
+            {/* 战斗动效层 */}
+            {effects.map(effect => (
+              <BattleEffects
+                key={effect.id}
+                effectType={effect.type}
+                intensity={effect.intensity}
+                position={effect.position}
+                onComplete={() => removeEffect(effect.id)}
+              />
+            ))}
+
+            {/* 伤害数字 */}
+            {damageNumbers.map(d => (
+              <DamageFloatNumber
+                key={d.id}
+                damage={d.damage}
+                position={d.position}
+                isHeal={d.isHeal}
+                onComplete={() => removeDamageNumber(d.id)}
+              />
+            ))}
           </div>
 
           <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem' }}>
