@@ -95,7 +95,18 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
               <span style={{ width: '36px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>{attr.n}</span>
 
               {/* 滑块 */}
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
+                {/* 背景条 */}
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: `linear-gradient(to right, ${attr.color} ${((currentVal - minVal) / Math.max(1, maxVal - minVal)) * 100}%, rgba(255,255,255,0.1) ${((currentVal - minVal) / Math.max(1, maxVal - minVal)) * 100}%)`,
+                  pointerEvents: 'none',
+                }} />
+                {/* 滑块 */}
                 <input
                   type="range"
                   min={minVal}
@@ -109,10 +120,9 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
                     height: '6px',
                     borderRadius: '3px',
                     cursor: inBattle ? 'not-allowed' : 'pointer',
-                    outline: 'none',
-                    WebkitAppearance: 'none',
-                    appearance: 'none',
-                    background: `linear-gradient(to right, ${attr.color} ${(currentVal - minVal) / (maxVal - minVal) * 100}%, rgba(255,255,255,0.1) ${(currentVal - minVal) / (maxVal - minVal) * 100}%)`,
+                    background: 'transparent',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 />
               </div>
