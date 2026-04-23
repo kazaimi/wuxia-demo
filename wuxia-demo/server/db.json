@@ -6,7 +6,7 @@
     "exp": 7913,
     "maxExp": 12464,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 0,
     "hp": 1110,
     "maxHp": 1110,
     "attributes": {
@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "HAhXq4VWzNKzsPOiAAAL",
+    "id": "snQ1bDlJlrOGf58OAAAN",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Thu Apr 23 2026",
@@ -55,12 +55,12 @@
       "t1",
       "t11"
     ],
-    "encountersToday": 5,
+    "encountersToday": 1,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 200,
-    "silver": 187,
+    "dailyActivity": 210,
+    "silver": 89,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,
