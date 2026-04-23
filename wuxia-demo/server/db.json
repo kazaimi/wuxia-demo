@@ -1,19 +1,19 @@
 [
   {
     "name": "ALEX",
-    "title": "💪勤勉游侠",
+    "title": "🔥江湖劳模",
     "level": 38,
     "exp": 7913,
     "maxExp": 12464,
-    "freePoints": 121,
+    "freePoints": 0,
     "taskCount": 35,
-    "hp": 700,
-    "maxHp": 700,
+    "hp": 1110,
+    "maxHp": 1110,
     "attributes": {
-      "con": 3,
-      "str": 1,
-      "int": 4,
-      "agi": 1,
+      "con": 44,
+      "str": 10,
+      "int": 7,
+      "agi": 69,
       "luk": 2
     },
     "skills": [
@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "fTD-BWhK9Lt05dglAAAc",
+    "id": "aQ__CYsszOhnLVPUAAAw",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Thu Apr 23 2026",
@@ -55,12 +55,12 @@
       "t1",
       "t11"
     ],
-    "encountersToday": 1,
+    "encountersToday": 5,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 110,
-    "silver": 186,
+    "dailyActivity": 150,
+    "silver": 187,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,

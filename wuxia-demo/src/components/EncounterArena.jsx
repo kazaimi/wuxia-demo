@@ -120,13 +120,6 @@ export default function EncounterArena() {
   const [p2, setP2] = useState(null);
   const [logs, setLogs] = useState([]);
 
-  // 组件卸载时确保退出战斗状态
-  useEffect(() => {
-    return () => {
-      exitBattle();
-    };
-  }, [exitBattle]);
-
   // Auto-scroll removed as requested
 
 
