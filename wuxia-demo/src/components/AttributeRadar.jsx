@@ -103,13 +103,11 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
                   value={currentVal}
                   onChange={(e) => handleSliderChange(attr.k, parseInt(e.target.value, 10))}
                   disabled={inBattle}
+                  className="attribute-slider"
                   style={{
                     flex: 1,
-                    height: '6px',
-                    background: `linear-gradient(to right, ${attr.color} ${(currentVal / sliderMax) * 100}%, rgba(255,255,255,0.1) ${(currentVal / sliderMax) * 100}%)`,
-                    borderRadius: '3px',
-                    cursor: inBattle ? 'not-allowed' : 'pointer',
-                    opacity: inBattle ? 0.5 : 1,
+                    '--slider-color': attr.color,
+                    '--slider-percent': `${(currentVal / sliderMax) * 100}%`,
                   }}
                 />
               </div>

@@ -795,3 +795,49 @@ select.wuxia-select:focus {
   0%, 100% { opacity: 0.5; transform: rotate(0deg); }
   50% { opacity: 0.8; transform: rotate(5deg); }
 }
+
+/* 属性滑块样式 */
+.attribute-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--slider-color, #4facfe) var(--slider-percent, 50%), rgba(255,255,255,0.1) var(--slider-percent, 50%));
+  cursor: pointer;
+  outline: none;
+}
+
+.attribute-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--slider-color, #4facfe);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--slider-color, #4facfe);
+  transition: transform 0.1s;
+}
+
+.attribute-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.attribute-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--slider-color, #4facfe);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 6px var(--slider-color, #4facfe);
+}
+
+.attribute-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.attribute-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
