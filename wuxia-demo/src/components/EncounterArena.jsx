@@ -109,6 +109,8 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
+  const enterLocalBattle = useGameStore(state => state.enterLocalBattle);
+  const exitBattle = useGameStore(state => state.exitBattle);
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -117,6 +119,13 @@ export default function EncounterArena() {
   const [p1, setP1] = useState(null);
   const [p2, setP2] = useState(null);
   const [logs, setLogs] = useState([]);
+
+  // 组件卸载时确保退出战斗状态
+  useEffect(() => {
+    return () => {
+      exitBattle();
+    };
+  }, [exitBattle]);
 
   // Auto-scroll removed as requested
 
@@ -131,7 +140,10 @@ export default function EncounterArena() {
          alert("江湖尚未完全成型，凑不齐三位高手。");
          return;
      }
-     
+
+     // 进入战斗状态，锁定属性
+     enterLocalBattle();
+
      incrementEncounterCount();
      const upgradedTitle = addActivity(10);
      if (upgradedTitle) {
@@ -429,6 +441,7 @@ export default function EncounterArena() {
 
                setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
                setEncounterState('win');
+               exitBattle(); // 解锁属性
             } else {
                if (curIdx === 1) addSilver(1);
                const nextIdx = curIdx + 1;
@@ -441,6 +454,7 @@ export default function EncounterArena() {
          } else {
             setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，大侠请重新来过...`]);
             setEncounterState('lose');
+            exitBattle(); // 解锁属性
          }
       } else {
          if (isP1Turn) { setP1(attacker); setP2(defender); } else { setP1(defender); setP2(attacker); }

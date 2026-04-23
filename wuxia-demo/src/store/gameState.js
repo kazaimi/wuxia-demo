@@ -481,5 +481,6 @@ export const useGameStore = create((set, get) => ({
   },
   challengePlayer: (targetId) => { if (socket) socket.emit('challenge', targetId); },
   sendBattleAction: (roomId, actionData) => { if (socket) socket.emit('battle_action', { roomId, actionData }); },
-  exitBattle: () => set({ battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null } })
+  exitBattle: () => set({ battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null } }),
+  enterLocalBattle: () => set((state) => ({ battleState: { ...state.battleState, inBattle: true } }))
 }));
