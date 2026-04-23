@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { Shield, Swords, Brain, Zap, Clover } from 'lucide-react';
 
@@ -16,6 +16,16 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
   // 计算滑块的最大值
   const totalPoints = Object.values(attributes).reduce((a, b) => a + b, 0) + freePoints;
   const sliderMax = Math.max(100, totalPoints + 20);
+
+  // 计算每个属性的最大可分配值
+  const getAttrMax = (attrKey) => {
+    // 其他属性的最小值之和（永久加成）
+    const otherMinsSum = ATTR_CONFIG
+      .filter(a => a.k !== attrKey)
+      .reduce((sum, a) => sum + (permanentAttributes?.[a.k] || 0), 0);
+    // 最大值 = 总点数 - 其他属性的最小值之和
+    return totalPoints - otherMinsSum;
+  };
 
   const radarData = ATTR_CONFIG.map(attr => ({
     attribute: attr.n,
@@ -77,7 +87,7 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
           const currentVal = attributes[attr.k] || 0;
           const permVal = permanentAttributes?.[attr.k] || 0;
           const minVal = permVal; // 最小值为永久属性加成
-          const maxVal = currentVal + freePoints; // 最大值为当前值+剩余点数
+          const maxVal = getAttrMax(attr.k); // 最大值为可分配的最大值
 
           return (
             <div key={attr.k} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
