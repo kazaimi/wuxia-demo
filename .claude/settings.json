@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/57699/.claude/**)",
+      "WebSearch",
+      "WebFetch(domain:nanobanana.com)"
+    ]
+  }
+}

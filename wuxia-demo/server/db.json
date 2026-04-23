@@ -1,20 +1,20 @@
 [
   {
     "name": "ALEX",
-    "title": "🐎初出茅庐",
-    "level": 37,
-    "exp": 10885,
-    "maxExp": 11923,
-    "freePoints": 0,
-    "taskCount": 2,
-    "hp": 875,
-    "maxHp": 875,
+    "title": "💪勤勉游侠",
+    "level": 38,
+    "exp": 7913,
+    "maxExp": 12464,
+    "freePoints": 121,
+    "taskCount": 35,
+    "hp": 700,
+    "maxHp": 700,
     "attributes": {
-      "con": 22,
+      "con": 3,
       "str": 1,
-      "int": 57,
-      "agi": 24,
-      "luk": 25
+      "int": 4,
+      "agi": 1,
+      "luk": 2
     },
     "skills": [
       "s1",
@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "tguCKxyfHwJZ-3VeAAAM",
+    "id": "fTD-BWhK9Lt05dglAAAc",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Thu Apr 23 2026",
@@ -59,8 +59,8 @@
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 20,
-    "silver": 134,
+    "dailyActivity": 110,
+    "silver": 186,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,

@@ -9,7 +9,8 @@ import SecretRealm from './SecretRealm';
 import AuctionHouse from './AuctionHouse';
 import BlackMarket from './BlackMarket';
 import BattleEffectsDemo from './BattleEffectsDemo';
-import { ShoppingBag, Target, Swords, Trophy, Skull, Map, Gavel, Sparkles } from 'lucide-react';
+import DynamicPortraitDemo from './DynamicPortraitDemo';
+import { ShoppingBag, Target, Swords, Trophy, Skull, Map, Gavel, Sparkles, User } from 'lucide-react';
 
 export default function MainMenu() {
   const [activeTab, setActiveTab] = useState('tasks');
@@ -50,6 +51,7 @@ export default function MainMenu() {
     { id: 'encounter', label: '江湖奇遇', icon: <Skull size={16} /> },
     { id: 'realm', label: '秘境寻宝', icon: <Map size={16} />, color: '#c084fc' },
     { id: 'auction', label: '拍卖风云', icon: <Gavel size={16} />, color: '#d4af37' },
+    { id: 'portrait', label: '立绘演示', icon: <User size={16} />, color: '#f59e0b' },
     { id: 'effects', label: '动效演示', icon: <Sparkles size={16} />, color: '#22c55e' },
   ];
 
@@ -103,6 +105,7 @@ export default function MainMenu() {
           {activeTab === 'encounter' && <EncounterArena />}
           {activeTab === 'realm' && <SecretRealm />}
           {activeTab === 'auction' && <AuctionHouse />}
+          {activeTab === 'portrait' && <DynamicPortraitDemo />}
           {activeTab === 'effects' && <BattleEffectsDemo />}
         </div>
 
@@ -173,6 +176,7 @@ export default function MainMenu() {
         {activeTab === 'encounter' && <EncounterArena />}
         {activeTab === 'realm' && <SecretRealm />}
         {activeTab === 'auction' && <AuctionHouse />}
+        {activeTab === 'portrait' && <DynamicPortraitDemo />}
         {activeTab === 'effects' && <BattleEffectsDemo />}
       </div>
 
