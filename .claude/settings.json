@@ -3,7 +3,8 @@
     "allow": [
       "Read(//c/Users/57699/.claude/**)",
       "WebSearch",
-      "WebFetch(domain:nanobanana.com)"
+      "WebFetch(domain:nanobanana.com)",
+      "Bash(powershell -Command \"Stop-Process -Id 21252 -Force\")"
     ]
   }
 }

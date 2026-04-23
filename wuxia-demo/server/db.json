@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "🔥江湖劳模",
+    "title": "⚡武林卷王",
     "level": 38,
     "exp": 7913,
     "maxExp": 12464,
@@ -44,7 +44,7 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "aQ__CYsszOhnLVPUAAAw",
+    "id": "HAhXq4VWzNKzsPOiAAAL",
     "isBattling": false,
     "rankIndex": 25,
     "lastTaskDate": "Thu Apr 23 2026",
@@ -59,7 +59,7 @@
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 150,
+    "dailyActivity": 200,
     "silver": 187,
     "skillMastery": {
       "s1": 5,
