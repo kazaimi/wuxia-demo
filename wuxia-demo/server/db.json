@@ -1,19 +1,19 @@
 [
   {
     "name": "ALEX",
-    "title": "⚡武林卷王",
+    "title": "🐟摸鱼小虾",
     "level": 38,
     "exp": 7913,
     "maxExp": 12464,
     "freePoints": 0,
     "taskCount": 0,
-    "hp": 1110,
-    "maxHp": 1110,
+    "hp": 1410,
+    "maxHp": 1410,
     "attributes": {
-      "con": 44,
-      "str": 10,
-      "int": 7,
-      "agi": 69,
+      "con": 74,
+      "str": 1,
+      "int": 4,
+      "agi": 51,
       "luk": 2
     },
     "skills": [
@@ -44,10 +44,10 @@
       "ultimate": "s_liumai",
       "inner": "s5"
     },
-    "id": "snQ1bDlJlrOGf58OAAAN",
+    "id": "4Zpql2w6iYVdGzWuAAAH",
     "isBattling": false,
     "rankIndex": 25,
-    "lastTaskDate": "Thu Apr 23 2026",
+    "lastTaskDate": "Fri May 22 2026",
     "treasures": [
       "t3",
       "t5",
@@ -55,11 +55,11 @@
       "t1",
       "t11"
     ],
-    "encountersToday": 1,
+    "encountersToday": 0,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "equippedTreasure": "t11",
-    "dailyActivity": 210,
+    "equippedTreasure": "t5",
+    "dailyActivity": 0,
     "silver": 89,
     "skillMastery": {
       "s1": 5,

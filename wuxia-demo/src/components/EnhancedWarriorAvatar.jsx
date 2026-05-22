@@ -32,17 +32,67 @@ const EnhancedWarriorAvatar = ({
   const [effectState, setEffectState] = useState('idle');
   const [showDamage, setShowDamage] = useState(false);
   const [showHeal, setShowHeal] = useState(false);
+  
+  // 图片资源和降级容错状态
+  const [imgSrc, setImgSrc] = useState('');
+  const [fallbackActive, setFallbackActive] = useState(false);
+  
   const prevHpRef = useRef(player?.hp);
 
   const gender = useMemo(() => guessGenderByName(player?.name), [player?.name]);
   const isFemale = gender === 'female';
+
+  // 1. NPC 特殊配置彩蛋识别
+  const npcConfig = useMemo(() => {
+    if (!player?.name) return null;
+    for (const key of Object.keys(NPC_SPECIAL_CONFIGS)) {
+      if (player.name.includes(key)) {
+        return NPC_SPECIAL_CONFIGS[key];
+      }
+    }
+    return null;
+  }, [player?.name]);
+
+  // 设置图片路径加载
+  useEffect(() => {
+    if (npcConfig) {
+      const nameMap = {
+        '扫地僧': 'saodiseng',
+        '东方不败': 'dongfang',
+        '灭绝师太': 'miejue',
+        '邀月': 'yaoyue',
+        '张三丰': 'zhangsanfeng',
+        '乔峰': 'qiaofeng',
+        '萧峰': 'qiaofeng'
+      };
+      let key = 'saodiseng';
+      for (const k of Object.keys(nameMap)) {
+        if (player.name.includes(k)) {
+          key = nameMap[k];
+          break;
+        }
+      }
+      setImgSrc(`/npc_${key}.png`);
+    } else {
+      setImgSrc(isFemale ? '/wuxia_female_hero.png' : '/wuxia_male_hero.png');
+    }
+    setFallbackActive(false);
+  }, [player?.name, isFemale, npcConfig]);
+
+  const handleImgError = () => {
+    // 专属NPC精绘加载报错（尚未生成），自动退回使用通用立绘，并激活偏色着色
+    const defaultSrc = isFemale ? '/wuxia_female_hero.png' : '/wuxia_male_hero.png';
+    if (imgSrc !== defaultSrc) {
+      setImgSrc(defaultSrc);
+      setFallbackActive(true);
+    }
+  };
 
   // 检测气血变化触发动效
   useEffect(() => {
     if (prevHpRef.current && player?.hp) {
       const hpDiff = player.hp - prevHpRef.current;
       if (hpDiff < 0) {
-        // 受到伤害
         setEffectState('hit');
         setShowDamage(true);
         setTimeout(() => {
@@ -51,7 +101,6 @@ const EnhancedWarriorAvatar = ({
           if (onEffectComplete) onEffectComplete();
         }, 400);
       } else if (hpDiff > 0) {
-        // 恢复气血
         setEffectState('heal');
         setShowHeal(true);
         setTimeout(() => {
@@ -103,11 +152,18 @@ const EnhancedWarriorAvatar = ({
     }
   }, [isAttacking, isHit, isDodging, isHealing, isBuffing, isDebuffing, isDead]);
 
-  // 武器信息
+  // 武器与宝具
   const treasure = TREASURES_DB?.find(t => t.id === player?.equippedTreasure);
   const treasureEffect = treasure?.effect || '';
 
   const getWeaponInfo = () => {
+    if (npcConfig) {
+      return {
+        name: npcConfig.weaponName,
+        icon: npcConfig.weaponIcon,
+        color: npcConfig.weaponColor
+      };
+    }
     const weapons = {
       'yiTian': { name: '倚天剑', icon: '🗡️', color: '#c9a227' },
       'tuLong': { name: '屠龙刀', icon: '⚔️', color: '#8b0000' },
@@ -127,6 +183,13 @@ const EnhancedWarriorAvatar = ({
 
   // 等级决定边框和背景颜色
   const getLevelStyle = () => {
+    if (npcConfig) {
+      return {
+        border: npcConfig.color,
+        bg: 'linear-gradient(180deg, #1a1515 0%, #0d0606 100%)',
+        rank: '宗师'
+      };
+    }
     const level = player?.level || 1;
     if (level >= 90) return { border: '#ffd700', bg: 'linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)', rank: '神话' };
     if (level >= 70) return { border: '#a855f7', bg: 'linear-gradient(180deg, #1e1a3d 0%, #0f0d1f 100%)', rank: '传说' };
@@ -141,14 +204,62 @@ const EnhancedWarriorAvatar = ({
   // 内功气场
   const innerSkill = player?.equippedSkills?.inner;
   let auraStyle = {};
-  if (innerSkill === 's_yijin') auraStyle = { shadow: '0 0 30px rgba(139, 92, 246, 0.5)', glow: 'rgba(139, 92, 246, 0.3)' };
-  else if (innerSkill === 's5') auraStyle = { shadow: '0 0 30px rgba(251, 191, 36, 0.5)', glow: 'rgba(251, 191, 36, 0.3)' };
-  else if (innerSkill === 's_xixing') auraStyle = { shadow: '0 0 30px rgba(220, 38, 38, 0.5)', glow: 'rgba(220, 38, 38, 0.3)' };
+  if (innerSkill === 's_yijin') auraStyle = { shadow: '0 0 30px rgba(194, 157, 56, 0.5)', glow: 'rgba(194, 157, 56, 0.3)' };
+  else if (innerSkill === 's5') auraStyle = { shadow: '0 0 30px rgba(220, 38, 38, 0.5)', glow: 'rgba(220, 38, 38, 0.3)' };
+  else if (innerSkill === 's_xixing') auraStyle = { shadow: '0 0 30px rgba(139, 92, 246, 0.5)', glow: 'rgba(139, 92, 246, 0.3)' };
   else if (innerSkill === 's_shihou') auraStyle = { shadow: '0 0 30px rgba(234, 88, 12, 0.5)', glow: 'rgba(234, 88, 12, 0.3)' };
   else auraStyle = { shadow: '0 0 20px rgba(212, 175, 55, 0.3)', glow: 'rgba(212, 175, 55, 0.2)' };
 
   // 气血比例
   const hpRatio = (player?.hp || 0) / (player?.maxHp || 7000);
+
+  // 2. 程序化特征属性控制
+  const getProceduralStyles = () => {
+    const attrs = player?.attributes || { con: 10, str: 10, agi: 10 };
+    const level = player?.level || 1;
+
+    // 身高体型缩放（根据力量、体质、敏捷）
+    const scaleY = 1 + Math.max(-0.12, Math.min(0.18, ((attrs.agi || 10) - 10) * 0.015));
+    const scaleX = 1 + Math.max(-0.12, Math.min(0.2, ((attrs.str || 10) + (attrs.con || 10) - 20) * 0.01));
+
+    // 内功偏色滤镜
+    let colorFilter = '';
+    if (fallbackActive && npcConfig) {
+      colorFilter = npcConfig.filter;
+    } else {
+      if (innerSkill === 's_yijin') {
+        colorFilter = 'hue-rotate(25deg) saturate(1.4) contrast(1.1) brightness(1.05)';
+      } else if (innerSkill === 's5') {
+        colorFilter = 'hue-rotate(-15deg) saturate(1.5) contrast(1.1)';
+      } else if (innerSkill === 's_xixing') {
+        colorFilter = 'hue-rotate(240deg) saturate(1.4)';
+      } else if (innerSkill === 's_shihou') {
+        colorFilter = 'hue-rotate(35deg) saturate(1.3) contrast(1.05)';
+      }
+    }
+
+    // 宗师年龄滤镜 (>=60级宗师古朴色彩)
+    if (level >= 60 && !colorFilter.includes('grayscale')) {
+      colorFilter = `${colorFilter ? colorFilter + ' ' : ''}grayscale(0.15) sepia(0.15) contrast(1.05)`;
+    }
+
+    // 濒死重伤去色
+    if (hpRatio <= 0.2) {
+      colorFilter = 'grayscale(1) contrast(1.2)';
+    }
+
+    return {
+      transform: `scale(${scaleX}, ${scaleY})`,
+      filter: colorFilter,
+    };
+  };
+
+  const proceduralStyle = getProceduralStyles();
+
+  // 3. 判断面纱、白发特征
+  const level = player?.level || 1;
+  const isVeiled = level < 20 && !npcConfig; 
+  const isGrandmaster = (level >= 60 || npcConfig) && imgSrc.includes('hero'); 
 
   // 动效样式
   const getEffectStyle = () => {
@@ -161,7 +272,6 @@ const EnhancedWarriorAvatar = ({
       case 'hit':
         return {
           animation: 'characterHit 0.4s ease-out',
-          filter: 'brightness(1.5) saturate(1.2)',
         };
       case 'dodge':
         return {
@@ -186,42 +296,12 @@ const EnhancedWarriorAvatar = ({
       case 'dead':
         return {
           animation: 'characterDeath 0.8s ease-out forwards',
-          opacity: 0.3,
-          filter: 'grayscale(0.8)',
+          opacity: 0.25,
         };
       default:
         return {};
     }
   };
-
-  // 状态差分：根据气血比例决定角色表情
-  const getCharacterState = () => {
-    if (hpRatio <= 0) return 'dead';
-    if (hpRatio <= 0.2) return 'critical';
-    if (hpRatio <= 0.5) return 'wounded';
-    if (effectState === 'attack') return 'attacking';
-    return 'normal';
-  };
-
-  const characterState = getCharacterState();
-
-  // 眼睛样式（根据状态变化）
-  const getEyeStyle = () => {
-    switch (characterState) {
-      case 'attacking':
-        return { fill: '#dc2626', height: 4, y: 32 }; // 凌厉眼神
-      case 'wounded':
-        return { fill: '#1a1a1a', height: 2, y: 33 }; // 略微眯眼
-      case 'critical':
-        return { fill: '#1a1a1a', height: 1.5, y: 34 }; // 紧闭
-      case 'dead':
-        return { fill: '#1a1a1a', height: 0, y: 35 }; // 闭眼
-      default:
-        return { fill: '#1a1a1a', height: 3, y: 32 }; // 正常
-    }
-  };
-
-  const eyeStyle = getEyeStyle();
 
   // Buff/Debuff 状态指示器
   const renderStatusIndicators = () => {
@@ -242,7 +322,7 @@ const EnhancedWarriorAvatar = ({
         justifyContent: 'center',
         maxWidth: '180px',
       }}>
-        {/* Buff 指示器 */}
+        {/* Buff */}
         {buffs.dodge > 0 && (
           <div style={{
             padding: '2px 6px',
@@ -296,7 +376,7 @@ const EnhancedWarriorAvatar = ({
           </div>
         )}
 
-        {/* Debuff 指示器 */}
+        {/* Debuff */}
         {debuffs.stun > 0 && (
           <div style={{
             padding: '2px 6px',
@@ -356,7 +436,6 @@ const EnhancedWarriorAvatar = ({
   // 伤害飘字
   const renderDamageNumber = () => {
     if (!showDamage || !damageAmount) return null;
-
     return (
       <div style={{
         position: 'absolute',
@@ -364,7 +443,7 @@ const EnhancedWarriorAvatar = ({
         left: '50%',
         transform: 'translateX(-50%)',
         fontSize: '1.8rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
+        fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
         color: '#ef4444',
         textShadow: '0 0 15px rgba(239, 68, 68, 0.8)',
         fontWeight: 'bold',
@@ -379,7 +458,6 @@ const EnhancedWarriorAvatar = ({
   // 治愈飘字
   const renderHealNumber = () => {
     if (!showHeal || !healAmount) return null;
-
     return (
       <div style={{
         position: 'absolute',
@@ -387,7 +465,7 @@ const EnhancedWarriorAvatar = ({
         left: '50%',
         transform: 'translateX(-50%)',
         fontSize: '1.8rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
+        fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
         color: '#10b981',
         textShadow: '0 0 15px rgba(16, 185, 129, 0.8)',
         fontWeight: 'bold',
@@ -402,7 +480,6 @@ const EnhancedWarriorAvatar = ({
   // 受击红色闪光遮罩
   const renderHitFlash = () => {
     if (effectState !== 'hit') return null;
-
     return (
       <div style={{
         position: 'absolute',
@@ -418,6 +495,39 @@ const EnhancedWarriorAvatar = ({
     );
   };
 
+  // 4. 武器本命气劲流光粒子图层
+  const renderWeaponAura = () => {
+    if (isDead) return null;
+    let particles = null;
+    if (player?.equippedTreasure === 't8' || weapon.name.includes('金蛇')) {
+      particles = (
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
+          <path d="M 20,40 Q 80,10 160,40 T 160,200" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeDasharray="5 15" opacity="0.6" style={{ animation: 'swordQi 2s linear infinite' }} />
+        </svg>
+      );
+    } else if (player?.equippedTreasure === 't13' || weapon.name.includes('圣火')) {
+      particles = (
+        <div style={{ position: 'absolute', bottom: '60px', left: '10px', right: '10px', height: '80px', pointerEvents: 'none', zIndex: 5, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', bottom: 0, left: '20%', width: '6px', height: '6px', borderRadius: '50%', background: '#dc2626', opacity: 0.6, animation: 'poisonBubble 1.2s infinite' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: '50%', width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b', opacity: 0.5, animation: 'poisonBubble 1.6s infinite 0.4s' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: '80%', width: '5px', height: '5px', borderRadius: '50%', background: '#b91c1c', opacity: 0.7, animation: 'poisonBubble 1s infinite 0.2s' }} />
+        </div>
+      );
+    } else if (player?.equippedTreasure === 't7' || weapon.name.includes('打狗')) {
+      particles = (
+        <div style={{ position: 'absolute', bottom: '60px', left: '10px', right: '10px', height: '80px', pointerEvents: 'none', zIndex: 5, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '10px', left: '30%', width: '6px', height: '12px', background: '#22c55e', borderRadius: '1px', opacity: 0.4, transform: 'rotate(25deg)', animation: 'debuffFall 2s infinite' }} />
+          <div style={{ position: 'absolute', top: '20px', left: '70%', width: '6px', height: '12px', background: '#059669', borderRadius: '1px', opacity: 0.4, transform: 'rotate(45deg)', animation: 'debuffFall 2.4s infinite 0.5s' }} />
+        </div>
+      );
+    } else if (weapon.name.includes('剑') || weapon.name.includes('刀')) {
+      particles = (
+        <div className="sword-qi" style={{ position: 'absolute', inset: 0, border: '1px solid rgba(255,255,255,0.15)', pointerEvents: 'none', zIndex: 5, borderRadius: '8px' }} />
+      );
+    }
+    return particles;
+  };
+
   return (
     <div style={{
       display: 'flex',
@@ -430,23 +540,21 @@ const EnhancedWarriorAvatar = ({
       {/* 状态指示器 */}
       {renderStatusIndicators()}
 
-      {/* 角色卡片 - 太吾绘卷风格 */}
-      <div style={{
-        position: 'relative',
-        width: '180px',
-        height: '240px',
-        borderRadius: '8px',
-        background: levelStyle.bg,
-        border: `2px solid ${levelStyle.border}`,
-        boxShadow: auraStyle.shadow,
-        overflow: 'hidden',
-        transition: 'all 0.3s ease',
-        ...getEffectStyle(),
-      }}>
+      {/* 水墨暗黑国风人物卡片 */}
+      <div 
+        className={`wuxia-hero-card ${hpRatio <= 0.2 ? 'critical-blood' : ''} ${!isDead ? 'shimmer-active' : ''}`}
+        style={{
+          background: levelStyle.bg,
+          border: `2px solid ${levelStyle.border}`,
+          boxShadow: auraStyle.shadow,
+          transition: 'all 0.3s ease',
+          ...getEffectStyle(),
+        }}
+      >
         {/* 受击闪光 */}
         {renderHitFlash()}
 
-        {/* 顶部装饰边框 */}
+        {/* 顶部装饰条 */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -454,157 +562,122 @@ const EnhancedWarriorAvatar = ({
           right: 0,
           height: '3px',
           background: `linear-gradient(90deg, transparent, ${levelStyle.border}, transparent)`,
+          zIndex: 6,
         }} />
 
-        {/* 角落装饰 */}
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          left: '8px',
-          width: '20px',
-          height: '20px',
-          borderLeft: `2px solid ${levelStyle.border}`,
-          borderTop: `2px solid ${levelStyle.border}`,
-        }} />
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          width: '20px',
-          height: '20px',
-          borderRight: `2px solid ${levelStyle.border}`,
-          borderTop: `2px solid ${levelStyle.border}`,
-        }} />
+        {/* 夔纹/回纹四角古风装饰 */}
+        <div style={{ position: 'absolute', top: '8px', left: '8px', width: '12px', height: '12px', borderLeft: `2.5px solid ${levelStyle.border}`, borderTop: `2.5px solid ${levelStyle.border}`, zIndex: 6, opacity: 0.7 }} />
+        <div style={{ position: 'absolute', top: '8px', right: '8px', width: '12px', height: '12px', borderRight: `2.5px solid ${levelStyle.border}`, borderTop: `2.5px solid ${levelStyle.border}`, zIndex: 6, opacity: 0.7 }} />
+        <div style={{ position: 'absolute', bottom: '8px', left: '8px', width: '12px', height: '12px', borderLeft: `2.5px solid ${levelStyle.border}`, borderBottom: `2.5px solid ${levelStyle.border}`, zIndex: 6, opacity: 0.7 }} />
+        <div style={{ position: 'absolute', bottom: '8px', right: '8px', width: '12px', height: '12px', borderRight: `2.5px solid ${levelStyle.border}`, borderBottom: `2.5px solid ${levelStyle.border}`, zIndex: 6, opacity: 0.7 }} />
 
-        {/* 性别图标 */}
+        {/* 性别水墨标志 */}
         <div style={{
           position: 'absolute',
           top: '12px',
           left: '12px',
-          fontSize: '1.2rem',
-          opacity: 0.8,
-        }}>
-          {isFemale ? '👤' : '👤'}
-        </div>
-
-        {/* 等级标签 */}
-        <div style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          padding: '2px 8px',
-          background: 'rgba(0,0,0,0.6)',
-          borderRadius: '4px',
-          fontSize: '0.75rem',
+          fontSize: '0.8rem',
+          opacity: 0.6,
           color: levelStyle.border,
           fontFamily: '"Ma Shan Zheng", cursive',
-          border: `1px solid ${levelStyle.border}40`,
+          zIndex: 6,
+          transform: isLeft ? 'none' : 'scaleX(-1)', // 纠正翻转
         }}>
-          Lv.{player?.level}
+          {isFemale ? '坤' : '乾'}
         </div>
 
-        {/* 角色立绘区域 - 简化的像素风格人物 */}
+        {/* 等级标签名帖 */}
         <div style={{
           position: 'absolute',
-          top: '40px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '120px',
-          height: '140px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          top: '10px',
+          right: '10px',
+          padding: '1px 6px',
+          background: 'rgba(0,0,0,0.65)',
+          borderRadius: '3px',
+          fontSize: '0.7rem',
+          color: levelStyle.border,
+          fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
+          border: `1px solid ${levelStyle.border}35`,
+          zIndex: 6,
+          transform: isLeft ? 'none' : 'scaleX(-1)', // 纠正翻转
         }}>
-          {/* 像素风格角色 - 太吾绘卷风格 */}
-          <svg width="100" height="130" viewBox="0 0 100 130">
-            <defs>
-              <linearGradient id="robe" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={isFemale ? '#4a3f5c' : '#2d3a4a'} />
-                <stop offset="100%" stopColor={isFemale ? '#2d2538' : '#1a2530'} />
-              </linearGradient>
-              <linearGradient id="skin" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#f5e6d3" />
-                <stop offset="100%" stopColor="#e8d4be" />
-              </linearGradient>
-              <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#1a1a2e" />
-                <stop offset="100%" stopColor="#0d0d1a" />
-              </linearGradient>
-            </defs>
-
-            {/* 身体 - 简化的像素风格 */}
-            <rect x="35" y="55" width="30" height="50" fill="url(#robe)" rx="3" />
-
-            {/* 腿部 */}
-            <rect x="38" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
-            <rect x="52" y="105" width="10" height="20" fill="url(#robe)" rx="2" />
-
-            {/* 腰带 */}
-            <rect x="35" y="75" width="30" height="6" fill={levelStyle.border} opacity="0.8" rx="1" />
-
-            {/* 手臂 */}
-            <rect x="25" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
-            <rect x="63" y="55" width="12" height="30" fill="url(#robe)" rx="3" />
-
-            {/* 手 */}
-            <rect x="27" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
-            <rect x="65" y="82" width="8" height="10" fill="url(#skin)" rx="2" />
-
-            {/* 头部 */}
-            <ellipse cx="50" cy="35" rx="18" ry="20" fill="url(#skin)" />
-
-            {/* 头发 */}
-            {isFemale ? (
-              <g>
-                <ellipse cx="50" cy="25" rx="18" ry="14" fill="url(#hair)" />
-                <rect x="32" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
-                <rect x="60" y="25" width="8" height="35" fill="url(#hair)" rx="4" />
-                <ellipse cx="50" cy="15" rx="10" ry="8" fill="url(#hair)" />
-              </g>
-            ) : (
-              <g>
-                <ellipse cx="50" cy="25" rx="18" ry="12" fill="url(#hair)" />
-                <ellipse cx="50" cy="15" rx="8" ry="6" fill="url(#hair)" />
-                <rect x="46" y="12" width="8" height="4" fill={levelStyle.border} rx="1" />
-              </g>
-            )}
-
-            {/* 眼睛 - 根据状态变化 */}
-            <rect x="42" y={eyeStyle.y} width="4" height={eyeStyle.height} fill={eyeStyle.fill} rx="1" />
-            <rect x="54" y={eyeStyle.y} width="4" height={eyeStyle.height} fill={eyeStyle.fill} rx="1" />
-
-            {/* 嘴巴 */}
-            {characterState === 'dead' ? (
-              <rect x="47" y="42" width="6" height="1" fill="#c9a0a0" rx="0.5" />
-            ) : characterState === 'critical' ? (
-              <ellipse cx="50" cy="42" rx="4" ry="2" fill="#c9a0a0" />
-            ) : (
-              <rect x="47" y="42" width="6" height="2" fill="#c9a0a0" rx="1" />
-            )}
-
-            {/* 武器图标 */}
-            <text x="75" y="60" fontSize="20" textAnchor="middle">{weapon.icon}</text>
-          </svg>
+          {levelStyle.rank}
         </div>
 
-        {/* 底部信息栏 */}
+        {/* 动态太极气旋背景 */}
+        {!isDead && <div className="wuxia-card-taiji" />}
+
+        {/* 水墨精绘立绘图像 */}
+        {imgSrc && (
+          <img 
+            src={imgSrc} 
+            alt={player?.name} 
+            className="wuxia-hero-portrait"
+            onError={handleImgError}
+            style={{
+              opacity: isDead ? 0.15 : hpRatio <= 0.2 ? 0.75 : 0.9,
+              ...proceduralStyle,
+            }}
+          />
+        )}
+
+        {/* 动态特征：银发/白发气劲（一代宗师专属） */}
+        {isGrandmaster && !isDead && (
+          <svg style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width: '80px', height: '40px', pointerEvents: 'none', zIndex: 3 }}>
+            <path d="M 10,25 Q 40,5 70,25" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeDasharray="2 4" style={{ animation: 'swordQi 1.5s linear infinite' }} />
+            <path d="M 20,20 Q 40,8 60,20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+          </svg>
+        )}
+
+        {/* 动态特征：神秘黑色斗笠面纱（初出茅庐新手专属） */}
+        {isVeiled && !isDead && (
+          <div style={{
+            position: 'absolute',
+            top: '40px',
+            left: '30%',
+            width: '40%',
+            height: '35px',
+            background: 'linear-gradient(to bottom, rgba(15,10,10,0.9) 10%, rgba(15,10,10,0.75) 50%, rgba(15,10,10,0.0) 100%)',
+            borderBottom: '1px solid rgba(194, 157, 56, 0.15)',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.8)',
+            zIndex: 4,
+            pointerEvents: 'none',
+            borderRadius: '2px',
+          }} />
+        )}
+
+        {/* 本命宝具流电气劲 */}
+        {renderWeaponAura()}
+
+        {/* 死亡时覆盖冰裂墨痕 */}
+        {isDead && (
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 7, pointerEvents: 'none' }}>
+            <line x1="20" y1="20" x2="160" y2="220" stroke="#000" strokeWidth="2.5" opacity="0.8" strokeDasharray="5 5" />
+            <line x1="160" y1="20" x2="20" y2="220" stroke="#000" strokeWidth="2" opacity="0.8" strokeDasharray="3 7" />
+            <circle cx="90" cy="120" r="40" fill="none" stroke="#0d0606" strokeWidth="1.5" strokeDasharray="2 4" />
+          </svg>
+        )}
+
+        {/* 底部信息名牌面板 */}
         <div style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          padding: '10px',
-          background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.8))',
+          padding: '8px 10px',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(10,5,5,0.95) 75%)',
+          zIndex: 6,
+          transform: isLeft ? 'none' : 'scaleX(-1)', // 纠正翻转
         }}>
           {/* 名字 */}
           <div style={{
             textAlign: 'center',
-            fontSize: '1.1rem',
+            fontSize: '1.05rem',
             color: '#f0f0f0',
             fontFamily: '"Ma Shan Zheng", cursive',
             letterSpacing: '2px',
-            marginBottom: '6px',
-            textShadow: '0 0 10px rgba(0,0,0,0.8)',
+            marginBottom: '4px',
+            textShadow: '0 0 10px rgba(0,0,0,0.9)',
           }}>
             {player?.name}
           </div>
@@ -612,64 +685,133 @@ const EnhancedWarriorAvatar = ({
           {/* 武器 */}
           <div style={{
             textAlign: 'center',
-            fontSize: '0.8rem',
+            fontSize: '0.75rem',
             color: weapon.color,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px',
+            gap: '3px',
           }}>
             <span>{weapon.icon}</span>
-            <span>{weapon.name}</span>
+            <span style={{ fontFamily: '"Ma Shan Zheng", sans-serif' }}>{weapon.name}</span>
           </div>
         </div>
 
-        {/* 气血条 */}
+        {/* 气血条与气血数值 */}
         <div style={{
           position: 'absolute',
-          bottom: '55px',
-          left: '15px',
-          right: '15px',
-          height: '6px',
-          background: 'rgba(0,0,0,0.5)',
+          bottom: '50px',
+          left: '12px',
+          right: '12px',
+          height: '5px',
+          background: 'rgba(0,0,0,0.65)',
           borderRadius: '3px',
           overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1.5px solid rgba(194, 157, 56, 0.15)',
+          zIndex: 6,
         }}>
           <div style={{
             width: `${hpRatio * 100}%`,
             height: '100%',
             background: hpRatio <= 0.2
-              ? 'linear-gradient(90deg, #dc2626, #ef4444)'
+              ? 'linear-gradient(90deg, #b91c1c, #ef4444)'
               : hpRatio <= 0.5
-                ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
+                ? 'linear-gradient(90deg, #d97706, #fbbf24)'
                 : isLeft
-                  ? 'linear-gradient(90deg, #059669, #10b981)'
-                  : 'linear-gradient(90deg, #dc2626, #ef4444)',
+                  ? 'linear-gradient(90deg, #0f766e, #00a86b)'
+                  : 'linear-gradient(90deg, #b91c1c, #dc2626)',
             transition: 'width 0.3s ease',
           }} />
         </div>
 
-        {/* 气血数值 */}
         <div style={{
           position: 'absolute',
-          bottom: '62px',
+          bottom: '56px',
           left: '0',
           right: '0',
           textAlign: 'center',
-          fontSize: '0.7rem',
+          fontSize: '0.62rem',
           color: '#a0a0a0',
           fontFamily: 'monospace',
+          zIndex: 6,
+          transform: isLeft ? 'none' : 'scaleX(-1)', // 纠正翻转
         }}>
           {Math.floor(player?.hp || 0)} / {Math.floor(player?.maxHp || 7000)}
         </div>
 
-        {/* 伤害飘字 */}
+        {/* 伤害飘字层 */}
         {renderDamageNumber()}
         {renderHealNumber()}
       </div>
     </div>
   );
+};
+
+// 4. 特殊 NPC 原著数据与经典台词配置库
+export const NPC_SPECIAL_CONFIGS = {
+  '扫地僧': {
+    quote: '大凡武功修为，必须有慈悲之佛法相辅。',
+    comment: '大智若愚，藏经阁中扫尽红尘。',
+    color: '#9ca3af',
+    filter: 'grayscale(0.3) sepia(0.15) contrast(1.05)',
+    weaponIcon: '🧹',
+    weaponName: '铁木扫帚',
+    weaponColor: '#9ca3af',
+  },
+  '东方不败': {
+    quote: '日出东方，唯我不败！',
+    comment: '葵花宝典，红烛针影，绝代妖娆。',
+    color: '#ef4444',
+    filter: 'hue-rotate(-20deg) saturate(1.8) contrast(1.2)',
+    weaponIcon: '🪡',
+    weaponName: '葵花绣针',
+    weaponColor: '#f87171',
+  },
+  '灭绝师太': {
+    quote: '我峨嵋派倚天不出，谁与争锋！',
+    comment: '性情刚烈，斩尽妖邪，正邪不两立。',
+    color: '#6b7280',
+    filter: 'grayscale(0.8) contrast(1.3)',
+    weaponIcon: '🗡️',
+    weaponName: '倚天剑',
+    weaponColor: '#c9a227',
+  },
+  '邀月': {
+    quote: '若我不配得到，那谁也别想得到！',
+    comment: '明玉功成，移花宫主，冷若冰霜。',
+    color: '#06b6d4',
+    filter: 'hue-rotate(180deg) saturate(1.4) brightness(1.15)',
+    weaponIcon: '❄️',
+    weaponName: '明玉气劲',
+    weaponColor: '#22d3ee',
+  },
+  '张三丰': {
+    quote: '太极圆转，阴阳既济，生生不息。',
+    comment: '一代宗师，武当太极，泰山北斗。',
+    color: '#fbbf24',
+    filter: 'grayscale(0.9) contrast(1.15) sepia(0.05)',
+    weaponIcon: '☯️',
+    weaponName: '太极真意',
+    weaponColor: '#fbbf24',
+  },
+  '乔峰': {
+    quote: '我萧峰大好男儿，何惧之有！',
+    comment: '降龙神威，悲剧豪侠，豪气冲天。',
+    color: '#b45309',
+    filter: 'sepia(0.3) saturate(1.3) contrast(1.1)',
+    weaponIcon: '🐉',
+    weaponName: '降龙十八掌',
+    weaponColor: '#f59e0b',
+  },
+  '萧峰': {
+    quote: '我萧峰大好男儿，何惧之有！',
+    comment: '降龙神威，悲剧豪侠，豪气冲天。',
+    color: '#b45309',
+    filter: 'sepia(0.3) saturate(1.3) contrast(1.1)',
+    weaponIcon: '🐉',
+    weaponName: '降龙十八掌',
+    weaponColor: '#f59e0b',
+  }
 };
 
 export default EnhancedWarriorAvatar;

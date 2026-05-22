@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, getSkillInfo, TREASURES_DB } from '../store/gameState';
 import { Gavel, Clock, ArrowRight, ArrowUpRight, CheckCircle2, XCircle } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
 
 export default function AuctionHouse() {
   const player = useGameStore(state => state.player);
@@ -10,6 +11,8 @@ export default function AuctionHouse() {
   const placeBid = useGameStore(state => state.placeBid);
 
   const [tab, setTab] = useState('market'); // market, sell, history
+
+  const cleanIcon = useCleanImage('/wuxia_auction_icon.png');
   const [sellType, setSellType] = useState('skill');
   const [selectedItem, setSelectedItem] = useState('');
   const [startPrice, setStartPrice] = useState(1);
@@ -80,9 +83,32 @@ export default function AuctionHouse() {
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
-       <h2 style={{ fontSize: '1.8rem', color: '#facc15', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-         <Gavel /> 玩家拍卖行 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>万金散尽还复来</span>
-       </h2>
+       
+       {/* 居中大标题排版 */}
+       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+         <img
+           src={cleanIcon}
+           alt="玩家拍卖行"
+           style={{
+             width: '130px',
+             height: '130px',
+             objectFit: 'contain',
+             filter: 'drop-shadow(0 0 12px rgba(250, 204, 21, 0.5))',
+             transition: 'transform 0.3s ease',
+           }}
+           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+         />
+         <h2 style={{ fontSize: '2rem', color: '#facc15', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', marginTop: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+           玩家拍卖行
+         </h2>
+         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '600px', textAlign: 'center', margin: '0' }}>
+           万金散尽还复来
+         </p>
+       </div>
+
+       {/* 渐变分割线 */}
+       <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, #facc15, transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
        
        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>
           <button onClick={()=>setTab('market')} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? '#facc15' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>竞拍大厅</button>
@@ -117,7 +143,7 @@ export default function AuctionHouse() {
 
        {tab === 'sell' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px' }}>
-             <p style={{ color: '#888', fontSize: '0.9rem' }}>说明: 上架后倒计时4小时。功法卖出后买家习得的为劣化xN版，原典保留在您手中；宝具与疲劳点数上架将立刻从你身上扣除，一旦流拍则退还。</p>
+             <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: '1.6' }}>说明: 上架后倒计时4小时。功法卖出后买家习得的为劣化xN版，原典保留在您手中；宝具与疲劳点数上架将立刻从你身上扣除，一旦流拍则退还。</p>
              <div>
                 <label style={{ display: 'block', color: '#ccc', marginBottom: '0.5rem' }}>类别</label>
                 <select value={sellType} onChange={(e) => { setSellType(e.target.value); setSelectedItem(''); }} style={{ width: '100%', padding: '0.5rem', background: '#000', color: '#fff', border: '1px solid #555', borderRadius:'4px' }}>

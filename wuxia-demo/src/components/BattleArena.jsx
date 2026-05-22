@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Swords } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
 import DynamicPortrait from './DynamicPortrait';
 import BattleEffects, { DamageFloatNumber } from './BattleEffects';
+import { TreasureIcon } from './WuxiaIcon';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
@@ -118,7 +120,7 @@ const BattleCharacter = ({ player, isLeft, battleState }) => {
           <span style={{
             fontSize: '1rem',
             color: '#f0f0f0',
-            fontFamily: '"Ma Shan Zheng", cursive',
+            fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
             letterSpacing: '2px',
           }}>
             {player.name}
@@ -153,15 +155,19 @@ const BattleCharacter = ({ player, isLeft, battleState }) => {
         <div style={{
           textAlign: 'center',
           fontSize: '0.85rem',
-          color: '#c9a227',
+          color: 'var(--gold)',
           marginTop: '8px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '4px',
+          gap: '6px',
         }}>
-          <span>{weapon.icon}</span>
-          <span>{weapon.name}</span>
+          {player.equippedTreasure ? (
+            <TreasureIcon id={player.equippedTreasure} size={22} />
+          ) : (
+            <span style={{ fontSize: '1.1rem' }}>👊</span>
+          )}
+          <span style={{ fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>{weapon.name}</span>
         </div>
 
         {/* 气血条 */}
@@ -222,6 +228,8 @@ export default function BattleArena() {
   const { inBattle, p1, p2, logs, winner, roomId } = battleState;
   const sendBattleAction = useGameStore(state => state.sendBattleAction);
   const exitBattle = useGameStore(state => state.exitBattle);
+
+  const cleanIcon = useCleanImage('/wuxia_battle_icon.png');
 
   // 战斗动效状态
   const [effects, setEffects] = useState([]);
@@ -600,13 +608,35 @@ export default function BattleArena() {
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
        <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--crimson), transparent)', opacity: 0.5 }} />
 
-       <h2 style={{ fontSize: '1.8rem', color: 'var(--crimson)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
-        <Swords /> ✦ 竞技对决 ✦
-      </h2>
+       {/* 居中大标题排版 */}
+       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+         <img
+           src={cleanIcon}
+           alt="竞技对决"
+           style={{
+             width: '130px',
+             height: '130px',
+             objectFit: 'contain',
+             filter: 'drop-shadow(0 0 12px rgba(220, 20, 60, 0.5))',
+             transition: 'transform 0.3s ease',
+           }}
+           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+         />
+          <h2 style={{ fontSize: '2rem', color: 'var(--crimson)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', marginTop: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+            竞技对决
+          </h2>
+         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '600px', textAlign: 'center', margin: '0' }}>
+           以武会友，切磋招式，问道武林之巅
+         </p>
+       </div>
+
+       {/* 渐变暗红分割线 */}
+       <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--crimson), transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
 
       {!inBattle ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.8' }}>当前并未在切磋回合中。<br/>请前往【风云榜】中向真实的在线高手下发战书！</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>当前并未在切磋回合中。<br/>请前往【风云榜】中向真实的在线高手下发战书！</p>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -633,7 +663,7 @@ export default function BattleArena() {
               <div style={{
                 fontSize: '2.5rem',
                 color: 'var(--crimson)',
-                fontFamily: '"Ma Shan Zheng", cursive',
+                fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
                 textShadow: '0 0 20px rgba(220, 20, 60, 0.6)',
                 letterSpacing: '8px',
               }}>
@@ -642,7 +672,7 @@ export default function BattleArena() {
               <div style={{
                 fontSize: '0.9rem',
                 color: 'var(--gold)',
-                fontFamily: '"Ma Shan Zheng", cursive',
+                fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
                 background: 'rgba(0,0,0,0.6)',
                 padding: '4px 16px',
                 borderRadius: '4px',

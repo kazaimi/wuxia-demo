@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useGameStore, ATTR_MAP, SKILLS_DB } from '../store/gameState';
 import { Target, Gift, RefreshCw } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
 
 export default function TaskHall() {
   const dailyTasks = useGameStore(state => state.dailyTasks);
@@ -14,6 +15,8 @@ export default function TaskHall() {
   const incrementTaskCount = useGameStore(state => state.incrementTaskCount);
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
   const player = useGameStore(state => state.player);
+
+  const cleanIcon = useCleanImage('/wuxia_tasks_icon.png');
 
   useEffect(() => {
     checkDailyReset();
@@ -95,23 +98,41 @@ export default function TaskHall() {
       {/* 顶部装饰 */}
       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
-          <Target /> ✦ 悬赏大厅 ✦
-        </h2>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: player.taskCount >= 35 ? 'var(--danger)' : 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive' }}>
-             [当日活跃: {player.taskCount} / 35 次]
-          </span>
-          <button className="btn-primary" onClick={generateTasks} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
-            <RefreshCw size={16} 刷新榜单 />
-          </button>
-        </div>
+      {/* 右上角绝对定位状态及刷新按钮 */}
+      <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', display: 'flex', gap: '1rem', alignItems: 'center', zIndex: 10 }}>
+        <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: player.taskCount >= 35 ? 'var(--danger)' : 'var(--gold)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
+           [当日活跃: {player.taskCount} / 35 次]
+        </span>
+        <button className="btn-primary" onClick={generateTasks} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}>
+          <RefreshCw size={14} /> 刷新榜单
+        </button>
       </div>
 
-      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.6' }}>
-        领取委托需要面对失败的风险，成功率与指定属性倾向强挂钩。不论成功失败都会扣除每日次数。
-      </p>
+      {/* 居中大标题排版 */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+        <img
+          src={cleanIcon}
+          alt="悬赏大厅"
+          style={{
+            width: '130px',
+            height: '130px',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 0 12px rgba(212, 175, 55, 0.45))',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+        />
+        <h2 style={{ fontSize: '2rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', marginTop: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+          悬赏大厅
+        </h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', maxWidth: '600px', textAlign: 'center', margin: '0' }}>
+          领取委托需要面对失败的风险，成功率与指定属性倾向强挂钩。不论成功失败都会扣除每日次数。
+        </p>
+      </div>
+
+      {/* 渐变金丝分割线 */}
+      <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto', paddingRight: '8px' }}>
         {dailyTasks.map(task => {
@@ -141,7 +162,7 @@ export default function TaskHall() {
             )}
 
             <div>
-              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--crimson)' : 'var(--text-main)'), fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--crimson)' : 'var(--text-main)'), fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px' }}>
                 {task.title}
               </h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{task.desc}</p>

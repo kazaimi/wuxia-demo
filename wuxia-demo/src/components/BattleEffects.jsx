@@ -173,19 +173,8 @@ const CriticalHitEffect = ({ intensity }) => (
     />
 
     {/* 暴击文字 */}
-    <div
-      className="critical-text"
-      style={{
-        position: 'absolute',
-        fontSize: `${2 + intensity}rem`,
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color: '#dc143c',
-        textShadow: '0 0 20px rgba(220, 20, 60, 0.8), 0 0 40px rgba(220, 20, 60, 0.5)',
-        animation: 'criticalPop 0.5s ease-out forwards',
-        letterSpacing: '8px',
-      }}
-    >
-      暴击!
+    <div className="combat-text-critical" style={{ position: 'absolute' }}>
+      【暴擊】
     </div>
 
     {/* 剑气四散 */}
@@ -238,16 +227,8 @@ const DodgeEffect = () => (
     ))}
 
     {/* 闪避文字 */}
-    <div
-      style={{
-        fontSize: '1.5rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color: '#00a86b',
-        textShadow: '0 0 10px rgba(0, 168, 107, 0.6)',
-        animation: 'dodgeText 0.4s ease-out forwards',
-      }}
-    >
-      闪避
+    <div className="combat-text-dodge">
+      【閃避】
     </div>
   </div>
 );
@@ -287,16 +268,13 @@ const HealEffect = ({ intensity }) => (
 
     {/* 治愈数值 */}
     <div
+      className="combat-text-heal"
       style={{
         position: 'absolute',
-        fontSize: `${1.5 + intensity * 0.3}rem`,
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color: '#10b981',
-        textShadow: '0 0 15px rgba(16, 185, 129, 0.8)',
-        animation: 'healNumber 0.6s ease-out forwards',
+        fontSize: `${1.8 + intensity * 0.3}rem`,
       }}
     >
-      +{Math.floor(50 + intensity * 100)}
+      【回春】+{Math.floor(50 + intensity * 100)}
     </div>
   </div>
 );
@@ -508,16 +486,12 @@ const PoisonEffect = () => (
 
     {/* 中毒文字 */}
     <div
+      className="combat-text-debuff"
       style={{
         position: 'absolute',
-        fontSize: '1.2rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color: '#22c55e',
-        textShadow: '0 0 10px rgba(34, 197, 94, 0.6)',
-        animation: 'poisonText 0.8s ease-out forwards',
       }}
     >
-      中毒
+      【厄·中毒】
     </div>
   </div>
 );
@@ -544,16 +518,14 @@ const StunEffect = () => (
 
     {/* 眩晕文字 */}
     <div
+      className="combat-text-debuff"
       style={{
         position: 'absolute',
-        fontSize: '1.2rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
         color: '#fbbf24',
-        textShadow: '0 0 10px rgba(251, 191, 36, 0.6)',
-        animation: 'stunText 0.5s ease-out forwards',
+        textShadow: '0 0 10px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.4)',
       }}
     >
-      眩晕
+      【劫·眩暈】
     </div>
   </div>
 );
@@ -587,55 +559,70 @@ const InternalWoundEffect = () => (
 
     {/* 内伤文字 */}
     <div
+      className="combat-text-debuff"
       style={{
         position: 'absolute',
-        fontSize: '1.2rem',
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color: '#8b5cf6',
-        textShadow: '0 0 10px rgba(139, 92, 246, 0.6)',
-        animation: 'internalText 0.6s ease-out forwards',
       }}
     >
-      内伤
+      【厄·內傷】
     </div>
   </div>
 );
 
 // ========== 伤害飘字组件 ==========
-export const DamageFloatNumber = ({ damage, type = 'damage', position = { x: 0, y: 0 } }) => {
+export const DamageFloatNumber = ({ damage, type = 'damage', isHeal, position = { x: 0, y: 0 }, onComplete }) => {
   const [offsetY, setOffsetY] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setOffsetY(-80);
     }, 50);
-    return () => clearTimeout(timer);
-  }, []);
 
-  const colors = {
-    damage: '#ef4444',
-    heal: '#10b981',
-    critical: '#dc143c',
-    poison: '#22c55e',
-    buff: '#d4af37',
-    debuff: '#8b5cf6',
+    const completeTimer = setTimeout(() => {
+      if (onComplete) onComplete();
+    }, 600);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(completeTimer);
+    };
+  }, [onComplete]);
+
+  const finalType = isHeal ? 'heal' : type;
+
+  const classNames = {
+    damage: 'combat-text-damage',
+    heal: 'combat-text-heal',
+    critical: 'combat-text-critical',
+    poison: 'combat-text-debuff',
+    buff: 'combat-text-buff',
+    debuff: 'combat-text-debuff',
   };
 
-  const color = colors[type] || colors.damage;
-  const fontSize = type === 'critical' ? '2rem' : '1.5rem';
+  const className = classNames[finalType] || classNames.damage;
+
+  const getDisplayContent = () => {
+    if (finalType === 'heal') {
+      return `【回春】+${damage}`;
+    } else if (finalType === 'critical') {
+      return `-${damage}`;
+    } else if (finalType === 'poison') {
+      return `【毒】-${damage}`;
+    } else if (finalType === 'debuff') {
+      return `【厄】-${damage}`;
+    } else if (finalType === 'buff') {
+      return `【祥】+${damage}`;
+    }
+    return `-${damage}`;
+  };
 
   return (
     <div
-      className="damage-float"
+      className={className}
       style={{
         position: 'absolute',
         left: position.x,
         top: position.y + offsetY,
-        fontSize,
-        fontFamily: '"Ma Shan Zheng", cursive',
-        color,
-        textShadow: `0 0 15px ${color}`,
-        fontWeight: 'bold',
         transform: `translateY(${offsetY}px)`,
         opacity: offsetY === 0 ? 1 : 0,
         transition: 'all 0.5s ease-out',
@@ -643,7 +630,7 @@ export const DamageFloatNumber = ({ damage, type = 'damage', position = { x: 0, 
         zIndex: 200,
       }}
     >
-      {type === 'heal' ? '+' : '-'}{damage}
+      {getDisplayContent()}
     </div>
   );
 };

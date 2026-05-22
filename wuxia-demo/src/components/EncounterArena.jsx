@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
 import { Skull, Swords, Gift } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
 import DynamicPortrait from './DynamicPortrait';
 import BattleEffects, { DamageFloatNumber } from './BattleEffects';
 
@@ -56,7 +57,7 @@ const EncounterCharacter = ({ player, isPlayer }) => {
       <div style={{
         textAlign: 'center',
         color: isPlayer ? '#4facfe' : '#f59e0b',
-        fontFamily: '"Ma Shan Zheng", cursive',
+        fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
         letterSpacing: '2px',
       }}>
         <span style={{ fontSize: '1rem' }}>{player.name}</span>
@@ -109,6 +110,8 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
+
+  const cleanIcon = useCleanImage('/wuxia_encounter_icon.png');
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);
@@ -452,13 +455,36 @@ export default function EncounterArena() {
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
-       <h2 style={{ fontSize: '1.8rem', color: 'var(--warn)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Skull /> 江湖奇遇 <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>今日剩余：{5 - (player.encountersToday || 0)} 次</span>
-      </h2>
+      
+      {/* 居中大标题排版 */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+        <img
+          src={cleanIcon}
+          alt="江湖奇遇"
+          style={{
+            width: '130px',
+            height: '130px',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 0 12px rgba(185, 28, 28, 0.5))',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+        />
+        <h2 style={{ fontSize: '2rem', color: 'var(--warn)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', marginTop: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+          江湖奇遇
+        </h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '600px', textAlign: 'center', margin: '0', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+          风云突变遇豪侠，快意恩仇走天涯 <span style={{ fontSize: '0.85rem', color: 'var(--warn)', fontWeight: 'bold' }}>(今日剩余: {5 - (player.encountersToday || 0)} 次)</span>
+        </p>
+      </div>
+
+      {/* 渐变分割线 */}
+      <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--warn), transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
       
       {encounterState === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem' }}>你将连续挑战来自《江湖风云榜》的三人小队。<br/>血气虽会翻倍但在车轮战中绝不恢复！<br/>若能连胜，将有机会缴获敌方宝具。</p>
+         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>你将连续挑战来自《江湖风云榜》的三人小队。<br/>血气虽会翻倍但在车轮战中绝不恢复！<br/>若能连胜，将有机会缴获敌方宝具。</p>
          <button className="btn-primary" onClick={startEncounter} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'var(--warn)', color: '#000' }}>开启奇遇连战</button>
        </div>
       ) : (
@@ -477,8 +503,8 @@ export default function EncounterArena() {
             <EncounterCharacter player={p1} isPlayer={true} />
 
             <div style={{ textAlign: 'center' }}>
-               <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))', fontFamily: '"Ma Shan Zheng", cursive' }}>VS</h3>
-               <span style={{ fontSize: '0.9rem', color: 'var(--warn)', fontFamily: '"Ma Shan Zheng", cursive' }}>第 {currentEnemyIndex.current + 1} / 3 战</span>
+               <h3 style={{ color: 'var(--danger)', filter: 'drop-shadow(0 0 5px var(--danger))', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>VS</h3>
+               <span style={{ fontSize: '0.9rem', color: 'var(--warn)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>第 {currentEnemyIndex.current + 1} / 3 战</span>
             </div>
 
             <EncounterCharacter player={p2} isPlayer={false} />

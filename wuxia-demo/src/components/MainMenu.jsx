@@ -10,6 +10,125 @@ import AuctionHouse from './AuctionHouse';
 import BlackMarket from './BlackMarket';
 import { ShoppingBag, Target, Swords, Trophy, Skull, Map, Gavel } from 'lucide-react';
 
+const tokenStyles = `
+  .black-market-token-alien-img-btn {
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: tokenAlienFloat 4s infinite ease-in-out;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+  }
+  .token-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* 使用深色径向渐变底座，防止后面文本穿透，且边缘柔和羽化 */
+    background: radial-gradient(circle, rgba(12, 4, 4, 0.96) 0%, rgba(10, 3, 3, 0.82) 45%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .token-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    mix-blend-mode: screen; /* 核心：过滤掉纯黑背景 */
+    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 65%);
+    mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 65%);
+    filter: contrast(1.25) brightness(0.95);
+    transition: all 0.4s ease;
+  }
+  
+  /* 呼吸浮起的暗红熔岩光晕层 */
+  .token-glow-overlay {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.65) 0%, rgba(0, 0, 0, 0) 70%);
+    mix-blend-mode: color-dodge;
+    pointer-events: none;
+    opacity: 0.35;
+    animation: pulseGlow 3.5s infinite ease-in-out;
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.3; transform: scale(0.85); }
+    50% { opacity: 0.7; transform: scale(1.15); }
+  }
+
+  /* 悬停动作：上浮、略微旋转、亮度和细节增强，散发炽烈红光 */
+  .black-market-token-alien-img-btn:hover {
+    transform: translateY(-8px) scale(1.15) rotate(2deg) !important;
+  }
+  .black-market-token-alien-img-btn:hover .token-image-wrapper img {
+    filter: contrast(1.3) brightness(1.25) drop-shadow(0 0 10px rgba(239, 68, 68, 0.9));
+  }
+  .black-market-token-alien-img-btn:hover .token-image-wrapper {
+    background: radial-gradient(circle, rgba(35, 12, 12, 0.95) 0%, rgba(20, 5, 5, 0.9) 45%, rgba(184, 134, 11, 0.25) 75%);
+  }
+
+  /* 点击时的强力剧烈抖动 */
+  .black-market-token-alien-img-btn:active {
+    animation: tokenActiveShake 0.15s ease-in-out infinite;
+  }
+
+  @keyframes tokenActiveShake {
+    0%, 100% { transform: translateY(-8px) scale(1.1) rotate(2deg); }
+    25% { transform: translateY(-6px) scale(1.1) rotate(0deg); }
+    75% { transform: translateY(-10px) scale(1.1) rotate(4deg); }
+  }
+
+  /* 慢速呼吸和浮动（熔岩红与古铜金双色交替发光） */
+  @keyframes tokenAlienFloat {
+    0%, 100% {
+      transform: translateY(0) scale(1) rotate(0deg);
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 6px rgba(220, 38, 38, 0.45));
+    }
+    50% {
+      transform: translateY(-8px) scale(1.05) rotate(-1.5deg);
+      filter: drop-shadow(0 15px 26px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(245, 158, 11, 0.7));
+    }
+  }
+`;
+
+const RealIcon = ({ src, alt, size = 20, isActive }) => {
+  return (
+    <div style={{
+      width: `${size}px`,
+      height: `${size}px`,
+      position: 'relative',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '4px',
+      overflow: 'hidden',
+      background: isActive ? 'radial-gradient(circle, rgba(249, 115, 22, 0.3) 0%, transparent 70%)' : 'transparent',
+      transition: 'all 0.3s ease',
+      verticalAlign: 'middle',
+    }}>
+      <img 
+        src={src} 
+        alt={alt} 
+        style={{
+          width: '120%',
+          height: '120%',
+          objectFit: 'contain',
+          mixBlendMode: 'screen',
+          WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 65%)',
+          maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 65%)',
+          filter: isActive ? 'contrast(1.3) brightness(1.25) drop-shadow(0 0 6px rgba(249, 115, 22, 0.8))' : 'contrast(1.1) brightness(0.8) grayscale(0.2)',
+          transition: 'all 0.3s ease',
+        }}
+      />
+    </div>
+  );
+};
+
 export default function MainMenu() {
   const [activeTab, setActiveTab] = useState('tasks');
   const [showBlackMarket, setShowBlackMarket] = useState(false);
@@ -30,31 +149,32 @@ export default function MainMenu() {
     if (isActive) {
       return specialColor ? {
         background: specialColor,
-        color: '#1a1a2e',
-        boxShadow: `0 0 20px ${specialColor === '#c084fc' ? 'rgba(192, 132, 252, 0.5)' : 'rgba(212, 175, 55, 0.5)'}`
+        color: '#110505',
+        boxShadow: `0 0 20px ${specialColor === '#f97316' ? 'rgba(249, 115, 22, 0.5)' : 'rgba(194, 157, 56, 0.5)'}`
       } : {};
     }
     return {
       background: 'transparent',
-      border: `1px solid ${specialColor || 'rgba(212, 175, 55, 0.4)'}`,
+      border: `1px solid ${specialColor || 'rgba(194, 157, 56, 0.4)'}`,
       boxShadow: 'none',
       color: specialColor || 'var(--gold)'
     };
   };
 
   const tabs = [
-    { id: 'tasks', label: '任务大厅', icon: <Target size={16} /> },
-    { id: 'battle', label: '竞技对战', icon: <Swords size={16} /> },
-    { id: 'leader', label: '风云榜', icon: <Trophy size={16} /> },
-    { id: 'encounter', label: '江湖奇遇', icon: <Skull size={16} /> },
-    { id: 'realm', label: '秘境寻宝', icon: <Map size={16} />, color: '#c084fc' },
-    { id: 'auction', label: '拍卖风云', icon: <Gavel size={16} />, color: '#d4af37' },
+    { id: 'tasks', label: '任务大厅', img: '/wuxia_tasks_icon.png' },
+    { id: 'battle', label: '竞技对战', img: '/wuxia_battle_icon.png' },
+    { id: 'leader', label: '风云榜', img: '/wuxia_leader_icon.png' },
+    { id: 'encounter', label: '江湖奇遇', img: '/wuxia_encounter_icon.png' },
+    { id: 'realm', label: '秘境寻宝', img: '/wuxia_realm_icon.png', color: '#f97316' },
+    { id: 'auction', label: '拍卖风云', img: '/wuxia_auction_icon.png', color: '#c29d38' },
   ];
 
   // 移动端布局
   if (isMobile) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+        <style>{tokenStyles}</style>
         {/* 顶部Tab导航 */}
         <div style={{
           display: 'flex',
@@ -63,24 +183,28 @@ export default function MainMenu() {
           paddingBottom: '0.5rem',
           borderBottom: '1px solid rgba(212, 175, 55, 0.2)'
         }}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className="btn-primary"
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                ...btnStyle(activeTab === tab.id, tab.color),
-                padding: '0.5rem 0.8rem',
-                fontSize: '0.85rem',
-                whiteSpace: 'nowrap',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                className="btn-primary"
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  ...btnStyle(isActive, tab.color),
+                  padding: '0.5rem 0.8rem',
+                  fontSize: '0.85rem',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <RealIcon src={tab.img} alt={tab.label} size={18} isActive={isActive} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* 玩家状态卡片 - 可折叠 */}
@@ -105,15 +229,20 @@ export default function MainMenu() {
 
         {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
 
-        {/* 黑市按钮 */}
-        <button onClick={() => setShowBlackMarket(true)} style={{
-          position: 'fixed', bottom: '20px', right: '20px', zIndex: 8000,
-          background: 'linear-gradient(135deg, #7f1d1d, #b91c1c)', color: '#fff',
-          border: '2px solid var(--gold)', borderRadius: '50%', width: '56px', height: '56px',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
-          boxShadow: '0 0 20px rgba(185, 28, 28, 0.6), 0 0 30px rgba(212, 175, 55, 0.3)'
-        }}>
-          <ShoppingBag size={24} />
+        {/* 黑市按钮 - 极致暗黑异形纹理令牌 */}
+        <button 
+          onClick={() => setShowBlackMarket(true)} 
+          className="black-market-token-alien-img-btn" 
+          style={{
+            position: 'fixed', bottom: '20px', right: '20px', zIndex: 8000,
+            width: '110px', height: '110px'
+          }}
+          title="进入黑市"
+        >
+          <div className="token-image-wrapper">
+            <img src="/dark_wuxia_token.png" alt="黑市密令" />
+            <div className="token-glow-overlay"></div>
+          </div>
         </button>
       </div>
     );
@@ -148,19 +277,30 @@ export default function MainMenu() {
             fontSize: '1rem',
             letterSpacing: '2px'
           }}>
-            ✦ 江湖入口 ✦
+            江湖入口
           </div>
 
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className="btn-primary"
-              onClick={() => setActiveTab(tab.id)}
-              style={btnStyle(activeTab === tab.id, tab.color)}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                className="btn-primary"
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  ...btnStyle(isActive, tab.color),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  padding: '0.8rem 1.2rem',
+                }}
+              >
+                <RealIcon src={tab.img} alt={tab.label} size={24} isActive={isActive} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div>
@@ -174,19 +314,22 @@ export default function MainMenu() {
 
       {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
 
-      {/* 黑市按钮 - 武侠风 */}
-      <button onClick={() => setShowBlackMarket(true)} style={{
+      {/* 确保PC端也加载相同的样式 */}
+      <style>{tokenStyles}</style>
+      {/* 黑市按钮 - 极致暗黑异形纹理令牌 */}
+      <button 
+        onClick={() => setShowBlackMarket(true)} 
+        className="black-market-token-alien-img-btn" 
+        style={{
           position: 'fixed', bottom: '30px', right: '30px', zIndex: 8000,
-          background: 'linear-gradient(135deg, #7f1d1d, #b91c1c)', color: '#fff',
-          border: '2px solid var(--gold)', borderRadius: '50%', width: '64px', height: '64px',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer',
-          boxShadow: '0 0 25px rgba(185, 28, 28, 0.6), 0 0 40px rgba(212, 175, 55, 0.3)',
-          transition: 'transform 0.3s ease'
-      }}
-      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          width: '160px', height: '160px'
+        }}
+        title="进入黑市"
       >
-          <ShoppingBag size={28} />
+        <div className="token-image-wrapper">
+          <img src="/dark_wuxia_token.png" alt="黑市密令" />
+          <div className="token-glow-overlay"></div>
+        </div>
       </button>
     </div>
   );

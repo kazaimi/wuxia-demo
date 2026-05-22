@@ -3,6 +3,7 @@ import { useGameStore, TREASURES_DB } from '../store/gameState';
 import { generateEventDeck } from '../data/realmEvents';
 import { Map, DoorOpen } from 'lucide-react';
 import EventIllustration from './EventIllustration';
+import { useCleanImage } from '../utils/imageProcess';
 
 export default function SecretRealm() {
   const player = useGameStore(state => state.player);
@@ -13,6 +14,8 @@ export default function SecretRealm() {
   const addSilver = useGameStore(state => state.addSilver);
 
   const [state, setState] = useState('idle'); // idle, exploring, result
+
+  const cleanIcon = useCleanImage('/wuxia_realm_icon.png');
   const [deck, setDeck] = useState([]);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [depth, setDepth] = useState(0);
@@ -156,27 +159,49 @@ export default function SecretRealm() {
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, rgba(10,10,20,0.95), rgba(5,5,15,0.98))', color: '#eee', border: '1px solid rgba(192, 132, 252, 0.3)', position: 'relative' }}>
-       {/* 顶部装饰 */}
-       <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, #c084fc, transparent)', opacity: 0.5 }} />
+        {/* 顶部装饰 */}
+        <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: '1px', background: 'linear-gradient(90deg, transparent, #c084fc, transparent)', opacity: 0.5 }} />
 
-       <h2 style={{ fontSize: '1.8rem', color: '#c084fc', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
-        <Map /> ✦ 琅嬛福地 ✦ <span style={{fontSize: '1rem', color: 'var(--text-muted)', letterSpacing: '1px'}}>今日门票：{3 - (player.secretRealmAttempts || 0)}/3</span>
-      </h2>
+        {/* 居中大标题排版 */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+          <img
+            src={cleanIcon}
+            alt="琅嬛福地"
+            style={{
+              width: '130px',
+              height: '130px',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 12px rgba(192, 132, 252, 0.5))',
+              transition: 'transform 0.3s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+          />
+          <h2 style={{ fontSize: '2rem', color: '#c084fc', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', marginTop: '0.5rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+            琅嬛福地
+          </h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '600px', textAlign: 'center', margin: '0', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+            天衍四九，见好就收 <span style={{ fontSize: '0.85rem', color: '#c084fc', fontWeight: 'bold' }}>(今日门票: {3 - (player.secretRealmAttempts || 0)} / 3)</span>
+          </p>
+        </div>
+
+        {/* 渐变分割线 */}
+        <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, #c084fc, transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
 
       {state === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '2' }}>
+         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>
             天衍四九，人遁其一。<br/>
             此处为琅嬛福地，充满了未知的奇遇与致命的凶险。<br/>
             你的每一次选择，都将深刻影响最终的因果与你能到达的深度。<br/>
             切记，见好就收方能全身而退；一味贪念造化，恐有万劫不复之厄！
          </p>
-         <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff', boxShadow: '0 0 20px rgba(192, 132, 252, 0.4)' }}>✦ 踏入秘境 ✦</button>
+         <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff', boxShadow: '0 0 20px rgba(192, 132, 252, 0.4)' }}>踏入秘境</button>
        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(20,20,30,0.8)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
-            <div>深径残尺：<span style={{color: 'var(--gold)', fontWeight: 'bold', fontFamily: '"Ma Shan Zheng", cursive'}}>{depth}</span> 层</div>
+            <div>深径残尺：<span style={{color: 'var(--gold)', fontWeight: 'bold', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif'}}>{depth}</span> 层</div>
             <div>尘世因果：<span style={{color: karma > 0 ? 'var(--jade)' : karma < 0 ? 'var(--crimson)' : 'var(--text-main)', fontWeight: 'bold'}}>{karma > 0 ? '+'+karma : karma}</span></div>
           </div>
 
@@ -204,7 +229,7 @@ export default function SecretRealm() {
                         return (
                            <button key={i} onClick={() => handleChoice(c)} style={{
                               background: 'rgba(30,30,50,0.8)', border: '1px solid rgba(192, 132, 252, 0.3)', color: '#ddd', padding: '1rem', textAlign: 'left', cursor: 'pointer', borderRadius: '6px',
-                              fontFamily: '"Ma Shan Zheng", cursive', transition: 'all 0.2s', fontSize: '1rem', letterSpacing: '1px'
+                              fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', transition: 'all 0.2s', fontSize: '1rem', letterSpacing: '1px'
                            }} onMouseOver={(e)=>{e.target.style.background='rgba(50,50,80,0.9)'; e.target.style.borderColor='#c084fc'}} onMouseOut={(e)=>{e.target.style.background='rgba(30,30,50,0.8)'; e.target.style.borderColor='rgba(192, 132, 252, 0.3)'}}>
                               {c.text}
                            </button>
@@ -212,7 +237,7 @@ export default function SecretRealm() {
                      })}
                      <button onClick={() => endExploration(depth, karma, false)} style={{
                         background: 'transparent', border: '1px dashed var(--gold)', color: 'var(--gold)', padding: '1rem', textAlign: 'center', cursor: 'pointer', borderRadius: '6px',
-                        fontFamily: '"Ma Shan Zheng", cursive', marginTop: '1.5rem', fontSize: '0.9rem', letterSpacing: '1px'
+                        fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', marginTop: '1.5rem', fontSize: '0.9rem', letterSpacing: '1px'
                      }} onMouseOver={(e)=>e.target.style.background='rgba(212, 175, 55, 0.1)'} onMouseOut={(e)=>e.target.style.background='transparent'}>
                         <DoorOpen size={16} style={{display: 'inline', verticalAlign: 'text-bottom', marginRight: '6px'}}/> [见好就收，遁出秘境]
                      </button>

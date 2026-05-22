@@ -91,7 +91,7 @@ export default function CreateRole({ initialName }) {
         disabled={points > 0}
         style={{ width: '100%', padding: '1rem', marginTop: '2rem', fontSize: '1.2rem', filter: points > 0 ? 'grayscale(100%)' : 'none' }}
       >
-        {points > 0 ? '点数未尽，不可草率' : '✦ 凝聚根骨，创立角色 ✦'}
+        {points > 0 ? '点数未尽，不可草率' : '凝聚根骨，创立角色'}
       </button>
     </div>
   );
