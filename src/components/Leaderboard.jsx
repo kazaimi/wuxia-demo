@@ -2,7 +2,7 @@ import React from 'react';
 import { useGameStore, TREASURES_DB } from '../store/gameState';
 import { Trophy, Medal, Star, Swords, Gift } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
-import { NPC_SPECIAL_CONFIGS } from './EnhancedWarriorAvatar';
+import { NPC_SPECIAL_CONFIGS, NPC_NAME_TO_KEY } from './EnhancedWarriorAvatar';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
@@ -84,26 +84,15 @@ function LeaderboardRowBackground({ name, npcConfig }) {
   
   // 初始图片路径
   let initialSrc = defaultSrc;
-  if (npcConfig) {
-    const nameMap = {
-      '扫地僧': 'saodiseng',
-      '东方不败': 'dongfang',
-      '灭绝师太': 'miejue',
-      '邀月': 'yaoyue',
-      '张三丰': 'zhangsanfeng',
-      '乔峰': 'qiaofeng',
-      '萧峰': 'qiaofeng'
-    };
-    let key = '';
-    for (const k of Object.keys(nameMap)) {
-      if (name.includes(k)) {
-        key = nameMap[k];
-        break;
-      }
+  let initialKey = '';
+  for (const k of Object.keys(NPC_NAME_TO_KEY)) {
+    if (name.includes(k)) {
+      initialKey = NPC_NAME_TO_KEY[k];
+      break;
     }
-    if (key) {
-      initialSrc = `/npc_${key}.png`;
-    }
+  }
+  if (initialKey) {
+    initialSrc = `/npc_${initialKey}.png`;
   }
   
   const [imgSrc, setImgSrc] = React.useState(initialSrc);
@@ -111,30 +100,19 @@ function LeaderboardRowBackground({ name, npcConfig }) {
   
   React.useEffect(() => {
     let src = defaultSrc;
-    if (npcConfig) {
-      const nameMap = {
-        '扫地僧': 'saodiseng',
-        '东方不败': 'dongfang',
-        '灭绝师太': 'miejue',
-        '邀月': 'yaoyue',
-        '张三丰': 'zhangsanfeng',
-        '乔峰': 'qiaofeng',
-        '萧峰': 'qiaofeng'
-      };
-      let key = '';
-      for (const k of Object.keys(nameMap)) {
-        if (name.includes(k)) {
-          key = nameMap[k];
-          break;
-        }
+    let key = '';
+    for (const k of Object.keys(NPC_NAME_TO_KEY)) {
+      if (name.includes(k)) {
+        key = NPC_NAME_TO_KEY[k];
+        break;
       }
-      if (key) {
-        src = `/npc_${key}.png`;
-      }
+    }
+    if (key) {
+      src = `/npc_${key}.png`;
     }
     setImgSrc(src);
     setFallbackActive(false);
-  }, [name, npcConfig, defaultSrc]);
+  }, [name, defaultSrc]);
 
   const handleError = () => {
     if (imgSrc !== defaultSrc) {

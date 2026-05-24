@@ -184,43 +184,42 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
         border: '1px dashed rgba(194, 157, 56, 0.15)',
         boxShadow: 'inset 0 0 20px rgba(194, 157, 56, 0.06)',
         position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         margin: '0 auto'
       }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={radarData} margin={{ top: 18, right: 32, bottom: 18, left: 32 }}>
-            <defs>
-              {/* 雷达图填充的太极余烬渐变 */}
-              <radialGradient id="wuxiaRadarGrad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.1" />
-                <stop offset="70%" stopColor="var(--gold)" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#fff5d4" stopOpacity="0.65" />
-              </radialGradient>
-            </defs>
-            <PolarGrid stroke="rgba(194, 157, 56, 0.22)" strokeDasharray="3 3" gridType="polygon" />
-            <PolarAngleAxis
-              dataKey="attribute"
-              tick={{ fill: '#e6c280', fontSize: 13, fontFamily: '"Ma Shan Zheng", "Zhi Mang Xing", cursive', letterSpacing: '1px' }}
-            />
-            <PolarRadiusAxis
-              angle={90}
-              domain={[0, sliderMax]}
-              tick={false}
-              stroke="rgba(194, 157, 56, 0.08)"
-            />
-            <Radar
-              name="属性"
-              dataKey="value"
-              stroke="var(--gold)"
-              fill="url(#wuxiaRadarGrad)"
-              fillOpacity={0.6}
-              strokeWidth={2}
-              dot={{ fill: '#fff5d4', stroke: 'var(--gold)', strokeWidth: 1.5, r: 4 }}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+            <RadarChart data={radarData} margin={{ top: 18, right: 32, bottom: 18, left: 32 }}>
+              <defs>
+                {/* 雷达图填充的太极余烬渐变 */}
+                <radialGradient id="wuxiaRadarGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.1" />
+                  <stop offset="70%" stopColor="var(--gold)" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#fff5d4" stopOpacity="0.65" />
+                </radialGradient>
+              </defs>
+              <PolarGrid stroke="rgba(194, 157, 56, 0.22)" strokeDasharray="3 3" gridType="polygon" />
+              <PolarAngleAxis
+                dataKey="attribute"
+                tick={{ fill: '#e6c280', fontSize: 13, fontFamily: '"Ma Shan Zheng", "Zhi Mang Xing", cursive', letterSpacing: '1px' }}
+              />
+              <PolarRadiusAxis
+                angle={90}
+                domain={[0, sliderMax]}
+                tick={false}
+                stroke="rgba(194, 157, 56, 0.08)"
+              />
+              <Radar
+                name="属性"
+                dataKey="value"
+                stroke="var(--gold)"
+                fill="url(#wuxiaRadarGrad)"
+                fillOpacity={0.6}
+                strokeWidth={2}
+                dot={{ fill: '#fff5d4', stroke: 'var(--gold)', strokeWidth: 1.5, r: 4 }}
+              />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* 属性调整区域 */}

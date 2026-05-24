@@ -130,7 +130,13 @@ const RealIcon = ({ src, alt, size = 20, isActive }) => {
 };
 
 export default function MainMenu() {
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.search.includes('mock_encounter=1')) return 'encounter';
+      if (window.location.search.includes('mock_battle=1') || window.location.search.includes('mock=1')) return 'battle';
+    }
+    return 'tasks';
+  });
   const [showBlackMarket, setShowBlackMarket] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const inBattle = useGameStore(state => state.battleState.inBattle);
