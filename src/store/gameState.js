@@ -103,12 +103,39 @@ let socket = null;
 const getNextExp = (level) => Math.floor(100 + level * 50 + Math.pow(level, 1.8) * 15);
 const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (conAttr || 0) * 10);
 
+const checkMockMode = () => {
+  if (typeof window === 'undefined') return false;
+  return window.location.search.includes('mock=1') || window.location.search.includes('mock_battle=1') || window.location.search.includes('mock_encounter=1');
+};
+
+const isMockMode = checkMockMode();
+
 export const useGameStore = create((set, get) => ({
-  hasCreatedRole: false,
-  socketConnected: false,
-  loginChecked: false, 
+  hasCreatedRole: isMockMode ? true : false,
+  socketConnected: isMockMode ? true : false,
+  loginChecked: isMockMode ? true : false, 
   
-  player: {
+  player: isMockMode ? {
+    name: '张无忌',
+    title: '👑肝帝真仙',
+    level: 85,
+    exp: 200,
+    maxExp: 1000,
+    freePoints: 0,
+    taskCount: 0,
+    encountersToday: 0,
+    lastTaskDate: new Date().toDateString(),
+    secretRealmAttempts: 0,
+    dailyDebuffs: [],
+    silver: 100,
+    hp: 7000,
+    maxHp: 7000,
+    attributes: { con: 30, str: 30, int: 30, agi: 30, luk: 30 },
+    skills: ['s1', 's2', 's5', 's_yijin'], 
+    treasures: ['t10'],
+    equippedSkills: { inner: 's_yijin', outer: 's1', motion: null, ultimate: null },
+    equippedTreasure: 't10'
+  } : {
     name: '', title: '', level: 1, exp: 0, maxExp: getNextExp(1), freePoints: 0, taskCount: 0, encountersToday: 0, lastTaskDate: new Date().toDateString(),
     secretRealmAttempts: 0, dailyDebuffs: [], silver: 0,
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
@@ -119,14 +146,50 @@ export const useGameStore = create((set, get) => ({
     equippedTreasure: null
   },
 
-  onlinePlayers: [],
+  onlinePlayers: isMockMode ? [
+    { id: 'bot1', name: '乔峰', level: 88, isMock: true, rankIndex: 3, attributes: { con: 45, str: 50, int: 25, agi: 35, luk: 15 }, equippedTreasure: 't7' },
+    { id: 'bot2', name: '灭绝师太', level: 75, isMock: true, rankIndex: 12, attributes: { con: 30, str: 35, int: 30, agi: 25, luk: 10 }, equippedTreasure: 't10' },
+    { id: 'bot3', name: '东方不败', level: 92, isMock: true, rankIndex: 1, attributes: { con: 40, str: 35, int: 45, agi: 50, luk: 20 }, equippedTreasure: 't13' }
+  ] : [],
   activeAuctions: [],
   auctionHistory: [],
   broadcastQueue: [],
-  battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null },
+  battleState: (isMockMode && (typeof window === 'undefined' || !window.location.search.includes('mock_encounter=1'))) ? {
+    inBattle: true,
+    roomId: 'mockRoom',
+    p1: {
+      name: '张无忌',
+      level: 85,
+      hp: 5500,
+      maxHp: 7000,
+      equippedTreasure: 't10',
+      equippedSkills: { inner: 's_yijin', outer: 's1' },
+      attributes: { con: 30, str: 30, int: 30, agi: 30, luk: 30 },
+      buffs: { dodge: 1, defUp: 0, shield: 200, revive: 0 },
+      debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0 }
+    },
+    p2: {
+      name: '东方不败',
+      level: 92,
+      hp: 4200,
+      maxHp: 8500,
+      equippedTreasure: 't13',
+      equippedSkills: { inner: 's_xixing', outer: 's_kuihua' },
+      attributes: { con: 40, str: 35, int: 45, agi: 50, luk: 20 },
+      buffs: { dodge: 0, defUp: 1, shield: 0, revive: 0 },
+      debuffs: { stun: 0, poison: 1, silence: 0, internalWound: 0 }
+    },
+    logs: [
+      '⚔️ 决斗开始！',
+      '张无忌 催动【易筋经】，真气护体，防御力大增！',
+      '东方不败 使出【葵花宝典】，对 张无忌 造成了 650 点伤害！'
+    ],
+    winner: null
+  } : { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null },
   dailyTasks: [],
 
   initSocket: () => {
+    if (isMockMode) return;
     if (!socket) {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
       const serverUrl = isLocal ? `http://${window.location.hostname}:3000` : 'https://unwhiskered-manie-staringly.ngrok-free.dev';
@@ -479,6 +542,29 @@ export const useGameStore = create((set, get) => ({
   placeBid: (auctionId, bidPrice) => {
       if (socket) socket.emit('place_bid', { auctionId, bidderName: get().player.name, bidPrice });
   },
+  devGrantPoints: (type, amount) => set((state) => {
+    let p = { ...state.player };
+    if (type === 'freePoints') {
+      p.freePoints = (p.freePoints || 0) + amount;
+    } else if (type === 'encountersToday') {
+      p.encountersToday = Math.max(0, (p.encountersToday || 0) - amount);
+    } else if (type === 'silver') {
+      p.silver = (p.silver || 0) + amount;
+    } else if (type === 'allAttrs') {
+      p.attributes = {
+         con: (p.attributes.con || 0) + amount,
+         str: (p.attributes.str || 0) + amount,
+         int: (p.attributes.int || 0) + amount,
+         agi: (p.attributes.agi || 0) + amount,
+         luk: (p.attributes.luk || 0) + amount,
+      };
+      p.maxHp = Math.min(7000, 100 + p.level * 15 + p.attributes.con * 10);
+      p.hp = p.maxHp;
+    }
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
   challengePlayer: (targetId) => { if (socket) socket.emit('challenge', targetId); },
   sendBattleAction: (roomId, actionData) => { if (socket) socket.emit('battle_action', { roomId, actionData }); },
   exitBattle: () => set({ battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null } })
