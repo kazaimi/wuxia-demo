@@ -189,15 +189,17 @@ export default function SecretRealm() {
         <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, #c084fc, transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
 
       {state === 'idle' ? (
-         <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>
+        <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+          <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>
             天衍四九，人遁其一。<br/>
             此处为琅嬛福地，充满了未知的奇遇与致命的凶险。<br/>
             你的每一次选择，都将深刻影响最终的因果与你能到达的深度。<br/>
             切记，见好就收方能全身而退；一味贪念造化，恐有万劫不复之厄！
-         </p>
-         <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff', boxShadow: '0 0 20px rgba(192, 132, 252, 0.4)' }}>踏入秘境</button>
-       </div>
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <button className="btn-primary" onClick={startExploration} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff', boxShadow: '0 0 20px rgba(192, 132, 252, 0.4)' }}>踏入秘境</button>
+          </div>
+        </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', background: 'rgba(20,20,30,0.8)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(192, 132, 252, 0.2)' }}>

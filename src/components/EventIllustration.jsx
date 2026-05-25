@@ -1,9 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-// 秘境事件插画组件 - 为每种事件类型绘制精美场景
+// 根据事件类型和内容计算对应的图片路径
+const getIllustrationSrc = (type, event) => {
+  // 1. 残局博弈
+  if (type === 'puzzle') {
+    if (event?.desc?.includes('棋阵') || event?.desc?.includes('棋')) return '/scenes/chess_01.png';
+    if (event?.desc?.includes('八卦')) return '/scenes/chess_02.png';
+    return '/scenes/chess_03.png';
+  }
+  // 2. 献祭舍己
+  if (type === 'sacrifice') {
+    if (event?.desc?.includes('猿猴')) return '/scenes/sacrifice_01.png';
+    if (event?.desc?.includes('高僧')) return '/scenes/sacrifice_02.png';
+    return '/scenes/sacrifice_03.png';
+  }
+  // 3. 蛮力破除
+  if (type === 'brute_force') {
+    if (event?.desc?.includes('古寺') || event?.desc?.includes('佛像')) return '/scenes/brute_01.png';
+    if (event?.desc?.includes('断龙石')) return '/scenes/brute_02.png';
+    return '/scenes/brute_03.png';
+  }
+  // 4. 古迹遗留
+  if (type === 'relic') {
+    if (event?.desc?.includes('枯骨') || event?.desc?.includes('重剑')) return '/scenes/relic_01.png';
+    if (event?.desc?.includes('寒泉') || event?.desc?.includes('仙女')) return '/scenes/relic_02.png';
+    return '/scenes/relic_03.png';
+  }
+  // 5. 幻境审视
+  if (type === 'illusion') {
+    if (event?.desc?.includes('冰窟') || event?.desc?.includes('镜')) return '/scenes/illusion_01.png';
+    if (event?.desc?.includes('桃花')) return '/scenes/illusion_02.png';
+    return '/scenes/illusion_03.png';
+  }
+  // 6. 身法机关
+  if (type === 'trap') {
+    if (event?.desc?.includes('弩') || event?.desc?.includes('甬道')) return '/scenes/trap_01.png';
+    if (event?.desc?.includes('独木桥') || event?.desc?.includes('断崖')) return '/scenes/trap_02.png';
+    return '/scenes/trap_03.png';
+  }
+  return '';
+};
+
+// 秘境事件插画组件 - 为每种事件类型绘制精美场景，支持水墨图片与原生 SVG Fallback
 const EventIllustration = ({ type, event }) => {
-  // 根据事件类型和内容选择插画
-  const getIllustration = () => {
+  const [imgSrc, setImgSrc] = useState('');
+  const [imgError, setImgError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const src = getIllustrationSrc(type, event);
+    setImgSrc(src);
+    setImgError(!src);
+    setIsLoaded(false);
+  }, [type, event]);
+
+  // 根据事件类型和内容选择降级插画
+  const getFallbackIllustration = () => {
     // 残局博弈 - 石亭棋阵
     if (type === 'puzzle') {
       if (event?.desc?.includes('棋阵')) {
@@ -74,17 +126,72 @@ const EventIllustration = ({ type, event }) => {
   };
 
   return (
-    <div style={{
-      width: '100%',
-      height: '200px',
-      marginBottom: '1rem',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      background: 'linear-gradient(180deg, rgba(20,10,30,0.9) 0%, rgba(10,5,20,0.95) 100%)',
-      border: '1px solid rgba(192, 132, 252, 0.2)',
-    }}>
-      {getIllustration()}
-    </div>
+    <>
+      <style>{`
+        @keyframes goldBreathe {
+          0%, 100% {
+            border-color: rgba(192, 132, 252, 0.2);
+            box-shadow: 0 0 10px rgba(192, 132, 252, 0.05);
+          }
+          50% {
+            border-color: rgba(212, 175, 55, 0.45);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.2);
+          }
+        }
+        @keyframes inkDissolve {
+          0% {
+            opacity: 0;
+            filter: blur(10px) contrast(3) grayscale(0.5);
+            transform: scale(1.05);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0px) contrast(1) grayscale(0);
+            transform: scale(1);
+          }
+        }
+        .wuxia-event-illustration-container {
+          width: 100%;
+          aspect-ratio: 2 / 1;
+          margin-bottom: 1rem;
+          border-radius: 8px;
+          overflow: hidden;
+          background: linear-gradient(180deg, rgba(20,10,30,0.9) 0%, rgba(10,5,20,0.95) 100%);
+          border: 1px solid rgba(192, 132, 252, 0.2);
+          animation: goldBreathe 4s infinite ease-in-out;
+          position: relative;
+        }
+        .wuxia-event-illustration-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: opacity 0.5s ease;
+        }
+        .wuxia-event-illustration-img.loaded {
+          animation: inkDissolve 0.8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+      `}</style>
+      <div className="wuxia-event-illustration-container">
+        {(!isLoaded || imgError) && getFallbackIllustration()}
+        {!imgError && (
+          <img
+            src={imgSrc}
+            alt={type}
+            className={`wuxia-event-illustration-img ${isLoaded ? 'loaded' : ''}`}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setImgError(true)}
+            style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              opacity: isLoaded ? 1 : 0, 
+              zIndex: 2, 
+              pointerEvents: 'none' 
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

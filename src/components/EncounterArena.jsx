@@ -707,53 +707,7 @@ export default function EncounterArena() {
       {/* 渐变分割线 */}
       <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--warn), transparent)', margin: '0.2rem auto 0.8rem', opacity: 0.3 }} />
       
-      {/* 开发者测试特批通道 */}
-      <div style={{
-        background: 'rgba(212, 175, 55, 0.05)',
-        border: '1px dashed rgba(212, 175, 55, 0.5)',
-        borderRadius: '8px',
-        padding: '10px 15px',
-        margin: '0 auto 1.2rem',
-        width: '90%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-        textAlign: 'left'
-      }}>
-        <div style={{ color: 'var(--gold)', fontSize: '0.8rem', fontWeight: 'bold', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-          ⚔️ 开发者测试特批通道 (Test Debug Console)
-        </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button 
-            className="btn-primary" 
-            style={{ padding: '4px 10px', fontSize: '0.75rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            onClick={() => devGrantPoints('freePoints', 100)}
-          >
-            特批 +100 自由分配点数
-          </button>
-          <button 
-            className="btn-primary" 
-            style={{ padding: '4px 10px', fontSize: '0.75rem', background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            onClick={() => devGrantPoints('encountersToday', 5)}
-          >
-            清空/重置今日奇遇限额
-          </button>
-          <button 
-            className="btn-primary" 
-            style={{ padding: '4px 10px', fontSize: '0.75rem', background: '#f59e0b', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-            onClick={() => devGrantPoints('silver', 1000)}
-          >
-            特批 +1000 银两
-          </button>
-          <button 
-            className="btn-primary" 
-            style={{ padding: '4px 10px', fontSize: '0.75rem', background: '#ec4899', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-            onClick={() => devGrantPoints('allAttrs', 10)}
-          >
-            特批全属性 +10 (增血上限)
-          </button>
-        </div>
-      </div>
+
 
       {encounterState === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '4rem' }}>
