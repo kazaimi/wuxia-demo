@@ -4,6 +4,7 @@ import { generateEventDeck } from '../data/realmEvents';
 import { Map, DoorOpen } from 'lucide-react';
 import EventIllustration from './EventIllustration';
 import { useCleanImage } from '../utils/imageProcess';
+import { SoundManager } from '../utils/SoundManager';
 
 export default function SecretRealm() {
   const player = useGameStore(state => state.player);
@@ -29,6 +30,11 @@ export default function SecretRealm() {
       alert("今日琅嬛福地探索次数已尽，大侠请明日再来。");
       return;
     }
+    
+    // 播放点击并淡入淡出切换为秘境探索专属 BGM
+    SoundManager.play('sfx_click');
+    SoundManager.playMusic('bgm_realm');
+
     useSecretRealmAttempt();
     const upgradedTitle = addActivity(15);
     if (upgradedTitle) {
@@ -64,6 +70,8 @@ export default function SecretRealm() {
   };
 
   const handleChoice = (choice) => {
+     // 播放选择按钮点击交互音
+     SoundManager.play('sfx_click');
      let result;
      try {
          result = choice.action(player);
@@ -100,6 +108,14 @@ export default function SecretRealm() {
   const endExploration = (finalDepth, finalKarma, isFail, failType) => {
      let newLogs = [...logs];
      if (isFail) {
+        // 播放历练失败与恶兆附身音效
+        SoundManager.play('sfx_fail');
+        if (failType) {
+           setTimeout(() => {
+             SoundManager.play('sfx_poison');
+           }, 300);
+        }
+
         newLogs.push(`\n【探险失败】你被迫遁出秘境！`);
         if (failType) {
            newLogs.push(`由于遭受重创，你染上了恶兆【${failType}】。直到明日拂晓前，你的运势都将大幅衰减！`);
@@ -109,6 +125,9 @@ export default function SecretRealm() {
         setState('result');
         return;
      }
+
+     // 播放探索成功古筝扫弦音效
+     SoundManager.play('sfx_success');
 
      newLogs.push(`\n【退隐结算】你驻足不前，开始清点此行造化。最终深度：${finalDepth}，累积业力：${finalKarma}`);
      let rewardDesc = "";
@@ -150,6 +169,11 @@ export default function SecretRealm() {
         rewardDesc += `\n此番历练共收获 ${total} 银两`;
         if (addKarmaSilver === 1) rewardDesc += ` (包含好人好报额外打赏 +1)`;
         if (addKarmaSilver === 2) rewardDesc += ` (包含杀人越货强制搜刮 +2)`;
+        
+        // 延迟播放铜钱交割音效
+        setTimeout(() => {
+          SoundManager.play('sfx_coin');
+        }, 300);
      }
      
      newLogs.push(rewardDesc);
@@ -225,6 +249,27 @@ export default function SecretRealm() {
                      <EventIllustration type={currentEvent.type} event={currentEvent} />
                   </div>
                   <p style={{ color: '#fff', marginBottom: '2rem', textShadow: '0 0 8px rgba(192, 132, 252, 0.3)', lineHeight: '1.8' }}>{currentEvent.desc}</p>
+                  
+                  {/* 古典隐晦的属性微调机缘提示 */}
+                  <div style={{ 
+                     fontSize: '0.8rem', 
+                     color: 'var(--gold)', 
+                     opacity: 0.8, 
+                     marginBottom: '1.2rem', 
+                     fontStyle: 'italic', 
+                     display: 'flex', 
+                     alignItems: 'center', 
+                     gap: '8px',
+                     background: 'rgba(212, 175, 55, 0.05)',
+                     padding: '8px 12px',
+                     borderRadius: '4px',
+                     borderLeft: '2px solid var(--gold)'
+                  }}>
+                     <span style={{ fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '1px' }}>
+                        天机玄妙，命格由心。每临关隘抉择，大侠若能先一步易骨改脉以调周天潜能，则造化生机大增，趋吉避凶亦在反掌之间。
+                     </span>
+                  </div>
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                      {currentEvent.choices.map((c, i) => {
                         if (c.isHidden && c.isHidden(player)) return null;
@@ -237,7 +282,7 @@ export default function SecretRealm() {
                            </button>
                         );
                      })}
-                     <button onClick={() => endExploration(depth, karma, false)} style={{
+                     <button onClick={() => { SoundManager.play('sfx_click'); endExploration(depth, karma, false); }} style={{
                         background: 'transparent', border: '1px dashed var(--gold)', color: 'var(--gold)', padding: '1rem', textAlign: 'center', cursor: 'pointer', borderRadius: '6px',
                         fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', marginTop: '1.5rem', fontSize: '0.9rem', letterSpacing: '1px'
                      }} onMouseOver={(e)=>e.target.style.background='rgba(212, 175, 55, 0.1)'} onMouseOut={(e)=>e.target.style.background='transparent'}>
@@ -250,7 +295,7 @@ export default function SecretRealm() {
           </div>
 
           {state === 'result' && (
-            <button className="btn-primary" style={{ marginTop: '1.5rem', alignSelf: 'center', padding: '1rem 3rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff' }} onClick={() => { setState('idle'); setLogs([]); }}>离开福地</button>
+            <button className="btn-primary" style={{ marginTop: '1.5rem', alignSelf: 'center', padding: '1rem 3rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', color: '#fff' }} onClick={() => { SoundManager.play('sfx_click'); SoundManager.playMusic('bgm_menu'); setState('idle'); setLogs([]); }}>离开福地</button>
           )}
         </div>
       )}

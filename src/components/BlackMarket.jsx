@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, ATTR_MAP } from '../store/gameState';
 import { ShoppingBag, Coffee, Package, X, Sparkles, AlertCircle } from 'lucide-react';
+import { SoundManager } from '../utils/SoundManager';
 
 const MERCHANT_DIALOGUES = [
   "大侠，江湖凶险，没点硬通货防身可走不远啊……",
@@ -29,6 +30,14 @@ export default function BlackMarket({ onClose }) {
   const [dialogue, setDialogue] = useState(MERCHANT_DIALOGUES[0]);
   const [dialogueIndex, setDialogueIndex] = useState(0);
 
+  // 挂载时切换为繁华市集 BGM，卸载时切回
+  useEffect(() => {
+    SoundManager.playMusic('bgm_market');
+    return () => {
+      SoundManager.playMusic('bgm_menu');
+    };
+  }, []);
+
   // 轮播商贩台词
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,6 +64,7 @@ export default function BlackMarket({ onClose }) {
   const handleBuy = (item) => {
      if ((player.silver || 0) < item.price) {
          setDialogue("兜里就这么几文钱，也想买老夫的心头好？去去去！");
+         SoundManager.play('sfx_fail');
          alert("对不起大侠，您的银两不足！黑市可不讲人情买卖。");
          return;
      }
@@ -104,6 +114,12 @@ export default function BlackMarket({ onClose }) {
          setDialogue("符纸燃尽，怨魂退散。你头顶的那缕黑气已经消散了。");
          alert("净心符燃尽，恶兆消散！你感觉身心重新变得清明。");
      }
+
+     // 交易成功，播放交易大吉与金币洒落音效
+     SoundManager.play('sfx_success');
+     setTimeout(() => {
+        SoundManager.play('sfx_coin');
+     }, 150);
   };
 
   return (
@@ -323,7 +339,7 @@ export default function BlackMarket({ onClose }) {
          {/* 右侧交易区 */}
          <div className="market-right-panel">
              {/* 关闭按钮 */}
-             <button onClick={onClose} style={{
+             <button onClick={() => { SoundManager.play('sfx_click'); onClose(); }} style={{
                  position: 'absolute', top: '15px', right: '15px',
                  background: 'rgba(20, 10, 10, 0.6)', border: '1px solid #b8860b',
                  borderRadius: '50%', color: '#b8860b', cursor: 'pointer',

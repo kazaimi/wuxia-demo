@@ -1,0 +1,115 @@
+{
+  "generated_at": "2026-05-26T10:20:00",
+  "total": 18,
+  "success": 18,
+  "scenes": [
+    {
+      "id": "chess_01",
+      "name": "石亭残局",
+      "status": "completed",
+      "file": "chess_01.png"
+    },
+    {
+      "id": "chess_02",
+      "name": "八卦阵图",
+      "status": "completed",
+      "file": "chess_02.png"
+    },
+    {
+      "id": "chess_03",
+      "name": "武功残卷",
+      "status": "completed",
+      "file": "chess_03.png"
+    },
+    {
+      "id": "sacrifice_01",
+      "name": "白猿求药",
+      "status": "completed",
+      "file": "sacrifice_01.png"
+    },
+    {
+      "id": "sacrifice_02",
+      "name": "高僧中毒",
+      "status": "completed",
+      "file": "sacrifice_02.png"
+    },
+    {
+      "id": "sacrifice_03",
+      "name": "阴寒女尸",
+      "status": "completed",
+      "file": "sacrifice_03.png"
+    },
+    {
+      "id": "brute_01",
+      "name": "古寺掀佛",
+      "status": "completed",
+      "file": "brute_01.png"
+    },
+    {
+      "id": "brute_02",
+      "name": "断龙石墙",
+      "status": "completed",
+      "file": "brute_02.png"
+    },
+    {
+      "id": "brute_03",
+      "name": "地衣蟹群",
+      "status": "completed",
+      "file": "brute_03.png"
+    },
+    {
+      "id": "relic_01",
+      "name": "剑冢枯骨",
+      "status": "completed",
+      "file": "relic_01.png"
+    },
+    {
+      "id": "relic_02",
+      "name": "寒泉仙图",
+      "status": "completed",
+      "file": "relic_02.png"
+    },
+    {
+      "id": "relic_03",
+      "name": "古铜香炉",
+      "status": "completed",
+      "file": "relic_03.png"
+    },
+    {
+      "id": "illusion_01",
+      "name": "冰窟心魔",
+      "status": "completed",
+      "file": "illusion_01.png"
+    },
+    {
+      "id": "illusion_02",
+      "name": "桃花迷障",
+      "status": "completed",
+      "file": "illusion_02.png"
+    },
+    {
+      "id": "illusion_03",
+      "name": "血海修罗",
+      "status": "completed",
+      "file": "illusion_03.png"
+    },
+    {
+      "id": "trap_01",
+      "name": "连弩机关",
+      "status": "completed",
+      "file": "trap_01.png"
+    },
+    {
+      "id": "trap_02",
+      "name": "青苔独木桥",
+      "status": "completed",
+      "file": "trap_02.png"
+    },
+    {
+      "id": "trap_03",
+      "name": "流沙密室",
+      "status": "completed",
+      "file": "trap_03.png"
+    }
+  ]
+}

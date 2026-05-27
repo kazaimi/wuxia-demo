@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useGameStore, ATTR_MAP, SKILLS_DB } from '../store/gameState';
 import { Target, Gift, RefreshCw } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
+import { SoundManager } from '../utils/SoundManager';
 
 export default function TaskHall() {
   const dailyTasks = useGameStore(state => state.dailyTasks);
@@ -32,6 +33,9 @@ export default function TaskHall() {
        return;
     }
     
+    // 播放接取任务动作音效
+    SoundManager.play('sfx_task_accept');
+
     incrementTaskCount();
     const upgradedTitle = addActivity(5);
     
@@ -56,16 +60,23 @@ export default function TaskHall() {
       else if (task.stars === 4) gotSilver = 2;
       else if (task.stars === 5) gotSilver = 4;
       
-      if (gotSilver > 0) {
-          addSilver(gotSilver);
-          msg += `并赚取了 ${gotSilver} 银两！`;
-      }
+      let isRareDrop = false;
       
       const rareSkills = ['s_taiji', 's_anran', 's5', 's_yijin', 's_xixing', 's_tiyun', 's_shenxing', 's_kuihua', 's_xianglong', 's_dugu', 's_liumai'];
       const midSkills = ['s3', 's4', 's_kuangfeng', 's_shihou'];
 
       if (upgradedTitle) {
          msg += ` 并且活跃度跨越门槛，名头晋升为了【${upgradedTitle}】！`;
+         isRareDrop = true; // 名号提升播放大音效
+      }
+
+      if (gotSilver > 0) {
+          addSilver(gotSilver);
+          msg += `并赚取了 ${gotSilver} 银两！`;
+          // 延迟播放金币音效以防重叠
+          setTimeout(() => {
+            SoundManager.play('sfx_coin');
+          }, 150);
       }
       
       if (task.stars === 4 && Math.random() > 0.75) {
@@ -73,6 +84,7 @@ export default function TaskHall() {
          const skillName = SKILLS_DB?.find(s => s.id === dropId)?.name || '无名残卷';
          learnSkill(dropId);
          msg += ` 竟在一处破庙捡到了【${skillName}】！`;
+         isRareDrop = true;
       }
 
       if (task.stars === 5) {
@@ -81,13 +93,25 @@ export default function TaskHall() {
           const skillName = SKILLS_DB?.find(s => s.id === dropId)?.name || '绝世残卷';
           learnSkill(dropId);
           msg += ` 成功触发稀世奇遇，掉落了绝世武学秘籍【${skillName}】！`;
+          isRareDrop = true;
         }
       }
+
+      // 如果有稀有掉落或境界突破，播放大突破音效，否则播放普通成功音效
+      if (isRareDrop) {
+        SoundManager.play('sfx_levelup');
+      } else {
+        SoundManager.play('sfx_success');
+      }
+
       alert(msg);
     } else {
       let failMsg = `很遗憾，由于你这趟【${ATTR_MAP[task.reqAttr]}】未能突破门槛约束，任务执行失败，一无所获且消耗了一次体力！`;
       if (upgradedTitle) {
          failMsg += ` (但随着你四处奔波苦劳积攒，名头反而晋升为了【${upgradedTitle}】！)`;
+         SoundManager.play('sfx_levelup');
+      } else {
+         SoundManager.play('sfx_fail');
       }
       alert(failMsg);
     }
@@ -103,7 +127,7 @@ export default function TaskHall() {
         <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: player.taskCount >= 35 ? 'var(--danger)' : 'var(--gold)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
            [当日活跃: {player.taskCount} / 35 次]
         </span>
-        <button className="btn-primary" onClick={generateTasks} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}>
+        <button className="btn-primary" onClick={() => { SoundManager.play('sfx_click'); generateTasks(); }} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}>
           <RefreshCw size={14} /> 刷新榜单
         </button>
       </div>

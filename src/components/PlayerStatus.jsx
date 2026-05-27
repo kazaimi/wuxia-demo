@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS, ATTR_MAP } from '../store/gameState';
 import { User, Star, AlertCircle } from 'lucide-react';
 import AttributeRadar from './AttributeRadar';
 import { GongfaIcon, TreasureIcon, WuxiaIconStyles } from './WuxiaIcon';
+import { SoundManager } from '../utils/SoundManager';
 
 const cleanText = (text) => {
   if (!text) return '';
@@ -18,6 +19,15 @@ export default function PlayerStatus() {
   const equipTreasure = useGameStore(state => state.equipTreasure);
   const inBattle = useGameStore(state => state.battleState.inBattle);
   const { name, title, level, exp, maxExp, freePoints, attributes, permanentAttributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
+
+  // 监听玩家等级境界变化，播放突破音效
+  const prevLevel = useRef(level);
+  useEffect(() => {
+    if (level > prevLevel.current) {
+      SoundManager.play('sfx_levelup');
+    }
+    prevLevel.current = level;
+  }, [level]);
 
   const bgStyle = {
     background: 'var(--glass-bg)',

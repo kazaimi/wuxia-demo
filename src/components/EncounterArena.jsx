@@ -4,6 +4,7 @@ import { Skull, Swords, Gift } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
 import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
 import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
+import { SoundManager } from '../utils/SoundManager';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
@@ -17,8 +18,7 @@ const guessGenderByName = (name) => {
   }
   return 'male';
 };
-
-// 战斗角色卡片（使用新版水墨卡牌）
+// 战斗角色卡牌（使用新版水墨卡牌）
 const EncounterCharacter = ({ player, isLeft, battleState, damageNumbers }) => {
   if (!player) return null;
 
@@ -115,6 +115,10 @@ export default function EncounterArena() {
          alert("江湖尚未完全成型，凑不齐三位高手。");
          return;
      }
+     
+     // 触发奇遇并切换为激昂战斗BGM
+     SoundManager.play('sfx_encounter_trigger');
+     SoundManager.playMusic('bgm_battle');
      
      incrementEncounterCount();
      const upgradedTitle = addActivity(10);
@@ -445,17 +449,34 @@ export default function EncounterArena() {
                
                addSilver(3);
 
+               // 播放连胜大捷与金币洒落音效
+               SoundManager.play('sfx_success');
+               setTimeout(() => {
+                 SoundManager.play('sfx_coin');
+               }, 300);
+
                setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
                setEncounterState('win');
             } else {
-               if (curIdx === 1) addSilver(1);
                const nextIdx = curIdx + 1;
                const defeatedName = isP1Turn ? defender.name : attacker.name;
                setEncounterState('transitioning');
                setLogs(prev => [...prev, `\n战胜 ${defeatedName}！${curIdx===1 ? '额外掉落 +1 银两！' : ''}进入下一战...`]);
+               
+               // 播放过关小捷与钱币音效
+               SoundManager.play('sfx_success');
+               if (curIdx === 1) {
+                  addSilver(1);
+                  setTimeout(() => {
+                    SoundManager.play('sfx_coin');
+                  }, 200);
+               }
+
                setTimeout(() => setupNextEnemy(finalP1, team, nextIdx), 2000);
             }
          } else {
+            // 播放战败的凄凉锣声
+            SoundManager.play('sfx_fail');
             setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，大侠请重新来过...`]);
             setEncounterState('lose');
          }
@@ -545,6 +566,19 @@ export default function EncounterArena() {
             addDamageNumber(damage, pos);
           };
 
+          // 播放对应动作打击音效
+          if (effectType === 'ultimateBurst') {
+            SoundManager.play('sfx_magic');
+          } else if (effectType === 'fistPunch') {
+            SoundManager.play('sfx_fist');
+          } else {
+            if (lastLog.includes('刀') || lastLog.includes('劈') || lastLog.includes('斩') || lastLog.includes('劈砍')) {
+              SoundManager.play('sfx_blade');
+            } else {
+              SoundManager.play('sfx_sword');
+            }
+          }
+
           if (lastLog.includes('对 ' + p1Name) || lastLog.includes('受到了 ' + p1Name) || lastLog.includes('反伤，' + p1Name) || lastLog.includes(p1Name + ' 损失') || lastLog.includes(p1Name + ' 丧失') || lastLog.includes(p1Name + ' 毒发') || lastLog.includes('反伤] ' + p1Name) || lastLog.includes('追击] ' + p1Name) || lastLog.includes('削去 ' + p1Name)) {
             lastHit = p1Name;
             attacker = p2Name;
@@ -628,6 +662,7 @@ export default function EncounterArena() {
           pos = 'right';
         }
         addEffect('dodge', pos);
+        SoundManager.play('sfx_dodge');
       }
 
       // 3. 检测治疗与恢复
@@ -636,6 +671,7 @@ export default function EncounterArena() {
         const healAmt = healMatch ? parseInt(healMatch[1]) : 150;
         const healPos = getTargetPos(lastLog, ['恢复', '回春', '复活', '涅槃', '夺取']);
         addEffect('heal', healPos);
+        SoundManager.play('sfx_heal');
         if (healPos === 'left') {
           healer = p1Name;
           addDamageNumber(healAmt, 'left', true);
@@ -652,18 +688,29 @@ export default function EncounterArena() {
       }
       if (lastLog.includes('毒') || lastLog.includes('中毒')) {
         addEffect('poison', getTargetPos(lastLog, ['毒', '中毒']));
+        SoundManager.play('sfx_poison');
       }
       if (lastLog.includes('力激荡') && lastLog.includes('逼出')) {
         addEffect('heal', getTargetPos(lastLog, ['力激荡', '逼出']));
+        SoundManager.play('sfx_heal');
       }
       if (lastLog.includes('晕') || lastLog.includes('震晕') || lastLog.includes('眩晕')) {
         addEffect('stun', getTargetPos(lastLog, ['晕', '震晕', '眩晕']));
+        SoundManager.play('sfx_stun');
+      }
+      if (lastLog.includes('点穴') || lastLog.includes('封锁') || lastLog.includes('被判官笔点中')) {
+        SoundManager.play('sfx_silence');
       }
       if (lastLog.includes('内伤') || lastLog.includes('经脉受损')) {
         addEffect('internalWound', getTargetPos(lastLog, ['内伤', '经脉受损']));
+        SoundManager.play('sfx_internal');
+      }
+      if (lastLog.includes('护盾') || lastLog.includes('佛光')) {
+        SoundManager.play('sfx_shield');
       }
       if (lastLog.includes('复活') || lastLog.includes('涅槃')) {
         addEffect('revive', getTargetPos(lastLog, ['复活', '涅槃']));
+        SoundManager.play('sfx_revive');
       }
 
       setCurrentBattleState({ attacker, lastHit, dodger, healer, effectType });
@@ -822,7 +869,7 @@ export default function EncounterArena() {
           </div>
 
           {(encounterState === 'win' || encounterState === 'lose') && (
-            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => { setEncounterState('idle'); setLogs([]); }}>退下调息 (返回)</button>
+            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => { SoundManager.play('sfx_click'); SoundManager.playMusic('bgm_menu'); setEncounterState('idle'); setLogs([]); }}>退下调息 (返回)</button>
           )}
         </div>
       )}

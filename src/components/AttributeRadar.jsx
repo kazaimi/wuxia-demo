@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { Shield, Swords, Brain, Zap, Clover } from 'lucide-react';
+import { SoundManager } from '../utils/SoundManager';
 
 // 五行古味色谱配色定义
 const ATTR_CONFIG = [
@@ -43,11 +44,13 @@ export default function AttributeRadar({ attributes, permanentAttributes, freePo
     const clampedValue = Math.max(minVal, Math.min(maxVal, newValue));
     onSetAttribute(attrKey, clampedValue);
     setInputValues(prev => ({ ...prev, [attrKey]: '' }));
+    SoundManager.play('sfx_allocate'); // 播放经脉调息音效
   };
 
   const handleSliderChange = (attrKey, newValue) => {
     if (inBattle) return;
     onSetAttribute(attrKey, newValue);
+    SoundManager.play('sfx_allocate'); // 播放经脉调息音效
   };
 
   const embedStyles = `

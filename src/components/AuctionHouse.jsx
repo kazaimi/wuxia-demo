@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGameStore, getSkillInfo, TREASURES_DB } from '../store/gameState';
 import { Gavel, Clock, ArrowRight, ArrowUpRight, CheckCircle2, XCircle } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
+import { SoundManager } from '../utils/SoundManager';
 
 export default function AuctionHouse() {
   const player = useGameStore(state => state.player);
@@ -17,6 +18,14 @@ export default function AuctionHouse() {
   const [selectedItem, setSelectedItem] = useState('');
   const [startPrice, setStartPrice] = useState(1);
   const [now, setNow] = useState(Date.now());
+
+  // 挂载时切换为市集 BGM，卸载时切回
+  useEffect(() => {
+    SoundManager.playMusic('bgm_market');
+    return () => {
+      SoundManager.playMusic('bgm_menu');
+    };
+  }, []);
 
   useEffect(() => {
      const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -55,6 +64,7 @@ export default function AuctionHouse() {
      }
 
      listAuction(sellType, itemToTrade, itemName, parseInt(startPrice, 10));
+     SoundManager.play('sfx_gavel'); // 确认上架，落槌定音
      alert("上架成功！你的拍品已进入全服竞拍席！");
      setTab('market');
   };
@@ -66,9 +76,15 @@ export default function AuctionHouse() {
      const bidPrice = parseInt(window.prompt(`当前最高价：${auction.price} 银两，出价人：${auction.highestBidder || '无'}\n你想出价多少银两？\n(你的余额：${player.silver || 0})`, auction.price + 1), 10);
      if (!isNaN(bidPrice) && bidPrice > auction.price) {
          if ((player.silver || 0) < bidPrice) {
+             SoundManager.play('sfx_fail');
              alert("银两不足！"); return;
          }
          placeBid(auction.id, bidPrice);
+         // 播放竞拍落槌与金币支付声
+         SoundManager.play('sfx_gavel');
+         setTimeout(() => {
+            SoundManager.play('sfx_coin');
+         }, 150);
      }
   };
 
@@ -111,9 +127,9 @@ export default function AuctionHouse() {
        <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, #facc15, transparent)', margin: '0.5rem auto 1.5rem', opacity: 0.3 }} />
        
        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>
-          <button onClick={()=>setTab('market')} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? '#facc15' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>竞拍大厅</button>
-          <button onClick={()=>setTab('sell')} style={{ background: 'transparent', border: 'none', color: tab === 'sell' ? '#facc15' : '#888', fontWeight: tab === 'sell'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>上架拍卖</button>
-          <button onClick={()=>setTab('history')} style={{ background: 'transparent', border: 'none', color: tab === 'history' ? '#facc15' : '#888', fontWeight: tab === 'history'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>拍卖记录</button>
+          <button onClick={() => { SoundManager.play('sfx_click'); setTab('market'); }} style={{ background: 'transparent', border: 'none', color: tab === 'market' ? '#facc15' : '#888', fontWeight: tab === 'market'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>竞拍大厅</button>
+          <button onClick={() => { SoundManager.play('sfx_click'); setTab('sell'); }} style={{ background: 'transparent', border: 'none', color: tab === 'sell' ? '#facc15' : '#888', fontWeight: tab === 'sell'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>上架拍卖</button>
+          <button onClick={() => { SoundManager.play('sfx_click'); setTab('history'); }} style={{ background: 'transparent', border: 'none', color: tab === 'history' ? '#facc15' : '#888', fontWeight: tab === 'history'?'bold':'normal', fontSize:'1.1rem', cursor: 'pointer' }}>拍卖记录</button>
           <div style={{ marginLeft: 'auto', color: '#bbb' }}>我的银两: <span style={{ color: '#fff', fontWeight: 'bold' }}>{player.silver || 0}</span></div>
        </div>
 

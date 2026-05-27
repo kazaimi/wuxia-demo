@@ -4,6 +4,8 @@ import CreateRole from './components/CreateRole';
 import MainMenu from './components/MainMenu';
 import BroadcastMarquee from './components/BroadcastMarquee';
 import { Target } from 'lucide-react';
+import { SoundManager } from './utils/SoundManager';
+import AudioController from './components/AudioController';
 
 function App() {
   const initSocket = useGameStore(state => state.initSocket);
@@ -17,6 +19,33 @@ function App() {
   useEffect(() => {
     initSocket();
   }, [initSocket]);
+
+  // 全局用户首次交互以解锁浏览器自动播放机制，并开始播放主背景音乐
+  useEffect(() => {
+    const handleGlobalUnlock = () => {
+      SoundManager.unlock();
+      if (hasCreatedRole) {
+        SoundManager.playMusic('bgm_menu');
+      }
+      window.removeEventListener('click', handleGlobalUnlock);
+      window.removeEventListener('touchstart', handleGlobalUnlock);
+    };
+
+    window.addEventListener('click', handleGlobalUnlock);
+    window.addEventListener('touchstart', handleGlobalUnlock);
+
+    return () => {
+      window.removeEventListener('click', handleGlobalUnlock);
+      window.removeEventListener('touchstart', handleGlobalUnlock);
+    };
+  }, [hasCreatedRole]);
+
+  // 监听角色登录加载状态，如果已登录且音频已解锁，自动播放主背景音乐
+  useEffect(() => {
+    if (hasCreatedRole && SoundManager.unlocked) {
+      SoundManager.playMusic('bgm_menu');
+    }
+  }, [hasCreatedRole]);
 
   if (!loginChecked) {
      return <div className="app-container" style={{ display:'flex', justifyContent:'center', alignItems:'center' }}><h2 className="glow-effect">正在查验江湖户籍...</h2></div>;
@@ -137,6 +166,9 @@ function App() {
       ) : (
         <MainMenu />
       )}
+
+      {/* 全局音频控制器悬浮组件 */}
+      <AudioController />
     </div>
   );
 }

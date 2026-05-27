@@ -5,6 +5,7 @@ import { useCleanImage } from '../utils/imageProcess';
 import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
 import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
 import { TreasureIcon } from './WuxiaIcon';
+import { SoundManager } from '../utils/SoundManager';
 
 // 根据名字判断性别
 const guessGenderByName = (name) => {
@@ -80,6 +81,25 @@ export default function BattleArena() {
   const exitBattle = useGameStore(state => state.exitBattle);
 
   const cleanIcon = useCleanImage('/wuxia_battle_icon.png');
+
+  // 监听进入战斗状态，自动播放战曲 bgm_battle
+  useEffect(() => {
+    if (inBattle) {
+      SoundManager.playMusic('bgm_battle');
+    }
+  }, [inBattle]);
+
+  // 监听决斗胜负，播放成功/失败结算音效
+  useEffect(() => {
+    if (winner && p1) {
+      const isPlayerWinner = (winner === 'p1' && p1.name === player.name) || (winner === 'p2' && p2.name === player.name);
+      if (isPlayerWinner) {
+        SoundManager.play('sfx_success');
+      } else {
+        SoundManager.play('sfx_fail');
+      }
+    }
+  }, [winner, p1, player.name]);
 
   // 战斗动效状态
   const [effects, setEffects] = useState([]);
@@ -189,6 +209,19 @@ export default function BattleArena() {
             addDamageNumber(damage, pos);
           };
 
+          // 播放动作打击音效
+          if (effectType === 'ultimateBurst') {
+            SoundManager.play('sfx_magic');
+          } else if (effectType === 'fistPunch') {
+            SoundManager.play('sfx_fist');
+          } else {
+            if (lastLog.includes('刀') || lastLog.includes('劈') || lastLog.includes('斩') || lastLog.includes('劈砍')) {
+              SoundManager.play('sfx_blade');
+            } else {
+              SoundManager.play('sfx_sword');
+            }
+          }
+
           if (lastLog.includes('对 ' + p1Name) || lastLog.includes('受到了 ' + p1Name) || lastLog.includes('反伤，' + p1Name) || lastLog.includes(p1Name + ' 损失') || lastLog.includes(p1Name + ' 丧失') || lastLog.includes(p1Name + ' 毒发') || lastLog.includes('反伤] ' + p1Name) || lastLog.includes('追击] ' + p1Name) || lastLog.includes('削去 ' + p1Name)) {
             lastHit = p1Name;
             attacker = p2Name;
@@ -262,6 +295,7 @@ export default function BattleArena() {
           attacker = p1Name;
         }
         addEffect('dodge', pos);
+        SoundManager.play('sfx_dodge');
       }
 
       // 3. 检测治疗与恢复
@@ -270,6 +304,7 @@ export default function BattleArena() {
         const healAmt = healMatch ? parseInt(healMatch[1]) : 150;
         const healPos = getTargetPos(lastLog, ['恢复', '回春', '复活', '涅槃', '夺取']);
         addEffect('heal', healPos);
+        SoundManager.play('sfx_heal');
         if (healPos === 'left') {
           healer = p1Name;
           addDamageNumber(healAmt, 'left', true);
@@ -286,18 +321,29 @@ export default function BattleArena() {
       }
       if (lastLog.includes('毒') || lastLog.includes('中毒')) {
         addEffect('poison', getTargetPos(lastLog, ['毒', '中毒']));
+        SoundManager.play('sfx_poison');
       }
       if (lastLog.includes('力激荡') && lastLog.includes('逼出')) {
         addEffect('heal', getTargetPos(lastLog, ['力激荡', '逼出']));
+        SoundManager.play('sfx_heal');
       }
       if (lastLog.includes('晕') || lastLog.includes('震晕') || lastLog.includes('眩晕')) {
         addEffect('stun', getTargetPos(lastLog, ['晕', '震晕', '眩晕']));
+        SoundManager.play('sfx_stun');
+      }
+      if (lastLog.includes('点穴') || lastLog.includes('封锁') || lastLog.includes('被判官笔点中')) {
+        SoundManager.play('sfx_silence');
       }
       if (lastLog.includes('内伤') || lastLog.includes('经脉受损')) {
         addEffect('internalWound', getTargetPos(lastLog, ['内伤', '经脉受损']));
+        SoundManager.play('sfx_internal');
+      }
+      if (lastLog.includes('护盾') || lastLog.includes('佛光')) {
+        SoundManager.play('sfx_shield');
       }
       if (lastLog.includes('复活') || lastLog.includes('涅槃')) {
         addEffect('revive', getTargetPos(lastLog, ['复活', '涅槃']));
+        SoundManager.play('sfx_revive');
       }
 
       setCurrentBattleState({ attacker, lastHit, dodger, healer, effectType });
@@ -743,7 +789,7 @@ export default function BattleArena() {
           </div>
 
           {winner && (
-            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={exitBattle}>退下调息 (返回)</button>
+            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => { SoundManager.play('sfx_click'); SoundManager.playMusic('bgm_menu'); exitBattle(); }}>退下调息 (返回)</button>
           )}
         </div>
       )}
