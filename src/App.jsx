@@ -20,15 +20,13 @@ function App() {
     initSocket();
   }, [initSocket]);
 
-  // 全局用户首次交互以解锁浏览器自动播放机制，并开始播放主背景音乐
+  // 全局用户交互以解锁浏览器自动播放机制，确保声音系统完全激活
   useEffect(() => {
     const handleGlobalUnlock = () => {
       SoundManager.unlock();
-      if (hasCreatedRole) {
+      if (SoundManager.unlocked && hasCreatedRole) {
         SoundManager.playMusic('bgm_menu');
       }
-      window.removeEventListener('click', handleGlobalUnlock);
-      window.removeEventListener('touchstart', handleGlobalUnlock);
     };
 
     window.addEventListener('click', handleGlobalUnlock);

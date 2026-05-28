@@ -915,27 +915,24 @@ class SoundManagerClass {
     this.isMuted = false;
     this.unlocked = false;
 
-    this.audioPool = {}; // SFX 缓存池
-    this.bgmChannels = [null, null]; // BGM 双播放通道
-    this.activeChannelIndex = 0; // 活跃通道索引
+    this.audioPool = {};
+    this.bgmChannels = [null, null];
+    this.activeChannelIndex = 0;
     this.currentMusicId = null;
     this.pendingMusicId = null;
 
     this.crossfadeTimer = null;
     this.maxPoolSizePerSfx = 5;
 
-    this.fallbackToSynth = {}; // 记录需要使用合成器发声的资源ID
+    this.fallbackToSynth = {};
 
-    // 从全局 Store 中初始化一次设置值
     const initialState = useAudioStore.getState();
     this.musicVolume = initialState.musicVolume;
     this.sfxVolume = initialState.sfxVolume;
     this.isMuted = initialState.isMuted;
 
-    // 同步给 Web Audio 合成器
     WebAudioSynthesizer.syncVolume(this.musicVolume, this.sfxVolume, this.isMuted);
 
-    // 订阅全局音频状态 Store 变更
     useAudioStore.subscribe((state) => {
       this.musicVolume = state.musicVolume;
       this.sfxVolume = state.sfxVolume;
@@ -944,9 +941,7 @@ class SoundManagerClass {
     });
   }
 
-  // 同步所有当前播放中的背景音乐及SFX音量与静音状态
   syncVolumes() {
-    // 1. 同步常规 BGM 播放器音量
     this.bgmChannels.forEach((audio, idx) => {
       if (audio) {
         audio.muted = this.isMuted;
@@ -958,7 +953,6 @@ class SoundManagerClass {
       }
     });
 
-    // 2. 同步常规 SFX 缓冲池中播放实例的音量与静音
     Object.values(this.audioPool).forEach((pool) => {
       pool.forEach((audio) => {
         if (audio && !audio.paused) {
@@ -970,18 +964,14 @@ class SoundManagerClass {
       });
     });
 
-    // 3. 同步 Web Audio 合成器的音量与静音状态
     WebAudioSynthesizer.syncVolume(this.musicVolume, this.sfxVolume, this.isMuted);
   }
 
-  // 突破浏览器 Autoplay 限制的解锁方法
   unlock() {
     if (this.unlocked) return;
 
-    // 唤醒 Web Audio 合成器
     WebAudioSynthesizer.resume();
 
-    // 创建一个极短的静音音轨进行预播放
     const testAudio = new Audio();
     testAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
     testAudio.play()
@@ -989,7 +979,6 @@ class SoundManagerClass {
         this.unlocked = true;
         console.log('全局音频自动播放已解锁。');
 
-        // 解锁成功后，如果有未完成的背景音乐播放指令，立即调起
         if (this.pendingMusicId) {
           const musicIdToPlay = this.pendingMusicId;
           this.pendingMusicId = null;
@@ -998,12 +987,10 @@ class SoundManagerClass {
       })
       .catch((err) => {
         console.warn('自动播放解锁动作被阻止，需等待真实用户在页面上产生交互：', err);
-        // 在受阻的情况下强行尝试激活合成器（点击事件内有效）
         WebAudioSynthesizer.resume();
       });
   }
 
-  // 创建具备“网络直链优先、本地静态备份回退”的音频对象
   _createAudioWithFallback(audioId, type = 'sfx') {
     const config = AUDIO_RESOURCES[audioId];
     if (!config) {
@@ -1017,7 +1004,6 @@ class SoundManagerClass {
 
     let isFallbackTriggered = false;
 
-    // 加载超时定时器（2.5 秒未响应就绪则启动本地降级播放）
     const timeoutId = setTimeout(() => {
       if (audio.readyState < 2 && !isFallbackTriggered) {
         triggerFallback();
@@ -1030,7 +1016,6 @@ class SoundManagerClass {
       audio.onerror = null;
       audio.oncanplaythrough = null;
 
-      // 切换为本地备份相对路径
       audio.src = config.local;
       audio.load();
     };
@@ -1039,11 +1024,9 @@ class SoundManagerClass {
       if (!isFallbackTriggered) {
         triggerFallback();
       } else {
-        // 本地备份文件亦不可用，切换到合成器降级状态
         console.warn(`音频资源 [${audioId}] 彻底加载失败，已激活 Web Audio 实时合成器进行降级播放。`);
         this.fallbackToSynth[audioId] = true;
 
-        // 如果是当前正在播放的背景音乐彻底报错了，需要立刻唤醒合成背景音乐
         if (type === 'music' && this.currentMusicId === audioId) {
           WebAudioSynthesizer.playBgm(audioId);
         }
@@ -1054,19 +1037,16 @@ class SoundManagerClass {
       clearTimeout(timeoutId);
     };
 
-    // 默认加载网络直链地址
     audio.src = config.online;
     return audio;
   }
 
-  // 背景音乐播放控制：支持双通道交叉淡入淡出（Crossfade）与合成器切换
   playMusic(musicId) {
     if (!AUDIO_RESOURCES[musicId]) {
       console.warn(`未注册的背景音乐 ID: ${musicId}`);
       return;
     }
 
-    // 如果播放的是同一首歌曲，且活跃通道正在播放，则无需重新载入
     if (this.currentMusicId === musicId) {
       if (this.fallbackToSynth[musicId]) {
         if (WebAudioSynthesizer.currentBgmId === musicId) return;
@@ -1076,15 +1056,12 @@ class SoundManagerClass {
       }
     }
 
-    // 如果浏览器尚未被点击行为解锁，将播放任务推入排队列表
     if (!this.unlocked) {
       this.pendingMusicId = musicId;
-      return;
     }
 
     this.currentMusicId = musicId;
 
-    // 如果已经处于合成降级状态，直接走合成器播放，并停止原生的播放器
     if (this.fallbackToSynth[musicId]) {
       this.bgmChannels.forEach((audio) => {
         if (audio) {
@@ -1095,23 +1072,19 @@ class SoundManagerClass {
       return;
     }
 
-    // 否则，正常使用 HTML5 Audio 双通道 Crossfade 播放
     WebAudioSynthesizer.stopBgm();
 
-    // 清除上一次未完成的淡入淡出计时器
     if (this.crossfadeTimer) {
       clearInterval(this.crossfadeTimer);
       this.crossfadeTimer = null;
     }
 
     const prevChannelIndex = this.activeChannelIndex;
-    const nextChannelIndex = 1 - this.activeChannelIndex; // 切换备用通道索引
+    const nextChannelIndex = 1 - this.activeChannelIndex;
     this.activeChannelIndex = nextChannelIndex;
 
-    // 停止并准备淡出先前通道
     const prevAudio = this.bgmChannels[prevChannelIndex];
 
-    // 加载并播放新背景音乐
     let nextAudio = this.bgmChannels[nextChannelIndex];
     if (nextAudio) {
       nextAudio.pause();
@@ -1123,7 +1096,7 @@ class SoundManagerClass {
     if (!nextAudio) return;
 
     nextAudio.loop = true;
-    nextAudio.volume = 0; // 从 0 音量开始淡入
+    nextAudio.volume = 0;
     this.bgmChannels[nextChannelIndex] = nextAudio;
 
     const playPromise = nextAudio.play();
@@ -1136,7 +1109,6 @@ class SoundManagerClass {
       });
     }
 
-    // 进行 Crossfade 淡入淡出计算
     const duration = 1500;
     const steps = 15;
     const interval = duration / steps;
@@ -1149,7 +1121,6 @@ class SoundManagerClass {
       stepCount++;
       const ratio = stepCount / steps;
 
-      // 渐进淡出旧曲
       if (prevAudio && !prevAudio.paused) {
         prevAudio.volume = Math.max(0, prevStartVolume * (1 - ratio));
         if (stepCount >= steps) {
@@ -1157,7 +1128,6 @@ class SoundManagerClass {
         }
       }
 
-      // 渐进淡入新曲
       if (nextAudio && !this.fallbackToSynth[musicId]) {
         nextAudio.volume = Math.min(targetMaxVolume, targetMaxVolume * ratio);
       }
@@ -1181,9 +1151,6 @@ class SoundManagerClass {
       console.warn(`未注册的音效 ID: ${sfxId}`);
       return;
     }
-
-    // 如果未被解锁，直接静默忽略音效
-    if (!this.unlocked) return;
 
     // 如果已经降级为合成器模式，直接调用合成器播放
     if (this.fallbackToSynth[sfxId]) {
@@ -1237,7 +1204,7 @@ class SoundManagerClass {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.warn(`播放音效 [${sfxId}] 被阻止或遇到异常，已紧急回退到 Web Audio 实时合成发声。`);
+          console.warn(`播放音效 [${sfxId}] 遇到异常，已紧急回退到 Web Audio 实时合成发声。`);
           WebAudioSynthesizer.playSfx(sfxId);
         });
       }
