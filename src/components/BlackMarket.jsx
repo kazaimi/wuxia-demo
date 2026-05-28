@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, ATTR_MAP } from '../store/gameState';
-import { ShoppingBag, Coffee, Package, X, Sparkles, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Coffee, Package, X, Sparkles, AlertCircle, BookOpen, Key, GlassWater } from 'lucide-react';
 import { SoundManager } from '../utils/SoundManager';
 
 const MERCHANT_DIALOGUES = [
@@ -25,6 +25,8 @@ export default function BlackMarket({ onClose }) {
   const learnSkill = useGameStore(state => state.learnSkill);
   const addAttributes = useGameStore(state => state.addAttributes);
   const clearDailyDebuffs = useGameStore(state => state.clearDailyDebuffs);
+  const resetPoints = useGameStore(state => state.resetPoints);
+  const gainExp = useGameStore(state => state.gainExp);
 
   const [shopItems, setShopItems] = useState([]);
   const [dialogue, setDialogue] = useState(MERCHANT_DIALOGUES[0]);
@@ -56,6 +58,10 @@ export default function BlackMarket({ onClose }) {
        { id: 'item_purify', name: '【圣物】净心符', price: 55, desc: '焚香沐浴，驱散所有恶兆缠身，恢复清明心智！', icon: <Sparkles size={18} color="#c084fc" />, type: 'purify' },
        { id: 'item_box1', name: '破旧的残卷箱', price: 8, desc: '随机获得一本入门外功或内功(必定非绝学)。', icon: <Package size={18} color="#a1a1aa" />, type: 'skill_box1' },
        { id: 'item_drug', name: '十全大补丸', price: 10, desc: '仙人秘制，随机永久增加3~5项基础属性各1~3点，立竿见影！', icon: <AlertCircle size={18} color="#fbbf24" />, type: 'attr_drug' },
+       { id: 'item_reset_pill', name: '【奇珍】洗髓灵丹', price: 50, desc: '洗去身上所有的常规分配属性点并全额返还为自由潜能点，大补丸的修持加成正常保留。', icon: <Sparkles size={18} color="#34d399" />, type: 'reset_pill' },
+       { id: 'item_heaven_token', name: '【密令】通天令牌', price: 30, desc: '墨玉令出，福地洞开！减少 5 次今日已用秘境挑战次数（相当于今日额外获得 5 次秘境机会）！', icon: <Key size={18} color="#818cf8" />, type: 'heaven_token' },
+       { id: 'item_peach_nectar', name: '【仙酿】万寿蟠桃露', price: 100, desc: '蟠桃仙浆，琼浆玉液。痛饮后立刻获得 1000 点修为经验值！', icon: <GlassWater size={18} color="#22d3ee" />, type: 'peach_nectar' },
+       { id: 'item_heaven_scroll', name: '【秘宝】天书密卷', price: 150, desc: '金光笼罩的神秘竹简，记载了震古烁今的武学奥秘，购买后随机领悟一本【绝学】级强力武功！', icon: <BookOpen size={18} color="#f59e0b" />, type: 'heaven_scroll' },
        { id: 'item_box2', name: '传说的盲盒', price: 100, desc: '随机获得一件史诗或传说宝具！', icon: <Package size={18} color="#e879f9" />, type: 'treasure_box' },
      ];
      setShopItems(items);
@@ -113,6 +119,30 @@ export default function BlackMarket({ onClose }) {
          addSilver(-item.price);
          setDialogue("符纸燃尽，怨魂退散。你头顶的那缕黑气已经消散了。");
          alert("净心符燃尽，恶兆消散！你感觉身心重新变得清明。");
+     } else if (item.type === 'reset_pill') {
+         resetPoints();
+         addSilver(-item.price);
+         setDialogue("脱胎换骨，伐毛洗髓！大侠现在可以重新划分你的属性潜能了！");
+         alert("洗髓成功！你身上的常规分配点数已全部重置并退还为自由潜能点，大补丸的修持加成已为你妥善保留。");
+     } else if (item.type === 'heaven_token') {
+         const p = useGameStore.getState().player;
+         p.secretRealmAttempts = Math.max(0, (p.secretRealmAttempts || 0) - 5);
+         addSilver(-item.price);
+         useGameStore.setState({ player: { ...p } });
+         setDialogue("拿好令牌，琅嬛福地的护法长老见此令如见庄主，去吧！");
+         alert("你激活了通天令牌，今日秘境探索已扣减 5 次使用记录（即额外获得 5 次秘境机会）！");
+     } else if (item.type === 'peach_nectar') {
+         gainExp(1000);
+         addSilver(-item.price);
+         setDialogue("琼浆玉液，造化无穷！是不是顿觉周身真气澎湃、瓶颈松动了？");
+         alert("你仰头痛饮下万寿蟠桃露，修为瞬间暴涨，获得了 1000 点修为经验！");
+     } else if (item.type === 'heaven_scroll') {
+         const pool = SKILLS_DB.filter(s => s.type === 'ultimate');
+         const sk = pool[Math.floor(Math.random() * pool.length)];
+         learnSkill(sk.id);
+         addSilver(-item.price);
+         setDialogue(`天机造化，这本《${cleanText(sk.name)}》乃本门不传之秘，望大侠好生研习！`);
+         alert(`你徐徐展开金光流转的天书密卷，在神识震撼中，顿悟参透了绝学【${cleanText(sk.name)}】！`);
      }
 
      // 交易成功，播放交易大吉与金币洒落音效

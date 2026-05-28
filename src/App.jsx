@@ -24,13 +24,20 @@ function App() {
   useEffect(() => {
     const handleGlobalUnlock = () => {
       SoundManager.unlock();
-      if (SoundManager.unlocked && hasCreatedRole) {
-        SoundManager.playMusic('bgm_menu');
+      if (SoundManager.unlocked) {
+        if (hasCreatedRole) {
+          SoundManager.playMusic('bgm_menu');
+        }
+        // 成功解锁后，立即移除全局交互解锁监听器，防止后续任意点击强制覆盖当前播放的 BGM
+        window.removeEventListener('click', handleGlobalUnlock);
+        window.removeEventListener('touchstart', handleGlobalUnlock);
       }
     };
 
-    window.addEventListener('click', handleGlobalUnlock);
-    window.addEventListener('touchstart', handleGlobalUnlock);
+    if (!SoundManager.unlocked) {
+      window.addEventListener('click', handleGlobalUnlock);
+      window.addEventListener('touchstart', handleGlobalUnlock);
+    }
 
     return () => {
       window.removeEventListener('click', handleGlobalUnlock);

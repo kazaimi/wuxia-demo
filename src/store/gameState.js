@@ -117,7 +117,7 @@ export const useGameStore = create((set, get) => ({
   
   player: isMockMode ? {
     name: '张无忌',
-    title: '👑肝帝真仙',
+    title: '肝帝真仙',
     level: 85,
     exp: 200,
     maxExp: 1000,
@@ -131,6 +131,7 @@ export const useGameStore = create((set, get) => ({
     hp: 7000,
     maxHp: 7000,
     attributes: { con: 30, str: 30, int: 30, agi: 30, luk: 30 },
+    permanentAttributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
     skills: ['s1', 's2', 's5', 's_yijin'], 
     treasures: ['t10'],
     equippedSkills: { inner: 's_yijin', outer: 's1', motion: null, ultimate: null },
@@ -140,6 +141,7 @@ export const useGameStore = create((set, get) => ({
     secretRealmAttempts: 0, dailyDebuffs: [], silver: 0,
     hp: calculateMaxHp(1, 0), maxHp: calculateMaxHp(1, 0),
     attributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
+    permanentAttributes: { con: 0, str: 0, int: 0, agi: 0, luk: 0 },
     skills: ['s1'], 
     treasures: [],
     equippedSkills: { inner: null, outer: 's1', motion: null, ultimate: null },
@@ -180,7 +182,7 @@ export const useGameStore = create((set, get) => ({
       debuffs: { stun: 0, poison: 1, silence: 0, internalWound: 0 }
     },
     logs: [
-      '⚔️ 决斗开始！',
+      '决斗开始！',
       '张无忌 催动【易筋经】，真气护体，防御力大增！',
       '东方不败 使出【葵花宝典】，对 张无忌 造成了 650 点伤害！'
     ],
@@ -226,6 +228,7 @@ export const useGameStore = create((set, get) => ({
          if (!playerData.dailyDebuffs) playerData.dailyDebuffs = [];
          if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
+         if (!playerData.permanentAttributes) playerData.permanentAttributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
@@ -234,7 +237,7 @@ export const useGameStore = create((set, get) => ({
             playerData.secretRealmAttempts = 0;
             playerData.dailyDebuffs = [];
             playerData.dailyActivity = 0;
-            playerData.title = '🐟摸鱼小虾';
+            playerData.title = '摸鱼小虾';
             playerData.lastTaskDate = today;
             socket.emit('update_player', playerData);
          }
@@ -312,7 +315,7 @@ export const useGameStore = create((set, get) => ({
      if (!state.player.name) return state;
      const today = new Date().toDateString();
      if (state.player.lastTaskDate !== today) {
-        const p = { ...state.player, taskCount: 0, encountersToday: 0, secretRealmAttempts: 0, dailyDebuffs: [], dailyActivity: 0, title: '🐟摸鱼小虾', lastTaskDate: today };
+        const p = { ...state.player, taskCount: 0, encountersToday: 0, secretRealmAttempts: 0, dailyDebuffs: [], dailyActivity: 0, title: '摸鱼小虾', lastTaskDate: today };
         if (socket) socket.emit('update_player', p);
         return { player: p, dailyTasks: [] };
      }
@@ -384,12 +387,37 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
+  addAttributes: (attrBoosts) => set((state) => {
+    const newAttrs = { ...state.player.attributes };
+    const newPermAttrs = { ...(state.player.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 }) };
+    Object.entries(attrBoosts).forEach(([key, val]) => {
+      newAttrs[key] = (newAttrs[key] || 0) + val;
+      newPermAttrs[key] = (newPermAttrs[key] || 0) + val;
+    });
+    const newMaxHp = calculateMaxHp(state.player.level, newAttrs.con);
+    const p = {
+      ...state.player,
+      attributes: newAttrs,
+      permanentAttributes: newPermAttrs,
+      maxHp: newMaxHp,
+      hp: newMaxHp,
+    };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
+  clearDailyDebuffs: () => set((state) => {
+    const p = { ...state.player, dailyDebuffs: [] };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
   resetPoints: () => set((state) => {
     const p = { ...state.player };
     const totalPoints = INITIAL_POINTS + (p.level - 1) * POINTS_PER_LEVEL;
     p.freePoints = totalPoints;
-    p.attributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
-    p.maxHp = calculateMaxHp(p.level, 0);
+    p.attributes = { ...(p.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 }) };
+    p.maxHp = calculateMaxHp(p.level, p.attributes.con);
     p.hp = p.maxHp;
     if (socket) socket.emit('update_player', p);
     return { player: p };
@@ -412,10 +440,9 @@ export const useGameStore = create((set, get) => ({
       .filter(([k]) => k !== attrKey)
       .reduce((sum, [, v]) => sum + v, 0);
 
-    // 新值不能导致总属性超过 (初始点数 + 等级奖励点数)
-    const INITIAL_POINTS = 0;
-    const POINTS_PER_LEVEL = 5;
-    const maxTotal = INITIAL_POINTS + (state.player.level - 1) * POINTS_PER_LEVEL;
+    // 新值不能导致总属性超过 (初始点数 + 等级奖励点数 + 永久加成)
+    const permTotal = Object.values(state.player.permanentAttributes || {}).reduce((sum, v) => sum + v, 0);
+    const maxTotal = INITIAL_POINTS + (state.player.level - 1) * POINTS_PER_LEVEL + permTotal;
     if (newValue + otherAttrsSum > maxTotal) return state;
 
     let p = { ...state.player, attributes: { ...state.player.attributes }, freePoints: state.player.freePoints - diff };
@@ -449,12 +476,15 @@ export const useGameStore = create((set, get) => ({
     const tasks = [];
     const attrs = Object.keys(ATTR_MAP);
     
-    // 方案一：定向生成不同难度的星级配置 (总计 4 个任务)
+    // 方案一：定向生成不同难度的星级配置 (总计 6 个任务，比例不变：1.5个低星、3个中星、1.5个高星)
     const starConfigs = [
       Math.random() > 0.5 ? 1 : 2, // 1个[低星数] (1~2星随机)
       3,                           // 第1个[中等星数] (固定3星)
       3,                           // 第2个[中等星数] (固定3星)
-      Math.random() > 0.8 ? 5 : 4  // 1个[高星数] (80%出4星，20%拼脸出5星)
+      3,                           // 第3个[中等星数] (固定3星)
+      Math.random() > 0.8 ? 5 : 4, // 1个[高星数] (80%出4星，20%拼脸出5星)
+      // 最后一个在[低星数]和[高星数]之间随机，使整体期望比例维持在 1.5 : 3 : 1.5 (即 1:2:1)
+      Math.random() > 0.5 ? (Math.random() > 0.5 ? 1 : 2) : (Math.random() > 0.8 ? 5 : 4)
     ];
 
     starConfigs.forEach(stars => {
@@ -490,20 +520,20 @@ export const useGameStore = create((set, get) => ({
     set((state) => {
        const p = { ...state.player };
        p.dailyActivity = (p.dailyActivity || 0) + points;
-       oldTitle = p.title || '🐟摸鱼小虾';
+       oldTitle = p.title || '摸鱼小虾';
        let nTitle = oldTitle;
        
        const act = p.dailyActivity;
-       if (act >= 250) nTitle = '👑肝帝真仙';
-       else if (act >= 200) nTitle = '⚡武林卷王';
-       else if (act >= 120) nTitle = '🔥江湖劳模';
-       else if (act >= 60) nTitle = '💪勤勉游侠';
-       else if (act >= 20) nTitle = '🐎初出茅庐';
-       else nTitle = '🐟摸鱼小虾';
+       if (act >= 250) nTitle = '肝帝真仙';
+       else if (act >= 200) nTitle = '武林卷王';
+       else if (act >= 120) nTitle = '江湖劳模';
+       else if (act >= 60) nTitle = '勤勉游侠';
+       else if (act >= 20) nTitle = '初出茅庐';
+       else nTitle = '摸鱼小虾';
        
        const titleRanks = {
-          '🐟摸鱼小虾': 1, '🐎初出茅庐': 2, '💪勤勉游侠': 3, 
-          '🔥江湖劳模': 4, '⚡武林卷王': 5, '👑肝帝真仙': 6
+          '摸鱼小虾': 1, '初出茅庐': 2, '勤勉游侠': 3, 
+          '江湖劳模': 4, '武林卷王': 5, '肝帝真仙': 6
        };
        const oldRank = titleRanks[oldTitle];
        const newRank = titleRanks[nTitle] || 1;

@@ -36,7 +36,7 @@ const BattleEffectsDemo = () => {
 
   // 模拟战斗
   const simulateBattle = () => {
-    setLogs(prev => [...prev, '⚔️ 战斗开始！']);
+    setLogs(prev => [...prev, '战斗开始！']);
 
     // 回合1：玩家攻击
     setTimeout(() => {
@@ -154,7 +154,7 @@ const BattleEffectsDemo = () => {
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '3px' }}>
-        ⚔️ 战斗动效演示
+        战斗动效演示
       </h2>
 
       {/* 战斗区域 */}
