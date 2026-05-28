@@ -405,43 +405,136 @@ io.on('connection', (socket) => {
   });
 });
 
+// 获取本地默认的 Suno Cookie，降低大侠手动输入成本
+app.get('/api/get-default-suno-cookie', (req, res) => {
+    const cookiePath = path.join(process.cwd(), 'suno_cookie.txt');
+    if (fs.existsSync(cookiePath)) {
+        try {
+            const cookie = fs.readFileSync(cookiePath, 'utf-8');
+            return res.json({ success: true, cookie: cookie.trim() });
+        } catch (e) {
+            return res.json({ success: false, error: e.message });
+        }
+    }
+    return res.json({ success: false, error: "未在运行根目录下找到 suno_cookie.txt" });
+});
+
 // ==================== 天机琴坊：大模型音乐创作接口 ====================
 app.post('/api/generate-music', async (req, res) => {
     const { prompt, musicId, customToken, modelSource } = req.body;
     
-    // Suno 桥接网关分支
+    // Suno 内置免 Docker 路由分支
     if (modelSource === 'suno') {
+        const cookie = customToken;
+        if (!cookie) {
+            return res.status(400).json({
+                success: false,
+                error: "未检测到 Suno Cookie。请在琴坊右上角填入您的 Suno Cookie 之后再开启炼乐。"
+            });
+        }
+        
         try {
-            console.log(`[天机琴坊] 收到 Suno 本地网关炼乐请求。意境: ${prompt}, 目标: ${musicId}`);
+            console.log(`[天机琴坊] 启动内置 Suno 免 Docker 大模型炼乐。意境: ${prompt}, 目标: ${musicId}`);
             
-            const response = await fetch('http://localhost:3002/api/generate', {
-                method: 'POST',
+            // 1. 请求 Suno Clerk 接口获取 JWT Token
+            console.log(`[天机琴坊] 正在向 Suno Clerk 请求 JWT Token...`);
+            const clerkRes = await fetch("https://clerk.suno.com/v1/client/shared_tokens?_clerk_js_version=4.70.0", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Cookie": cookie,
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Origin": "https://suno.com",
+                    "Referer": "https://suno.com/"
+                }
+            });
+            
+            if (!clerkRes.ok) {
+                const errTxt = await clerkRes.text();
+                throw new Error(`Suno Clerk 鉴权失败，请确认您的 Cookie 是否正确或是否已过期。状态码: ${clerkRes.status} - ${errTxt}`);
+            }
+            
+            const clerkData = await clerkRes.json();
+            const jwtToken = clerkData.token;
+            if (!jwtToken) {
+                throw new Error("Suno 鉴权响应中未找到有效 Token。请确保您复制了完整的 Cookie。");
+            }
+            
+            console.log(`[天机琴坊] JWT 令牌获取成功！正在向 Suno 发起生成任务...`);
+            
+            // 2. 创建生成任务 (使用 chirp-v3-5 纯乐器)
+            const genRes = await fetch("https://studio-api.suno.ai/v1/generate", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${jwtToken}`,
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Origin": "https://suno.com",
+                    "Referer": "https://suno.com/"
                 },
                 body: JSON.stringify({
                     prompt: prompt,
                     make_instrumental: true,
-                    wait_audio: true
+                    mv: "chirp-v3-5"
                 })
             });
             
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Suno 桥接网关返回异常: ${response.status} - ${errText}`);
+            if (!genRes.ok) {
+                const errTxt = await genRes.text();
+                throw new Error(`Suno 任务创建失败: ${genRes.status} - ${errTxt}`);
             }
             
-            const sunoData = await response.json();
-            // 获取生成的第一首音乐
-            const finalUrl = sunoData[0]?.audio_url;
-            
-            if (!finalUrl) {
-                throw new Error("Suno 桥接网关未成功返回音频直链。请确保您的本地 Docker 容器正确注入了 Session Cookie 且您的账号额度充足。");
+            const genData = await genRes.json();
+            const clips = genData.clips;
+            if (!clips || clips.length === 0) {
+                throw new Error("Suno 未成功创建音轨片段，请确认您的账号是否有充足的生成额度 (Credits)。");
             }
             
-            console.log(`[天机琴坊] Suno 大模型创作成功。远程音频直链: ${finalUrl}`);
+            const clipIds = clips.map(c => c.id).join(",");
+            console.log(`[天机琴坊] 任务提交成功，片段ID: ${clipIds}。进入状态轮询...`);
             
-            // 下载并保存到 temp_generate.wav
+            // 3. 轮询状态直到 complete
+            let finalUrl = null;
+            let status = 'queued';
+            let attempts = 0;
+            
+            while (status !== 'complete' && status !== 'error' && attempts < 40) {
+                await new Promise(r => setTimeout(r, 2000));
+                attempts++;
+                
+                const pollRes = await fetch(`https://studio-api.suno.ai/v1/feed/?ids=${clipIds}`, {
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                });
+                
+                if (pollRes.ok) {
+                    const feedData = await pollRes.json();
+                    const completedClip = feedData.find(c => c.status === 'complete');
+                    const errorClip = feedData.find(c => c.status === 'error');
+                    
+                    if (completedClip) {
+                        status = 'complete';
+                        finalUrl = completedClip.audio_url;
+                    } else if (errorClip) {
+                        status = 'error';
+                        throw new Error(`Suno 音轨生成报错: ${errorClip.error_message || '账户可能额度不足或模型错误'}`);
+                    } else {
+                        const currentStatus = feedData[0]?.status || 'queued';
+                        console.log(`[天机琴坊] Suno 轮询第 ${attempts} 次。当前状态: ${currentStatus}`);
+                    }
+                } else {
+                    console.warn(`[天机琴坊] Suno 轮询第 ${attempts} 次失败，HTTP: ${pollRes.status}`);
+                }
+            }
+            
+            if (status !== 'complete' || !finalUrl) {
+                throw new Error(`Suno 音乐生成超时。请稍后再试。`);
+            }
+            
+            console.log(`[天机琴坊] Suno 生成成功！远程音频直链: ${finalUrl}`);
+            
+            // 4. 下载并写入本地 temp_generate.wav
             const publicAudioDir = path.join(__dirname, '..', 'public', 'audio');
             if (!fs.existsSync(publicAudioDir)) {
                 fs.mkdirSync(publicAudioDir, { recursive: true });
@@ -455,16 +548,16 @@ app.post('/api/generate-music', async (req, res) => {
             
             const buffer = await audioRes.arrayBuffer();
             fs.writeFileSync(tempPath, Buffer.from(buffer));
-            console.log(`[天机琴坊] 临时音轨下载成功: ${tempPath}`);
+            console.log(`[天机琴坊] 临时音轨已成功保存至: ${tempPath}`);
             
             return res.json({
                 success: true,
                 url: `/audio/temp_generate.wav?t=${Date.now()}`,
-                message: "Suno 大模型背景乐实时创作成功，已生成临时试听音轨！"
+                message: "Suno 背景乐实时创作成功，已生成临时试听音轨！"
             });
             
         } catch (e) {
-            console.error("[天机琴坊] Suno 实时创作发生异常:", e.message);
+            console.error("[天机琴坊] Suno 实时创作异常:", e.message);
             return res.status(500).json({ success: false, error: e.message });
         }
     }

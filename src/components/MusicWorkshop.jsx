@@ -4,6 +4,7 @@ import { SoundManager } from '../utils/SoundManager';
 
 export default function MusicWorkshop({ isOpen, onClose }) {
   const [token, setToken] = useState('');
+  const [sunoCookie, setSunoCookie] = useState('');
   const [musicId, setMusicId] = useState('bgm_menu');
   const [prompt, setPrompt] = useState('peaceful zen ambient traditional chinese music, guzheng and xiao flute, slow tempo, mist and mountains');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -39,16 +40,37 @@ export default function MusicWorkshop({ isOpen, onClose }) {
     }
   ];
 
-  // 从本地加载密钥
+  // 从本地及后端加载密钥和Cookie
   useEffect(() => {
     const savedToken = localStorage.getItem('replicate_api_token') || '';
     setToken(savedToken);
+
+    const savedSunoCookie = localStorage.getItem('suno_cookie') || '';
+    if (savedSunoCookie) {
+      setSunoCookie(savedSunoCookie);
+    } else {
+      // 尝试向后端拉取本地保存的 Cookie 文件
+      fetch('http://localhost:3000/api/get-default-suno-cookie')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.cookie) {
+            setSunoCookie(data.cookie);
+            localStorage.setItem('suno_cookie', data.cookie);
+          }
+        })
+        .catch(e => console.log('拉取默认Suno Cookie失败:', e));
+    }
   }, []);
 
   // 密钥更改保存
   const handleTokenChange = (val) => {
     setToken(val);
     localStorage.setItem('replicate_api_token', val);
+  };
+
+  const handleSunoCookieChange = (val) => {
+    setSunoCookie(val);
+    localStorage.setItem('suno_cookie', val);
   };
 
   // 计时器逻辑
@@ -136,6 +158,10 @@ export default function MusicWorkshop({ isOpen, onClose }) {
       setErrorMsg('请先配置 Replicate API 密钥 (Token)，琴坊才可开启大模型炼乐之门。');
       return;
     }
+    if (modelSource === 'suno' && !sunoCookie.trim()) {
+      setErrorMsg('请先配置 Suno 鉴权 Cookie，琴坊才可开启大模型炼乐之门。');
+      return;
+    }
 
     setErrorMsg('');
     setSuccessMsg('');
@@ -153,7 +179,7 @@ export default function MusicWorkshop({ isOpen, onClose }) {
         body: JSON.stringify({
           prompt,
           musicId,
-          customToken: modelSource === 'replicate' ? token : '',
+          customToken: modelSource === 'replicate' ? token : sunoCookie,
           modelSource
         })
       });
@@ -166,7 +192,7 @@ export default function MusicWorkshop({ isOpen, onClose }) {
 
       // 获取临时音乐外链地址，并附带时间戳破除缓存
       setTempAudioUrl(`http://localhost:3000${resData.url}`);
-      setSuccessMsg('仙音炼制成功！请于下方开启“试听”，感受大模型创作的华美乐章。');
+      setSuccessMsg('仙音炼制成功！请于下方开启“试听”，感受大模型创作 of 华美乐章。');
     } catch (err) {
       setErrorMsg(err.message);
     } finally {
@@ -298,67 +324,94 @@ export default function MusicWorkshop({ isOpen, onClose }) {
           —— 汇聚云端乐律大模型，炼制您独一无二的江湖背景琴音 ——
         </p>
 
-        {/* 密钥配置折叠条 (仅在 Replicate 模式下需要) */}
-        {modelSource === 'replicate' && (
-          <div style={{ marginBottom: '1rem' }}>
-            <button
-              onClick={() => setShowKeySetting(!showKeySetting)}
-              style={{
-                width: '100%',
-                background: 'rgba(212, 175, 55, 0.05)',
-                border: '1px dashed rgba(212, 175, 55, 0.3)',
-                color: 'var(--gold)',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
-              }}
-            >
-              <Key size={14} />
-              {showKeySetting ? '隐藏大模型密钥配置' : '配置大模型 API 密钥'}
-            </button>
-            
-            {showKeySetting && (
-              <div style={{
-                background: 'rgba(0,0,0,0.4)',
-                border: '1px solid rgba(212, 175, 55, 0.15)',
-                borderTop: 'none',
-                padding: '0.8rem',
-                borderRadius: '0 0 4px 4px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                animation: 'fadeIn 0.2s'
-              }}>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Replicate API Token (仅保存在您的浏览器本地缓存中)：
-                </label>
-                <input
-                  type="password"
-                  placeholder="r8_..."
-                  value={token}
-                  onChange={(e) => handleTokenChange(e.target.value)}
-                  style={{
-                    background: 'rgba(10, 5, 5, 0.95)',
-                    border: '1px solid var(--gold)',
-                    color: '#fff',
-                    padding: '0.4rem 0.6rem',
-                    fontSize: '0.8rem',
-                    borderRadius: '4px',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
+        {/* 密钥或 Cookie 配置折叠条 */}
+        <div style={{ marginBottom: '1rem' }}>
+          <button
+            onClick={() => setShowKeySetting(!showKeySetting)}
+            style={{
+              width: '100%',
+              background: 'rgba(212, 175, 55, 0.05)',
+              border: '1px dashed rgba(212, 175, 55, 0.3)',
+              color: 'var(--gold)',
+              padding: '0.5rem',
+              borderRadius: '4px',
+              fontSize: '0.8rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+          >
+            <Key size={14} />
+            {modelSource === 'replicate' 
+              ? (showKeySetting ? '隐藏 Replicate 密钥配置' : '配置 Replicate API 密钥')
+              : (showKeySetting ? '隐藏 Suno 鉴权 Cookie 配置' : '配置 Suno 鉴权 Cookie')
+            }
+          </button>
+          
+          {showKeySetting && (
+            <div style={{
+              background: 'rgba(0,0,0,0.4)',
+              border: '1px solid rgba(212, 175, 55, 0.15)',
+              borderTop: 'none',
+              padding: '0.8rem',
+              borderRadius: '0 0 4px 4px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              animation: 'fadeIn 0.2s'
+            }}>
+              {modelSource === 'replicate' ? (
+                <>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    Replicate API Token (仅保存在您的浏览器本地缓存中)：
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="r8_..."
+                    value={token}
+                    onChange={(e) => handleTokenChange(e.target.value)}
+                    style={{
+                      background: 'rgba(10, 5, 5, 0.95)',
+                      border: '1px solid var(--gold)',
+                      color: '#fff',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.8rem',
+                      borderRadius: '4px',
+                      outline: 'none'
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    Suno 账号 Cookie (已为您保存在浏览器本地缓存中，并已尝试自动拉取)：
+                  </label>
+                  <textarea
+                    placeholder="singular_device_id=... __session=..."
+                    value={sunoCookie}
+                    onChange={(e) => handleSunoCookieChange(e.target.value)}
+                    rows="3"
+                    style={{
+                      background: 'rgba(10, 5, 5, 0.95)',
+                      border: '1px solid var(--gold)',
+                      color: '#fff',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.8rem',
+                      borderRadius: '4px',
+                      outline: 'none',
+                      resize: 'vertical'
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Suno 模式下的 Docker 启动提示 */}
+        {/* Suno 模式下的直连提示 */}
         {modelSource === 'suno' && (
           <div style={{
             fontSize: '0.75rem',
@@ -370,7 +423,7 @@ export default function MusicWorkshop({ isOpen, onClose }) {
             marginBottom: '1rem',
             lineHeight: '1.4'
           }}>
-            已启用 Suno 桥接网关。请确保您已在本地终端运行了 Docker 容器 (suno-api) 并在其中正确注入了您 Pro 账号的 Session Cookie 环境变量。
+            已启用内置免 Docker 大模型逆向通道。乐曲生成将通过您的 Pro 账号直连 Suno 云端进行，需要消耗您的账号额度。
           </div>
         )}
 
