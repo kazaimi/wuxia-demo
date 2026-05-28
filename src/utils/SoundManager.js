@@ -1053,25 +1053,26 @@ class SoundManagerClass {
 
     const timeoutId = setTimeout(() => {
       if (audio.readyState < 2 && !isFallbackTriggered) {
-        triggerFallback();
+        triggerOnlineFallback();
       }
-    }, 2500);
+    }, 2000);
 
-    const triggerFallback = () => {
+    const triggerOnlineFallback = () => {
       isFallbackTriggered = true;
       clearTimeout(timeoutId);
       audio.onerror = null;
       audio.oncanplaythrough = null;
 
-      audio.src = config.local;
+      console.warn(`本地音频 [${audioId}] 加载超时，尝试回退加载在线备用音轨: ${config.online}`);
+      audio.src = config.online;
       audio.load();
     };
 
     audio.onerror = () => {
       if (!isFallbackTriggered) {
-        triggerFallback();
+        triggerOnlineFallback();
       } else {
-        console.warn(`音频资源 [${audioId}] 彻底加载失败，已激活 Web Audio 实时合成器进行降级播放。`);
+        console.warn(`音频资源 [${audioId}] 本地与在线均加载失败，已激活 Web Audio 实时合成器进行降级播放。`);
         this.fallbackToSynth[audioId] = true;
 
         if (type === 'music' && this.currentMusicId === audioId) {
@@ -1084,7 +1085,8 @@ class SoundManagerClass {
       clearTimeout(timeoutId);
     };
 
-    audio.src = config.online;
+    // 本地优先：默认首选加载本地覆盖的 WAV 静态资源
+    audio.src = config.local;
     return audio;
   }
 
