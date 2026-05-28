@@ -4,103 +4,103 @@ import { useAudioStore } from '../store/useAudioStore';
 export const AUDIO_RESOURCES = {
   bgm_menu: {
     online: 'https://assets.mixkit.co/music/preview/mixkit-valley-sunset-122.mp3',
-    local: '/audio/bgm_menu.mp3'
+    local: '/audio/bgm_menu.wav'
   },
   bgm_battle: {
     online: 'https://assets.mixkit.co/music/preview/mixkit-epic-drums-of-war-281.mp3',
-    local: '/audio/bgm_battle.mp3'
+    local: '/audio/bgm_battle.wav'
   },
   bgm_realm: {
     online: 'https://assets.mixkit.co/music/preview/mixkit-mysterious-anticipation-1111.mp3',
-    local: '/audio/bgm_realm.mp3'
+    local: '/audio/bgm_realm.wav'
   },
   bgm_market: {
     online: 'https://assets.mixkit.co/music/preview/mixkit-asian-prologue-164.mp3',
-    local: '/audio/bgm_market.mp3'
+    local: '/audio/bgm_market.wav'
   },
   sfx_click: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-wooden-gong-single-hit-2200.mp3',
-    local: '/audio/sfx_click.mp3'
+    local: '/audio/sfx_click.wav'
   },
   sfx_allocate: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-game-quick-drop-2843.mp3',
-    local: '/audio/sfx_allocate.mp3'
+    local: '/audio/sfx_allocate.wav'
   },
   sfx_levelup: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-level-up-achievement-completion-1898.mp3',
-    local: '/audio/sfx_levelup.mp3'
+    local: '/audio/sfx_levelup.wav'
   },
   sfx_task_accept: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-stamp-ink-press-impact-2374.mp3',
-    local: '/audio/sfx_task_accept.mp3'
+    local: '/audio/sfx_task_accept.wav'
   },
   sfx_encounter_trigger: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-wood-striking-single-hit-2204.mp3',
-    local: '/audio/sfx_encounter_trigger.mp3'
+    local: '/audio/sfx_encounter_trigger.wav'
   },
   sfx_success: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-win-game-chime-1996.mp3',
-    local: '/audio/sfx_success.mp3'
+    local: '/audio/sfx_success.wav'
   },
   sfx_fail: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3',
-    local: '/audio/sfx_fail.mp3'
+    local: '/audio/sfx_fail.wav'
   },
   sfx_coin: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-coin-win-notification-1999.mp3',
-    local: '/audio/sfx_coin.mp3'
+    local: '/audio/sfx_coin.wav'
   },
   sfx_gavel: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-wooden-mallet-gavel-tap-2206.mp3',
-    local: '/audio/sfx_gavel.mp3'
+    local: '/audio/sfx_gavel.wav'
   },
   sfx_sword: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-sword-strikes-heavy-2195.mp3',
-    local: '/audio/sfx_sword.mp3'
+    local: '/audio/sfx_sword.wav'
   },
   sfx_blade: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-kitchen-knife-cut-on-board-2475.mp3',
-    local: '/audio/sfx_blade.mp3'
+    local: '/audio/sfx_blade.wav'
   },
   sfx_fist: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-boxer-punch-2050.mp3',
-    local: '/audio/sfx_fist.mp3'
+    local: '/audio/sfx_fist.wav'
   },
   sfx_magic: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-fire-spell-2848.mp3',
-    local: '/audio/sfx_magic.mp3'
+    local: '/audio/sfx_magic.wav'
   },
   sfx_dodge: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-arrow-foley-whip-rush-2376.mp3',
-    local: '/audio/sfx_dodge.mp3'
+    local: '/audio/sfx_dodge.wav'
   },
   sfx_heal: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-fairy-bell-sweep-2384.mp3',
-    local: '/audio/sfx_heal.mp3'
+    local: '/audio/sfx_heal.wav'
   },
   sfx_poison: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-acid-burn-leak-sizzles-2377.mp3',
-    local: '/audio/sfx_poison.mp3'
+    local: '/audio/sfx_poison.wav'
   },
   sfx_stun: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-electric-hum-2840.mp3',
-    local: '/audio/sfx_stun.mp3'
+    local: '/audio/sfx_stun.wav'
   },
   sfx_silence: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-soft-breeze-wind-in-trees-brush-2434.mp3',
-    local: '/audio/sfx_silence.mp3'
+    local: '/audio/sfx_silence.wav'
   },
   sfx_internal: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-falling-on-wooden-roof-2191.mp3',
-    local: '/audio/sfx_internal.mp3'
+    local: '/audio/sfx_internal.wav'
   },
   sfx_shield: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-large-gong-strike-2202.mp3',
-    local: '/audio/sfx_shield.mp3'
+    local: '/audio/sfx_shield.wav'
   },
   sfx_revive: {
     online: 'https://assets.mixkit.co/sfx/preview/mixkit-bell-magical-shine-clean-1997.mp3',
-    local: '/audio/sfx_revive.mp3'
+    local: '/audio/sfx_revive.wav'
   }
 };
 
@@ -275,27 +275,74 @@ class WebAudioSynthesizerClass {
       delayNode.connect(outNode);
     }
 
-    // 辅助函数：播放单个合成琴音
+    // 辅助函数：播放单个物理建模合成琴音（多重谐音 + 极短高频白噪指甲起音）
     const playPluck = (freq, duration, volume) => {
       const t = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      
+      // 1. 基波 (Triangle)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(freq, t);
+      
+      // 2. 第一谐波 (Sine - 2倍频，明亮感)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2, t);
+      
+      // 3. 第二谐波 (Sine - 3倍频，温润感)
+      const osc3 = ctx.createOscillator();
+      const gain3 = ctx.createGain();
+      osc3.type = 'sine';
+      osc3.frequency.setValueAtTime(freq * 3, t);
 
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(volume, t + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
-
-      osc.connect(gain);
-      gain.connect(outNode);
-      if (delayNode) {
-        gain.connect(delayNode);
+      // 4. 指甲拨弦瞬态擦音 (极短白噪声起音)
+      const clickNode = this.createNoiseBufferNode(0.015);
+      let clickGain = null;
+      if (clickNode) {
+        const clickFilter = ctx.createBiquadFilter();
+        clickFilter.type = 'highpass';
+        clickFilter.frequency.value = 3200;
+        clickGain = ctx.createGain();
+        clickGain.gain.setValueAtTime(volume * 0.35, t);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.012);
+        
+        clickNode.connect(clickFilter);
+        clickFilter.connect(clickGain);
+        clickGain.connect(outNode);
       }
 
-      osc.start(t);
-      osc.stop(t + duration + 0.1);
+      // 包络设置
+      gain1.gain.setValueAtTime(0, t);
+      gain1.gain.linearRampToValueAtTime(volume, t + 0.018);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+      gain2.gain.setValueAtTime(0, t);
+      gain2.gain.linearRampToValueAtTime(volume * 0.3, t + 0.012);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + duration * 0.65);
+
+      gain3.gain.setValueAtTime(0, t);
+      gain3.gain.linearRampToValueAtTime(volume * 0.12, t + 0.01);
+      gain3.gain.exponentialRampToValueAtTime(0.001, t + duration * 0.4);
+
+      // 连接输出
+      osc1.connect(gain1); gain1.connect(outNode);
+      osc2.connect(gain2); gain2.connect(outNode);
+      osc3.connect(gain3); gain3.connect(outNode);
+      
+      if (delayNode) {
+        gain1.connect(delayNode);
+      }
+
+      // 启动与销毁
+      osc1.start(t); osc1.stop(t + duration + 0.1);
+      osc2.start(t); osc2.stop(t + duration + 0.1);
+      osc3.start(t); osc3.stop(t + duration + 0.1);
+      if (clickNode) {
+        clickNode.start(t);
+        clickNode.stop(t + 0.02);
+      }
     };
 
     if (musicId === 'bgm_menu') {
