@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAudioStore } from '../store/useAudioStore';
-import { Volume2, VolumeX, Music, Swords, Settings } from 'lucide-react';
+import { Volume2, VolumeX, Music, Swords, Settings, Sparkles } from 'lucide-react';
+import MusicWorkshop from './MusicWorkshop';
 
 export default function AudioController() {
   const isMuted = useAudioStore(state => state.isMuted);
@@ -11,9 +12,11 @@ export default function AudioController() {
   const setSfxVolume = useAudioStore(state => state.setSfxVolume);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isWorkshopOpen, setIsWorkshopOpen] = useState(false);
 
   return (
-    <div style={{
+    <>
+      <div style={{
       position: 'fixed',
       bottom: '1.5rem',
       right: '1.5rem',
@@ -95,6 +98,43 @@ export default function AudioController() {
               }}
             />
           </div>
+
+          {/* 天机琴坊 AI 创作入口 */}
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              setIsWorkshopOpen(true);
+            }}
+            style={{
+              marginTop: '0.4rem',
+              width: '100%',
+              background: 'none',
+              border: '1px solid var(--gold)',
+              color: 'var(--gold)',
+              padding: '0.4rem',
+              borderRadius: '4px',
+              fontSize: '0.8rem',
+              fontFamily: '"Ma Shan Zheng", cursive',
+              letterSpacing: '1px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'var(--gold)';
+              e.target.style.color = '#000';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'none';
+              e.target.style.color = 'var(--gold)';
+            }}
+          >
+            <Sparkles size={12} />
+            天机琴坊
+          </button>
         </div>
       )}
 
@@ -145,5 +185,8 @@ export default function AudioController() {
         </button>
       </div>
     </div>
+
+    <MusicWorkshop isOpen={isWorkshopOpen} onClose={() => setIsWorkshopOpen(false)} />
+  </>
   );
 }

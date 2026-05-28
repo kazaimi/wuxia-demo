@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } });
@@ -402,6 +403,140 @@ io.on('connection', (socket) => {
         }
     }
   });
+});
+
+// ==================== 天机琴坊：大模型音乐创作接口 ====================
+app.post('/api/generate-music', async (req, res) => {
+    const { prompt, musicId, customToken } = req.body;
+    const token = customToken || process.env.REPLICATE_API_TOKEN;
+    
+    if (!token) {
+        return res.status(400).json({
+            success: false,
+            error: "未配置大模型密钥。请于琴坊右上角填入您的 Replicate API Token 之后再开启炼乐。"
+        });
+    }
+    
+    try {
+        console.log(`[天机琴坊] 收到大模型炼乐请求。意境: ${prompt}, 目标: ${musicId}`);
+        
+        // 1. 发起 Replicate 预测任务 (Meta MusicGen-Melody)
+        const response = await fetch('https://api.replicate.com/v1/predictions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                version: "b05b5c77c975a082f6b50dfd7f709585199998440eb7c93c30da11de02cfc780",
+                input: {
+                    prompt: prompt,
+                    duration: 15,
+                    model_version: "melody",
+                    output_format: "wav"
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Replicate API 预测请求失败: ${response.status} - ${errText}`);
+        }
+        
+        let prediction = await response.json();
+        const predId = prediction.id;
+        console.log(`[天机琴坊] 预测任务创建成功，ID: ${predId}。进入状态轮询...`);
+        
+        // 2. 轮询状态，最多等待约 80 秒
+        let status = prediction.status;
+        let finalUrl = null;
+        let attempts = 0;
+        
+        while (status !== 'succeeded' && status !== 'failed' && status !== 'canceled' && attempts < 40) {
+            await new Promise(r => setTimeout(r, 2000));
+            attempts++;
+            
+            const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${predId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (pollRes.ok) {
+                prediction = await pollRes.json();
+                status = prediction.status;
+                console.log(`[天机琴坊] 轮询第 ${attempts} 次。当前状态: ${status}`);
+                if (status === 'succeeded') {
+                    finalUrl = prediction.output;
+                }
+            } else {
+                console.warn(`[天机琴坊] 轮询第 ${attempts} 次失败，HTTP 状态码: ${pollRes.status}`);
+            }
+        }
+        
+        if (status !== 'succeeded' || !finalUrl) {
+            throw new Error(`大模型音乐生成未成功完成。最终状态: ${status}`);
+        }
+        
+        console.log(`[天机琴坊] 大模型生成成功。音频远程下载链接: ${finalUrl}`);
+        
+        // 3. 下载音频数据并保存到本地 temp_generate.wav
+        const publicAudioDir = path.join(__dirname, '..', 'public', 'audio');
+        if (!fs.existsSync(publicAudioDir)) {
+            fs.mkdirSync(publicAudioDir, { recursive: true });
+        }
+        
+        const tempPath = path.join(publicAudioDir, 'temp_generate.wav');
+        const audioRes = await fetch(finalUrl);
+        if (!audioRes.ok) {
+            throw new Error(`从 Replicate 镜像下载音频文件失败: ${audioRes.statusText}`);
+        }
+        
+        const buffer = await audioRes.arrayBuffer();
+        fs.writeFileSync(tempPath, Buffer.from(buffer));
+        console.log(`[天机琴坊] 临时音乐已下载并保存至: ${tempPath}`);
+        
+        res.json({
+            success: true,
+            url: `/audio/temp_generate.wav?t=${Date.now()}`,
+            message: "大模型音乐实时创作成功，已生成临时试听音轨！"
+        });
+        
+    } catch (e) {
+        console.error("[天机琴坊] 实时创作发生异常:", e.message);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// 大模型音乐确认拓印接口
+app.post('/api/confirm-music', async (req, res) => {
+    const { musicId } = req.body;
+    try {
+        const publicAudioDir = path.join(__dirname, '..', 'public', 'audio');
+        const tempPath = path.join(publicAudioDir, 'temp_generate.wav');
+        const targetPath = path.join(publicAudioDir, `${musicId}.wav`);
+        
+        if (!fs.existsSync(tempPath)) {
+            return res.status(400).json({
+                success: false,
+                error: "未找到新炼制的临时音轨，请先进行大模型生成。"
+            });
+        }
+        
+        // 复制临时文件覆盖目标文件
+        fs.copyFileSync(tempPath, targetPath);
+        // 删除临时文件
+        fs.unlinkSync(tempPath);
+        
+        console.log(`[天机琴坊] 大模型作品已成功拓印入库，覆盖: ${targetPath}`);
+        
+        res.json({
+            success: true,
+            url: `/audio/${musicId}.wav?t=${Date.now()}`,
+            message: "拓印完成，专属 AI 背景乐已刻入江湖！"
+        });
+    } catch (e) {
+        console.error("[天机琴坊] 确认拓印发生异常:", e.message);
+        res.status(500).json({ success: false, error: e.message });
+    }
 });
 
 const PORT = 3000;
