@@ -407,7 +407,69 @@ io.on('connection', (socket) => {
 
 // ==================== 天机琴坊：大模型音乐创作接口 ====================
 app.post('/api/generate-music', async (req, res) => {
-    const { prompt, musicId, customToken } = req.body;
+    const { prompt, musicId, customToken, modelSource } = req.body;
+    
+    // Suno 桥接网关分支
+    if (modelSource === 'suno') {
+        try {
+            console.log(`[天机琴坊] 收到 Suno 本地网关炼乐请求。意境: ${prompt}, 目标: ${musicId}`);
+            
+            const response = await fetch('http://localhost:3002/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    make_instrumental: true,
+                    wait_audio: true
+                })
+            });
+            
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`Suno 桥接网关返回异常: ${response.status} - ${errText}`);
+            }
+            
+            const sunoData = await response.json();
+            // 获取生成的第一首音乐
+            const finalUrl = sunoData[0]?.audio_url;
+            
+            if (!finalUrl) {
+                throw new Error("Suno 桥接网关未成功返回音频直链。请确保您的本地 Docker 容器正确注入了 Session Cookie 且您的账号额度充足。");
+            }
+            
+            console.log(`[天机琴坊] Suno 大模型创作成功。远程音频直链: ${finalUrl}`);
+            
+            // 下载并保存到 temp_generate.wav
+            const publicAudioDir = path.join(__dirname, '..', 'public', 'audio');
+            if (!fs.existsSync(publicAudioDir)) {
+                fs.mkdirSync(publicAudioDir, { recursive: true });
+            }
+            
+            const tempPath = path.join(publicAudioDir, 'temp_generate.wav');
+            const audioRes = await fetch(finalUrl);
+            if (!audioRes.ok) {
+                throw new Error(`下载 Suno 音频失败: ${audioRes.statusText}`);
+            }
+            
+            const buffer = await audioRes.arrayBuffer();
+            fs.writeFileSync(tempPath, Buffer.from(buffer));
+            console.log(`[天机琴坊] 临时音轨下载成功: ${tempPath}`);
+            
+            return res.json({
+                success: true,
+                url: `/audio/temp_generate.wav?t=${Date.now()}`,
+                message: "Suno 大模型背景乐实时创作成功，已生成临时试听音轨！"
+            });
+            
+        } catch (e) {
+            console.error("[天机琴坊] Suno 实时创作发生异常:", e.message);
+            return res.status(500).json({ success: false, error: e.message });
+        }
+    }
+    
+    // Replicate 原生分支
     const token = customToken || process.env.REPLICATE_API_TOKEN;
     
     if (!token) {
@@ -418,7 +480,7 @@ app.post('/api/generate-music', async (req, res) => {
     }
     
     try {
-        console.log(`[天机琴坊] 收到大模型炼乐请求。意境: ${prompt}, 目标: ${musicId}`);
+        console.log(`[天机琴坊] 收到 Replicate 炼乐请求。意境: ${prompt}, 目标: ${musicId}`);
         
         // 1. 发起 Replicate 预测任务 (Meta MusicGen-Melody)
         const response = await fetch('https://api.replicate.com/v1/predictions', {

@@ -14,6 +14,7 @@ export default function MusicWorkshop({ isOpen, onClose }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [showKeySetting, setShowKeySetting] = useState(false);
+  const [modelSource, setModelSource] = useState('replicate');
 
   const audioRef = useRef(null);
   const timerRef = useRef(null);
@@ -131,7 +132,7 @@ export default function MusicWorkshop({ isOpen, onClose }) {
 
   // 调用大模型炼乐
   const handleGenerate = async () => {
-    if (!token.trim()) {
+    if (modelSource === 'replicate' && !token.trim()) {
       setErrorMsg('请先配置 Replicate API 密钥 (Token)，琴坊才可开启大模型炼乐之门。');
       return;
     }
@@ -152,7 +153,8 @@ export default function MusicWorkshop({ isOpen, onClose }) {
         body: JSON.stringify({
           prompt,
           musicId,
-          customToken: token
+          customToken: modelSource === 'replicate' ? token : '',
+          modelSource
         })
       });
 
@@ -296,66 +298,117 @@ export default function MusicWorkshop({ isOpen, onClose }) {
           —— 汇聚云端乐律大模型，炼制您独一无二的江湖背景琴音 ——
         </p>
 
-        {/* 密钥配置折叠条 */}
-        <div style={{ marginBottom: '1rem' }}>
-          <button
-            onClick={() => setShowKeySetting(!showKeySetting)}
-            style={{
-              width: '100%',
-              background: 'rgba(212, 175, 55, 0.05)',
-              border: '1px dashed rgba(212, 175, 55, 0.3)',
-              color: 'var(--gold)',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              fontSize: '0.8rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-          >
-            <Key size={14} />
-            {showKeySetting ? '隐藏大模型密钥配置' : '配置大模型 API 密钥'}
-          </button>
-          
-          {showKeySetting && (
-            <div style={{
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(212, 175, 55, 0.15)',
-              borderTop: 'none',
-              padding: '0.8rem',
-              borderRadius: '0 0 4px 4px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              animation: 'fadeIn 0.2s'
-            }}>
-              <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Replicate API Token (仅保存在您的浏览器本地缓存中)：
-              </label>
-              <input
-                type="password"
-                placeholder="r8_..."
-                value={token}
-                onChange={(e) => handleTokenChange(e.target.value)}
-                style={{
-                  background: 'rgba(10, 5, 5, 0.95)',
-                  border: '1px solid var(--gold)',
-                  color: '#fff',
-                  padding: '0.4rem 0.6rem',
-                  fontSize: '0.8rem',
-                  borderRadius: '4px',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          )}
-        </div>
+        {/* 密钥配置折叠条 (仅在 Replicate 模式下需要) */}
+        {modelSource === 'replicate' && (
+          <div style={{ marginBottom: '1rem' }}>
+            <button
+              onClick={() => setShowKeySetting(!showKeySetting)}
+              style={{
+                width: '100%',
+                background: 'rgba(212, 175, 55, 0.05)',
+                border: '1px dashed rgba(212, 175, 55, 0.3)',
+                color: 'var(--gold)',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                fontSize: '0.8rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <Key size={14} />
+              {showKeySetting ? '隐藏大模型密钥配置' : '配置大模型 API 密钥'}
+            </button>
+            
+            {showKeySetting && (
+              <div style={{
+                background: 'rgba(0,0,0,0.4)',
+                border: '1px solid rgba(212, 175, 55, 0.15)',
+                borderTop: 'none',
+                padding: '0.8rem',
+                borderRadius: '0 0 4px 4px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                animation: 'fadeIn 0.2s'
+              }}>
+                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  Replicate API Token (仅保存在您的浏览器本地缓存中)：
+                </label>
+                <input
+                  type="password"
+                  placeholder="r8_..."
+                  value={token}
+                  onChange={(e) => handleTokenChange(e.target.value)}
+                  style={{
+                    background: 'rgba(10, 5, 5, 0.95)',
+                    border: '1px solid var(--gold)',
+                    color: '#fff',
+                    padding: '0.4rem 0.6rem',
+                    fontSize: '0.8rem',
+                    borderRadius: '4px',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Suno 模式下的 Docker 启动提示 */}
+        {modelSource === 'suno' && (
+          <div style={{
+            fontSize: '0.75rem',
+            color: 'var(--text-muted)',
+            background: 'rgba(212, 175, 55, 0.05)',
+            border: '1px dashed rgba(212, 175, 55, 0.25)',
+            padding: '0.6rem',
+            borderRadius: '4px',
+            marginBottom: '1rem',
+            lineHeight: '1.4'
+          }}>
+            已启用 Suno 桥接网关。请确保您已在本地终端运行了 Docker 容器 (suno-api) 并在其中正确注入了您 Pro 账号的 Session Cookie 环境变量。
+          </div>
+        )}
 
         {/* 表单区域 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.85rem' }}>
+          {/* 大模型源选择 */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Settings size={14} /> 感应乐理天机 (大模型源)
+            </span>
+            <div style={{ display: 'flex', gap: '1.5rem', margin: '4px 0', fontSize: '0.8rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="modelSource"
+                  value="replicate"
+                  checked={modelSource === 'replicate'}
+                  onChange={() => setModelSource('replicate')}
+                  disabled={isGenerating}
+                  style={{ accentColor: 'var(--gold)', cursor: 'pointer' }}
+                />
+                <span>Replicate (轻量快炼)</span>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name="modelSource"
+                  value="suno"
+                  checked={modelSource === 'suno'}
+                  onChange={() => setModelSource('suno')}
+                  disabled={isGenerating}
+                  style={{ accentColor: 'var(--gold)', cursor: 'pointer' }}
+                />
+                <span>Suno (Pro 会员深炼)</span>
+              </label>
+            </div>
+          </div>
+
           {/* 目标音乐 ID 选择 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span style={{ color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '4px' }}>
