@@ -1102,10 +1102,10 @@ class SoundManagerClass {
     const playPromise = nextAudio.play();
     if (playPromise !== undefined) {
       playPromise.catch((err) => {
-        console.warn(`播放背景音乐 [${musicId}] 失败：`, err);
-        if (this.fallbackToSynth[musicId]) {
-          WebAudioSynthesizer.playBgm(musicId);
-        }
+        console.warn(`播放背景音乐 [${musicId}] 失败，紧急激活 Web Audio 合成琴音：`, err);
+        this.fallbackToSynth[musicId] = true;
+        try { nextAudio.pause(); } catch(e) {}
+        WebAudioSynthesizer.playBgm(musicId);
       });
     }
 
@@ -1204,7 +1204,8 @@ class SoundManagerClass {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.warn(`播放音效 [${sfxId}] 遇到异常，已紧急回退到 Web Audio 实时合成发声。`);
+          console.warn(`播放音效 [${sfxId}] 遇到异常，紧急转入 Web Audio 实时合成发声：`, err);
+          this.fallbackToSynth[sfxId] = true;
           WebAudioSynthesizer.playSfx(sfxId);
         });
       }
