@@ -436,47 +436,79 @@ app.post('/api/generate-music', async (req, res) => {
         try {
             console.log(`[天机琴坊] 启动内置 Suno 免 Docker 大模型炼乐。意境: ${prompt}, 目标: ${musicId}`);
             
-            // 1. 请求 Suno Clerk 接口获取 JWT Token
-            console.log(`[天机琴坊] 正在向 Suno Clerk 请求 JWT Token...`);
-            const clerkRes = await fetch("https://clerk.suno.com/v1/client/shared_tokens?_clerk_js_version=4.70.0", {
-                method: "POST",
-                headers: {
-                    "Cookie": cookie,
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "Origin": "https://suno.com",
-                    "Referer": "https://suno.com/"
+            // 1. 优先直接从 Cookie 中提取 Clerk JWT 令牌 (即 __session 字段)
+            let jwtToken = null;
+            const sessionMatch = cookie.match(/__session=([^;]+)/);
+            if (sessionMatch) {
+                jwtToken = sessionMatch[1].trim();
+                console.log(`[天机琴坊] 成功从 Cookie 中提取 __session 令牌，长度为 ${jwtToken.length} 字节。`);
+            } else {
+                console.log(`[天机琴坊] 未在 Cookie 中检测到 __session 字段，尝试向 Clerk 换取令牌...`);
+                const clerkRes = await fetch("https://clerk.suno.com/v1/client/shared_tokens?_clerk_js_version=4.70.0", {
+                    method: "POST",
+                    headers: {
+                        "Cookie": cookie,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                        "Origin": "https://suno.com",
+                        "Referer": "https://suno.com/"
+                    }
+                });
+                if (clerkRes.ok) {
+                    const clerkData = await clerkRes.json();
+                    jwtToken = clerkData.token;
                 }
-            });
-            
-            if (!clerkRes.ok) {
-                const errTxt = await clerkRes.text();
-                throw new Error(`Suno Clerk 鉴权失败，请确认您的 Cookie 是否正确或是否已过期。状态码: ${clerkRes.status} - ${errTxt}`);
             }
             
-            const clerkData = await clerkRes.json();
-            const jwtToken = clerkData.token;
             if (!jwtToken) {
-                throw new Error("Suno 鉴权响应中未找到有效 Token。请确保您复制了完整的 Cookie。");
+                throw new Error("Suno 鉴权响应中未找到有效 Token。请确保您复制了包含 __session 字段的完整 Cookie。");
             }
             
-            console.log(`[天机琴坊] JWT 令牌获取成功！正在向 Suno 发起生成任务...`);
+            console.log(`[天机琴坊] 令牌校验通过！正在向 Suno 发起生成任务...`);
             
-            // 2. 创建生成任务 (使用 chirp-v3-5 纯乐器)
-            const genRes = await fetch("https://studio-api.suno.ai/v1/generate", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${jwtToken}`,
-                    "Content-Type": "application/json",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "Origin": "https://suno.com",
-                    "Referer": "https://suno.com/"
-                },
-                body: JSON.stringify({
-                    prompt: prompt,
-                    make_instrumental: true,
-                    mv: "chirp-v3-5"
-                })
-            });
+            // 2. 自适应探测可用的生成接口
+            const possibleUrls = [
+                "https://studio-api-prod.suno.com/api/generate",
+                "https://studio-api-prod.suno.com/api/generate/",
+                "https://studio-api-prod.suno.com/v1/generate",
+                "https://studio-api-prod.suno.com/api/v2/generate"
+            ];
+            
+            let genRes = null;
+            let finalGenUrl = null;
+            
+            for (const url of possibleUrls) {
+                console.log(`[天机琴坊] 正在尝试 Suno 接口: ${url} ...`);
+                try {
+                    const tempRes = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${jwtToken}`,
+                            "Content-Type": "application/json",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                            "Origin": "https://suno.com",
+                            "Referer": "https://suno.com/"
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            make_instrumental: true,
+                            mv: "chirp-v3-5"
+                        })
+                    });
+                    
+                    console.log(`[天机琴坊] 接口 ${url} 返回状态码: ${tempRes.status}`);
+                    if (tempRes.status !== 404) {
+                        genRes = tempRes;
+                        finalGenUrl = url;
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`[天机琴坊] 接口 ${url} 请求异常:`, e.message);
+                }
+            }
+            
+            if (!genRes) {
+                throw new Error("Suno 任务创建失败: 尝试了所有可能的 API 路径均返回 404 错误。");
+            }
             
             if (!genRes.ok) {
                 const errTxt = await genRes.text();
@@ -497,11 +529,17 @@ app.post('/api/generate-music', async (req, res) => {
             let status = 'queued';
             let attempts = 0;
             
+            // 根据生成接口的路径自适应推断 feed 接口的路径
+            let feedUrl = `https://studio-api-prod.suno.com/v1/feed/?ids=${clipIds}`;
+            if (finalGenUrl.includes("/api/generate")) {
+                feedUrl = `https://studio-api-prod.suno.com/api/feed/?ids=${clipIds}`;
+            }
+            
             while (status !== 'complete' && status !== 'error' && attempts < 40) {
                 await new Promise(r => setTimeout(r, 2000));
                 attempts++;
                 
-                const pollRes = await fetch(`https://studio-api.suno.ai/v1/feed/?ids=${clipIds}`, {
+                const pollRes = await fetch(feedUrl, {
                     headers: {
                         "Authorization": `Bearer ${jwtToken}`,
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
