@@ -1,0 +1,898 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&display=swap');
+
+:root {
+  --bg-color: #0a0d14;
+  --glass-bg: rgba(18, 25, 43, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --primary: #00f2fe;
+  --primary-glow: rgba(0, 242, 254, 0.4);
+  --secondary: #4facfe;
+  --text-main: #f0f4f8;
+  --text-muted: #94a3b8;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warn: #f59e0b;
+  --gold: #d4af37;
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  --ink: #1a1a2e;
+  --jade: #00a86b;
+  --crimson: #dc143c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  background-image:
+    /* 水墨晕染效果 */
+    radial-gradient(ellipse at 10% 20%, rgba(0, 168, 107, 0.08), transparent 40%),
+    radial-gradient(ellipse at 90% 80%, rgba(220, 20, 60, 0.06), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05), transparent 50%),
+    /* 原有渐变 */
+    radial-gradient(circle at 15% 50%, rgba(79, 172, 254, 0.12), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.12), transparent 25%);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 武侠风背景纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L30 60M0 30L60 30' stroke='%23ffffff' stroke-opacity='0.02' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 浮动粒子效果 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(212, 175, 55, 0.4), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(0, 242, 254, 0.3), transparent),
+    radial-gradient(1px 1px at 60% 20%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 80% 60%, rgba(212, 175, 55, 0.3), transparent),
+    radial-gradient(1px 1px at 10% 80%, rgba(0, 168, 107, 0.4), transparent),
+    radial-gradient(2px 2px at 90% 10%, rgba(220, 20, 60, 0.3), transparent);
+  background-size: 200px 200px;
+  animation: floatParticles 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatParticles {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(-100px) translateX(50px); }
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* 武侠风装饰边框 */
+.wuxia-border {
+  position: relative;
+}
+
+.wuxia-border::before,
+.wuxia-border::after {
+  content: '❖';
+  position: absolute;
+  font-size: 1.2rem;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+.wuxia-border::before {
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.wuxia-border::after {
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 玻璃面板增强 - 武侠风 */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 玻璃面板角落装饰 */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
+}
+
+/* 武侠风标题 */
+.wuxia-title {
+  font-family: 'Ma Shan Zheng', 'Zhi Mang Xing', cursive;
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, var(--gold) 0%, #fff5d4 50%, var(--gold) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 8px;
+  position: relative;
+}
+
+/* 标题装饰线 */
+.wuxia-title::before,
+.wuxia-title::after {
+  content: '═══';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.5;
+  letter-spacing: 0;
+}
+
+.wuxia-title::before {
+  left: -80px;
+}
+
+.wuxia-title::after {
+  right: -80px;
+}
+
+/* 武侠风按钮 */
+button.btn-primary {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(180, 140, 40, 0.9) 100%);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  color: #1a1a2e;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 15px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+button.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+button.btn-primary:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+button.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 25px rgba(212, 175, 55, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+button.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 次要按钮样式 */
+button.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  color: var(--gold);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+
+button.btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+/* 动画效果 */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  70% { box-shadow: 0 0 25px 12px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+.glow-effect {
+  animation: pulse-glow 2s infinite;
+}
+
+/* 剑气闪烁效果 */
+@keyframes swordQi {
+  0%, 100% { opacity: 0.3; transform: scaleX(1); }
+  50% { opacity: 0.8; transform: scaleX(1.1); }
+}
+
+.sword-qi {
+  animation: swordQi 3s ease-in-out infinite;
+}
+
+/* 水墨流动效果 */
+@keyframes inkFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.ink-flow {
+  background-size: 200% 200%;
+  animation: inkFlow 8s ease infinite;
+}
+
+/* 金光闪烁 */
+@keyframes goldShimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+.gold-shimmer {
+  animation: goldShimmer 2s ease-in-out infinite;
+}
+
+/* 武侠风分割线 */
+.wuxia-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.wuxia-divider::before {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  background: var(--bg-color);
+  padding: 0 0.5rem;
+}
+
+/* 武侠风标签 */
+.wuxia-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-family: 'Ma Shan Zheng', cursive;
+  letter-spacing: 1px;
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* 武侠风输入框 */
+input.wuxia-input,
+select.wuxia-select {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input.wuxia-input:focus,
+select.wuxia-select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* 进度条武侠风 */
+.wuxia-progress {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wuxia-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--jade), var(--gold));
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.wuxia-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes auraPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
+}
+
+/* 卡片悬浮效果 */
+.wuxia-card {
+  transition: all 0.3s ease;
+}
+
+.wuxia-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* 响应式设计 - 移动端适配 */
+@media screen and (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  /* 标题缩小 */
+  .wuxia-title {
+    font-size: 2rem;
+    letter-spacing: 4px;
+  }
+
+  .wuxia-title::before,
+  .wuxia-title::after {
+    display: none;
+  }
+
+  /* 玻璃面板调整 */
+  .glass-panel {
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  /* 按钮调整 */
+  button.btn-primary {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+  }
+
+  /* 输入框调整 */
+  input.wuxia-input,
+  select.wuxia-select {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* 隐藏角落装饰 */
+  .corner-decoration {
+    display: none;
+  }
+
+  /* 标签调整 */
+  .wuxia-tag {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  /* 移动端进度条 */
+  .wuxia-progress {
+    height: 6px;
+  }
+
+  /* 移动端卡片 */
+  .wuxia-card {
+    padding: 0.8rem !important;
+  }
+
+  /* 移动端字体 */
+  body {
+    font-size: 14px;
+  }
+
+  /* 折叠面板样式 */
+  details summary {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[open] summary::after {
+    content: ' ▼';
+    font-size: 0.7rem;
+  }
+
+  details:not([open]) summary::after {
+    content: ' ▶';
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .app-container {
+    padding: 0.8rem;
+  }
+
+  .wuxia-title {
+    font-size: 1.6rem;
+  }
+
+  button.btn-primary {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* 超小屏幕隐藏装饰线 */
+  .sword-decoration-left,
+  .sword-decoration-right {
+    display: none !important;
+  }
+}
+
+/* 装饰性角标 */
+.corner-decoration {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+  opacity: 0.5;
+}
+
+.corner-decoration.top-left {
+  top: 8px;
+  left: 8px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-decoration.top-right {
+  top: 8px;
+  right: 8px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-decoration.bottom-left {
+  bottom: 8px;
+  left: 8px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-decoration.bottom-right {
+  bottom: 8px;
+  right: 8px;
+  border-left: none;
+  border-top: none;
+}
+
+/* ========== 战斗动效样式 ========== */
+
+/* 剑气划过动画 */
+@keyframes slashDraw {
+  0% { stroke-dasharray: 0 600; stroke-dashoffset: 0; }
+  100% { stroke-dasharray: 600 0; stroke-dashoffset: -600; }
+}
+
+@keyframes slashFade {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(50px); }
+}
+
+/* 重击震动 */
+@keyframes heavyShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-10px); }
+  20% { transform: translateX(10px); }
+  30% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  50% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+}
+
+/* 暴击爆发 */
+@keyframes burstExpand {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes criticalPop {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  50% { transform: scale(1.5) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 0; transform: translateY(-30px); }
+}
+
+@keyframes rayShoot {
+  0% { transform: scaleX(0); opacity: 1; }
+  100% { transform: scaleX(2); opacity: 0; }
+}
+
+/* 闪避效果 */
+@keyframes dodgeFade {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes dodgeText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+/* 治愈效果 */
+@keyframes healPulse {
+  0% { transform: scale(0); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes healFloat {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-50px); opacity: 0; }
+}
+
+@keyframes healNumber {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1); opacity: 0; }
+}
+
+/* 增益效果 */
+@keyframes buffRing {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes buffRise {
+  0% { transform: translateY(50px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+
+/* 减益效果 */
+@keyframes debuffPulse {
+  0% { transform: scale(0); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes debuffFall {
+  0% { transform: translateY(-30px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(30px); opacity: 0; }
+}
+
+/* 复活效果 */
+@keyframes reviveGlow {
+  0% { transform: scale(0); opacity: 0; }
+  30% { transform: scale(1); opacity: 0.8; }
+  60% { transform: scale(1.5); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes reviveRay {
+  0% { transform: scaleY(0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scaleY(1.5); opacity: 0; }
+}
+
+@keyframes reviveText {
+  0% { transform: scale(0) translateY(20px); opacity: 0; }
+  30% { transform: scale(1.2) translateY(0); opacity: 1; }
+  70% { transform: scale(1) translateY(-10px); opacity: 1; }
+  100% { transform: scale(0.8) translateY(-30px); opacity: 0; }
+}
+
+/* 气劲爆发 */
+@keyframes inkExpand {
+  0% { r: 5; opacity: 1; }
+  100% { r: 80; opacity: 0; }
+}
+
+@keyframes inkSpread {
+  0% { r: 10; opacity: 0.8; }
+  100% { r: 100; opacity: 0; }
+}
+
+@keyframes inkSplash {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  100% { transform: scale(0.3); opacity: 0; }
+}
+
+/* 中毒效果 */
+@keyframes poisonCloud {
+  0% { transform: scale(0.5); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes poisonBubble {
+  0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+  50% { transform: translateY(-20px) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+@keyframes poisonText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+/* 眩晕效果 */
+@keyframes stunStar {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+  50% { transform: rotate(180deg) scale(1.5); opacity: 1; }
+}
+
+@keyframes stunText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-10px); opacity: 0; }
+}
+
+/* 内伤效果 */
+@keyframes internalText {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1) translateY(-15px); opacity: 0; }
+}
+
+/* 打击停顿 */
+@keyframes hitStop {
+  0% { transform: scale(1); }
+  10% { transform: scale(0.98); }
+  30% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* 角色受击震动 */
+@keyframes characterHit {
+  0%, 100% { transform: translateX(0); filter: brightness(1); }
+  20% { transform: translateX(-5px); filter: brightness(1.5) saturate(1.2); }
+  40% { transform: translateX(5px); filter: brightness(1.2); }
+  60% { transform: translateX(-3px); filter: brightness(1); }
+}
+
+/* 角色出招发光 */
+@keyframes characterAttack {
+  0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+  30% { filter: brightness(1.3) drop-shadow(0 0 15px var(--gold)); }
+  60% { filter: brightness(1.1) drop-shadow(0 0 8px var(--gold)); }
+  100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+
+/* 角色闪避残影 */
+@keyframes characterDodge {
+  0% { opacity: 1; transform: translateX(0); }
+  30% { opacity: 0.5; transform: translateX(-10px); }
+  60% { opacity: 0.3; transform: translateX(5px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* 角色重伤灰化 */
+@keyframes characterWounded {
+  0% { filter: grayscale(0) brightness(1); }
+  100% { filter: grayscale(0.5) brightness(0.7); }
+}
+
+/* 角色死亡 */
+@keyframes characterDeath {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  50% { opacity: 0.5; transform: translateY(10px) rotate(-5deg); }
+  100% { opacity: 0; transform: translateY(20px) rotate(-10deg); }
+}
+
+/* 伤害飘字 */
+@keyframes damageFloat {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+  50% { transform: translateY(-30px) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+}
+
+/* 气血条变化动画 */
+@keyframes hpBarChange {
+  0% { transition: width 0.1s ease-out; }
+  50% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+/* 护盾效果 */
+@keyframes shieldGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(79, 172, 254, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(79, 172, 254, 0.6); }
+}
+
+/* Buff 状态指示器 */
+@keyframes buffIndicator {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Debuff 状态指示器 */
+@keyframes debuffIndicator {
+  0%, 100% { opacity: 0.5; transform: rotate(0deg); }
+  50% { opacity: 0.8; transform: rotate(5deg); }
+}
+
+/* 属性滑块样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4facfe;
+  cursor: pointer;
+  margin-top: -5px;
+  box-shadow: 0 0 8px rgba(79, 172, 254, 0.6);
+  border: 2px solid #fff;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(79, 172, 254, 0.8);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4facfe;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 8px rgba(79, 172, 254, 0.6);
+}
+
+input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+.attribute-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--slider-color, #4facfe) var(--slider-percent, 50%), rgba(255,255,255,0.1) var(--slider-percent, 50%));
+  cursor: pointer;
+  outline: none;
+}
+
+.attribute-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--slider-color, #4facfe);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--slider-color, #4facfe);
+  transition: transform 0.1s;
+}
+
+.attribute-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.attribute-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--slider-color, #4facfe);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 6px var(--slider-color, #4facfe);
+}
+
+.attribute-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.attribute-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
