@@ -57,7 +57,7 @@ export default function BlackMarket({ onClose }) {
        { id: 'item_coffee', name: '【特供】橙C美式', price: 99, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee size={18} color="#f97316" />, type: 'coffee' },
        { id: 'item_purify', name: '【圣物】净心符', price: 55, desc: '焚香沐浴，驱散所有恶兆缠身，恢复清明心智！', icon: <Sparkles size={18} color="#c084fc" />, type: 'purify' },
        { id: 'item_box1', name: '破旧的残卷箱', price: 8, desc: '随机获得一本入门外功或内功(必定非绝学)。', icon: <Package size={18} color="#a1a1aa" />, type: 'skill_box1' },
-       { id: 'item_drug', name: '十全大补丸', price: 10, desc: '仙人秘制，随机永久增加3~5项基础属性各1~3点，立竿见影！', icon: <AlertCircle size={18} color="#fbbf24" />, type: 'attr_drug' },
+       { id: 'item_drug', name: '十全大补丸', price: 120, desc: '仙人秘制，随机永久增加3~5项基础属性各1~3点，立竿见影！', icon: <AlertCircle size={18} color="#fbbf24" />, type: 'attr_drug' },
        { id: 'item_reset_pill', name: '【奇珍】洗髓灵丹', price: 50, desc: '洗去身上所有的常规分配属性点并全额返还为自由潜能点，大补丸的修持加成正常保留。', icon: <Sparkles size={18} color="#34d399" />, type: 'reset_pill' },
        { id: 'item_heaven_token', name: '【密令】通天令牌', price: 30, desc: '墨玉令出，福地洞开！减少 5 次今日已用秘境挑战次数（相当于今日额外获得 5 次秘境机会）！', icon: <Key size={18} color="#818cf8" />, type: 'heaven_token' },
        { id: 'item_peach_nectar', name: '【仙酿】万寿蟠桃露', price: 100, desc: '蟠桃仙浆，琼浆玉液。痛饮后立刻获得 1000 点修为经验值！', icon: <GlassWater size={18} color="#22d3ee" />, type: 'peach_nectar' },
