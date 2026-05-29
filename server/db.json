@@ -80,20 +80,20 @@
   },
   {
     "name": "芙蓉女侠",
-    "title": "🔥江湖劳模",
-    "level": 29,
-    "exp": 6691,
-    "maxExp": 7982,
+    "title": "江湖劳模",
+    "level": 31,
+    "exp": 1041,
+    "maxExp": 8903,
     "freePoints": 0,
-    "taskCount": 30,
-    "hp": 1505,
-    "maxHp": 1505,
+    "taskCount": 31,
+    "hp": 1145,
+    "maxHp": 1145,
     "attributes": {
-      "con": 97,
-      "str": 1,
-      "int": 1,
-      "agi": 2,
-      "luk": 1
+      "con": 58,
+      "str": 69,
+      "int": 52,
+      "agi": 65,
+      "luk": 39
     },
     "skills": [
       "s1",
@@ -118,28 +118,28 @@
       "outer": "s_taiji",
       "inner": "s_yijin"
     },
-    "id": "hVT94XArg852e-6HAAAb",
+    "id": "DQbLX0z7A3Yc_GsjAAAF",
     "isBattling": false,
-    "rankIndex": 41,
-    "lastTaskDate": "Wed Apr 22 2026",
+    "rankIndex": 34,
+    "lastTaskDate": "Fri May 29 2026",
     "treasures": [
       "t8",
       "t10",
       "t3"
     ],
     "encountersToday": 0,
-    "dailyActivity": 150,
+    "dailyActivity": 155,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "silver": 197,
+    "silver": 10,
     "skillMastery": {},
     "equippedTreasure": "t10",
     "permanentAttributes": {
-      "con": 3,
-      "str": 1,
-      "int": 1,
-      "agi": 2,
-      "luk": 1
+      "con": 38,
+      "str": 37,
+      "int": 32,
+      "agi": 37,
+      "luk": 39
     }
   },
   {
