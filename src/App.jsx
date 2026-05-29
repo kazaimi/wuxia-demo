@@ -100,7 +100,7 @@ function App() {
           fontFamily: '"Ma Shan Zheng", cursive',
           opacity: 0.8
         }}>
-          ═══ v1.5 一掷千金 ═══
+          ═══ v2.0 天机琴坊 ═══
         </div>
         {/* 装饰性剑纹 - 仅PC端显示 */}
         <div className="sword-decoration-left" style={{

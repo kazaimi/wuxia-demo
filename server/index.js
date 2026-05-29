@@ -409,7 +409,7 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 1.5 一掷千金 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 2.0 天机琴坊 已开启 (Server listen on ${PORT})`);
 });
 
 setInterval(() => {
