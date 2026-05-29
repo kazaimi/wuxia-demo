@@ -193,9 +193,10 @@ export const useGameStore = create((set, get) => ({
   initSocket: () => {
     if (isMockMode) return;
     if (!socket) {
-      const serverUrl = (window.location.hostname.endsWith('ngrok-free.dev') || window.location.hostname.endsWith('ngrok.io'))
-        ? 'https://unwhiskered-manie-staringly.ngrok-free.dev'
-        : `http://${window.location.hostname}:3000`;
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const serverUrl = isLocal
+        ? `http://${window.location.hostname}:3000`
+        : 'https://unwhiskered-manie-staringly.ngrok-free.dev';
       socket = io(serverUrl, { transports: ['websocket'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
