@@ -180,7 +180,7 @@ export default function BlackMarket({ onClose }) {
           position: relative;
           width: 42%;
           height: 100%;
-          background-image: url('/black_market_merchant.png');
+          background-image: url('/black_market_merchant.webp');
           background-size: cover;
           background-position: center;
           border-right: 1px solid rgba(184, 134, 11, 0.4);
