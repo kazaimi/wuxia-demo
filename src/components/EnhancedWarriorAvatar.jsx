@@ -230,16 +230,16 @@ const EnhancedWarriorAvatar = ({
       }
     }
     if (key) {
-      setImgSrc(`/npc_${key}.png`);
+      setImgSrc(`/npc_${key}.webp`);
     } else {
-      setImgSrc(isFemale ? '/wuxia_female_hero.png' : '/wuxia_male_hero.png');
+      setImgSrc(isFemale ? '/wuxia_female_hero.webp' : '/wuxia_male_hero.webp');
     }
     setFallbackActive(false);
   }, [player?.name, isFemale]);
 
   const handleImgError = () => {
     // 专属NPC精绘加载报错（尚未生成），自动退回使用通用立绘，并激活偏色着色
-    const defaultSrc = isFemale ? '/wuxia_female_hero.png' : '/wuxia_male_hero.png';
+    const defaultSrc = isFemale ? '/wuxia_female_hero.webp' : '/wuxia_male_hero.webp';
     if (imgSrc !== defaultSrc) {
       setImgSrc(defaultSrc);
       setFallbackActive(true);

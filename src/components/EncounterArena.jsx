@@ -58,7 +58,7 @@ export default function EncounterArena() {
   const addSilver = useGameStore(state => state.addSilver);
   const devGrantPoints = useGameStore(state => state.devGrantPoints);
 
-  const cleanIcon = useCleanImage('/wuxia_encounter_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_encounter_icon.webp');
 
   const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
   const [team, setTeam] = useState([]);

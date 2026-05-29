@@ -80,7 +80,7 @@ const getPlayerComment = (player, npcConfig) => {
 function LeaderboardRowBackground({ name, npcConfig }) {
   const gender = guessGenderByName(name);
   const isFemale = gender === 'female';
-  const defaultSrc = isFemale ? '/wuxia_female_hero.png' : '/wuxia_male_hero.png';
+  const defaultSrc = isFemale ? '/wuxia_female_hero.webp' : '/wuxia_male_hero.webp';
   
   // 初始图片路径
   let initialSrc = defaultSrc;
@@ -92,7 +92,7 @@ function LeaderboardRowBackground({ name, npcConfig }) {
     }
   }
   if (initialKey) {
-    initialSrc = `/npc_${initialKey}.png`;
+    initialSrc = `/npc_${initialKey}.webp`;
   }
   
   const [imgSrc, setImgSrc] = React.useState(initialSrc);
@@ -108,7 +108,7 @@ function LeaderboardRowBackground({ name, npcConfig }) {
       }
     }
     if (key) {
-      src = `/npc_${key}.png`;
+      src = `/npc_${key}.webp`;
     }
     setImgSrc(src);
     setFallbackActive(false);
@@ -167,7 +167,7 @@ export default function Leaderboard() {
   const challengePlayer = useGameStore(state => state.challengePlayer);
   const inBattle = useGameStore(state => state.battleState.inBattle);
   
-  const cleanIcon = useCleanImage('/wuxia_leader_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_leader_icon.webp');
 
   // 按照服务器指定的 rankIndex 升序排序
   const fullBoard = [...onlinePlayers].sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));

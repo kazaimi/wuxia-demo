@@ -4,39 +4,39 @@ import React, { useState, useEffect } from 'react';
 const getIllustrationSrc = (type, event) => {
   // 1. 残局博弈
   if (type === 'puzzle') {
-    if (event?.desc?.includes('棋阵') || event?.desc?.includes('棋')) return '/scenes/chess_01.png';
-    if (event?.desc?.includes('八卦')) return '/scenes/chess_02.png';
-    return '/scenes/chess_03.png';
+    if (event?.desc?.includes('棋阵') || event?.desc?.includes('棋')) return '/scenes/chess_01.webp';
+    if (event?.desc?.includes('八卦')) return '/scenes/chess_02.webp';
+    return '/scenes/chess_03.webp';
   }
   // 2. 献祭舍己
   if (type === 'sacrifice') {
-    if (event?.desc?.includes('猿猴')) return '/scenes/sacrifice_01.png';
-    if (event?.desc?.includes('高僧')) return '/scenes/sacrifice_02.png';
-    return '/scenes/sacrifice_03.png';
+    if (event?.desc?.includes('猿猴')) return '/scenes/sacrifice_01.webp';
+    if (event?.desc?.includes('高僧')) return '/scenes/sacrifice_02.webp';
+    return '/scenes/sacrifice_03.webp';
   }
   // 3. 蛮力破除
   if (type === 'brute_force') {
-    if (event?.desc?.includes('古寺') || event?.desc?.includes('佛像')) return '/scenes/brute_01.png';
-    if (event?.desc?.includes('断龙石')) return '/scenes/brute_02.png';
-    return '/scenes/brute_03.png';
+    if (event?.desc?.includes('古寺') || event?.desc?.includes('佛像')) return '/scenes/brute_01.webp';
+    if (event?.desc?.includes('断龙石')) return '/scenes/brute_02.webp';
+    return '/scenes/brute_03.webp';
   }
   // 4. 古迹遗留
   if (type === 'relic') {
-    if (event?.desc?.includes('枯骨') || event?.desc?.includes('重剑')) return '/scenes/relic_01.png';
-    if (event?.desc?.includes('寒泉') || event?.desc?.includes('仙女')) return '/scenes/relic_02.png';
-    return '/scenes/relic_03.png';
+    if (event?.desc?.includes('枯骨') || event?.desc?.includes('重剑')) return '/scenes/relic_01.webp';
+    if (event?.desc?.includes('寒泉') || event?.desc?.includes('仙女')) return '/scenes/relic_02.webp';
+    return '/scenes/relic_03.webp';
   }
   // 5. 幻境审视
   if (type === 'illusion') {
-    if (event?.desc?.includes('冰窟') || event?.desc?.includes('镜')) return '/scenes/illusion_01.png';
-    if (event?.desc?.includes('桃花')) return '/scenes/illusion_02.png';
-    return '/scenes/illusion_03.png';
+    if (event?.desc?.includes('冰窟') || event?.desc?.includes('镜')) return '/scenes/illusion_01.webp';
+    if (event?.desc?.includes('桃花')) return '/scenes/illusion_02.webp';
+    return '/scenes/illusion_03.webp';
   }
   // 6. 身法机关
   if (type === 'trap') {
-    if (event?.desc?.includes('弩') || event?.desc?.includes('甬道')) return '/scenes/trap_01.png';
-    if (event?.desc?.includes('独木桥') || event?.desc?.includes('断崖')) return '/scenes/trap_02.png';
-    return '/scenes/trap_03.png';
+    if (event?.desc?.includes('弩') || event?.desc?.includes('甬道')) return '/scenes/trap_01.webp';
+    if (event?.desc?.includes('独木桥') || event?.desc?.includes('断崖')) return '/scenes/trap_02.webp';
+    return '/scenes/trap_03.webp';
   }
   return '';
 };

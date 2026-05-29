@@ -17,7 +17,7 @@ export default function TaskHall() {
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
   const player = useGameStore(state => state.player);
 
-  const cleanIcon = useCleanImage('/wuxia_tasks_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_tasks_icon.webp');
 
   useEffect(() => {
     checkDailyReset();

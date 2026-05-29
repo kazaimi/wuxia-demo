@@ -13,7 +13,7 @@ export default function AuctionHouse() {
 
   const [tab, setTab] = useState('market'); // market, sell, history
 
-  const cleanIcon = useCleanImage('/wuxia_auction_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_auction_icon.webp');
   const [sellType, setSellType] = useState('skill');
   const [selectedItem, setSelectedItem] = useState('');
   const [startPrice, setStartPrice] = useState(1);

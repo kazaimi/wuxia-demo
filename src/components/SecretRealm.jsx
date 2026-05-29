@@ -16,7 +16,7 @@ export default function SecretRealm() {
 
   const [state, setState] = useState('idle'); // idle, exploring, result
 
-  const cleanIcon = useCleanImage('/wuxia_realm_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_realm_icon.webp');
   const [deck, setDeck] = useState([]);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [depth, setDepth] = useState(0);

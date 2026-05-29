@@ -168,12 +168,12 @@ export default function MainMenu() {
   };
 
   const tabs = [
-    { id: 'tasks', label: '任务大厅', img: '/wuxia_tasks_icon.png' },
-    { id: 'battle', label: '竞技对战', img: '/wuxia_battle_icon.png' },
-    { id: 'leader', label: '风云榜', img: '/wuxia_leader_icon.png' },
-    { id: 'encounter', label: '江湖奇遇', img: '/wuxia_encounter_icon.png' },
-    { id: 'realm', label: '秘境寻宝', img: '/wuxia_realm_icon.png', color: '#f97316' },
-    { id: 'auction', label: '拍卖风云', img: '/wuxia_auction_icon.png', color: '#c29d38' },
+    { id: 'tasks', label: '任务大厅', img: '/wuxia_tasks_icon.webp' },
+    { id: 'battle', label: '竞技对战', img: '/wuxia_battle_icon.webp' },
+    { id: 'leader', label: '风云榜', img: '/wuxia_leader_icon.webp' },
+    { id: 'encounter', label: '江湖奇遇', img: '/wuxia_encounter_icon.webp' },
+    { id: 'realm', label: '秘境寻宝', img: '/wuxia_realm_icon.webp', color: '#f97316' },
+    { id: 'auction', label: '拍卖风云', img: '/wuxia_auction_icon.webp', color: '#c29d38' },
   ];
 
   // 移动端布局
@@ -246,7 +246,7 @@ export default function MainMenu() {
           title="进入黑市"
         >
           <div className="token-image-wrapper">
-            <img src="/dark_wuxia_token.png" alt="黑市密令" />
+            <img src="/dark_wuxia_token.webp" alt="黑市密令" />
             <div className="token-glow-overlay"></div>
           </div>
         </button>
@@ -333,7 +333,7 @@ export default function MainMenu() {
         title="进入黑市"
       >
         <div className="token-image-wrapper">
-          <img src="/dark_wuxia_token.png" alt="黑市密令" />
+          <img src="/dark_wuxia_token.webp" alt="黑市密令" />
           <div className="token-glow-overlay"></div>
         </div>
       </button>

@@ -80,7 +80,7 @@ export default function BattleArena() {
   const sendBattleAction = useGameStore(state => state.sendBattleAction);
   const exitBattle = useGameStore(state => state.exitBattle);
 
-  const cleanIcon = useCleanImage('/wuxia_battle_icon.png');
+  const cleanIcon = useCleanImage('/wuxia_battle_icon.webp');
 
   // 监听进入战斗状态，自动播放战曲 bgm_battle
   useEffect(() => {
