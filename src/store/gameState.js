@@ -205,8 +205,8 @@ export const useGameStore = create((set, get) => ({
         socket.emit('get_auction_history');
         const savedName = localStorage.getItem('wuxia_username');
         const savedPassword = localStorage.getItem('wuxia_password');
-        if (savedName) {
-           socket.emit('player_login', { name: savedName, password: savedPassword || '' });
+        if (savedName && savedPassword) {
+           socket.emit('player_login', { name: savedName, password: savedPassword });
         } else {
            set({ loginChecked: true });
         }

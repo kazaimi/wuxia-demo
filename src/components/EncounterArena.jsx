@@ -101,31 +101,31 @@ const buildBuffChoice = (id, quality, treasureId) => {
    
    switch(id) {
       case 'str':
-         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
          choice.name = `${qLabel}力量之源`;
          choice.desc = `力量属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'con':
-         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
          choice.name = `${qLabel}体质之源`;
-         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 10}，并恢复等量生命)`;
+         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 30}，并恢复等量生命)`;
          choice.type = 'attr';
          break;
       case 'int':
-         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
          choice.name = `${qLabel}智慧之源`;
          choice.desc = `智慧属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'agi':
-         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
          choice.name = `${qLabel}敏捷之源`;
          choice.desc = `敏捷属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'luk':
-         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
          choice.name = `${qLabel}幸运之源`;
          choice.desc = `幸运属性增加 ${choice.val} 点`;
          choice.type = 'attr';
@@ -232,10 +232,24 @@ const generateBuffChoices = (treasureId, isEarly) => {
       }
    });
 
-   return tempChoices.map(item => {
+   const list = tempChoices.map(item => {
       const finalQuality = typeQualityMap[item.type];
       return buildBuffChoice(item.id, finalQuality, treasureId);
    });
+
+   // 每一波次抉择固定在卡牌最右端追加 60% 恢复大还丹选项
+   list.push({
+      id: 'heal60',
+      quality: 'rare',
+      qLabel: '【济世】',
+      qColor: 'var(--warn)',
+      name: '【济世】气血大还丹',
+      desc: '立即恢复当前气血 60% 最大生命值',
+      type: 'heal',
+      val: 0.60
+   });
+
+   return list;
 };
 
 export default function EncounterArena() {
@@ -257,6 +271,8 @@ export default function EncounterArena() {
   const [buffChoices, setBuffChoices] = useState([]);
   const [settlementInfo, setSettlementInfo] = useState(null);
   const [selectedIndices, setSelectedIndices] = useState([]);
+  const [rerollsLeft, setRerollsLeft] = useState(4);
+  const [milestonePopup, setMilestonePopup] = useState(null);
 
   // 可叠加的 Roguelike Buff 状态
   const [rogueBuffs, setRogueBuffs] = useState({
@@ -267,11 +283,27 @@ export default function EncounterArena() {
     stunDuration: 0, stunChance: 0,
     silenceDuration: 0, silenceDamageAmp: 0,
     treasureBoostLevel: 0,
+    heal60Count: 0,
   });
   
   const [p1, setP1] = useState(null);
   const [p2, setP2] = useState(null);
   const [logs, setLogs] = useState([]);
+
+  const getMilestoneDesc = (m) => {
+     switch (m) {
+        case 6: return "战胜 6 人：修为 +500，银两 +1";
+        case 12: return "战胜 12 人：修为 +1000，银两 +1，并有概率缴获普通秘宝";
+        case 30: return "战胜 30 人：修为 +2500，银两 +1，并有概率缴获普通/稀有秘宝";
+        case 42: return "战胜 42 人：修为 +2500，银两 +2，并有概率缴获稀有/史诗秘宝";
+        case 48: return "战胜 48 人：修为 +2500，银两 +2，并有概率缴获史诗秘宝";
+        case 51: return "战胜 51 人：修为 +2500，银两 +2，并有概率缴获史诗/传说秘宝";
+        case 54: return "战胜 54 人：修为 +2500，银两 +3，并有概率缴获传说秘宝";
+        case 57: return "战胜 57 人：修为 +2500，银两 +3，并有概率缴获传说/神话秘宝";
+        case 60: return "通关大捷！修为 +3000，银两 +5，并有概率缴获神话秘宝，荣升【鸣剑宗主】名望！";
+        default: return "";
+     }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search.includes('mock_encounter=1') && encounterState === 'idle') {
@@ -342,6 +374,8 @@ export default function EncounterArena() {
      setLeaderboardTeam(sortedLeaderboard);
      setSettlementInfo(null);
      setSelectedIndices([]);
+     setRerollsLeft(4);
+     setMilestonePopup(null);
      
      setRogueBuffs({
        str: 0, con: 0, int: 0, agi: 0, luk: 0,
@@ -351,14 +385,15 @@ export default function EncounterArena() {
        stunDuration: 0, stunChance: 0,
        silenceDuration: 0, silenceDamageAmp: 0,
        treasureBoostLevel: 0,
+       heal60Count: 0,
      });
 
-     // 初始化强制统一的 P1 属性
+     // 初始化强制统一的 P1 属性 (10级起步)
      const myPlayer = { 
          ...player, 
-         level: 25,
-         attributes: { con: 50, str: 30, int: 15, agi: 45, luk: 15 },
-         hp: 5000, maxHp: 5000,
+         level: 10,
+         attributes: { con: 20, str: 12, int: 6, agi: 18, luk: 6 },
+         hp: 2000, maxHp: 2000,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -372,11 +407,68 @@ export default function EncounterArena() {
 
   // 设置下一位挑战对手
   const setupNextEnemy = (currentP1, currentLeaderboard, totalDefeated) => {
+     const targetRank = 60 - totalDefeated;
+     let rawEnemy = currentLeaderboard.find(p => p.rankIndex === targetRank);
+     
+     if (!rawEnemy) {
+        // 缺少足够在线/真实玩家时，从底层倒序生成经典的强力武侠NPC
+        const npcLevel = Math.min(100, 5 + totalDefeated * 1.6);
+        const conVal = Math.floor(10 + totalDefeated * 1.5);
+        const strVal = Math.floor(8 + totalDefeated * 1.2);
+        const intVal = Math.floor(5 + totalDefeated * 0.8);
+        const agiVal = Math.floor(12 + totalDefeated * 1.4);
+        const lukVal = Math.floor(5 + totalDefeated * 0.5);
+        const npcNames = [
+          '独孤求败', '扫地僧', '张三丰', '东方不败', '王重阳', '风清扬', '无崖子', '天山童姥', '李秋水', '黄药师',
+          '欧阳锋', '段智兴', '洪七公', '周伯通', '郭靖', '黄蓉', '杨过', '小龙女', '张无忌', '令狐冲',
+          '任我行', '岳不群', '左冷禅', '林平之', '向问天', '谢逊', '殷天正', '韦一笑', '黛绮丝', '宋远桥',
+          '俞莲舟', '俞岱岩', '张松溪', '张翠山', '殷梨亭', '莫声谷', '成昆', '段延庆', '叶二娘', '岳老三',
+          '云中鹤', '慕容复', '鸠摩智', '游坦之', '丁春秋', '阿朱', '阿紫', '木婉清', '钟灵', '段誉',
+          '虚竹', '乔峰', '慕容博', '萧远山', '枯荣大师', '本因', '本观', '本参', '本相', '江南七怪'
+        ];
+        const npcName = npcNames[totalDefeated % npcNames.length] || `江湖神秘人 #${totalDefeated + 1}`;
+        rawEnemy = {
+           name: npcName,
+           title: totalDefeated >= 50 ? '👑一代宗师' : totalDefeated >= 30 ? '⚔️名震江湖' : '🐎初出茅庐',
+           level: Math.floor(npcLevel),
+           hp: Math.floor(1000 + totalDefeated * 80),
+           maxHp: Math.floor(1000 + totalDefeated * 80),
+           attributes: { con: conVal, str: strVal, int: intVal, agi: agiVal, luk: lukVal },
+           equippedSkills: {
+              inner: 's5',
+              outer: 's1',
+              motion: 's4',
+              ultimate: totalDefeated >= 30 ? 's_dianxue' : null
+           },
+           equippedTreasure: null
+        };
+     } else {
+        // 确保对阵已注册玩家时，随着关卡数提升有最低限度的难度成长，防止瞬间秒杀
+        const minLevel = Math.max(rawEnemy.level || 1, Math.floor(5 + totalDefeated * 1.5));
+        const scaleFactor = minLevel / (rawEnemy.level || 1);
+        if (scaleFactor > 1) {
+           rawEnemy = {
+              ...rawEnemy,
+              level: minLevel,
+              maxHp: Math.max(rawEnemy.maxHp || 100, Math.floor((rawEnemy.maxHp || 100) * scaleFactor)),
+              attributes: {
+                 con: Math.max(rawEnemy.attributes?.con || 10, Math.floor((rawEnemy.attributes?.con || 10) * scaleFactor)),
+                 str: Math.max(rawEnemy.attributes?.str || 10, Math.floor((rawEnemy.attributes?.str || 10) * scaleFactor)),
+                 int: Math.max(rawEnemy.attributes?.int || 10, Math.floor((rawEnemy.attributes?.int || 10) * scaleFactor)),
+                 agi: Math.max(rawEnemy.attributes?.agi || 10, Math.floor((rawEnemy.attributes?.agi || 10) * scaleFactor)),
+                 luk: Math.max(rawEnemy.attributes?.luk || 10, Math.floor((rawEnemy.attributes?.luk || 10) * scaleFactor))
+              }
+           };
+        }
+     }
+     
      const enemy = { 
-         ...currentLeaderboard[totalDefeated],
+         ...rawEnemy,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
+     enemy.hp = enemy.maxHp;
+
      setP2(enemy);
      setP1(currentP1);
      setEffects([]);
@@ -671,34 +763,48 @@ export default function EncounterArena() {
       }
 
       if (attacker.hp <= 0 || defender.hp <= 0) {
-         const p1Won = isP1Turn ? defender.hp <= 0 : attacker.hp <= 0;
-         const finalP1 = isP1Turn ? attacker : defender;
+            const p1Won = isP1Turn ? defender.hp <= 0 : attacker.hp <= 0;
+            let finalP1 = isP1Turn ? attacker : defender;
 
-         if (p1Won) {
-            const nextDefeatedCount = defeatedCount + 1;
-            setDefeatedCount(nextDefeatedCount);
+            if (p1Won) {
+               const nextDefeatedCount = defeatedCount + 1;
+               setDefeatedCount(nextDefeatedCount);
 
-            if (nextDefeatedCount >= 60) {
-               handleRogueSettlement(nextDefeatedCount);
-            } else if (nextDefeatedCount % 3 === 0) {
-               setEncounterState('buffSelection');
-               const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
-               setSelectedIndices([]);
-               setBuffChoices(choices);
-               setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
-               SoundManager.play('sfx_success');
+               // 升级玩家等级 (+1.25 级/关) 并等额提升生命上限及当前气血
+               const newLevel = 10 + nextDefeatedCount * 1.25;
+               const oldMaxHp = finalP1.maxHp;
+               const newMaxHp = 2000 + (newLevel - 10) * 80 + (finalP1.attributes.con - 20) * 30;
+               finalP1.level = newLevel;
+               finalP1.maxHp = newMaxHp;
+               finalP1.hp = Math.min(newMaxHp, finalP1.hp + (newMaxHp - oldMaxHp));
+               setP1(finalP1);
+
+               if ([6, 12, 30, 42, 48, 51, 54, 57, 60].includes(nextDefeatedCount)) {
+                  setMilestonePopup(nextDefeatedCount);
+                  setTimeout(() => setMilestonePopup(null), 3000);
+               }
+
+               if (nextDefeatedCount >= 60) {
+                  handleRogueSettlement(nextDefeatedCount);
+               } else if (nextDefeatedCount % 3 === 0) {
+                  setEncounterState('buffSelection');
+                  const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
+                  setSelectedIndices([]);
+                  setBuffChoices(choices);
+                  setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
+                  SoundManager.play('sfx_success');
+               } else {
+                  setEncounterState('transitioning');
+                  setLogs(prev => [...prev, `\n战胜了 ${defender.name}！进入下一战...`]);
+                  SoundManager.play('sfx_success');
+                  setTimeout(() => setupNextEnemy(finalP1, leaderboardTeam, nextDefeatedCount), 2000);
+               }
             } else {
-               setEncounterState('transitioning');
-               setLogs(prev => [...prev, `\n战胜了 ${defender.name}！进入下一战...`]);
-               SoundManager.play('sfx_success');
-               setTimeout(() => setupNextEnemy(finalP1, leaderboardTeam, nextDefeatedCount), 2000);
+               setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，挑战结束。一共击败了 ${defeatedCount} 位对手。`]);
+               setEncounterState('lose_settling');
+               SoundManager.play('sfx_fail');
             }
-         } else {
-            setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，挑战结束。一共击败了 ${defeatedCount} 位对手。`]);
-            setEncounterState('lose_settling');
-            SoundManager.play('sfx_fail');
          }
-      }
 
     }, 1200);
     return () => clearTimeout(timer);
@@ -1509,16 +1615,122 @@ export default function EncounterArena() {
       {/* 渐变分割线 */}
       <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--warn), transparent)', margin: '0.2rem auto 0.8rem', opacity: 0.3 }} />
       
+      {/* 奇遇属性与增益看板 */}
+      {encounterState !== 'idle' && encounterState !== 'settlement' && p1 && (
+        <div style={{
+          background: 'rgba(0, 0, 0, 0.45)',
+          border: '1px solid var(--glass-border)',
+          borderRadius: '10px',
+          padding: '0.8rem 1.2rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+        }}>
+          {/* 第一行：基础属性 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ color: 'var(--gold)', fontWeight: 'bold', fontSize: '0.9rem' }}>👤 侠客状态:</span>
+              <span className="wuxia-tag" style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--gold)', fontSize: '0.8rem', padding: '2px 6px', borderRadius: '4px' }}>
+                等阶: {p1.level.toFixed(2)} 级
+              </span>
+              <span className="wuxia-tag" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', fontSize: '0.8rem', padding: '2px 6px', borderRadius: '4px' }}>
+                气血: {p1.hp} / {p1.maxHp}
+              </span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '4px' }}>
+                (体质: <span style={{ color: 'var(--text-main)' }}>{p1.attributes.con}</span> | 
+                力量: <span style={{ color: 'var(--text-main)' }}>{p1.attributes.str}</span> | 
+                智慧: <span style={{ color: 'var(--text-main)' }}>{p1.attributes.int}</span> | 
+                敏捷: <span style={{ color: 'var(--text-main)' }}>{p1.attributes.agi}</span> | 
+                幸运: <span style={{ color: 'var(--text-main)' }}>{p1.attributes.luk}</span>)
+              </span>
+            </div>
+            
+            {/* 里程碑进度提示 */}
+            <div style={{ fontSize: '0.85rem', color: 'var(--warn)', fontWeight: 'bold' }}>
+              {(() => {
+                const milestones = [6, 12, 30, 42, 48, 51, 54, 57, 60];
+                const nextM = milestones.find(m => m > defeatedCount);
+                if (nextM) {
+                  return `🎯 距下个里程碑奖励还剩 ${nextM - defeatedCount} 关 (第 ${nextM} 关)`;
+                }
+                return `🏆 已达成所有里程碑奖项`;
+              })()}
+            </div>
+          </div>
+          
+          {/* 第二行：累计奇遇增益 */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            gap: '8px', 
+            borderTop: '1px dashed rgba(255,255,255,0.1)', 
+            paddingTop: '6px',
+            fontSize: '0.8rem'
+          }}>
+            <span style={{ color: 'var(--jade)', fontWeight: 'bold', whiteSpace: 'nowrap' }}>✨ 奇遇加持:</span>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {(() => {
+                const buffTags = [];
+                if (rogueBuffs.con > 0) buffTags.push({ label: `体质 +${rogueBuffs.con}`, type: 'attr' });
+                if (rogueBuffs.str > 0) buffTags.push({ label: `力量 +${rogueBuffs.str}`, type: 'attr' });
+                if (rogueBuffs.int > 0) buffTags.push({ label: `智慧 +${rogueBuffs.int}`, type: 'attr' });
+                if (rogueBuffs.agi > 0) buffTags.push({ label: `敏捷 +${rogueBuffs.agi}`, type: 'attr' });
+                if (rogueBuffs.luk > 0) buffTags.push({ label: `幸运 +${rogueBuffs.luk}`, type: 'attr' });
+                if (rogueBuffs.defUpEffect > 0) buffTags.push({ label: `防御效果 +${Math.floor(rogueBuffs.defUpEffect * 100)}%`, type: 'special' });
+                if (rogueBuffs.defUpDuration > 0) buffTags.push({ label: `防御时间 +${rogueBuffs.defUpDuration}回`, type: 'special' });
+                if (rogueBuffs.dodgeEffect > 0) buffTags.push({ label: `闪避率 +${Math.floor(rogueBuffs.dodgeEffect * 100)}%`, type: 'special' });
+                if (rogueBuffs.dodgeDuration > 0) buffTags.push({ label: `闪避时间 +${rogueBuffs.dodgeDuration}回`, type: 'special' });
+                if (rogueBuffs.poisonDmgPct > 0) buffTags.push({ label: `毒害 +${Math.floor(rogueBuffs.poisonDmgPct * 100)}%`, type: 'special' });
+                if (rogueBuffs.poisonDuration > 0) buffTags.push({ label: `毒害时间 +${rogueBuffs.poisonDuration}回`, type: 'special' });
+                if (rogueBuffs.stunDuration > 0) buffTags.push({ label: `眩晕 +${rogueBuffs.stunDuration}回(概率+${Math.floor(rogueBuffs.stunChance * 100)}%)`, type: 'special' });
+                if (rogueBuffs.silenceDuration > 0) buffTags.push({ label: `封穴 +${rogueBuffs.silenceDuration}回(易伤+${Math.floor(rogueBuffs.silenceDamageAmp * 100)}%)`, type: 'special' });
+                if (rogueBuffs.treasureBoostLevel > 0) buffTags.push({ label: `秘宝层级 +${rogueBuffs.treasureBoostLevel}`, type: 'special' });
+                if (rogueBuffs.heal60Count > 0) buffTags.push({ label: `气血大还丹 x${rogueBuffs.heal60Count}`, type: 'heal' });
+                
+                if (buffTags.length === 0) {
+                  return <span style={{ color: 'var(--text-muted)' }}>暂无奇遇加持 (通关 3 关后可选择增益)</span>;
+                }
+                
+                return buffTags.map((tag, i) => {
+                  let bg = 'rgba(16,185,129,0.1)';
+                  let color = 'var(--jade)';
+                  if (tag.type === 'special') {
+                    bg = 'rgba(245,158,11,0.1)';
+                    color = 'var(--warn)';
+                  } else if (tag.type === 'heal') {
+                    bg = 'rgba(239,68,68,0.1)';
+                    color = 'var(--danger)';
+                  }
+                  return (
+                    <span key={i} style={{
+                      background: bg,
+                      color: color,
+                      padding: '1px 6px',
+                      borderRadius: '3px',
+                      fontSize: '0.75rem',
+                      border: `1px solid ${color}33`,
+                    }}>
+                      {tag.label}
+                    </span>
+                  );
+                });
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
       {encounterState === 'idle' ? (
          <div style={{ textAlign: 'center', marginTop: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)', maxWidth: '680px', margin: '1.5rem auto' }}>
            <h3 style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.35rem', marginBottom: '1.2rem', letterSpacing: '1px' }}>
              【鸣剑破劫】Roguelike 闯关模式说明
            </h3>
            <ul style={{ color: 'var(--text-main)', textAlign: 'left', fontSize: '0.9rem', lineHeight: '1.8', listStyleType: 'none', paddingLeft: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-             <li>⚔️ <b>初始统一</b>：等级强制重置为 <b>15 级</b>，初始气血 <b>2000 HP</b>，五维属性全部重置为 <b>15点</b>。保留您当前装备的功法与秘宝（属性按15级重置）。</li>
-             <li>🏆 <b>逆袭风云榜</b>：从风云榜的最底端（第 60 席）依次向上发起车轮战，单场战斗结束后的剩余气血<b>不会自动恢复</b>。</li>
-             <li>✨ <b>奇遇加持</b>：每击败 3 名对手通关一个波次，气血恢复 <b>20%</b> 并获得一次奇遇增益（三选一），增益<b>可无限叠加</b>，助你构筑强力流派！</li>
-             <li>🎁 <b>里程碑大奖</b>：击败人数达 <b>6、12、30、42、48、51、54、57、60</b> 时派发大奖。通关全部 60 关将晋升限定专属名望【<b>鸣剑宗主</b>】！</li>
+             <li>⚔️ <b>初始统一</b>：等级强制重置为 <b>10 级</b>，初始气血 <b>2000 HP</b>，属性重置为 <b>体质:20, 力量:12, 智慧:6, 敏捷:18, 幸运:6</b>。保留装备的功法与秘宝。</li>
+             <li>🏆 <b>逆袭风云榜</b>：从风云榜的最底端席位依次向上挑战，单场战斗结束后的剩余气血<b>不会自动恢复</b>。</li>
+             <li>✨ <b>奇遇加持</b>：每击败 3 名对手通关一个波次，气血恢复 <b>20%</b> 并获得自选奇遇增益与大还丹（大还丹可恢复 60% 最大生命值），增益可叠加！</li>
+             <li>🎁 <b>里程碑大奖</b>：击败人数达 <b>6、12、30、42、48、51、54、57、60</b> 时派发大奖，中央弹窗提示。通关 60 关将晋升限定名望【<b>鸣剑宗主</b>】！</li>
            </ul>
            <button className="btn-primary" onClick={startEncounter} style={{ marginTop: '2rem', padding: '1rem 3.5rem', fontSize: '1.2rem', background: 'var(--warn)', color: '#000', fontWeight: 'bold' }}>
              开启奇遇闯关
@@ -1644,27 +1856,54 @@ export default function EncounterArena() {
               })}
             </div>
 
-            {/* 确认注入按钮 */}
-            <button
-              className="btn-primary glow-effect"
-              onClick={confirmRogueBuffs}
-              disabled={selectedIndices.length !== (defeatedCount < 30 ? 2 : 1)}
-              style={{
-                padding: '0.8rem 3.5rem',
-                fontSize: '1.1rem',
-                background: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
-                color: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
-                fontWeight: 'bold',
-                cursor: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'pointer' : 'not-allowed',
-                border: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                filter: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : 'grayscale(100%)',
-                boxShadow: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
-              }}
-            >
-              {selectedIndices.length === (defeatedCount < 30 ? 2 : 1) 
-                ? '确立根基，注入奇遇加持' 
-                : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount < 30 ? 2 : 1}）`}
-            </button>
+            {/* 操作控制面板 */}
+            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '800px' }}>
+              <button
+                className="btn-secondary"
+                disabled={rerollsLeft <= 0}
+                onClick={() => {
+                   if (rerollsLeft <= 0) return;
+                   SoundManager.play('sfx_click');
+                   setRerollsLeft(prev => prev - 1);
+                   const choices = generateBuffChoices(player.equippedTreasure, defeatedCount < 30);
+                   setSelectedIndices([]);
+                   setBuffChoices(choices);
+                }}
+                style={{
+                  padding: '0.8rem 2.5rem',
+                  fontSize: '1.1rem',
+                  background: rerollsLeft > 0 ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  color: rerollsLeft > 0 ? 'var(--gold)' : 'rgba(255, 255, 255, 0.2)',
+                  border: `1px solid ${rerollsLeft > 0 ? 'var(--gold)' : 'rgba(255, 255, 255, 0.1)'}`,
+                  borderRadius: '6px',
+                  cursor: rerollsLeft > 0 ? 'pointer' : 'not-allowed',
+                  fontWeight: 'bold',
+                }}
+              >
+                🔄 刷新选项 (剩 {rerollsLeft} 次)
+              </button>
+
+              <button
+                className="btn-primary glow-effect"
+                onClick={confirmRogueBuffs}
+                disabled={selectedIndices.length !== (defeatedCount < 30 ? 2 : 1)}
+                style={{
+                  padding: '0.8rem 3.5rem',
+                  fontSize: '1.1rem',
+                  background: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
+                  color: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
+                  fontWeight: 'bold',
+                  cursor: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'pointer' : 'not-allowed',
+                  border: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  filter: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : 'grayscale(100%)',
+                  boxShadow: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
+                }}
+              >
+                {selectedIndices.length === (defeatedCount < 30 ? 2 : 1) 
+                  ? '确立根基，注入奇遇加持' 
+                  : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount < 30 ? 2 : 1}）`}
+              </button>
+            </div>
           </div>
        ) : encounterState === 'settlement' ? (
          <div style={{ textAlign: 'center', padding: '1rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -1870,6 +2109,68 @@ export default function EncounterArena() {
             )}
           </div>
         </div>
+      )}
+
+      {/* 里程碑奖励获得弹窗 */}
+      {milestonePopup !== null && (
+         <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+         }}>
+            <div className="glass-panel" style={{
+               padding: '2.5rem',
+               maxWidth: '480px',
+               textAlign: 'center',
+               border: '2px solid var(--gold)',
+               boxShadow: '0 0 30px rgba(212, 175, 55, 0.6)',
+               background: 'rgba(15, 10, 5, 0.95)',
+               borderRadius: '16px',
+            }}>
+               <div style={{ fontSize: '4rem', marginBottom: '1rem', filter: 'drop-shadow(0 0 12px rgba(212, 175, 55, 0.6))' }}>🎁</div>
+               <h2 style={{
+                  color: 'var(--gold)',
+                  fontFamily: '"Ma Shan Zheng", cursive',
+                  fontSize: '2rem',
+                  margin: '0 0 1rem 0',
+                  letterSpacing: '2px',
+                  textShadow: '0 0 10px rgba(212,175,55,0.8)'
+               }}>
+                  【斩获里程碑奖励！】
+               </h2>
+               <div style={{
+                  width: '60%',
+                  height: '1px',
+                  background: 'linear-gradient(90deg, transparent, var(--gold), transparent)',
+                  margin: '0 auto 1.5rem',
+               }} />
+               <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', lineHeight: '1.6', margin: '0 0 1.5rem 0' }}>
+                  恭喜大侠战胜了第 <span style={{ color: 'var(--warn)', fontWeight: 'bold', fontSize: '1.4rem' }}>{milestonePopup}</span> 位对手，特派发如下里程碑大奖：
+               </p>
+               <div style={{
+                  background: 'rgba(0, 0, 0, 0.5)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  color: 'var(--warn)',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  marginBottom: '1.5rem'
+               }}>
+                  {getMilestoneDesc(milestonePopup)}
+               </div>
+               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                  (本窗口将在 3 秒后自动关闭，奖励已发放至包裹)
+               </p>
+            </div>
+         </div>
       )}
     </div>
   );

@@ -147,6 +147,26 @@ let battles = {};
 let winStreaks = {};
 let activeAuctions = [];
 
+const getLeaderboardData = () => {
+    const onlineRealPlayers = players.filter(p => !p.isMock);
+    const realPlayers = realPlayersDB.map(dbP => {
+        const onlineP = onlineRealPlayers.find(p => p.name === dbP.name);
+        if (onlineP) {
+            return { ...onlineP, isOnline: true, isMock: false };
+        } else {
+            return { ...dbP, isOnline: false, isMock: false, id: null, isBattling: false };
+        }
+    });
+
+    const npcs = MOCK_PLAYERS.map(mockP => {
+        const onlineP = players.find(p => p.name === mockP.name && p.isMock);
+        return { ...(onlineP || mockP), isOnline: true, isMock: true };
+    });
+
+    const all = [...realPlayers, ...npcs];
+    return all.sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));
+};
+
 io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
   
@@ -192,7 +212,7 @@ io.on('connection', (socket) => {
 
           socket.emit('login_success', dbPlayer);
           console.log(`[调试] 已发送 login_success 给 ${username}`);
-          io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+          io.emit('online_players', getLeaderboardData());
       } else {
           socket.emit('login_failed', { reason: '户籍未登入' });
           console.log(`[调试] 已发送 login_failed, 玩家不存在`);
@@ -230,7 +250,7 @@ io.on('connection', (socket) => {
           const i = players.findIndex(p => p.name === data.name);
           if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
       }
-      io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
+      io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('update_player', (data) => {
@@ -246,7 +266,7 @@ io.on('connection', (socket) => {
               saveDB();
           }
        }
-       io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
      }
   });
 
@@ -325,7 +345,7 @@ io.on('connection', (socket) => {
 
      const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
      if (existingIndex >= 0) players[existingIndex] = dbPlayer;
-     io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
+     io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('disconnect', () => {
@@ -353,7 +373,7 @@ io.on('connection', (socket) => {
           delete battles[roomId];
        }
     }
-    io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+    io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('challenge', (targetId) => {
@@ -382,7 +402,7 @@ io.on('connection', (socket) => {
        
        battles[roomId] = { p1: bp1, p2: bp2, logs: [`[风云再起] ${bp1.name} VS ${bp2.name}！`], lastActionTime: Date.now() };
        io.to(roomId).emit('battle_start', { roomId, p1: bp1, p2: bp2, logs: battles[roomId].logs });
-       io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
      }
   });
   
@@ -447,7 +467,7 @@ io.on('connection', (socket) => {
            setTimeout(() => {
               io.to(roomId).emit('battle_log', { log: actionData.log, winner: actionData.winner });
               delete battles[roomId];
-              io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+              io.emit('online_players', getLeaderboardData());
               socket.leave(roomId);
            }, 100);
         }
@@ -459,7 +479,7 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 2.0 天机琴坊 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 2.1 无尽血战 已开启 (Server listen on ${PORT})`);
 });
 
 setInterval(() => {
@@ -560,6 +580,6 @@ setInterval(() => {
    
    if (updated) {
        io.emit('auction_update', activeAuctions);
-       io.emit('online_players', players.sort((a,b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
    }
 }, 5000);
