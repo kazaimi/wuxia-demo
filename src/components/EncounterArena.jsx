@@ -211,13 +211,13 @@ const generateBuffChoices = (treasureId, isEarly) => {
    const shuffled = [...BUFF_POOL].sort(() => 0.5 - Math.random());
    const selected = shuffled.slice(0, count);
    
-   // 随机生成独立品质，降低绝世概率至 2%，精妙概率至 23%
+   // 随机生成独立品质，降低绝世概率至 2%，精妙概率至 13%
    const list = selected.map(b => {
       const rand = Math.random();
       let quality = 'common'; 
       if (rand < 0.02) {
          quality = 'epic';
-      } else if (rand < 0.25) {
+      } else if (rand < 0.15) {
          quality = 'rare';
       }
       return buildBuffChoice(b.id, quality, treasureId);
@@ -412,7 +412,7 @@ export default function EncounterArena() {
           '云中鹤', '慕容复', '鸠摩智', '游坦之', '丁春秋', '阿朱', '阿紫', '木婉清', '钟灵', '段誉',
           '虚竹', '乔峰', '慕容博', '萧远山', '枯荣大师', '本因', '本观', '本参', '本相', '江南七怪'
         ];
-        const npcName = npcNames[totalDefeated % npcNames.length] || `江湖神秘人 #${totalDefeated + 1}`;
+        const npcName = npcNames[npcNames.length - 1 - (totalDefeated % npcNames.length)] || `江湖神秘人 #${totalDefeated + 1}`;
         rawEnemy = {
            name: npcName,
            title: totalDefeated >= 50 ? '👑一代宗师' : totalDefeated >= 30 ? '⚔️名震江湖' : '🐎初出茅庐',
@@ -756,8 +756,8 @@ export default function EncounterArena() {
                const nextDefeatedCount = defeatedCount + 1;
                setDefeatedCount(nextDefeatedCount);
 
-               // 升级玩家等级 (+1.25 级/关) 并等额提升生命上限及当前气血
-               const newLevel = 10 + nextDefeatedCount * 1.25;
+               // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+               const newLevel = 10 + nextDefeatedCount * 0.9;
                const oldMaxHp = finalP1.maxHp;
                const newMaxHp = 2000 + (newLevel - 10) * 80 + (finalP1.attributes.con - 20) * 30;
                finalP1.level = newLevel;
@@ -1327,6 +1327,16 @@ export default function EncounterArena() {
      
      if (p1Won) {
         setDefeatedCount(nextDefeatedCount);
+         
+         // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+         const newLevel = 10 + nextDefeatedCount * 0.9;
+         const oldMaxHp = result.p1.maxHp;
+         const newMaxHp = 2000 + (newLevel - 10) * 80 + (result.p1.attributes.con - 20) * 30;
+         result.p1.level = newLevel;
+         result.p1.maxHp = newMaxHp;
+         result.p1.hp = Math.min(newMaxHp, result.p1.hp + (newMaxHp - oldMaxHp));
+         setP1(result.p1);
+         
         if (nextDefeatedCount >= 60) {
            handleRogueSettlement(nextDefeatedCount);
         } else if (nextDefeatedCount % 3 === 0) {
