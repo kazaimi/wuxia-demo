@@ -158,6 +158,7 @@ io.on('connection', (socket) => {
       if (dbPlayer) {
          dbPlayer.id = socket.id;
          dbPlayer.isBattling = false;
+         socket.username = username; // 保存当前连接的玩家名号
 
          const existingIndex = players.findIndex(p => p.name === username);
          if (existingIndex >= 0) {
@@ -181,12 +182,19 @@ io.on('connection', (socket) => {
       data.isBattling = false;
       
       if (!dbPlayer) {
+         // 禁止玩家使用与 NPC 列表中重名的名号创建新账号
+         if (MOCK_NAMES.includes(data.name)) {
+            socket.emit('login_failed', { reason: '此名号已被武林名宿占用' });
+            return;
+         }
+         socket.username = data.name; // 保存当前连接的玩家名号
          data.rankIndex = 10000 + players.length;
          if (typeof data.silver === 'undefined') data.silver = 0;
          realPlayersDB.push(data);
          saveDB();
          players.push(data);
       } else {
+         socket.username = data.name; // 保存当前连接的玩家名号
          Object.assign(dbPlayer, data);
          if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
          dbPlayer.id = socket.id;
@@ -293,7 +301,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    const username = socket.username;
     players = players.filter(p => p.id !== socket.id || p.isMock);
+
+    // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
+    if (username && MOCK_NAMES.includes(username)) {
+       const originalMock = MOCK_PLAYERS.find(p => p.name === username);
+       const isAlreadyBack = players.some(p => p.name === username && p.isMock);
+       if (originalMock && !isAlreadyBack) {
+          players.push({
+             ...originalMock,
+             isBattling: false // 重置其战斗状态
+          });
+       }
+    }
+
     for (const roomId in battles) {
        const battle = battles[roomId];
        if (battle.p1.id === socket.id || battle.p2.id === socket.id) {

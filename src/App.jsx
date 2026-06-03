@@ -58,13 +58,27 @@ function App() {
 
   const handleLogin = (e) => {
      e.preventDefault();
-     if(inputName.trim()){
+     const trimmedName = inputName.trim();
+     if(trimmedName){
         // 尝试向服务器查询是否存在此账号
-        manualLogin(inputName.trim());
+        manualLogin(trimmedName);
         // 给一定时间让 websocket 通信返回是否成功
         setTimeout(() => {
            const state = useGameStore.getState();
            if (!state.hasCreatedRole) {
+              const MOCK_NAMES = [
+                '扫地僧', '东方不败', '乔峰', '虚竹', '段誉', '无崖子', '张三丰', '张无忌', '独孤求败', '王重阳', 
+                '周伯通', '洪七公', '金轮法王', '郭靖', '黄药师', '欧阳锋', '令狐冲', '风清扬', '任我行', '邀月', 
+                '燕南天', '西门吹雪', '叶孤城', '绝无神', '雄霸', '步惊云', '聂风', '天山童姥', '李寻欢', '阿飞', 
+                '左冷禅', '岳不群', '丁春秋', '鸠摩智', '游坦之', '慕容复', '段延庆', '天机老人', '楚留香', '陆小凤', 
+                '胡铁花', '花无缺', '小鱼儿', '成昆', '谢逊', '灭绝师太', '林平之', '陈家洛', '袁承志', '狄云', 
+                '石破天', '丁典', '白自在', '胡一刀', '玄慈大师', '神雕大侠', '玉面飞龙', '血刀老祖', '苗人凤', '四大恶人'
+              ];
+              if (MOCK_NAMES.includes(trimmedName)) {
+                 alert('此名号为武林名宿专属，新入世大侠不可冒用，请换个名号！');
+                 localStorage.removeItem('wuxia_username');
+                 return;
+              }
               // 服务器找不到或没有旧档，显示捏人页面
               setShowCreate(true);
            }
