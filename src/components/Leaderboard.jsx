@@ -77,7 +77,7 @@ const getPlayerComment = (player, npcConfig) => {
 };
 
 // 排行榜列表项背景：右侧绝对定位、斜切剪裁立绘
-function LeaderboardRowBackground({ name, npcConfig }) {
+function LeaderboardRowBackground({ name, npcConfig, isOnline }) {
   const gender = guessGenderByName(name);
   const isFemale = gender === 'female';
   const defaultSrc = isFemale ? '/wuxia_female_hero.webp' : '/wuxia_male_hero.webp';
@@ -150,8 +150,8 @@ function LeaderboardRowBackground({ name, npcConfig }) {
           height: '100%',
           objectFit: 'cover',
           objectPosition: 'center 15%',
-          opacity: 0.42,
-          filter: (fallbackActive && npcConfig) ? npcConfig.filter : 'none',
+          opacity: isOnline ? 0.42 : 0.15,
+          filter: (isOnline ? '' : 'grayscale(100%) ') + ((fallbackActive && npcConfig) ? npcConfig.filter : 'none'),
           // 双向渐变融合效果：左侧和右侧都羽化淡出，完美隐入格子黑色背景中
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, transparent 100%)',
           maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, transparent 100%)',
@@ -229,10 +229,11 @@ export default function Leaderboard() {
             background: 'var(--glass-bg)', borderRadius: '8px',
             border: isMe ? '1px solid var(--gold)' : '1px solid var(--glass-border)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            opacity: u.isOnline !== false ? 1 : 0.65
           }}>
             {/* 格斗游戏裁切背景立绘 (带斜切和 mask 羽化) */}
-            <LeaderboardRowBackground name={u.name} npcConfig={npcConfig} />
+            <LeaderboardRowBackground name={u.name} npcConfig={npcConfig} isOnline={u.isOnline !== false} />
 
             {/* 排名装饰 */}
             {i < 3 && (
@@ -249,6 +250,7 @@ export default function Leaderboard() {
                  <div style={{ fontSize: '1.15rem', color: u.isBattling ? 'var(--text-muted)' : 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                    <span style={{ fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px', fontWeight: isMe ? 'bold' : 'normal' }}>{u.name}</span>
                    {isMe && <span style={{ color: 'var(--gold)', fontSize: '0.82rem' }}>(您)</span>}
+                   {u.isOnline === false && <span style={{ color: '#9ca3af', background: 'rgba(156, 163, 175, 0.15)', border: '1px solid rgba(156, 163, 175, 0.3)', fontSize: '0.72rem', padding: '1px 6px', borderRadius: '3px' }}>[离线]</span>}
                    {u.isBattling && <span style={{ color: 'var(--crimson)', fontSize: '0.82rem' }}>[激战中]</span>}
                    {u.title && <span className="wuxia-tag" style={{ fontSize: '0.72rem', padding: '1px 6px' }}>{u.title}</span>}
                    {u.dailyDebuffs && u.dailyDebuffs.length > 0 && <span style={{ fontSize: '0.72rem', color: 'var(--crimson)', background: 'rgba(220, 20, 60, 0.1)', border: '1px solid var(--crimson)', padding: '1px 6px', borderRadius: '3px' }}>[{u.dailyDebuffs.join(' / ')}]</span>}
@@ -309,7 +311,7 @@ export default function Leaderboard() {
                   </span>
                 </span>
               </div>
-              {!isMe && !u.isBattling && !inBattle && (
+              {!isMe && !u.isBattling && !inBattle && (u.isMock || u.isOnline) && (
                 <button onClick={() => challengePlayer(u.id)} className="btn-primary" style={{ padding: '0.35rem 0.9rem', fontSize: '0.82rem', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5)' }}>
                   <Swords size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }}/>
                   挑战

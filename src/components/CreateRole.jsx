@@ -10,7 +10,7 @@ const ATTRIBUTE_CONFIG = [
   { key: 'luk', name: '幸运', icon: <Clover size={18} color="#10b981" />, desc: '影响玄学与掉宝概率' }
 ];
 
-export default function CreateRole({ initialName }) {
+export default function CreateRole({ initialName, initialPassword }) {
   const createRole = useGameStore(state => state.createRole);
   
   const [points, setPoints] = useState(INITIAL_POINTS);
@@ -28,7 +28,7 @@ export default function CreateRole({ initialName }) {
 
   const handleStart = () => {
     if (points === 0) {
-      createRole(initialName, attributes);
+      createRole(initialName, initialPassword || '', attributes);
     } else {
       alert('请将潜能点分配完毕再踏入江湖！');
     }

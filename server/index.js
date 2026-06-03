@@ -147,31 +147,75 @@ let battles = {};
 let winStreaks = {};
 let activeAuctions = [];
 
+const getLeaderboardData = () => {
+    const onlineRealPlayers = players.filter(p => !p.isMock);
+    const realPlayers = realPlayersDB.map(dbP => {
+        const onlineP = onlineRealPlayers.find(p => p.name === dbP.name);
+        if (onlineP) {
+            return { ...onlineP, isOnline: true, isMock: false };
+        } else {
+            return { ...dbP, isOnline: false, isMock: false, id: null, isBattling: false };
+        }
+    });
+
+    const npcs = MOCK_PLAYERS.map(mockP => {
+        const onlineP = players.find(p => p.name === mockP.name && p.isMock);
+        return { ...(onlineP || mockP), isOnline: true, isMock: true };
+    });
+
+    const all = [...realPlayers, ...npcs];
+    return all.sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));
+};
+
 io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
   
-  socket.on('player_login', (username) => {
+  socket.on('player_login', (data) => {
+      let username = '';
+      let password = '';
+      if (typeof data === 'string') {
+          username = data;
+      } else if (data && typeof data === 'object') {
+          username = data.name;
+          password = data.password;
+      }
+
       console.log(`[入局提醒] 大侠 【${username}】 请求连接服务端...`);
       const dbPlayer = realPlayersDB.find(p => p.name === username);
       console.log(`[调试] 数据库中查找玩家: ${username}, 结果: ${dbPlayer ? '找到 - ' + dbPlayer.level + '级' : '未找到'}`);
       console.log(`[调试] 数据库中共有 ${realPlayersDB.length} 个玩家记录`);
       if (dbPlayer) {
-         dbPlayer.id = socket.id;
-         dbPlayer.isBattling = false;
+          // 密码校验逻辑
+          if (dbPlayer.password && dbPlayer.password !== password) {
+              socket.emit('login_failed', { reason: '密码不正确，请重新输入！' });
+              console.log(`[调试] 已发送 login_failed 给 ${username}, 原因: 密码不正确`);
+              return;
+          }
 
-         const existingIndex = players.findIndex(p => p.name === username);
-         if (existingIndex >= 0) {
-            players[existingIndex] = dbPlayer;
-         } else {
-            players.push(dbPlayer);
-         }
+          // 如果老玩家没有密码，且这次输入了密码，则为其自动绑定该密码
+          if (!dbPlayer.password && password) {
+              dbPlayer.password = password;
+              saveDB();
+              console.log(`[调试] 玩家 【${username}】 首次输入密码，已在数据库自动绑定该密码`);
+          }
 
-         socket.emit('login_success', dbPlayer);
-         console.log(`[调试] 已发送 login_success 给 ${username}`);
-         io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+          dbPlayer.id = socket.id;
+          dbPlayer.isBattling = false;
+          socket.username = username; // 保存当前连接的玩家名号
+
+          const existingIndex = players.findIndex(p => p.name === username);
+          if (existingIndex >= 0) {
+             players[existingIndex] = dbPlayer;
+          } else {
+             players.push(dbPlayer);
+          }
+
+          socket.emit('login_success', dbPlayer);
+          console.log(`[调试] 已发送 login_success 给 ${username}`);
+          io.emit('online_players', getLeaderboardData());
       } else {
-         socket.emit('login_failed', { reason: '户籍未登入' });
-         console.log(`[调试] 已发送 login_failed, 玩家不存在`);
+          socket.emit('login_failed', { reason: '户籍未登入' });
+          console.log(`[调试] 已发送 login_failed, 玩家不存在`);
       }
   });
 
@@ -181,20 +225,32 @@ io.on('connection', (socket) => {
       data.isBattling = false;
       
       if (!dbPlayer) {
+         // 禁止玩家使用与 NPC 列表中重名的名号创建新账号
+         if (MOCK_NAMES.includes(data.name)) {
+            socket.emit('login_failed', { reason: '此名号已被武林名宿占用' });
+            return;
+         }
+         socket.username = data.name; // 保存当前连接的玩家名号
          data.rankIndex = 10000 + players.length;
          if (typeof data.silver === 'undefined') data.silver = 0;
          realPlayersDB.push(data);
          saveDB();
          players.push(data);
       } else {
-         Object.assign(dbPlayer, data);
-         if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
-         dbPlayer.id = socket.id;
-         saveDB();
-         const i = players.findIndex(p => p.name === data.name);
-         if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
+          // 已有同名玩家，但如果是以 player_join 重新加入，需要校验密码
+          if (dbPlayer.password && dbPlayer.password !== data.password) {
+             socket.emit('login_failed', { reason: '密码不正确，请重新输入！' });
+             return;
+          }
+          socket.username = data.name; // 保存当前连接的玩家名号
+          Object.assign(dbPlayer, data);
+          if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
+          dbPlayer.id = socket.id;
+          saveDB();
+          const i = players.findIndex(p => p.name === data.name);
+          if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
       }
-      io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
+      io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('update_player', (data) => {
@@ -210,7 +266,7 @@ io.on('connection', (socket) => {
               saveDB();
           }
        }
-       io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
      }
   });
 
@@ -289,11 +345,25 @@ io.on('connection', (socket) => {
 
      const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
      if (existingIndex >= 0) players[existingIndex] = dbPlayer;
-     io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
+     io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('disconnect', () => {
+    const username = socket.username;
     players = players.filter(p => p.id !== socket.id || p.isMock);
+
+    // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
+    if (username && MOCK_NAMES.includes(username)) {
+       const originalMock = MOCK_PLAYERS.find(p => p.name === username);
+       const isAlreadyBack = players.some(p => p.name === username && p.isMock);
+       if (originalMock && !isAlreadyBack) {
+          players.push({
+             ...originalMock,
+             isBattling: false // 重置其战斗状态
+          });
+       }
+    }
+
     for (const roomId in battles) {
        const battle = battles[roomId];
        if (battle.p1.id === socket.id || battle.p2.id === socket.id) {
@@ -303,7 +373,7 @@ io.on('connection', (socket) => {
           delete battles[roomId];
        }
     }
-    io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+    io.emit('online_players', getLeaderboardData());
   });
 
   socket.on('challenge', (targetId) => {
@@ -332,7 +402,7 @@ io.on('connection', (socket) => {
        
        battles[roomId] = { p1: bp1, p2: bp2, logs: [`[风云再起] ${bp1.name} VS ${bp2.name}！`], lastActionTime: Date.now() };
        io.to(roomId).emit('battle_start', { roomId, p1: bp1, p2: bp2, logs: battles[roomId].logs });
-       io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
      }
   });
   
@@ -397,7 +467,7 @@ io.on('connection', (socket) => {
            setTimeout(() => {
               io.to(roomId).emit('battle_log', { log: actionData.log, winner: actionData.winner });
               delete battles[roomId];
-              io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+              io.emit('online_players', getLeaderboardData());
               socket.leave(roomId);
            }, 100);
         }
@@ -409,7 +479,7 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`江湖信使局 2.0 天机琴坊 已开启 (Server listen on ${PORT})`);
+  console.log(`江湖信使局 2.1 无尽血战 已开启 (Server listen on ${PORT})`);
 });
 
 setInterval(() => {
@@ -510,6 +580,6 @@ setInterval(() => {
    
    if (updated) {
        io.emit('auction_update', activeAuctions);
-       io.emit('online_players', players.sort((a,b) => a.rankIndex - b.rankIndex));
+       io.emit('online_players', getLeaderboardData());
    }
 }, 5000);

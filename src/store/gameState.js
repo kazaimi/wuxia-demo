@@ -114,6 +114,7 @@ export const useGameStore = create((set, get) => ({
   hasCreatedRole: isMockMode ? true : false,
   socketConnected: isMockMode ? true : false,
   loginChecked: isMockMode ? true : false, 
+  loginError: null,
   
   player: isMockMode ? {
     name: '张无忌',
@@ -203,8 +204,9 @@ export const useGameStore = create((set, get) => ({
         socket.emit('get_auctions');
         socket.emit('get_auction_history');
         const savedName = localStorage.getItem('wuxia_username');
-        if (savedName) {
-           socket.emit('player_login', savedName);
+        const savedPassword = localStorage.getItem('wuxia_password');
+        if (savedName && savedPassword) {
+           socket.emit('player_login', { name: savedName, password: savedPassword });
         } else {
            set({ loginChecked: true });
         }
@@ -243,12 +245,17 @@ export const useGameStore = create((set, get) => ({
             socket.emit('update_player', playerData);
          }
          
-         set({ hasCreatedRole: true, player: playerData, loginChecked: true });
+         set({ hasCreatedRole: true, player: playerData, loginChecked: true, loginError: null });
       });
       
-      socket.on('login_failed', () => {
+      socket.on('login_failed', (errorData) => {
          localStorage.removeItem('wuxia_username');
-         set({ hasCreatedRole: false, loginChecked: true });
+         localStorage.removeItem('wuxia_password');
+         set({ 
+            hasCreatedRole: false, 
+            loginChecked: true, 
+            loginError: errorData ? errorData.reason : '户籍未登入' 
+         });
       });
 
       socket.on('online_players', (playersList) => set((state) => {
@@ -293,17 +300,19 @@ export const useGameStore = create((set, get) => ({
 
   removeBroadcast: (id) => set(state => ({ broadcastQueue: state.broadcastQueue.filter(b => b.id !== id) })),
 
-  createRole: (name, attributes) => set((state) => {
+  createRole: (name, password, attributes) => set((state) => {
     const maxHp = calculateMaxHp(1, attributes.con);
-    const newPlayer = { ...state.player, name, attributes, hp: maxHp, maxHp, maxExp: getNextExp(1) };
+    const newPlayer = { ...state.player, name, password, attributes, hp: maxHp, maxHp, maxExp: getNextExp(1) };
     localStorage.setItem('wuxia_username', name);
+    localStorage.setItem('wuxia_password', password);
     if (socket) socket.emit('player_join', newPlayer);
-    return { hasCreatedRole: true, player: newPlayer };
+    return { hasCreatedRole: true, player: newPlayer, loginError: null };
   }),
 
-  manualLogin: (name) => {
+  manualLogin: (name, password) => {
      localStorage.setItem('wuxia_username', name);
-     if (socket) socket.emit('player_login', name);
+     localStorage.setItem('wuxia_password', password);
+     if (socket) socket.emit('player_login', { name, password });
   },
 
   incrementTaskCount: () => set((state) => {

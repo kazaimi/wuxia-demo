@@ -460,9 +460,8 @@ const EnhancedWarriorAvatar = ({
 
   const proceduralStyle = getProceduralStyles();
 
-  // 3. 判断面纱、白发特征
+  // 3. 判断白发特征
   const level = player?.level || 1;
-  const isVeiled = level < 20 && !npcConfig; 
   const isGrandmaster = (level >= 60 || npcConfig) && imgSrc.includes('hero'); 
 
   // 动效样式
@@ -836,7 +835,7 @@ const EnhancedWarriorAvatar = ({
         )}
 
         {/* 动态特征：神秘黑色斗笠面纱（初出茅庐新手专属） */}
-        {isVeiled && !isDead && (
+        {false && (
           <div style={{
             position: 'absolute',
             top: '40px',
