@@ -150,29 +150,52 @@ let activeAuctions = [];
 io.on('connection', (socket) => {
   console.log(`[网络提醒] 有新的客户端尝试连接外网/内网端口，连接标识码: ${socket.id}`);
   
-  socket.on('player_login', (username) => {
+  socket.on('player_login', (data) => {
+      let username = '';
+      let password = '';
+      if (typeof data === 'string') {
+          username = data;
+      } else if (data && typeof data === 'object') {
+          username = data.name;
+          password = data.password;
+      }
+
       console.log(`[入局提醒] 大侠 【${username}】 请求连接服务端...`);
       const dbPlayer = realPlayersDB.find(p => p.name === username);
       console.log(`[调试] 数据库中查找玩家: ${username}, 结果: ${dbPlayer ? '找到 - ' + dbPlayer.level + '级' : '未找到'}`);
       console.log(`[调试] 数据库中共有 ${realPlayersDB.length} 个玩家记录`);
       if (dbPlayer) {
-         dbPlayer.id = socket.id;
-         dbPlayer.isBattling = false;
-         socket.username = username; // 保存当前连接的玩家名号
+          // 密码校验逻辑
+          if (dbPlayer.password && dbPlayer.password !== password) {
+              socket.emit('login_failed', { reason: '密码不正确，请重新输入！' });
+              console.log(`[调试] 已发送 login_failed 给 ${username}, 原因: 密码不正确`);
+              return;
+          }
 
-         const existingIndex = players.findIndex(p => p.name === username);
-         if (existingIndex >= 0) {
-            players[existingIndex] = dbPlayer;
-         } else {
-            players.push(dbPlayer);
-         }
+          // 如果老玩家没有密码，且这次输入了密码，则为其自动绑定该密码
+          if (!dbPlayer.password && password) {
+              dbPlayer.password = password;
+              saveDB();
+              console.log(`[调试] 玩家 【${username}】 首次输入密码，已在数据库自动绑定该密码`);
+          }
 
-         socket.emit('login_success', dbPlayer);
-         console.log(`[调试] 已发送 login_success 给 ${username}`);
-         io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
+          dbPlayer.id = socket.id;
+          dbPlayer.isBattling = false;
+          socket.username = username; // 保存当前连接的玩家名号
+
+          const existingIndex = players.findIndex(p => p.name === username);
+          if (existingIndex >= 0) {
+             players[existingIndex] = dbPlayer;
+          } else {
+             players.push(dbPlayer);
+          }
+
+          socket.emit('login_success', dbPlayer);
+          console.log(`[调试] 已发送 login_success 给 ${username}`);
+          io.emit('online_players', players.sort((a, b) => a.rankIndex - b.rankIndex));
       } else {
-         socket.emit('login_failed', { reason: '户籍未登入' });
-         console.log(`[调试] 已发送 login_failed, 玩家不存在`);
+          socket.emit('login_failed', { reason: '户籍未登入' });
+          console.log(`[调试] 已发送 login_failed, 玩家不存在`);
       }
   });
 
@@ -194,13 +217,18 @@ io.on('connection', (socket) => {
          saveDB();
          players.push(data);
       } else {
-         socket.username = data.name; // 保存当前连接的玩家名号
-         Object.assign(dbPlayer, data);
-         if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
-         dbPlayer.id = socket.id;
-         saveDB();
-         const i = players.findIndex(p => p.name === data.name);
-         if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
+          // 已有同名玩家，但如果是以 player_join 重新加入，需要校验密码
+          if (dbPlayer.password && dbPlayer.password !== data.password) {
+             socket.emit('login_failed', { reason: '密码不正确，请重新输入！' });
+             return;
+          }
+          socket.username = data.name; // 保存当前连接的玩家名号
+          Object.assign(dbPlayer, data);
+          if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
+          dbPlayer.id = socket.id;
+          saveDB();
+          const i = players.findIndex(p => p.name === data.name);
+          if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
       }
       io.emit('online_players', players.sort((a,b)=>a.rankIndex - b.rankIndex));
   });

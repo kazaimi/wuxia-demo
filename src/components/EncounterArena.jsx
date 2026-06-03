@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery } from '../store/gameState';
 import { useCleanImage } from '../utils/imageProcess';
 import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
 import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
@@ -50,20 +50,20 @@ const EncounterCharacter = ({ player, isLeft, battleState, damageNumbers }) => {
 
 // Roguelike 奇遇 Buff 选项定义
 const BUFF_POOL = [
-  { id: 'str', name: '力量之源', desc: '力量属性增加 20 点', type: 'attr' },
-  { id: 'con', name: '体质之源', desc: '体质属性增加 20 点 (最大生命值同步增加 200，并立即治疗 200 生命)', type: 'attr' },
-  { id: 'int', name: '智慧之源', desc: '智慧属性增加 20 点', type: 'attr' },
-  { id: 'agi', name: '敏捷之源', desc: '敏捷属性增加 20 点', type: 'attr' },
-  { id: 'luk', name: '幸运之源', desc: '幸运属性增加 20 点', type: 'attr' },
-  { id: 'defUpEffect', name: '防御加固', desc: '易筋经/九阳神功等功法触发的防御加成 (defUp) 防御数值加成比例提升 25%', type: 'def' },
-  { id: 'defUpDuration', name: '坚毅不拔', desc: '防御 Buff (defUp) 的持续时间延长 1 回合', type: 'def' },
-  { id: 'dodgeEffect', name: '身法幻影', desc: '身法闪避 Buff (dodge) 激活期间的闪避成功率提升 15%', type: 'dodge' },
-  { id: 'dodgeDuration', name: '轻功延续', desc: '身法闪避 Buff (dodge) 的持续时间延长 1 回合', type: 'dodge' },
-  { id: 'poisonDmgPct', name: '见血封喉', desc: '施加的中毒伤害每回合比例额外增加 2% 最大生命值', type: 'poison' },
-  { id: 'poisonDuration', name: '蚀骨剧毒', desc: '施加的中毒状态持续时间延长 2 回合', type: 'poison' },
-  { id: 'stunDuration', name: '夺魂摄魄', desc: '施加的击晕（眩晕）状态时长增加 1 回合，且击晕概率额外增加 10%', type: 'stun' },
-  { id: 'silenceDuration', name: '指点江山', desc: '施加的封穴（沉默）状态时长增加 1 回合，且封穴期间目标受到伤害提升 15%', type: 'silence' },
-  { id: 'treasureBoost', name: '神兵唤醒', desc: '增强当前已装备秘宝/武器的原有被动特效数值', type: 'treasure' }
+  { id: 'str', type: 'attr' },
+  { id: 'con', type: 'attr' },
+  { id: 'int', type: 'attr' },
+  { id: 'agi', type: 'attr' },
+  { id: 'luk', type: 'attr' },
+  { id: 'defUpEffect', type: 'def' },
+  { id: 'defUpDuration', type: 'def' },
+  { id: 'dodgeEffect', type: 'dodge' },
+  { id: 'dodgeDuration', type: 'dodge' },
+  { id: 'poisonDmgPct', type: 'poison' },
+  { id: 'poisonDuration', type: 'poison' },
+  { id: 'stunDuration', type: 'stun' },
+  { id: 'silenceDuration', type: 'silence' },
+  { id: 'treasureBoost', type: 'treasure' }
 ];
 
 // 获取携带秘宝的特定强化描述
@@ -92,17 +92,150 @@ const getTreasureBuffInfo = (treasureId) => {
   }
 };
 
-// 随机生成 3 个不同的 Buff 卡牌
-const generateBuffChoices = (treasureId) => {
-  const shuffled = [...BUFF_POOL].sort(() => 0.5 - Math.random());
-  const selected = shuffled.slice(0, 3);
-  return selected.map(b => {
-    if (b.id === 'treasureBoost') {
-      const info = getTreasureBuffInfo(treasureId);
-      return { ...b, name: info.name, desc: info.desc };
-    }
-    return b;
-  });
+// 动态拼装具有不同品质等级的 Buff 详细属性和文案
+const buildBuffChoice = (id, quality, treasureId) => {
+   const qLabel = quality === 'epic' ? '【绝世】' : quality === 'rare' ? '【精妙】' : '【粗浅】';
+   const qColor = quality === 'epic' ? 'var(--danger)' : quality === 'rare' ? 'var(--gold)' : 'var(--text-muted)';
+   
+   let choice = { id, quality, qLabel, qColor };
+   
+   switch(id) {
+      case 'str':
+         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.name = `${qLabel}力量之源`;
+         choice.desc = `力量属性增加 ${choice.val} 点`;
+         choice.type = 'attr';
+         break;
+      case 'con':
+         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.name = `${qLabel}体质之源`;
+         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 10}，并恢复等量生命)`;
+         choice.type = 'attr';
+         break;
+      case 'int':
+         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.name = `${qLabel}智慧之源`;
+         choice.desc = `智慧属性增加 ${choice.val} 点`;
+         choice.type = 'attr';
+         break;
+      case 'agi':
+         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.name = `${qLabel}敏捷之源`;
+         choice.desc = `敏捷属性增加 ${choice.val} 点`;
+         choice.type = 'attr';
+         break;
+      case 'luk':
+         choice.val = quality === 'epic' ? 55 : quality === 'rare' ? 25 : 10;
+         choice.name = `${qLabel}幸运之源`;
+         choice.desc = `幸运属性增加 ${choice.val} 点`;
+         choice.type = 'attr';
+         break;
+      case 'defUpEffect':
+         choice.val = quality === 'epic' ? 0.60 : quality === 'rare' ? 0.30 : 0.15;
+         choice.name = `${qLabel}防御加固`;
+         choice.desc = `防御 Buff (defUp) 的效果比例提升 ${Math.floor(choice.val * 100)}%`;
+         choice.type = 'def';
+         break;
+      case 'defUpDuration':
+         choice.val = quality === 'epic' ? 3 : quality === 'rare' ? 2 : 1;
+         choice.name = `${qLabel}坚毅不拔`;
+         choice.desc = `防御 Buff (defUp) 的持续时间延长 ${choice.val} 回合`;
+         choice.type = 'def';
+         break;
+      case 'dodgeEffect':
+         choice.val = quality === 'epic' ? 0.35 : quality === 'rare' ? 0.20 : 0.10;
+         choice.name = `${qLabel}身法幻影`;
+         choice.desc = `身法闪避 Buff (dodge) 期间闪避成功率提升 ${Math.floor(choice.val * 100)}%`;
+         choice.type = 'dodge';
+         break;
+      case 'dodgeDuration':
+         choice.val = quality === 'epic' ? 3 : quality === 'rare' ? 2 : 1;
+         choice.name = `${qLabel}轻功延续`;
+         choice.desc = `身法闪避 Buff (dodge) 的持续时间延长 ${choice.val} 回合`;
+         choice.type = 'dodge';
+         break;
+      case 'poisonDmgPct':
+         choice.val = quality === 'epic' ? 0.04 : quality === 'rare' ? 0.02 : 0.01;
+         choice.name = `${qLabel}见血封喉`;
+         choice.desc = `中毒伤害比例每回合增加 ${Math.floor(choice.val * 100)}% MaxHP`;
+         choice.type = 'poison';
+         break;
+      case 'poisonDuration':
+         choice.val = quality === 'epic' ? 3 : quality === 'rare' ? 2 : 1;
+         choice.name = `${qLabel}蚀骨剧毒`;
+         choice.desc = `中毒状态持续时间延长 ${choice.val} 回合`;
+         choice.type = 'poison';
+         break;
+      case 'stunDuration':
+         choice.val = quality === 'epic' ? 2 : quality === 'rare' ? 1 : 1;
+         choice.chance = quality === 'epic' ? 0.25 : quality === 'rare' ? 0.15 : 0.05;
+         choice.name = `${qLabel}夺魂摄魄`;
+         choice.desc = `眩晕延长 ${choice.val} 回合，且眩晕概率额外增加 ${Math.floor(choice.chance * 100)}%`;
+         choice.type = 'stun';
+         break;
+      case 'silenceDuration':
+         choice.val = quality === 'epic' ? 2 : quality === 'rare' ? 1 : 1;
+         choice.amp = quality === 'epic' ? 0.30 : quality === 'rare' ? 0.15 : 0.05;
+         choice.name = `${qLabel}指点江山`;
+         choice.desc = `封穴延长 ${choice.val} 回合，且封穴期间目标受伤提升 ${Math.floor(choice.amp * 100)}%`;
+         choice.type = 'silence';
+         break;
+      case 'treasureBoost':
+         if (quality === 'common') {
+            choice.name = `【粗浅】强身健体`;
+            choice.desc = `身怀利刃：最终伤害额外提升 5%`;
+            choice.val = 1; 
+            choice.type = 'normal';
+         } else {
+            const info = getTreasureBuffInfo(treasureId);
+            const levelAdd = quality === 'epic' ? 2 : 1;
+            choice.name = `${qLabel}${info.name}`;
+            choice.desc = `增强特效：${info.desc} 且层级 +${levelAdd}`;
+            choice.val = levelAdd;
+            choice.type = 'treasure';
+         }
+         break;
+      default:
+         choice.name = `【粗浅】强身健体`;
+         choice.desc = `身怀利刃：最终伤害提升 5%`;
+         choice.val = 5;
+         choice.type = 'normal';
+   }
+   
+   return choice;
+};
+
+// 随机生成不同品质的奇遇增益选项 (前期 5 张，后期 3 张)
+const generateBuffChoices = (treasureId, isEarly) => {
+   const count = isEarly ? 5 : 3;
+   const shuffled = [...BUFF_POOL].sort(() => 0.5 - Math.random());
+   const selected = shuffled.slice(0, count);
+   
+   // 先随机一个基础品质
+   const tempChoices = selected.map(b => {
+      const rand = Math.random();
+      let quality = 'common'; 
+      if (rand < 0.05) {
+         quality = 'epic';
+      } else if (rand < 0.30) {
+         quality = 'rare';
+      }
+      return { id: b.id, type: b.type, quality };
+   });
+
+   // 同一种类型的奇遇 buff（即相同的 type 属性，例如同为属性类 attr，或同为防御类 def），同时出现时品质保持一致（取其中生成的最高品质）
+   const typeQualityMap = {};
+   const rarityRank = { 'common': 1, 'rare': 2, 'epic': 3 };
+   tempChoices.forEach(item => {
+      if (!typeQualityMap[item.type] || rarityRank[item.quality] > rarityRank[typeQualityMap[item.type]]) {
+         typeQualityMap[item.type] = item.quality;
+      }
+   });
+
+   return tempChoices.map(item => {
+      const finalQuality = typeQualityMap[item.type];
+      return buildBuffChoice(item.id, finalQuality, treasureId);
+   });
 };
 
 export default function EncounterArena() {
@@ -123,6 +256,7 @@ export default function EncounterArena() {
   const [waveIndex, setWaveIndex] = useState(0);
   const [buffChoices, setBuffChoices] = useState([]);
   const [settlementInfo, setSettlementInfo] = useState(null);
+  const [selectedIndices, setSelectedIndices] = useState([]);
 
   // 可叠加的 Roguelike Buff 状态
   const [rogueBuffs, setRogueBuffs] = useState({
@@ -207,6 +341,7 @@ export default function EncounterArena() {
      setWaveIndex(0);
      setLeaderboardTeam(sortedLeaderboard);
      setSettlementInfo(null);
+     setSelectedIndices([]);
      
      setRogueBuffs({
        str: 0, con: 0, int: 0, agi: 0, luk: 0,
@@ -221,9 +356,9 @@ export default function EncounterArena() {
      // 初始化强制统一的 P1 属性
      const myPlayer = { 
          ...player, 
-         level: 15,
-         attributes: { con: 15, str: 15, int: 15, agi: 15, luk: 15 },
-         hp: 2000, maxHp: 2000,
+         level: 25,
+         attributes: { con: 50, str: 30, int: 15, agi: 45, luk: 15 },
+         hp: 5000, maxHp: 5000,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -547,7 +682,8 @@ export default function EncounterArena() {
                handleRogueSettlement(nextDefeatedCount);
             } else if (nextDefeatedCount % 3 === 0) {
                setEncounterState('buffSelection');
-               const choices = generateBuffChoices(player.equippedTreasure);
+               const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
+               setSelectedIndices([]);
                setBuffChoices(choices);
                setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
                SoundManager.play('sfx_success');
@@ -885,7 +1021,8 @@ export default function EncounterArena() {
               const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
               const dDefBase = defender.attributes.con * 2 + defender.level * 2;
               const aMod = 1 + attacker.level * 0.05;
-              const adjustedSkillPwr = skill.power * aMod;
+              const mastery = getSkillMastery(skill.id, isP1Turn ? (player.masteryMap || {}) : (attacker.masteryMap || {}));
+              const adjustedSkillPwr = skill.power * aMod * (1 + mastery.bonus);
 
               if (skill.id === 's5' || skill.id === 's_yijin') {
                  attacker.buffs.defUp = 3 + (isP1Turn ? rogueBuffs.defUpDuration : 0);
@@ -920,8 +1057,10 @@ export default function EncounterArena() {
                        actionLog += `\n[神行反击] ${tempP1.name} 乘虚而入反击一招，对 ${tempP2.name} 造成了 ${counterDmg} 点伤害！`;
                     }
                  } else {
-                    const defMultiplier = (!isP1Turn && defender.buffs.defUp > 0) ? (2 + rogueBuffs.defUpEffect) : (defender.buffs.defUp > 0 ? 2 : 1);
-                    let finalDef = dDefBase * 1 * defMultiplier;
+                    const defMultiplier = defender.buffs.defUp > 0
+                       ? (!isP1Turn ? (1.0 + rogueBuffs.defUpEffect) : 1.0)
+                       : 0.5;
+                    let finalDef = dDefBase * defMultiplier;
                     let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
                     
                     const tBoostA = isP1Turn ? rogueBuffs.treasureBoostLevel : 0;
@@ -1100,7 +1239,8 @@ export default function EncounterArena() {
            handleRogueSettlement(nextDefeatedCount);
         } else if (nextDefeatedCount % 3 === 0) {
            setEncounterState('buffSelection');
-           const choices = generateBuffChoices(player.equippedTreasure);
+           const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
+           setSelectedIndices([]);
            setBuffChoices(choices);
            SoundManager.play('sfx_success');
         } else {
@@ -1125,42 +1265,44 @@ export default function EncounterArena() {
 
      // 胜场奖励阶梯：6, 12, 30, 42, 48, 51, 54, 57, 60
      if (finalDefeatedCount >= 6) {
-        totalExp += 200;
-        totalSilver += 2;
-        rewardsList.push("战胜 6 人：修为 +200，银两 +2");
+         totalExp += 500;
+         totalSilver += 1;
+         rewardsList.push("战胜 6 人：修为 +500，银两 +1");
      }
      if (finalDefeatedCount >= 12) {
-        totalExp += 500;
-        totalSilver += 3;
-        rewardsList.push("战胜 12 人：修为 +500，银两 +3");
-        if (Math.random() < 0.15) {
+         totalExp += 1000;
+         totalSilver += 1;
+         rewardsList.push("战胜 12 人：修为 +1000，银两 +1");
+        if (Math.random() < 0.10) {
            const common = TREASURES_DB.filter(t => t.rarity === '普通');
            const tr = common[Math.floor(Math.random() * common.length)];
            if (tr) droppedTreasures.push(tr);
         }
      }
      if (finalDefeatedCount >= 30) {
-        totalExp += 1200;
-        totalSilver += 6;
-        rewardsList.push("战胜 30 人：修为 +1200，银两 +6，普通秘宝 100%");
-        const common = TREASURES_DB.filter(t => t.rarity === '普通');
-        const tr1 = common[Math.floor(Math.random() * common.length)];
-        if (tr1) droppedTreasures.push(tr1);
-        
-        if (Math.random() < 0.20) {
+         totalExp += 2500;
+         totalSilver += 1;
+         rewardsList.push("战胜 30 人：修为 +2500，银两 +1");
+        if (Math.random() < 0.50) {
+           const common = TREASURES_DB.filter(t => t.rarity === '普通');
+           const tr1 = common[Math.floor(Math.random() * common.length)];
+           if (tr1) droppedTreasures.push(tr1);
+        }
+        if (Math.random() < 0.10) {
            const rare = TREASURES_DB.filter(t => t.rarity === '稀有');
            const tr2 = rare[Math.floor(Math.random() * rare.length)];
            if (tr2) droppedTreasures.push(tr2);
         }
      }
      if (finalDefeatedCount >= 42) {
-        totalExp += 2000;
-        totalSilver += 10;
-        rewardsList.push("战胜 42 人：修为 +2000，银两 +10，稀有秘宝 100%");
-        const rare = TREASURES_DB.filter(t => t.rarity === '稀有');
-        const tr1 = rare[Math.floor(Math.random() * rare.length)];
-        if (tr1) droppedTreasures.push(tr1);
-        
+         totalExp += 2500;
+         totalSilver += 2;
+         rewardsList.push("战胜 42 人：修为 +2500，银两 +2");
+        if (Math.random() < 0.60) {
+           const rare = TREASURES_DB.filter(t => t.rarity === '稀有');
+           const tr1 = rare[Math.floor(Math.random() * rare.length)];
+           if (tr1) droppedTreasures.push(tr1);
+        }
         if (Math.random() < 0.10) {
            const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
            const tr2 = epic[Math.floor(Math.random() * epic.length)];
@@ -1168,61 +1310,70 @@ export default function EncounterArena() {
         }
      }
      if (finalDefeatedCount >= 48) {
-        totalExp += 3000;
-        totalSilver += 15;
-        rewardsList.push("战胜 48 人：修为 +3000，银两 +15，史诗秘宝 100%");
-        const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
-        const tr = epic[Math.floor(Math.random() * epic.length)];
-        if (tr) droppedTreasures.push(tr);
+         totalExp += 2500;
+         totalSilver += 2;
+         rewardsList.push("战胜 48 人：修为 +2500，银两 +2");
+        if (Math.random() < 0.50) {
+           const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
+           const tr = epic[Math.floor(Math.random() * epic.length)];
+           if (tr) droppedTreasures.push(tr);
+        }
      }
      if (finalDefeatedCount >= 51) {
-        totalExp += 4000;
-        totalSilver += 20;
-        rewardsList.push("战胜 51 人：修为 +4000，银两 +20，史诗秘宝 100%");
-        const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
-        const tr1 = epic[Math.floor(Math.random() * epic.length)];
-        if (tr1) droppedTreasures.push(tr1);
-        
-        if (Math.random() < 0.10) {
+         totalExp += 2500;
+         totalSilver += 2;
+         rewardsList.push("战胜 51 人：修为 +2500，银两 +2");
+        if (Math.random() < 0.50) {
+           const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
+           const tr1 = epic[Math.floor(Math.random() * epic.length)];
+           if (tr1) droppedTreasures.push(tr1);
+        }
+        if (Math.random() < 0.05) {
            const legend = TREASURES_DB.filter(t => t.rarity === '传说');
            const tr2 = legend[Math.floor(Math.random() * legend.length)];
            if (tr2) droppedTreasures.push(tr2);
         }
      }
      if (finalDefeatedCount >= 54) {
-        totalExp += 5000;
-        totalSilver += 25;
-        rewardsList.push("战胜 54 人：修为 +5000，银两 +25，传说秘宝 50% 概率");
-        if (Math.random() < 0.50) {
+         totalExp += 2500;
+         totalSilver += 3;
+         rewardsList.push("战胜 54 人：修为 +2500，银两 +3");
+        if (Math.random() < 0.30) {
            const legend = TREASURES_DB.filter(t => t.rarity === '传说');
            const tr = legend[Math.floor(Math.random() * legend.length)];
            if (tr) droppedTreasures.push(tr);
         }
      }
      if (finalDefeatedCount >= 57) {
-        totalExp += 6500;
-        totalSilver += 35;
-        rewardsList.push("战胜 57 人：修为 +6500，银两 +35，传说秘宝 100%");
-        const legend = TREASURES_DB.filter(t => t.rarity === '传说');
-        const tr1 = legend[Math.floor(Math.random() * legend.length)];
-        if (tr1) droppedTreasures.push(tr1);
-        
-        if (Math.random() < 0.05) {
+         totalExp += 2500;
+         totalSilver += 3;
+         rewardsList.push("战胜 57 人：修为 +2500，银两 +3");
+        if (Math.random() < 0.40) {
+           const legend = TREASURES_DB.filter(t => t.rarity === '传说');
+           const tr1 = legend[Math.floor(Math.random() * legend.length)];
+           if (tr1) droppedTreasures.push(tr1);
+        }
+        if (Math.random() < 0.02) {
            const mythic = TREASURES_DB.filter(t => t.rarity === '神话');
            const tr2 = mythic[Math.floor(Math.random() * mythic.length)];
            if (tr2) droppedTreasures.push(tr2);
         }
      }
      if (finalDefeatedCount >= 60) {
-        totalExp += 10000;
-        totalSilver += 50;
-        rewardsList.push("通关奇迹！胜 60 人：修为 +10000，银两 +50，神话秘宝 30% 概率");
-        if (Math.random() < 0.30) {
+         totalExp += 3000;
+         totalSilver += 5;
+         rewardsList.push("通关奇迹！胜 60 人：修为 +3000，银两 +5");
+        if (Math.random() < 0.15) {
            const mythic = TREASURES_DB.filter(t => t.rarity === '神话');
            const tr = mythic[Math.floor(Math.random() * mythic.length)];
            if (tr) droppedTreasures.push(tr);
         }
      }
+
+     // 对随机判断掉落的秘宝按稀有度降序排序，并截取前 2 个
+     const rarityWeight = { '普通': 1, '稀有': 2, '史诗': 3, '传说': 4, '神话': 5 };
+     droppedTreasures.sort((a, b) => (rarityWeight[b.rarity] || 0) - (rarityWeight[a.rarity] || 0));
+     droppedTreasures = droppedTreasures.slice(0, 2);
 
      // 结算派发奖励到主状态机
      if (totalExp > 0) gainExp(totalExp);
@@ -1250,65 +1401,81 @@ export default function EncounterArena() {
      }
   };
 
-  // 应用奇遇所选 Buff，并恢复气血
-  const applyRogueBuff = (choice) => {
-     SoundManager.play('sfx_success');
-     
-     let updatedP1 = { 
-        ...p1, 
-        attributes: { ...p1.attributes } 
-     };
+  // 精确应用单张奇遇卡牌的增益效果到局部副本与 rogueBuffs 状态中
+  const applyRogueBuffEffect = (choice, updatedP1) => {
+      setRogueBuffs(prev => {
+         const next = { ...prev };
+         if (choice.id === 'str') next.str += choice.val;
+         else if (choice.id === 'con') next.con += choice.val;
+         else if (choice.id === 'int') next.int += choice.val;
+         else if (choice.id === 'agi') next.agi += choice.val;
+         else if (choice.id === 'luk') next.luk += choice.val;
+         else if (choice.id === 'defUpEffect') next.defUpEffect += choice.val;
+         else if (choice.id === 'defUpDuration') next.defUpDuration += choice.val;
+         else if (choice.id === 'dodgeEffect') next.dodgeEffect += choice.val;
+         else if (choice.id === 'dodgeDuration') next.dodgeDuration += choice.val;
+         else if (choice.id === 'poisonDmgPct') next.poisonDmgPct += choice.val;
+         else if (choice.id === 'poisonDuration') next.poisonDuration += choice.val;
+         else if (choice.id === 'stunDuration') {
+            next.stunDuration += choice.val;
+            next.stunChance += choice.chance;
+         }
+         else if (choice.id === 'silenceDuration') {
+            next.silenceDuration += choice.val;
+            next.silenceDamageAmp += choice.amp;
+         }
+         else if (choice.id === 'treasureBoost') {
+            next.treasureBoostLevel += choice.val;
+         }
+         return next;
+      });
 
-     setRogueBuffs(prev => {
-        const next = { ...prev };
-        if (choice.id === 'str') next.str += 20;
-        else if (choice.id === 'con') next.con += 20;
-        else if (choice.id === 'int') next.int += 20;
-        else if (choice.id === 'agi') next.agi += 20;
-        else if (choice.id === 'luk') next.luk += 20;
-        else if (choice.id === 'defUpEffect') next.defUpEffect += 0.25;
-        else if (choice.id === 'defUpDuration') next.defUpDuration += 1;
-        else if (choice.id === 'dodgeEffect') next.dodgeEffect += 0.15;
-        else if (choice.id === 'dodgeDuration') next.dodgeDuration += 1;
-        else if (choice.id === 'poisonDmgPct') next.poisonDmgPct += 0.02;
-        else if (choice.id === 'poisonDuration') next.poisonDuration += 2;
-        else if (choice.id === 'stunDuration') {
-           next.stunDuration += 1;
-           next.stunChance += 0.10;
-        }
-        else if (choice.id === 'silenceDuration') {
-           next.silenceDuration += 1;
-           next.silenceDamageAmp += 0.15;
-        }
-        else if (choice.id === 'treasureBoost') {
-           next.treasureBoostLevel += 1;
-        }
-        return next;
-     });
+      // 修改 P1 属性与 HP 上限
+      if (choice.id === 'str') updatedP1.attributes.str += choice.val;
+      else if (choice.id === 'con') {
+         updatedP1.attributes.con += choice.val;
+         updatedP1.maxHp += choice.val * 10;
+         updatedP1.hp += choice.val * 10;
+      }
+      else if (choice.id === 'int') updatedP1.attributes.int += choice.val;
+      else if (choice.id === 'agi') updatedP1.attributes.agi += choice.val;
+      else if (choice.id === 'luk') updatedP1.attributes.luk += choice.val;
+  };
 
-     // 修改 P1 属性与 HP 上限
-     if (choice.id === 'str') updatedP1.attributes.str += 20;
-     else if (choice.id === 'con') {
-        updatedP1.attributes.con += 20;
-        updatedP1.maxHp += 200;
-        updatedP1.hp += 200;
-     }
-     else if (choice.id === 'int') updatedP1.attributes.int += 20;
-     else if (choice.id === 'agi') updatedP1.attributes.agi += 20;
-     else if (choice.id === 'luk') updatedP1.attributes.luk += 20;
+  // 确认并批量注入所有已选中的奇遇加持，并恢复生命值与流转状态
+  const confirmRogueBuffs = () => {
+      const maxChoices = defeatedCount < 30 ? 2 : 1;
+      if (selectedIndices.length !== maxChoices) {
+         alert(`请选满 ${maxChoices} 个奇遇增益后再确认注入！`);
+         return;
+      }
+      
+      SoundManager.play('sfx_success');
+      
+      let updatedP1 = { 
+         ...p1, 
+         attributes: { ...p1.attributes } 
+      };
 
-     // 通关波次额外获得 20% 生命值恢复
-     const healVal = Math.floor(updatedP1.maxHp * 0.20);
-     updatedP1.hp = Math.min(updatedP1.maxHp, updatedP1.hp + healVal);
+      // 依次注入
+      selectedIndices.forEach(idx => {
+         const choice = buffChoices[idx];
+         applyRogueBuffEffect(choice, updatedP1);
+      });
 
-     setP1(updatedP1);
-     setWaveIndex(prev => prev + 1);
+      // 通关波次额外获得 20% 生命值恢复
+      const healVal = Math.floor(updatedP1.maxHp * 0.20);
+      updatedP1.hp = Math.min(updatedP1.maxHp, updatedP1.hp + healVal);
 
-     // 切入下一个对手战斗
-     setEncounterState('transitioning');
-     setTimeout(() => {
-        setupNextEnemy(updatedP1, leaderboardTeam, defeatedCount);
-     }, 1000);
+      setP1(updatedP1);
+      setWaveIndex(prev => prev + 1);
+      setSelectedIndices([]); // 重置选择索引
+
+      // 切入下一个对手战斗
+      setEncounterState('transitioning');
+      setTimeout(() => {
+         setupNextEnemy(updatedP1, leaderboardTeam, defeatedCount);
+      }, 1000);
   };
 
   return (
@@ -1358,63 +1525,148 @@ export default function EncounterArena() {
            </button>
          </div>
       ) : encounterState === 'buffSelection' ? (
-         <div style={{ textAlign: 'center', padding: '1rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-           <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', marginBottom: '0.5rem' }}>
-             奇遇抉择
-           </h2>
-           <p style={{ color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '2.5rem' }}>
-             战绩斐然！大侠请在以下三项奇遇加持中抉择一项（增益可叠加，选择后恢复 20% 气血）：
-           </p>
-           
-           <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', flexWrap: 'wrap', width: '100%', maxWidth: '900px' }}>
-             {buffChoices.map((choice, idx) => (
-               <div 
-                 key={idx}
-                 onClick={() => applyRogueBuff(choice)}
-                 style={{
-                   flex: '1 1 240px',
-                   maxWidth: '280px',
-                   background: 'rgba(212, 175, 55, 0.04)',
-                   border: '1px solid rgba(212, 175, 55, 0.25)',
-                   borderRadius: '12px',
-                   padding: '2.5rem 1.5rem',
-                   cursor: 'pointer',
-                   transition: 'all 0.2s',
-                   display: 'flex',
-                   flexDirection: 'column',
-                   alignItems: 'center',
-                   justifyContent: 'space-between',
-                   gap: '15px',
-                   boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                 }}
-                 onMouseEnter={(e) => {
-                   e.currentTarget.style.transform = 'scale(1.05)';
-                   e.currentTarget.style.background = 'rgba(212, 175, 55, 0.08)';
-                   e.currentTarget.style.borderColor = 'var(--gold)';
-                 }}
-                 onMouseLeave={(e) => {
-                   e.currentTarget.style.transform = 'scale(1)';
-                   e.currentTarget.style.background = 'rgba(212, 175, 55, 0.04)';
-                   e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
-                 }}
-               >
-                 <div style={{ fontSize: '2.5rem' }}>
-                   {choice.type === 'attr' ? '🧬' : choice.type === 'def' ? '🛡️' : choice.type === 'dodge' ? '💨' : choice.type === 'poison' ? '🧪' : choice.type === 'stun' ? '🌀' : choice.type === 'silence' ? '🔇' : '🗡️'}
-                 </div>
-                 <h3 style={{ color: 'var(--gold)', fontSize: '1.25rem', fontFamily: '"Ma Shan Zheng", cursive', margin: '0 0 10px 0' }}>
-                   {choice.name}
-                 </h3>
-                 <p style={{ color: '#d1d5db', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, flex: 1, display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                   {choice.desc}
-                 </p>
-                 <div style={{ fontSize: '0.72rem', color: 'var(--gold)', background: 'rgba(212, 175, 55, 0.1)', padding: '3px 10px', borderRadius: '4px', border: '1px solid rgba(212, 175, 55, 0.2)', marginTop: '10px' }}>
-                   点击注入加持
-                 </div>
-               </div>
-             ))}
-           </div>
-         </div>
-      ) : encounterState === 'settlement' ? (
+          <div style={{ textAlign: 'center', padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', marginBottom: '0.5rem', textShadow: '0 0 10px rgba(212, 175, 55, 0.5)' }}>
+              奇遇抉择
+            </h2>
+            <p style={{ color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '2rem', maxWidth: '700px', lineHeight: '1.6' }}>
+              战绩斐然！大侠请注意：当前处于{defeatedCount < 30 ? <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【前期发育阶段，可任意挑选 2 项】</span> : <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>【中后期突围阶段，仅能精选 1 项】</span>}奇遇加持注入（增益可叠加，注入后获得 20% 气血恢复）：
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', width: '100%', maxWidth: '1000px', marginBottom: '2rem' }}>
+              {buffChoices.map((choice, idx) => {
+                const isSelected = selectedIndices.includes(idx);
+                const maxChoices = defeatedCount < 30 ? 2 : 1;
+                return (
+                  <div 
+                    key={idx}
+                    onClick={() => {
+                       setSelectedIndices(prev => {
+                          if (prev.includes(idx)) {
+                             return prev.filter(i => i !== idx);
+                          }
+                          if (prev.length < maxChoices) {
+                             return [...prev, idx];
+                          }
+                          if (maxChoices === 1) {
+                             return [idx];
+                          }
+                          return prev;
+                       });
+                    }}
+                    style={{
+                      flex: '1 1 170px',
+                      maxWidth: '190px',
+                      background: isSelected ? 'rgba(212, 175, 55, 0.12)' : 'rgba(0, 0, 0, 0.45)',
+                      border: isSelected ? '2px solid var(--gold)' : `1px solid ${choice.qColor || 'rgba(212, 175, 55, 0.25)'}`,
+                      boxShadow: isSelected ? '0 0 15px rgba(212, 175, 55, 0.4)' : '0 4px 10px rgba(0,0,0,0.5)',
+                      borderRadius: '12px',
+                      padding: '2rem 1rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '15px',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-5px)';
+                      if (!isSelected) {
+                         e.currentTarget.style.borderColor = 'var(--gold)';
+                         e.currentTarget.style.background = 'rgba(212, 175, 55, 0.06)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      if (!isSelected) {
+                         e.currentTarget.style.borderColor = choice.qColor || 'rgba(212, 175, 55, 0.25)';
+                         e.currentTarget.style.background = 'rgba(0, 0, 0, 0.45)';
+                      }
+                    }}
+                  >
+                    {/* 选中的对勾标识 */}
+                    {isSelected && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '-10px',
+                        right: '-10px',
+                        background: 'var(--gold)',
+                        color: '#000',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '0.85rem',
+                        border: '2px solid #000',
+                        boxShadow: '0 0 8px rgba(212, 175, 55, 0.8)'
+                      }}>
+                        ✓
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: '2.4rem', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.1))' }}>
+                      {choice.type === 'attr' ? '🧬' : choice.type === 'def' ? '🛡️' : choice.type === 'dodge' ? '💨' : choice.type === 'poison' ? '🧪' : choice.type === 'stun' ? '🌀' : choice.type === 'silence' ? '🔇' : '🗡️'}
+                    </div>
+                    
+                    <h3 style={{ 
+                      color: choice.quality === 'epic' ? 'var(--danger)' : choice.quality === 'rare' ? 'var(--gold)' : 'var(--text-main)', 
+                      fontSize: '1.2rem', 
+                      fontFamily: '"Ma Shan Zheng", cursive', 
+                      margin: '0', 
+                      textShadow: choice.quality === 'epic' ? '0 0 8px rgba(239, 68, 68, 0.4)' : 'none'
+                    }}>
+                      {choice.name}
+                    </h3>
+                    
+                    <p style={{ color: '#d1d5db', fontSize: '0.85rem', lineHeight: '1.5', margin: 0, flex: 1, display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                      {choice.desc}
+                    </p>
+                    
+                    <div style={{ 
+                      fontSize: '0.72rem', 
+                      color: isSelected ? '#000' : 'var(--gold)', 
+                      background: isSelected ? 'var(--gold)' : 'rgba(212, 175, 55, 0.1)', 
+                      padding: '3px 12px', 
+                      borderRadius: '4px', 
+                      border: isSelected ? 'none' : '1px solid rgba(212, 175, 55, 0.2)', 
+                      marginTop: '5px',
+                      fontWeight: isSelected ? 'bold' : 'normal'
+                    }}>
+                      {isSelected ? '已选中加持' : '点击选择'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 确认注入按钮 */}
+            <button
+              className="btn-primary glow-effect"
+              onClick={confirmRogueBuffs}
+              disabled={selectedIndices.length !== (defeatedCount < 30 ? 2 : 1)}
+              style={{
+                padding: '0.8rem 3.5rem',
+                fontSize: '1.1rem',
+                background: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
+                color: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
+                fontWeight: 'bold',
+                cursor: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'pointer' : 'not-allowed',
+                border: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                filter: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : 'grayscale(100%)',
+                boxShadow: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
+              }}
+            >
+              {selectedIndices.length === (defeatedCount < 30 ? 2 : 1) 
+                ? '确立根基，注入奇遇加持' 
+                : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount < 30 ? 2 : 1}）`}
+            </button>
+          </div>
+       ) : encounterState === 'settlement' ? (
          <div style={{ textAlign: 'center', padding: '1rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
            <div style={{ fontSize: '4.5rem', marginBottom: '0.5rem' }}>
              {settlementInfo?.defeatedCount >= 60 ? '🥇' : '💀'}
