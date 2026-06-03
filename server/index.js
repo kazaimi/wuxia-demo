@@ -27,6 +27,12 @@ const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (co
 if (fs.existsSync(DB_FILE)) {
    try {
       realPlayersDB = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      const originalCount = realPlayersDB.length;
+      realPlayersDB = realPlayersDB.filter(p => !['西门吹雪', '令狐冲', '独孤求败', '扫地僧'].includes(p.name));
+      if (realPlayersDB.length !== originalCount) {
+         saveDB();
+         console.log(`[数据库初始化] 已清理重名的玩家账号。`);
+      }
       realPlayersDB.forEach(p => {
          if (typeof p.silver === 'undefined') p.silver = 0;
          if (p.attributes && typeof p.attributes.hp !== 'undefined') {
@@ -160,15 +166,7 @@ const getLeaderboardData = () => {
 
     const npcs = MOCK_PLAYERS.map(mockP => {
         const onlineP = players.find(p => p.name === mockP.name && p.isMock);
-        const npcObj = { ...(onlineP || mockP), isOnline: true, isMock: true };
-        
-        // 排查重名：如果有名号与NPC同名的真实玩家，在NPC名称后追加微小中点“·”以示区别
-        const isNameConflict = realPlayersDB.some(rp => rp.name === mockP.name);
-        if (isNameConflict) {
-            npcObj.name = `${mockP.name}·`;
-        }
-        
-        return npcObj;
+        return { ...(onlineP || mockP), isOnline: true, isMock: true };
     });
 
     const all = [...realPlayers, ...npcs];
