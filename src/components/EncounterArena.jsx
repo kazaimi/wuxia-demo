@@ -211,30 +211,16 @@ const generateBuffChoices = (treasureId, isEarly) => {
    const shuffled = [...BUFF_POOL].sort(() => 0.5 - Math.random());
    const selected = shuffled.slice(0, count);
    
-   // 先随机一个基础品质
-   const tempChoices = selected.map(b => {
+   // 随机生成独立品质，降低绝世概率至 2%，精妙概率至 23%
+   const list = selected.map(b => {
       const rand = Math.random();
       let quality = 'common'; 
-      if (rand < 0.05) {
+      if (rand < 0.02) {
          quality = 'epic';
-      } else if (rand < 0.30) {
+      } else if (rand < 0.25) {
          quality = 'rare';
       }
-      return { id: b.id, type: b.type, quality };
-   });
-
-   // 同一种类型的奇遇 buff（即相同的 type 属性，例如同为属性类 attr，或同为防御类 def），同时出现时品质保持一致（取其中生成的最高品质）
-   const typeQualityMap = {};
-   const rarityRank = { 'common': 1, 'rare': 2, 'epic': 3 };
-   tempChoices.forEach(item => {
-      if (!typeQualityMap[item.type] || rarityRank[item.quality] > rarityRank[typeQualityMap[item.type]]) {
-         typeQualityMap[item.type] = item.quality;
-      }
-   });
-
-   const list = tempChoices.map(item => {
-      const finalQuality = typeQualityMap[item.type];
-      return buildBuffChoice(item.id, finalQuality, treasureId);
+      return buildBuffChoice(b.id, quality, treasureId);
    });
 
    // 每一波次抉择固定在卡牌最右端追加 60% 恢复大还丹选项
