@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB } from '../store/gameState';
-import { Skull, Swords, Gift } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
 import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
 import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
@@ -18,6 +17,7 @@ const guessGenderByName = (name) => {
   }
   return 'male';
 };
+
 // 战斗角色卡牌（使用新版水墨卡牌）
 const EncounterCharacter = ({ player, isLeft, battleState, damageNumbers }) => {
   if (!player) return null;
@@ -48,6 +48,63 @@ const EncounterCharacter = ({ player, isLeft, battleState, damageNumbers }) => {
   );
 };
 
+// Roguelike 奇遇 Buff 选项定义
+const BUFF_POOL = [
+  { id: 'str', name: '力量之源', desc: '力量属性增加 20 点', type: 'attr' },
+  { id: 'con', name: '体质之源', desc: '体质属性增加 20 点 (最大生命值同步增加 200，并立即治疗 200 生命)', type: 'attr' },
+  { id: 'int', name: '智慧之源', desc: '智慧属性增加 20 点', type: 'attr' },
+  { id: 'agi', name: '敏捷之源', desc: '敏捷属性增加 20 点', type: 'attr' },
+  { id: 'luk', name: '幸运之源', desc: '幸运属性增加 20 点', type: 'attr' },
+  { id: 'defUpEffect', name: '防御加固', desc: '易筋经/九阳神功等功法触发的防御加成 (defUp) 防御数值加成比例提升 25%', type: 'def' },
+  { id: 'defUpDuration', name: '坚毅不拔', desc: '防御 Buff (defUp) 的持续时间延长 1 回合', type: 'def' },
+  { id: 'dodgeEffect', name: '身法幻影', desc: '身法闪避 Buff (dodge) 激活期间的闪避成功率提升 15%', type: 'dodge' },
+  { id: 'dodgeDuration', name: '轻功延续', desc: '身法闪避 Buff (dodge) 的持续时间延长 1 回合', type: 'dodge' },
+  { id: 'poisonDmgPct', name: '见血封喉', desc: '施加的中毒伤害每回合比例额外增加 2% 最大生命值', type: 'poison' },
+  { id: 'poisonDuration', name: '蚀骨剧毒', desc: '施加的中毒状态持续时间延长 2 回合', type: 'poison' },
+  { id: 'stunDuration', name: '夺魂摄魄', desc: '施加的击晕（眩晕）状态时长增加 1 回合，且击晕概率额外增加 10%', type: 'stun' },
+  { id: 'silenceDuration', name: '指点江山', desc: '施加的封穴（沉默）状态时长增加 1 回合，且封穴期间目标受到伤害提升 15%', type: 'silence' },
+  { id: 'treasureBoost', name: '神兵唤醒', desc: '增强当前已装备秘宝/武器的原有被动特效数值', type: 'treasure' }
+];
+
+// 获取携带秘宝的特定强化描述
+const getTreasureBuffInfo = (treasureId) => {
+  const t = TREASURES_DB?.find(x => x.id === treasureId);
+  if (!t) {
+    return { name: '强身健体', desc: '身怀利刃：最终伤害提升 +10%' };
+  }
+  switch (treasureId) {
+    case 't1': return { name: `【${t.name}·佛光】`, desc: '【宁神】开局护盾比例额外 +5% 最大生命值' };
+    case 't2': return { name: `【${t.name}·厚重】`, desc: '【轻巧】受到伤害减少数值额外 +20 点' };
+    case 't3': return { name: `【${t.name}·锋利】`, desc: '【破伤】普攻额外真实伤害额外 +40 点' };
+    case 't4': return { name: `【${t.name}·生机】`, desc: '【回春】造成伤害时恢复生命值比例额外 +1.5%' };
+    case 't5': return { name: `【${t.name}·精准】`, desc: '【点穴】攻击触发封穴概率额外 +8%' };
+    case 't6': return { name: `【${t.name}·毒刺】`, desc: '【剧毒】攻击触发中毒概率额外 +10%' };
+    case 't7': return { name: `【${t.name}·击顶】`, desc: '【打狗】攻击触发击晕概率额外 +10%' };
+    case 't8': return { name: `【${t.name}·影袭】`, desc: '【金蛇】触发额外连击概率额外 +10%' };
+    case 't9': return { name: `【${t.name}·反伤】`, desc: '【软猬】受击反弹伤害比例额外 +10%' };
+    case 't10': return { name: `【${t.name}·圣力】`, desc: '【倚天】最终伤害额外 +5%，且吸血比例额外 +10%' };
+    case 't11': return { name: `【${t.name}·狂战】`, desc: '【破釜沉舟】低血量（低于40%）时伤害提升额外 +15%' };
+    case 't12': return { name: `【${t.name}·重锋】`, desc: '【重剑】攻击触发内伤概率额外 +10%' };
+    case 't13': return { name: `【${t.name}·法言】`, desc: '【威压】沉默时长 +1 回合且攻击额外附带 2% 最大生命伤害' };
+    case 't14': return { name: `【${t.name}·死境】`, desc: '【寂灭】触发斩杀（直接削减目标50%HP）的概率额外 +2%' };
+    case 't15': return { name: `【${t.name}·舍利】`, desc: '【涅槃】复活时恢复的生命比例额外 +15% HP' };
+    default: return { name: '强身健体', desc: '身怀利刃：最终伤害提升 +10%' };
+  }
+};
+
+// 随机生成 3 个不同的 Buff 卡牌
+const generateBuffChoices = (treasureId) => {
+  const shuffled = [...BUFF_POOL].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 3);
+  return selected.map(b => {
+    if (b.id === 'treasureBoost') {
+      const info = getTreasureBuffInfo(treasureId);
+      return { ...b, name: info.name, desc: info.desc };
+    }
+    return b;
+  });
+};
+
 export default function EncounterArena() {
   const player = useGameStore(state => state.player);
   const onlinePlayers = useGameStore(state => state.onlinePlayers);
@@ -56,13 +113,27 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
-  const devGrantPoints = useGameStore(state => state.devGrantPoints);
 
   const cleanIcon = useCleanImage('/wuxia_encounter_icon.webp');
 
-  const [encounterState, setEncounterState] = useState('idle'); // idle, battling, win, lose
-  const [team, setTeam] = useState([]);
-  const currentEnemyIndex = useRef(0);
+  // Roguelike 核心状态
+  const [encounterState, setEncounterState] = useState('idle'); // idle, battling, transitioning, buffSelection, settlement, lose_settling
+  const [leaderboardTeam, setLeaderboardTeam] = useState([]);
+  const [defeatedCount, setDefeatedCount] = useState(0);
+  const [waveIndex, setWaveIndex] = useState(0);
+  const [buffChoices, setBuffChoices] = useState([]);
+  const [settlementInfo, setSettlementInfo] = useState(null);
+
+  // 可叠加的 Roguelike Buff 状态
+  const [rogueBuffs, setRogueBuffs] = useState({
+    str: 0, con: 0, int: 0, agi: 0, luk: 0,
+    defUpEffect: 0, defUpDuration: 0,
+    dodgeEffect: 0, dodgeDuration: 0,
+    poisonDmgPct: 0, poisonDuration: 0,
+    stunDuration: 0, stunChance: 0,
+    silenceDuration: 0, silenceDamageAmp: 0,
+    treasureBoostLevel: 0,
+  });
   
   const [p1, setP1] = useState(null);
   const [p2, setP2] = useState(null);
@@ -105,14 +176,17 @@ export default function EncounterArena() {
     setDamageNumbers(prev => prev.filter(d => d.id !== id));
   };
 
+  // 开启肉鸽奇遇挑战
   const startEncounter = () => {
      if ((player.encountersToday || 0) >= 5) {
          alert("今日奇遇次数已达上限，大侠请明日再来！");
          return;
      }
-     const bots = onlinePlayers.filter(p => p.isMock);
-     if (bots.length < 3) {
-         alert("江湖尚未完全成型，凑不齐三位高手。");
+
+     // 风云榜降序排列（席位从大到小，即从底部倒序挑战）
+     const sortedLeaderboard = [...onlinePlayers].sort((a, b) => (b.rankIndex || 9999) - (a.rankIndex || 9999));
+     if (sortedLeaderboard.length < 3) {
+         alert("江湖风云榜高手尚且不足，无法开启挑战。");
          return;
      }
      
@@ -128,54 +202,43 @@ export default function EncounterArena() {
          }, 500);
      }
 
-     const bossCands = bots.filter(b => b.rankIndex <= 10);
-     const boss = bossCands[Math.floor(Math.random() * bossCands.length)] || bots[0];
+     // 重置肉鸽闯关状态
+     setDefeatedCount(0);
+     setWaveIndex(0);
+     setLeaderboardTeam(sortedLeaderboard);
+     setSettlementInfo(null);
+     
+     setRogueBuffs({
+       str: 0, con: 0, int: 0, agi: 0, luk: 0,
+       defUpEffect: 0, defUpDuration: 0,
+       dodgeEffect: 0, dodgeDuration: 0,
+       poisonDmgPct: 0, poisonDuration: 0,
+       stunDuration: 0, stunChance: 0,
+       silenceDuration: 0, silenceDamageAmp: 0,
+       treasureBoostLevel: 0,
+     });
 
-     const remainingBots = bots.filter(b => b.id !== boss.id);
-     
-     let lowerBots = remainingBots.filter(b => b.level < player.level);
-     if (lowerBots.length === 0) lowerBots = remainingBots;
-     const enemy1 = lowerBots[Math.floor(Math.random() * lowerBots.length)];
-
-     const r2 = remainingBots.filter(b => b.id !== enemy1.id);
-     let higherBots = r2.filter(b => b.level >= player.level && b.level <= player.level + 5);
-     if (higherBots.length === 0) higherBots = r2;
-     const enemy2 = higherBots[Math.floor(Math.random() * higherBots.length)];
-
-     // 按等级升序排列：垫脚石 → 中等 → Boss（强制保证 boss 最后出场）
-     const prelimTeam = [enemy1, enemy2].sort((a, b) => a.level - b.level);
-     const selectedTeam = [...prelimTeam, boss];
-     
-     setTeam(selectedTeam);
-     currentEnemyIndex.current = 0;
-     
-     let mHp = player.maxHp * 2;
-     if (player.dailyDebuffs?.includes('血枯劫')) mHp = Math.floor(mHp * 0.8);
-     
+     // 初始化强制统一的 P1 属性
      const myPlayer = { 
          ...player, 
-         attributes: { ...player.attributes },
-         hp: mHp, maxHp: mHp,
+         level: 15,
+         attributes: { con: 15, str: 15, int: 15, agi: 15, luk: 15 },
+         hp: 2000, maxHp: 2000,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
-     
-     if (player.dailyDebuffs?.includes('散功劫')) {
-         myPlayer.attributes.str = Math.max(0, myPlayer.attributes.str - 5);
-         myPlayer.attributes.con = Math.max(0, myPlayer.attributes.con - 5);
-     }
      
      setP1(myPlayer);
      setEffects([]);
      setDamageNumbers([]);
      setCurrentBattleState({});
-     setupNextEnemy(myPlayer, selectedTeam, 0);
+     setupNextEnemy(myPlayer, sortedLeaderboard, 0);
   };
 
-  const setupNextEnemy = (currentP1, currentTeam, idx) => {
-     currentEnemyIndex.current = idx;
+  // 设置下一位挑战对手
+  const setupNextEnemy = (currentP1, currentLeaderboard, totalDefeated) => {
      const enemy = { 
-         ...currentTeam[idx],
+         ...currentLeaderboard[totalDefeated],
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -185,9 +248,10 @@ export default function EncounterArena() {
      setDamageNumbers([]);
      setCurrentBattleState({});
      setEncounterState('battling');
-     setLogs([`\n=== 第 ${idx+1} 战：对阵 ${enemy.name} ===`]);
+     setLogs([`\n=== 第 ${totalDefeated + 1} 战：对阵 ${enemy.name} ===`]);
   };
 
+  // 战斗回合主时钟循环 (1.2s 一回合)
   useEffect(() => {
     if (encounterState !== 'battling' || !p1 || !p2) return;
     if (p2.hp <= 0) return;
@@ -211,21 +275,29 @@ export default function EncounterArena() {
 
       let logPrefix = "";
       if (logs.length === 1) { 
+         const p1IsAttacker = isP1Turn;
+         const tBoostAttacker = p1IsAttacker ? rogueBuffs.treasureBoostLevel : 0;
+         const tBoostDefender = p1IsAttacker ? 0 : rogueBuffs.treasureBoostLevel;
+
          if (aTreasure?.effect === 'ningShen') {
-             attacker.buffs.shield += Math.floor(attacker.maxHp * 0.05);
-             logPrefix += `[开局] ${attacker.name} 的【木质佛珠】泛起佛光，获得了护盾！\n`;
+             const shieldVal = Math.floor(attacker.maxHp * (0.05 + 0.05 * tBoostAttacker));
+             attacker.buffs.shield += shieldVal;
+             logPrefix += `[开局] ${attacker.name} 的【木质佛珠】泛起佛光，获得了 ${shieldVal} 点护盾！\n`;
          }
          if (dTreasure?.effect === 'ningShen') {
-             defender.buffs.shield += Math.floor(defender.maxHp * 0.05);
-             logPrefix += `[开局] ${defender.name} 的【木质佛珠】泛起佛光，获得了护盾！\n`;
+             const shieldVal = Math.floor(defender.maxHp * (0.05 + 0.05 * tBoostDefender));
+             defender.buffs.shield += shieldVal;
+             logPrefix += `[开局] ${defender.name} 的【木质佛珠】泛起佛光，获得了 ${shieldVal} 点护盾！\n`;
          }
          if (aTreasure?.effect === 'shengHuo' && !checkImmune(defender, dTreasure, 'silence')) {
-             defender.debuffs.silence = 2;
-             logPrefix += `[开局] ${attacker.name} 亮出【圣火令】，发出无上威压，封锁了 ${defender.name}！\n`;
+             const silDur = 2 + (p1IsAttacker ? rogueBuffs.silenceDuration : 0);
+             defender.debuffs.silence = silDur;
+             logPrefix += `[开局] ${attacker.name} 亮出【圣火令】，发出无上威压，封锁了 ${defender.name} ${silDur} 回合！\n`;
          }
          if (dTreasure?.effect === 'shengHuo' && !checkImmune(attacker, aTreasure, 'silence')) {
-             attacker.debuffs.silence = 2;
-             logPrefix += `[开局] ${defender.name} 亮出【圣火令】，发出无上威压，封锁了 ${attacker.name}！\n`;
+             const silDur = 2 + (p1IsAttacker ? 0 : rogueBuffs.silenceDuration);
+             attacker.debuffs.silence = silDur;
+             logPrefix += `[开局] ${defender.name} 亮出【圣火令】，发出无上威压，封锁了 ${attacker.name} ${silDur} 回合！\n`;
          }
       }
 
@@ -241,147 +313,185 @@ export default function EncounterArena() {
       }
 
       let actionLog = "";
-      if (attacker.debuffs.stun > 0) {
-         attacker.debuffs.stun--;
-         actionLog = `[系统] ${attacker.name} 处于【晕眩】中，只能呆立当场，无法动弹！`;
-      } else if (attacker.dailyDebuffs?.includes('心魔劫') && Math.random() < 0.15) {
-         actionLog = `[心魔发作] ${attacker.name} 突然心神失守，招式走形破绽大开，错失了良机！`;
-      } else {
-         const eq = attacker.equippedSkills || {};
-         let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
-         if (attacker.debuffs.silence > 0) {
-             skillIds = ['s1']; attacker.debuffs.silence--;
-         } else if (attacker.debuffs.internalWound > 0) {
-             skillIds = [eq.outer].filter(Boolean); 
-             if (skillIds.length===0) skillIds = ['s1'];
-             attacker.debuffs.internalWound--;
-         }
-
-         const pickSkill = () => {
-            if (skillIds.length === 0) return SKILLS_DB[0];
-            let totalWeight = 0;
-            const weighted = skillIds.map(sId => {
-               const sk = SKILLS_DB.find(s=>s.id===sId) || SKILLS_DB[0];
-               const weight = 100 + (sk.power / 10) * (attacker.attributes.int || 0) * 1.5;
-               totalWeight += weight;
-               return { skill: sk, weight };
-            });
-            let rand = Math.random() * totalWeight;
-            for (const item of weighted) {
-               if (rand < item.weight) return item.skill;
-               rand -= item.weight;
-            }
-            return weighted[weighted.length - 1].skill;
-         };
-         const skill = pickSkill();
-         
-         const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
-         const dDefBase = defender.attributes.con * 2 + defender.level * 2;
-         const aMod = 1 + attacker.level * 0.05;
-         const adjustedSkillPwr = skill.power * aMod;
-
-         if (skill.id === 's5' || skill.id === 's_yijin') {
-            attacker.buffs.defUp = 3;
-            actionLog = `${attacker.name} 催动【${skill.name}】，真气护体，防御力大增！`;
-            if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
-                attacker.debuffs.poison = 0;
-                actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
-            }
-         } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
-            attacker.buffs.dodge = 3; actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
-         } else if (skill.id === 's_shenxing') {
-            attacker.buffs.dodge = 99; actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
-         } else if (skill.id === 's_shengxin') {
-            attacker.buffs.revive = 1; actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉！`;
-         } else if (skill.type === 'heal') {
-            const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
-            attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
-            actionLog = `${attacker.name} 运转内力使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
-         } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
-            attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
+      if (attacker.hp > 0) {
+         if (attacker.debuffs.stun > 0) {
+            attacker.debuffs.stun--;
+            actionLog = `[系统] ${attacker.name} 处于【晕眩】中，只能呆立当场，无法动弹！`;
+         } else if (attacker.dailyDebuffs?.includes('心魔劫') && Math.random() < 0.15) {
+            actionLog = `[心魔发作] ${attacker.name} 突然心神失守，招式走形破绽大开，错失了良机！`;
          } else {
-            let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false));
+            const eq = attacker.equippedSkills || {};
+            let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
+            if (attacker.debuffs.silence > 0) {
+                skillIds = ['s1']; attacker.debuffs.silence--;
+            } else if (attacker.debuffs.internalWound > 0) {
+                skillIds = [eq.outer].filter(Boolean); 
+                if (skillIds.length===0) skillIds = ['s1'];
+                attacker.debuffs.internalWound--;
+            }
+
+            const pickSkill = () => {
+               if (skillIds.length === 0) return SKILLS_DB[0];
+               let totalWeight = 0;
+               const weighted = skillIds.map(sId => {
+                  const sk = SKILLS_DB.find(s=>s.id===sId) || SKILLS_DB[0];
+                  const weight = 100 + (sk.power / 10) * (attacker.attributes.int || 0) * 1.5;
+                  totalWeight += weight;
+                  return { skill: sk, weight };
+               });
+               let rand = Math.random() * totalWeight;
+               for (const item of weighted) {
+                  if (rand < item.weight) return item.skill;
+                  rand -= item.weight;
+               }
+               return weighted[weighted.length - 1].skill;
+            };
+            const skill = pickSkill();
             
-            if (isDodge) {
-               actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
+            const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
+            const dDefBase = defender.attributes.con * 2 + defender.level * 2;
+            const aMod = 1 + attacker.level * 0.05;
+            const adjustedSkillPwr = skill.power * aMod;
+
+            if (skill.id === 's5' || skill.id === 's_yijin') {
+               attacker.buffs.defUp = 3 + (isP1Turn ? rogueBuffs.defUpDuration : 0);
+               actionLog = `${attacker.name} 催动【${skill.name}】，真气护体，防御力大增！`;
+               if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
+                   attacker.debuffs.poison = 0;
+                   actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
+               }
+            } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
+               attacker.buffs.dodge = 3 + (isP1Turn ? rogueBuffs.dodgeDuration : 0);
+               actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
+            } else if (skill.id === 's_shenxing') {
+               attacker.buffs.dodge = 99;
+               actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
+            } else if (skill.id === 's_shengxin') {
+               attacker.buffs.revive = 1; actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉！`;
+            } else if (skill.type === 'heal') {
+               const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
+               attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
+               actionLog = `${attacker.name} 运转内力使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
+            } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+               attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
             } else {
-               let finalDef = dDefBase * 1 * (defender.buffs.defUp > 0 ? 2 : 1);
-               let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
+               const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
+               let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                
-               if (aTreasure?.effect === 'poShang') dmg += 50; 
-               if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * 1.2);
-               if (aTreasure?.effect === 'tuLong' && (attacker.hp / attacker.maxHp) < 0.4) dmg = Math.floor(dmg * 1.5);
-               if (aTreasure?.effect === 'shengHuo') dmg += Math.floor(defender.hp * 0.05);
-
-               if (dTreasure?.effect === 'qingQiao') dmg -= 30;
-               if (dTreasure?.effect === 'tuLong' && (defender.hp / defender.maxHp) < 0.4) dmg = Math.floor(dmg * 0.8);
-               dmg = Math.max(1, dmg);
-
-               if (aTreasure?.effect === 'jiMie' && Math.random() < 0.05) {
-                   dmg = Math.floor(defender.hp * 0.5);
-                   actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
-               }
-
-               if (defender.buffs.shield > 0) {
-                   if (defender.buffs.shield >= dmg) { defender.buffs.shield -= dmg; dmg = 0; } 
-                   else { dmg -= defender.buffs.shield; defender.buffs.shield = 0; }
-               }
-               defender.hp = Math.max(0, defender.hp - dmg);
-               
-               if (dmg > 0 && aTreasure?.effect === 'huiChun') attacker.hp = Math.min(attacker.maxHp, attacker.hp + Math.floor(attacker.maxHp * 0.02));
-               if (dmg > 0 && aTreasure?.effect === 'yiTian') attacker.hp = Math.min(attacker.maxHp, Math.floor(attacker.hp + dmg * 0.15));
-
-               if (!actionLog.includes('[寂灭]')) {
-                  actionLog = `${attacker.name} 使出【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！`;
-               }
-
-               if (dmg > 0 && dTreasure?.effect === 'ruanWei') {
-                  const rDmg = Math.floor(dmg * 0.15); attacker.hp -= rDmg;
-                  actionLog += `\n[软猬荆棘] 尖刺反伤，${attacker.name} 受到了 ${rDmg} 点伤害！`;
-               }
-               if (aTreasure?.effect === 'jinShe' && defender.hp > 0 && Math.random() <= 0.20) {
-                   const comboDmg = Math.max(1, Math.floor(dmg * 0.5)); defender.hp = Math.max(0, defender.hp - comboDmg);
-                   actionLog += `\n[金蛇出洞] ${attacker.name} 挥出虚影追加一击，造成 ${comboDmg} 伤害！`;
-               }
-
-               if (dmg > 0 && skill.id === 's_xixing') {
-                   const drainAmt = Math.floor(dmg * 0.8);
-                   attacker.hp = Math.min(attacker.maxHp, attacker.hp + drainAmt);
-                   actionLog += ` \n[吸星大法] ${attacker.name} 夺取了 ${drainAmt} 点气血化为己用！`;
-               }
-
-               // 特效施加判定 
-               if (defender.hp > 0) {
-                  if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
-                      defender.debuffs.poison = 999;
-                      defender.debuffs.poisonPercent = 0.07;
-                      actionLog += ` \n[万毒] ${defender.name} 身中奇毒，骨髓俱损！`;
+               if (isDodge) {
+                  actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
+                  if (!isP1Turn && rogueBuffs.dodgeDuration > 0 && Math.random() < 0.20) {
+                     const counterDmg = Math.max(1, Math.floor((p1.attributes.str * 2 + p1.level * 5) * 0.5));
+                     attacker.hp = Math.max(0, attacker.hp - counterDmg);
+                     actionLog += `\n[神行反击] ${p1.name} 乘虚而入反击一招，对 ${attacker.name} 造成了 ${counterDmg} 点伤害！`;
                   }
-                  if (skill.id === 's_shihou' && Math.random() <= 0.6 && !checkImmune(defender, dTreasure, 'stun')) {
-                      defender.debuffs.stun = 1; actionLog += ` \n[狮吼] 震耳欲聋，${defender.name} 被当场震晕！`;
-                  }
-                  if (skill.id === 's_dianxue' && Math.random() <= 0.8 && !checkImmune(defender, dTreasure, 'silence')) {
-                      defender.debuffs.silence = 2; actionLog += ` \n[点穴] ${defender.name} 要穴被封，无法动用武学！`;
-                  }
-                  if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
-                      defender.debuffs.internalWound = 2; actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损！`;
+               } else {
+                  const defMultiplier = (!isP1Turn && defender.buffs.defUp > 0) ? (2 + rogueBuffs.defUpEffect) : (defender.buffs.defUp > 0 ? 2 : 1);
+                  let finalDef = dDefBase * 1 * defMultiplier;
+                  let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
+                  
+                  const tBoostA = isP1Turn ? rogueBuffs.treasureBoostLevel : 0;
+                  const tBoostD = isP1Turn ? 0 : rogueBuffs.treasureBoostLevel;
+
+                  if (aTreasure?.effect === 'poShang') dmg += (50 + 40 * tBoostA); 
+                  if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * (1.20 + 0.05 * tBoostA));
+                  if (aTreasure?.effect === 'tuLong' && (attacker.hp / attacker.maxHp) < 0.4) dmg = Math.floor(dmg * (1.50 + 0.15 * tBoostA));
+                  if (aTreasure?.effect === 'shengHuo') dmg += Math.floor(defender.hp * (0.05 + 0.02 * tBoostA));
+                  if (!aTreasure && isP1Turn) dmg = Math.floor(dmg * (1.0 + 0.10 * tBoostA));
+
+                  if (dTreasure?.effect === 'qingQiao') dmg -= (30 + 20 * tBoostD);
+                  if (dTreasure?.effect === 'tuLong' && (defender.hp / defender.maxHp) < 0.4) dmg = Math.floor(dmg * 0.8);
+                  dmg = Math.max(1, dmg);
+
+                  if (aTreasure?.effect === 'jiMie' && Math.random() < (0.05 + 0.02 * tBoostA)) {
+                      dmg = Math.floor(defender.hp * 0.5);
+                      actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
                   }
 
-                  if (aTreasure?.effect === 'dianXue' && Math.random() <= 0.10 && !checkImmune(defender, dTreasure, 'silence')) {
-                      defender.debuffs.silence = 1;
-                      actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴！`;
-                   }
-                   if (aTreasure?.effect === 'juDu' && Math.random() <= 0.15 && !checkImmune(defender, dTreasure, 'poison')) {
-                      defender.debuffs.poison = 3;
-                      actionLog += ` \n[宝具] 冰魄银针刺入，${defender.name} 身中剧毒！`;
-                   }
-                  if (aTreasure?.effect === 'daGou' && Math.random() <= 0.15 && !checkImmune(defender, dTreasure, 'stun')) {
-                      defender.debuffs.stun = 1;
-                      actionLog += ` \n[宝具] 打狗棒击中后脑，${defender.name} 当场晕眩！`;
-                   }
-                  if (aTreasure?.effect === 'xuanTie' && Math.random() <= 0.20 && !checkImmune(defender, dTreasure, 'internalWound')) {
-                      defender.debuffs.internalWound = 2;
-                      actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                  if (defender.buffs.shield > 0) {
+                      if (defender.buffs.shield >= dmg) { defender.buffs.shield -= dmg; dmg = 0; } 
+                      else { dmg -= defender.buffs.shield; defender.buffs.shield = 0; }
+                  }
+                  defender.hp = Math.max(0, defender.hp - dmg);
+                  
+                  if (dmg > 0 && aTreasure?.effect === 'huiChun') attacker.hp = Math.min(attacker.maxHp, attacker.hp + Math.floor(attacker.maxHp * (0.02 + 0.015 * tBoostA)));
+                  if (dmg > 0 && aTreasure?.effect === 'yiTian') attacker.hp = Math.min(attacker.maxHp, Math.floor(attacker.hp + dmg * (0.15 + 0.10 * tBoostA)));
+
+                  if (!actionLog.includes('[寂灭]')) {
+                     actionLog = `${attacker.name} 使出【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！`;
+                  }
+
+                  if (defender.debuffs.silence > 0 && !isP1Turn && rogueBuffs.silenceDamageAmp > 0) {
+                     const ampDmg = Math.floor(dmg * rogueBuffs.silenceDamageAmp);
+                     defender.hp = Math.max(0, defender.hp - ampDmg);
+                     actionLog += ` (封印易伤 +${ampDmg})`;
+                  }
+
+                  if (dmg > 0 && dTreasure?.effect === 'ruanWei') {
+                     const rRatio = 0.15 + 0.10 * tBoostD;
+                     const rDmg = Math.floor(dmg * rRatio); attacker.hp -= rDmg;
+                     actionLog += `\n[软猬荆棘] 尖刺反伤，${attacker.name} 受到了 ${rDmg} 点伤害！`;
+                  }
+                  if (aTreasure?.effect === 'jinShe' && defender.hp > 0 && Math.random() <= (0.20 + 0.10 * tBoostA)) {
+                      const comboDmg = Math.max(1, Math.floor(dmg * 0.5)); defender.hp = Math.max(0, defender.hp - comboDmg);
+                      actionLog += `\n[金蛇出洞] ${attacker.name} 挥出虚影追加一击，造成 ${comboDmg} 伤害！`;
+                  }
+
+                  if (dmg > 0 && skill.id === 's_xixing') {
+                      const drainAmt = Math.floor(dmg * 0.8);
+                      attacker.hp = Math.min(attacker.maxHp, attacker.hp + drainAmt);
+                      actionLog += ` \n[吸星大法] ${attacker.name} 夺取了 ${drainAmt} 点气血化为己用！`;
+                  }
+
+                  if (defender.hp > 0) {
+                     if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
+                         defender.debuffs.poison = 999;
+                         defender.debuffs.poisonPercent = 0.07 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                         actionLog += ` \n[万毒] ${defender.name} 身中奇毒，骨髓俱损！`;
+                     }
+                     if (skill.id === 's_shihou' && !checkImmune(defender, dTreasure, 'stun')) {
+                         const stunChanceVal = 0.6 + (isP1Turn ? rogueBuffs.stunChance : 0);
+                         if (Math.random() <= stunChanceVal) {
+                            defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                            actionLog += ` \n[狮吼] 震耳欲聋，${defender.name} 被当场震晕 ${defender.debuffs.stun} 回合！`;
+                         }
+                     }
+                     if (skill.id === 's_dianxue' && !checkImmune(defender, dTreasure, 'silence')) {
+                         if (Math.random() <= 0.8) {
+                            defender.debuffs.silence = 2 + (isP1Turn ? rogueBuffs.silenceDuration : 0);
+                            actionLog += ` \n[点穴] ${defender.name} 要穴被封，无法动用武学 ${defender.debuffs.silence} 回合！`;
+                         }
+                     }
+                     if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
+                         defender.debuffs.internalWound = 2; actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损！`;
+                     }
+
+                     if (aTreasure?.effect === 'dianXue' && !checkImmune(defender, dTreasure, 'silence')) {
+                        const silenceChance = 0.10 + 0.08 * tBoostA;
+                        if (Math.random() <= silenceChance) {
+                           defender.debuffs.silence = 1 + (isP1Turn ? rogueBuffs.silenceDuration : 0);
+                           actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
+                        }
+                     }
+                     if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                        const poisonChance = 0.15 + 0.10 * tBoostA;
+                        if (Math.random() <= poisonChance) {
+                           defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
+                           defender.debuffs.poisonPercent = 0.03 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                           actionLog += ` \n[宝具] 冰魄银针刺入，${defender.name} 身中剧毒！`;
+                        }
+                     }
+                     if (aTreasure?.effect === 'daGou' && !checkImmune(defender, dTreasure, 'stun')) {
+                        const stunChance = (0.15 + 0.10 * tBoostA) + (isP1Turn ? rogueBuffs.stunChance : 0);
+                        if (Math.random() <= stunChance) {
+                           defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                           actionLog += ` \n[宝具] 打狗棒击中后脑，${defender.name} 当场晕眩 ${defender.debuffs.stun} 回合！`;
+                        }
+                     }
+                     if (aTreasure?.effect === 'xuanTie' && Math.random() <= (0.20 + 0.10 * tBoostA) && !checkImmune(defender, dTreasure, 'internalWound')) {
+                         defender.debuffs.internalWound = 2;
+                         actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                     }
                   }
                }
             }
@@ -392,7 +502,7 @@ export default function EncounterArena() {
       if (attacker.buffs.defUp > 0) attacker.buffs.defUp--;
 
       if (attacker.hp <= 0 && aTreasure?.effect === 'niePan' && !attacker.hasRevived) {
-          attacker.hp = Math.floor(attacker.maxHp * 0.5);
+          attacker.hp = Math.floor(attacker.maxHp * (0.50 + 0.15 * tBoostA));
           attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           attacker.hasRevived = true;
           actionLog += `\n[涅槃] ${attacker.name} 达摩舍利碎裂，原地满血复活！`;
@@ -403,7 +513,7 @@ export default function EncounterArena() {
           actionLog += `\n[圣心涅槃] ${attacker.name} 凭借圣心诀真气，强行起死回生！`;
       }
       if (defender.hp <= 0 && dTreasure?.effect === 'niePan' && !defender.hasRevived) {
-          defender.hp = Math.floor(defender.maxHp * 0.5);
+          defender.hp = Math.floor(defender.maxHp * (0.50 + 0.15 * tBoostD));
           defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
           defender.hasRevived = true;
           actionLog += `\n[涅槃] ${defender.name} 达摩舍利碎裂，奇迹般续命！`;
@@ -417,7 +527,6 @@ export default function EncounterArena() {
       const finalLog = logPrefix + actionLog;
       setLogs(prev => [...prev, finalLog]);
 
-      // Always update p1/p2 state immediately to ensure React renders the correct final values (including HP=0 death states)
       if (isP1Turn) {
          setP1(attacker);
          setP2(defender);
@@ -429,64 +538,37 @@ export default function EncounterArena() {
       if (attacker.hp <= 0 || defender.hp <= 0) {
          const p1Won = isP1Turn ? defender.hp <= 0 : attacker.hp <= 0;
          const finalP1 = isP1Turn ? attacker : defender;
-         // 用 ref 读取，避免闭包快照陈旧问题
-         const curIdx = currentEnemyIndex.current;
 
          if (p1Won) {
-            if (curIdx >= 2) {
-               // 连胜3人，胜利结算
-               let expReward = 0;
-               let droppedTreasure = null;
-               team.forEach(t => {
-                   expReward += Math.floor((100 - t.rankIndex) * 20 + t.level * 10);
-                   if (t.equippedTreasure) {
-                       const dropChance = 0.05 + Math.min(0.2, player.attributes.luk * 0.01);
-                       if (Math.random() < dropChance) droppedTreasure = t.equippedTreasure;
-                   }
-               });
-               gainExp(expReward);
-               if (droppedTreasure) gainTreasure(droppedTreasure);
-               
-               addSilver(3);
+            const nextDefeatedCount = defeatedCount + 1;
+            setDefeatedCount(nextDefeatedCount);
 
-               // 播放连胜大捷与金币洒落音效
+            if (nextDefeatedCount >= 60) {
+               handleRogueSettlement(nextDefeatedCount);
+            } else if (nextDefeatedCount % 3 === 0) {
+               setEncounterState('buffSelection');
+               const choices = generateBuffChoices(player.equippedTreasure);
+               setBuffChoices(choices);
+               setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
                SoundManager.play('sfx_success');
-               setTimeout(() => {
-                 SoundManager.play('sfx_coin');
-               }, 300);
-
-               setLogs(prev => [...prev, `\n====== 奇遇大捷！======\n连破三敌，威震江湖！\n获得修为：${expReward}\n赚取银币：+3 银两` + (droppedTreasure ? `\n🎁 获得绝世宝物：[${TREASURES_DB.find(t=>t.id===droppedTreasure)?.name}]` : '')]);
-               setEncounterState('win');
             } else {
-               const nextIdx = curIdx + 1;
-               const defeatedName = isP1Turn ? defender.name : attacker.name;
                setEncounterState('transitioning');
-               setLogs(prev => [...prev, `\n战胜 ${defeatedName}！${curIdx===1 ? '额外掉落 +1 银两！' : ''}进入下一战...`]);
-               
-               // 播放过关小捷与钱币音效
+               setLogs(prev => [...prev, `\n战胜了 ${defender.name}！进入下一战...`]);
                SoundManager.play('sfx_success');
-               if (curIdx === 1) {
-                  addSilver(1);
-                  setTimeout(() => {
-                    SoundManager.play('sfx_coin');
-                  }, 200);
-               }
-
-               setTimeout(() => setupNextEnemy(finalP1, team, nextIdx), 2000);
+               setTimeout(() => setupNextEnemy(finalP1, leaderboardTeam, nextDefeatedCount), 2000);
             }
          } else {
-            // 播放战败的凄凉锣声
+            setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，挑战结束。一共击败了 ${defeatedCount} 位对手。`]);
+            setEncounterState('lose_settling');
             SoundManager.play('sfx_fail');
-            setLogs(prev => [...prev, `\n====== 战败 ====== \n不敌对手，大侠请重新来过...`]);
-            setEncounterState('lose');
          }
       }
 
     }, 1200);
     return () => clearTimeout(timer);
-  }, [encounterState, p1, p2, logs.length]);
+  }, [encounterState, p1, p2, logs.length, defeatedCount, leaderboardTeam, rogueBuffs]);
 
-  // 解析战斗日志，触发动效
+  // 解析日志触发打击音效与动画
   useEffect(() => {
     if (!logs || logs.length === 0) return;
     const lastLog = logs[logs.length - 1];
@@ -503,7 +585,6 @@ export default function EncounterArena() {
       const p1Name = p1.name;
       const p2Name = p2.name;
 
-      // 拦截特写招式
       const cleanLog = lastLog.replace(/^\[[^\]]+\]\s*/, '');
       const skillMatch = cleanLog.match(/([^\s\n]+)\s+[^【\n]*【([^】]+)】/);
       if (skillMatch) {
@@ -521,12 +602,10 @@ export default function EncounterArena() {
         }
       }
 
-      // 1. 检测受击 & 攻击
       if (lastLog.includes('造成了') || lastLog.includes('斩去') || lastLog.includes('伤害') || lastLog.includes('反伤') || lastLog.includes('损失') || lastLog.includes('造成') || lastLog.includes('追击') || lastLog.includes('削去') || lastLog.includes('丧失') || lastLog.includes('毒发')) {
         const damageMatch = lastLog.match(/(\d+)\s*(点|点伤害|气血|伤害)?/);
         if (damageMatch) {
           const damage = parseInt(damageMatch[1]);
-          // 智能检测招式类型
           const cleanLog = lastLog.replace(/^\[[^\]]+\]\s*/, '');
           const skillNameMatch = cleanLog.match(/【([^】]+)】/);
           effectType = 'swordSlash';
@@ -549,12 +628,8 @@ export default function EncounterArena() {
                 effectType = 'fistPunch';
               }
             }
-          } else {
-            // 普通物理攻击/反伤等物理撞击，还原原版直接进行刀剑斩击 (即不显示飞行气团弹道，打击感爽快直接)
-            effectType = 'swordSlash';
           }
 
-          // 根据不同动效的弹道飞行时长计算伤害数值飘字的生成延迟
           let delay = 0;
           if (effectType === 'ultimateBurst') {
             delay = 580;
@@ -566,7 +641,6 @@ export default function EncounterArena() {
             addDamageNumber(damage, pos);
           };
 
-          // 播放对应动作打击音效
           if (effectType === 'ultimateBurst') {
             SoundManager.play('sfx_magic');
           } else if (effectType === 'fistPunch') {
@@ -598,7 +672,6 @@ export default function EncounterArena() {
               triggerDamage('right');
             }
           } else {
-            // fallback: check who is active attacker
             if (lastLog.startsWith(p1Name) || lastLog.includes(p1Name + ' 使出') || lastLog.includes(p1Name + ' 施展')) {
               attacker = p1Name;
               lastHit = p2Name;
@@ -624,8 +697,6 @@ export default function EncounterArena() {
 
       const getTargetPos = (logText, keywords = null) => {
         const lines = logText.split('\n');
-        
-        // 1. 如果指定了关键字，优先在包含任意一个关键字的行里找名字
         if (keywords) {
           const kwList = Array.isArray(keywords) ? keywords : [keywords];
           for (let i = lines.length - 1; i >= 0; i--) {
@@ -636,20 +707,15 @@ export default function EncounterArena() {
             }
           }
         }
-        
-        // 2. 如果没指定关键字或者对应行没名字，从最后一行往前找名字
         for (let i = lines.length - 1; i >= 0; i--) {
           if (p1Name && lines[i].includes(p1Name)) return 'left';
           if (p2Name && lines[i].includes(p2Name)) return 'right';
         }
-        
-        // 3. 兜底策略：全文匹配
         if (p1Name && logText.includes(p1Name)) return 'left';
         if (p2Name && logText.includes(p2Name)) return 'right';
         return 'center';
       };
 
-      // 2. 检测闪避
       if (lastLog.includes('躲开') || lastLog.includes('闪避') || lastLog.includes('闪开') || lastLog.includes('被闪开')) {
         let pos = 'center';
         if (lastLog.includes('被 ' + p1Name) || lastLog.includes('被' + p1Name + '闪开') || (lastLog.includes(p1Name + ' 的【') && lastLog.includes('被闪开'))) {
@@ -665,7 +731,6 @@ export default function EncounterArena() {
         SoundManager.play('sfx_dodge');
       }
 
-      // 3. 检测治疗与恢复
       if (lastLog.includes('恢复了') || lastLog.includes('回春') || lastLog.includes('复活') || lastLog.includes('涅槃') || lastLog.includes('夺取了') || lastLog.includes('恢复')) {
         const healMatch = lastLog.match(/(?:恢复了|夺取了|恢复|回春)?\s*\+?(\d+)/);
         const healAmt = healMatch ? parseInt(healMatch[1]) : 150;
@@ -681,7 +746,6 @@ export default function EncounterArena() {
         }
       }
 
-      // 4. 检测其他特殊控制与增益
       if (lastLog.includes('暴击') || lastLog.includes('重创')) {
         const critPos = lastHit ? (lastHit === p1Name ? 'left' : 'right') : getTargetPos(lastLog, ['暴击', '重创']);
         addEffect('criticalHit', critPos, 2);
@@ -694,7 +758,7 @@ export default function EncounterArena() {
         addEffect('heal', getTargetPos(lastLog, ['力激荡', '逼出']));
         SoundManager.play('sfx_heal');
       }
-      if (lastLog.includes('晕') || lastLog.includes('震晕') || lastLog.includes('眩晕')) {
+      if (lastLog.includes('伤功') || lastLog.includes('晕') || lastLog.includes('震晕') || lastLog.includes('眩晕')) {
         addEffect('stun', getTargetPos(lastLog, ['晕', '震晕', '眩晕']));
         SoundManager.play('sfx_stun');
       }
@@ -716,12 +780,536 @@ export default function EncounterArena() {
       setCurrentBattleState({ attacker, lastHit, dodger, healer, effectType });
     }
 
-    // 清除战斗状态
     const timer = setTimeout(() => {
       setCurrentBattleState({});
     }, 800);
     return () => clearTimeout(timer);
   }, [logs]);
+
+  // 同步计算模拟剩余战斗
+  const simulateRestOfBattle = (startP1, startP2, startLogs) => {
+     let tempP1 = { ...startP1, attributes: { ...startP1.attributes }, buffs: { ...startP1.buffs }, debuffs: { ...startP1.debuffs } };
+     let tempP2 = { ...startP2, attributes: { ...startP2.attributes }, buffs: { ...startP2.buffs }, debuffs: { ...startP2.debuffs } };
+     let tempLogs = [...startLogs];
+
+     const getTreasure = (id) => TREASURES_DB?.find(t => t.id === id);
+
+     const checkImmune = (playerObj, tObj, debuffType) => {
+        if (tObj?.effect === 'jiMie') return true; 
+        if (tObj?.effect === 'ruanWei' && (debuffType === 'stun' || debuffType === 'poison')) return true;
+        if (tObj?.effect === 'jinShe' && debuffType === 'poison') return true;
+        return false;
+     };
+
+     while (tempP1.hp > 0 && tempP2.hp > 0) {
+        const isP1Turn = Math.random() < (tempP1.attributes.agi / (tempP1.attributes.agi + tempP2.attributes.agi + 1));
+        let attacker = { ... (isP1Turn ? tempP1 : tempP2) };
+        let defender = { ... (isP1Turn ? tempP2 : tempP1) };
+
+        const aTreasure = getTreasure(attacker.equippedTreasure);
+        const dTreasure = getTreasure(defender.equippedTreasure);
+
+        let logPrefix = "";
+        if (tempLogs.length === 1) { 
+           const p1IsAttacker = isP1Turn;
+           const tBoostAttacker = p1IsAttacker ? rogueBuffs.treasureBoostLevel : 0;
+           const tBoostDefender = p1IsAttacker ? 0 : rogueBuffs.treasureBoostLevel;
+           
+           if (aTreasure?.effect === 'ningShen') {
+               const shieldVal = Math.floor(attacker.maxHp * (0.05 + 0.05 * tBoostAttacker));
+               attacker.buffs.shield += shieldVal;
+               logPrefix += `[开局] ${attacker.name} 的【木质佛珠】泛起佛光，获得了 ${shieldVal} 点护盾！\n`;
+           }
+           if (dTreasure?.effect === 'ningShen') {
+               const shieldVal = Math.floor(defender.maxHp * (0.05 + 0.05 * tBoostDefender));
+               defender.buffs.shield += shieldVal;
+               logPrefix += `[开局] ${defender.name} 的【木质佛珠】泛起佛光，获得了 ${shieldVal} 点护盾！\n`;
+           }
+           if (aTreasure?.effect === 'shengHuo' && !checkImmune(defender, dTreasure, 'silence')) {
+               const silDur = 2 + (p1IsAttacker ? rogueBuffs.silenceDuration : 0);
+               defender.debuffs.silence = silDur;
+               logPrefix += `[开局] ${attacker.name} 亮出【圣火令】，发出无上威压，封锁了 ${defender.name} ${silDur} 回合！\n`;
+           }
+           if (dTreasure?.effect === 'shengHuo' && !checkImmune(attacker, aTreasure, 'silence')) {
+               const silDur = 2 + (p1IsAttacker ? 0 : rogueBuffs.silenceDuration);
+               attacker.debuffs.silence = silDur;
+               logPrefix += `[开局] ${defender.name} 亮出【圣火令】，发出无上威压，封锁了 ${attacker.name} ${silDur} 回合！\n`;
+           }
+        }
+
+        if (attacker.debuffs.poison > 0) {
+           const poisonPct = attacker.debuffs.poisonPercent || 0.03;
+           const pDmg = Math.max(1, Math.floor(attacker.maxHp * poisonPct));
+           attacker.hp = Math.max(0, attacker.hp - pDmg);
+           attacker.debuffs.poison--;
+           if (attacker.debuffs.poison === 0) {
+               attacker.debuffs.poisonPercent = 0.03;
+           }
+           logPrefix += `[中毒] ${attacker.name} 毒发，丧失了 ${pDmg} 气血！\n`;
+        }
+
+        let actionLog = "";
+        if (attacker.hp > 0) {
+           if (attacker.debuffs.stun > 0) {
+              attacker.debuffs.stun--;
+              actionLog = `[系统] ${attacker.name} 处于【晕眩】中，只能呆立当场，无法动弹！`;
+           } else {
+              const eq = attacker.equippedSkills || {};
+              let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
+              if (attacker.debuffs.silence > 0) {
+                  skillIds = ['s1']; attacker.debuffs.silence--;
+              } else if (attacker.debuffs.internalWound > 0) {
+                  skillIds = [eq.outer].filter(Boolean); 
+                  if (skillIds.length===0) skillIds = ['s1'];
+                  attacker.debuffs.internalWound--;
+              }
+
+              const pickSkill = () => {
+                 if (skillIds.length === 0) return SKILLS_DB[0];
+                 let totalWeight = 0;
+                 const weighted = skillIds.map(sId => {
+                    const sk = SKILLS_DB.find(s=>s.id===sId) || SKILLS_DB[0];
+                    const weight = 100 + (sk.power / 10) * (attacker.attributes.int || 0) * 1.5;
+                    totalWeight += weight;
+                    return { skill: sk, weight };
+                 });
+                 let rand = Math.random() * totalWeight;
+                 for (const item of weighted) {
+                    if (rand < item.weight) return item.skill;
+                    rand -= item.weight;
+                 }
+                 return weighted[weighted.length - 1].skill;
+              };
+              const skill = pickSkill();
+              
+              const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
+              const dDefBase = defender.attributes.con * 2 + defender.level * 2;
+              const aMod = 1 + attacker.level * 0.05;
+              const adjustedSkillPwr = skill.power * aMod;
+
+              if (skill.id === 's5' || skill.id === 's_yijin') {
+                 attacker.buffs.defUp = 3 + (isP1Turn ? rogueBuffs.defUpDuration : 0);
+                 actionLog = `${attacker.name} 催动【${skill.name}】，真气护体，防御力大增！`;
+                 if (skill.id === 's_yijin' && attacker.debuffs.poison > 0) {
+                     attacker.debuffs.poison = 0;
+                     actionLog += ` 易筋经内力激荡，体内剧毒被猛然逼出！`;
+                 }
+              } else if (skill.id === 's4' || skill.id === 's_tiyun') { 
+                 attacker.buffs.dodge = 3 + (isP1Turn ? rogueBuffs.dodgeDuration : 0);
+                 actionLog = `${attacker.name} 施展【${skill.name}】，身形变幻莫测，闪避率大幅提升！`;
+              } else if (skill.id === 's_shenxing') {
+                 attacker.buffs.dodge = 99;
+                 actionLog = `${attacker.name} 施展出【${skill.name}】，犹如鬼魅不可捉摸，难以命中！`;
+              } else if (skill.id === 's_shengxin') {
+                 attacker.buffs.revive = 1; actionLog = `${attacker.name} 运转【${skill.name}】，生死二气护住心脉！`;
+              } else if (skill.type === 'heal') {
+                 const healAmt = Math.floor(adjustedSkillPwr + attacker.attributes.int * 2 + 30);
+                 attacker.hp = Math.min(attacker.maxHp, attacker.hp + healAmt);
+                 actionLog = `${attacker.name} 运转内力使出【${skill.name}】，恢复了 ${healAmt} 点气血！`;
+              } else if (skill.type === 'buff' || skill.type === 'motion' || skill.power === 0) {
+                 attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
+              } else {
+                 const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
+                 let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
+                 
+                 if (isDodge) {
+                    actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
+                    if (!isP1Turn && rogueBuffs.dodgeDuration > 0 && Math.random() < 0.20) {
+                       const counterDmg = Math.max(1, Math.floor((tempP1.attributes.str * 2 + tempP1.level * 5) * 0.5));
+                       tempP2.hp = Math.max(0, tempP2.hp - counterDmg);
+                       actionLog += `\n[神行反击] ${tempP1.name} 乘虚而入反击一招，对 ${tempP2.name} 造成了 ${counterDmg} 点伤害！`;
+                    }
+                 } else {
+                    const defMultiplier = (!isP1Turn && defender.buffs.defUp > 0) ? (2 + rogueBuffs.defUpEffect) : (defender.buffs.defUp > 0 ? 2 : 1);
+                    let finalDef = dDefBase * 1 * defMultiplier;
+                    let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
+                    
+                    const tBoostA = isP1Turn ? rogueBuffs.treasureBoostLevel : 0;
+                    const tBoostD = isP1Turn ? 0 : rogueBuffs.treasureBoostLevel;
+
+                    if (aTreasure?.effect === 'poShang') dmg += (50 + 40 * tBoostA); 
+                    if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * (1.20 + 0.05 * tBoostA));
+                    if (aTreasure?.effect === 'tuLong' && (attacker.hp / attacker.maxHp) < 0.4) dmg = Math.floor(dmg * (1.50 + 0.15 * tBoostA));
+                    if (aTreasure?.effect === 'shengHuo') dmg += Math.floor(defender.hp * (0.05 + 0.02 * tBoostA));
+                    if (!aTreasure && isP1Turn) dmg = Math.floor(dmg * (1.0 + 0.10 * tBoostA));
+
+                    if (dTreasure?.effect === 'qingQiao') dmg -= (30 + 20 * tBoostD);
+                    if (dTreasure?.effect === 'tuLong' && (defender.hp / defender.maxHp) < 0.4) dmg = Math.floor(dmg * 0.8);
+                    dmg = Math.max(1, dmg);
+
+                    if (aTreasure?.effect === 'jiMie' && Math.random() < (0.05 + 0.02 * tBoostA)) {
+                        dmg = Math.floor(defender.hp * 0.5);
+                        actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
+                    }
+
+                    if (defender.buffs.shield > 0) {
+                        if (defender.buffs.shield >= dmg) { defender.buffs.shield -= dmg; dmg = 0; } 
+                        else { dmg -= defender.buffs.shield; defender.buffs.shield = 0; }
+                    }
+                    defender.hp = Math.max(0, defender.hp - dmg);
+                    
+                    if (dmg > 0 && aTreasure?.effect === 'huiChun') attacker.hp = Math.min(attacker.maxHp, attacker.hp + Math.floor(attacker.maxHp * (0.02 + 0.015 * tBoostA)));
+                    if (dmg > 0 && aTreasure?.effect === 'yiTian') attacker.hp = Math.min(attacker.maxHp, Math.floor(attacker.hp + dmg * (0.15 + 0.10 * tBoostA)));
+
+                    if (!actionLog.includes('[寂灭]')) {
+                       actionLog = `${attacker.name} 使出【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！`;
+                    }
+
+                    if (defender.debuffs.silence > 0 && !isP1Turn && rogueBuffs.silenceDamageAmp > 0) {
+                       const ampDmg = Math.floor(dmg * rogueBuffs.silenceDamageAmp);
+                       defender.hp = Math.max(0, defender.hp - ampDmg);
+                       actionLog += ` (封印易伤 +${ampDmg})`;
+                    }
+
+                    if (dmg > 0 && dTreasure?.effect === 'ruanWei') {
+                       const rRatio = 0.15 + 0.10 * tBoostD;
+                       const rDmg = Math.floor(dmg * rRatio); attacker.hp -= rDmg;
+                       actionLog += `\n[软猬荆棘] 尖刺反伤，${attacker.name} 受到了 ${rDmg} 点伤害！`;
+                    }
+                    if (aTreasure?.effect === 'jinShe' && defender.hp > 0 && Math.random() <= (0.20 + 0.10 * tBoostA)) {
+                        const comboDmg = Math.max(1, Math.floor(dmg * 0.5)); defender.hp = Math.max(0, defender.hp - comboDmg);
+                        actionLog += `\n[金蛇出洞] ${attacker.name} 挥出虚影追加一击，造成 ${comboDmg} 伤害！`;
+                    }
+
+                    if (dmg > 0 && skill.id === 's_xixing') {
+                        const drainAmt = Math.floor(dmg * 0.8);
+                        attacker.hp = Math.min(attacker.maxHp, attacker.hp + drainAmt);
+                        actionLog += ` \n[吸星大法] ${attacker.name} 夺取了 ${drainAmt} 点气血化为己用！`;
+                    }
+
+                    if (defender.hp > 0) {
+                       if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
+                           defender.debuffs.poison = 999;
+                           defender.debuffs.poisonPercent = 0.07 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                           actionLog += ` \n[万毒] ${defender.name} 身中奇毒，骨髓俱损！`;
+                       }
+                       if (skill.id === 's_shihou' && !checkImmune(defender, dTreasure, 'stun')) {
+                           const stunChanceVal = 0.6 + (isP1Turn ? rogueBuffs.stunChance : 0);
+                           if (Math.random() <= stunChanceVal) {
+                              defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                              actionLog += ` \n[狮吼] 震耳欲聋，${defender.name} 被当场震晕 ${defender.debuffs.stun} 回合！`;
+                           }
+                       }
+                       if (skill.id === 's_dianxue' && !checkImmune(defender, dTreasure, 'silence')) {
+                           if (Math.random() <= 0.8) {
+                              defender.debuffs.silence = 2 + (isP1Turn ? rogueBuffs.silenceDuration : 0);
+                              actionLog += ` \n[点穴] ${defender.name} 要穴被封，无法动用武学 ${defender.debuffs.silence} 回合！`;
+                           }
+                       }
+                       if (skill.id === 's_liumai' && Math.random() <= 0.5 && !checkImmune(defender, dTreasure, 'internalWound')) {
+                           defender.debuffs.internalWound = 2; actionLog += ` \n[六脉] 无形剑气震伤内腑，${defender.name} 经脉受损！`;
+                       }
+
+                       if (aTreasure?.effect === 'dianXue' && !checkImmune(defender, dTreasure, 'silence')) {
+                          const silenceChance = 0.10 + 0.08 * tBoostA;
+                          if (Math.random() <= silenceChance) {
+                             defender.debuffs.silence = 1 + (isP1Turn ? rogueBuffs.silenceDuration : 0);
+                             actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
+                          }
+                       }
+                       if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                          const poisonChance = 0.15 + 0.10 * tBoostA;
+                          if (Math.random() <= poisonChance) {
+                             defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
+                             defender.debuffs.poisonPercent = 0.03 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                             actionLog += ` \n[宝具] 冰魄银针刺入，${defender.name} 身中剧毒！`;
+                          }
+                       }
+                       if (aTreasure?.effect === 'daGou' && !checkImmune(defender, dTreasure, 'stun')) {
+                          const stunChance = (0.15 + 0.10 * tBoostA) + (isP1Turn ? rogueBuffs.stunChance : 0);
+                          if (Math.random() <= stunChance) {
+                             defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                             actionLog += ` \n[宝具] 打狗棒击中后脑，${defender.name} 当场晕眩 ${defender.debuffs.stun} 回合！`;
+                          }
+                       }
+                       if (aTreasure?.effect === 'xuanTie' && Math.random() <= (0.20 + 0.10 * tBoostA) && !checkImmune(defender, dTreasure, 'internalWound')) {
+                           defender.debuffs.internalWound = 2;
+                           actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                       }
+                    }
+                 }
+              }
+           }
+        }
+
+        if (attacker.buffs.dodge > 0) attacker.buffs.dodge--;
+        if (attacker.buffs.defUp > 0) attacker.buffs.defUp--;
+
+        if (attacker.hp <= 0 && aTreasure?.effect === 'niePan' && !attacker.hasRevived) {
+            attacker.hp = Math.floor(attacker.maxHp * (0.50 + 0.15 * tBoostA));
+            attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
+            attacker.hasRevived = true;
+            actionLog += `\n[涅槃] ${attacker.name} 达摩舍利碎裂，原地满血复活！`;
+        } else if (attacker.hp <= 0 && attacker.buffs.revive > 0) {
+            attacker.hp = Math.floor(attacker.maxHp * 0.5);
+            attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
+            attacker.buffs.revive--;
+            actionLog += `\n[圣心涅槃] ${attacker.name} 凭借圣心诀真气，强行起死回生！`;
+        }
+        if (defender.hp <= 0 && dTreasure?.effect === 'niePan' && !defender.hasRevived) {
+            defender.hp = Math.floor(defender.maxHp * (0.50 + 0.15 * tBoostD));
+            defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
+            defender.hasRevived = true;
+            actionLog += `\n[涅槃] ${defender.name} 达摩舍利碎裂，奇迹般续命！`;
+        } else if (defender.hp <= 0 && defender.buffs.revive > 0) {
+            defender.hp = Math.floor(defender.maxHp * 0.5);
+            defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
+            defender.buffs.revive--;
+            actionLog += `\n[圣心涅槃] ${defender.name} 凭借圣心诀真气，强行起死回生！`;
+        }
+
+        const finalLog = logPrefix + actionLog;
+        tempLogs.push(finalLog);
+
+        if (isP1Turn) {
+           tempP1 = attacker;
+           tempP2 = defender;
+        } else {
+           tempP1 = defender;
+           tempP2 = attacker;
+        }
+     }
+
+     return { p1: tempP1, p2: tempP2, logs: tempLogs };
+  };
+
+  // “直接结算”一键跳过当前单场战斗
+  const skipBattle = () => {
+     if (encounterState !== 'battling' || !p1 || !p2) return;
+     SoundManager.play('sfx_click');
+     
+     const result = simulateRestOfBattle(p1, p2, logs);
+     
+     setP1(result.p1);
+     setP2(result.p2);
+     
+     const p1Won = result.p1.hp > 0;
+     const nextDefeatedCount = defeatedCount + 1;
+     
+     let finalLogs = [...result.logs];
+     if (p1Won) {
+        finalLogs.push(`\n战胜了 ${result.p2.name}！`);
+     } else {
+        finalLogs.push(`\n====== 战败 ====== \n不敌 ${result.p2.name}，挑战结束。一共击败了 ${defeatedCount} 位对手。`);
+     }
+     setLogs(finalLogs);
+     
+     if (p1Won) {
+        setDefeatedCount(nextDefeatedCount);
+        if (nextDefeatedCount >= 60) {
+           handleRogueSettlement(nextDefeatedCount);
+        } else if (nextDefeatedCount % 3 === 0) {
+           setEncounterState('buffSelection');
+           const choices = generateBuffChoices(player.equippedTreasure);
+           setBuffChoices(choices);
+           SoundManager.play('sfx_success');
+        } else {
+           setEncounterState('transitioning');
+           SoundManager.play('sfx_success');
+           setTimeout(() => {
+              setupNextEnemy(result.p1, leaderboardTeam, nextDefeatedCount);
+           }, 2000);
+        }
+     } else {
+        setEncounterState('lose_settling');
+        SoundManager.play('sfx_fail');
+     }
+  };
+
+  // 累积计算阶段奖励，并写入主 Store
+  const handleRogueSettlement = (finalDefeatedCount) => {
+     let totalExp = 0;
+     let totalSilver = 0;
+     let rewardsList = [];
+     let droppedTreasures = [];
+
+     // 胜场奖励阶梯：6, 12, 30, 42, 48, 51, 54, 57, 60
+     if (finalDefeatedCount >= 6) {
+        totalExp += 200;
+        totalSilver += 2;
+        rewardsList.push("战胜 6 人：修为 +200，银两 +2");
+     }
+     if (finalDefeatedCount >= 12) {
+        totalExp += 500;
+        totalSilver += 3;
+        rewardsList.push("战胜 12 人：修为 +500，银两 +3");
+        if (Math.random() < 0.15) {
+           const common = TREASURES_DB.filter(t => t.rarity === '普通');
+           const tr = common[Math.floor(Math.random() * common.length)];
+           if (tr) droppedTreasures.push(tr);
+        }
+     }
+     if (finalDefeatedCount >= 30) {
+        totalExp += 1200;
+        totalSilver += 6;
+        rewardsList.push("战胜 30 人：修为 +1200，银两 +6，普通秘宝 100%");
+        const common = TREASURES_DB.filter(t => t.rarity === '普通');
+        const tr1 = common[Math.floor(Math.random() * common.length)];
+        if (tr1) droppedTreasures.push(tr1);
+        
+        if (Math.random() < 0.20) {
+           const rare = TREASURES_DB.filter(t => t.rarity === '稀有');
+           const tr2 = rare[Math.floor(Math.random() * rare.length)];
+           if (tr2) droppedTreasures.push(tr2);
+        }
+     }
+     if (finalDefeatedCount >= 42) {
+        totalExp += 2000;
+        totalSilver += 10;
+        rewardsList.push("战胜 42 人：修为 +2000，银两 +10，稀有秘宝 100%");
+        const rare = TREASURES_DB.filter(t => t.rarity === '稀有');
+        const tr1 = rare[Math.floor(Math.random() * rare.length)];
+        if (tr1) droppedTreasures.push(tr1);
+        
+        if (Math.random() < 0.10) {
+           const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
+           const tr2 = epic[Math.floor(Math.random() * epic.length)];
+           if (tr2) droppedTreasures.push(tr2);
+        }
+     }
+     if (finalDefeatedCount >= 48) {
+        totalExp += 3000;
+        totalSilver += 15;
+        rewardsList.push("战胜 48 人：修为 +3000，银两 +15，史诗秘宝 100%");
+        const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
+        const tr = epic[Math.floor(Math.random() * epic.length)];
+        if (tr) droppedTreasures.push(tr);
+     }
+     if (finalDefeatedCount >= 51) {
+        totalExp += 4000;
+        totalSilver += 20;
+        rewardsList.push("战胜 51 人：修为 +4000，银两 +20，史诗秘宝 100%");
+        const epic = TREASURES_DB.filter(t => t.rarity === '史诗');
+        const tr1 = epic[Math.floor(Math.random() * epic.length)];
+        if (tr1) droppedTreasures.push(tr1);
+        
+        if (Math.random() < 0.10) {
+           const legend = TREASURES_DB.filter(t => t.rarity === '传说');
+           const tr2 = legend[Math.floor(Math.random() * legend.length)];
+           if (tr2) droppedTreasures.push(tr2);
+        }
+     }
+     if (finalDefeatedCount >= 54) {
+        totalExp += 5000;
+        totalSilver += 25;
+        rewardsList.push("战胜 54 人：修为 +5000，银两 +25，传说秘宝 50% 概率");
+        if (Math.random() < 0.50) {
+           const legend = TREASURES_DB.filter(t => t.rarity === '传说');
+           const tr = legend[Math.floor(Math.random() * legend.length)];
+           if (tr) droppedTreasures.push(tr);
+        }
+     }
+     if (finalDefeatedCount >= 57) {
+        totalExp += 6500;
+        totalSilver += 35;
+        rewardsList.push("战胜 57 人：修为 +6500，银两 +35，传说秘宝 100%");
+        const legend = TREASURES_DB.filter(t => t.rarity === '传说');
+        const tr1 = legend[Math.floor(Math.random() * legend.length)];
+        if (tr1) droppedTreasures.push(tr1);
+        
+        if (Math.random() < 0.05) {
+           const mythic = TREASURES_DB.filter(t => t.rarity === '神话');
+           const tr2 = mythic[Math.floor(Math.random() * mythic.length)];
+           if (tr2) droppedTreasures.push(tr2);
+        }
+     }
+     if (finalDefeatedCount >= 60) {
+        totalExp += 10000;
+        totalSilver += 50;
+        rewardsList.push("通关奇迹！胜 60 人：修为 +10000，银两 +50，神话秘宝 30% 概率");
+        if (Math.random() < 0.30) {
+           const mythic = TREASURES_DB.filter(t => t.rarity === '神话');
+           const tr = mythic[Math.floor(Math.random() * mythic.length)];
+           if (tr) droppedTreasures.push(tr);
+        }
+     }
+
+     // 结算派发奖励到主状态机
+     if (totalExp > 0) gainExp(totalExp);
+     if (totalSilver > 0) addSilver(totalSilver);
+     droppedTreasures.forEach(t => gainTreasure(t.id));
+
+     // 若战胜 60 位通关，授予特别名望
+     if (finalDefeatedCount >= 60) {
+        useGameStore.getState().setTitle("鸣剑宗主");
+     }
+
+     setSettlementInfo({
+        defeatedCount: finalDefeatedCount,
+        exp: totalExp,
+        silver: totalSilver,
+        treasures: droppedTreasures,
+        milestones: rewardsList,
+        titleUnlocked: finalDefeatedCount >= 60 ? "鸣剑宗主" : null
+     });
+
+     setEncounterState('settlement');
+     SoundManager.play('sfx_success');
+     if (totalSilver > 0) {
+        setTimeout(() => { SoundManager.play('sfx_coin'); }, 400);
+     }
+  };
+
+  // 应用奇遇所选 Buff，并恢复气血
+  const applyRogueBuff = (choice) => {
+     SoundManager.play('sfx_success');
+     
+     let updatedP1 = { 
+        ...p1, 
+        attributes: { ...p1.attributes } 
+     };
+
+     setRogueBuffs(prev => {
+        const next = { ...prev };
+        if (choice.id === 'str') next.str += 20;
+        else if (choice.id === 'con') next.con += 20;
+        else if (choice.id === 'int') next.int += 20;
+        else if (choice.id === 'agi') next.agi += 20;
+        else if (choice.id === 'luk') next.luk += 20;
+        else if (choice.id === 'defUpEffect') next.defUpEffect += 0.25;
+        else if (choice.id === 'defUpDuration') next.defUpDuration += 1;
+        else if (choice.id === 'dodgeEffect') next.dodgeEffect += 0.15;
+        else if (choice.id === 'dodgeDuration') next.dodgeDuration += 1;
+        else if (choice.id === 'poisonDmgPct') next.poisonDmgPct += 0.02;
+        else if (choice.id === 'poisonDuration') next.poisonDuration += 2;
+        else if (choice.id === 'stunDuration') {
+           next.stunDuration += 1;
+           next.stunChance += 0.10;
+        }
+        else if (choice.id === 'silenceDuration') {
+           next.silenceDuration += 1;
+           next.silenceDamageAmp += 0.15;
+        }
+        else if (choice.id === 'treasureBoost') {
+           next.treasureBoostLevel += 1;
+        }
+        return next;
+     });
+
+     // 修改 P1 属性与 HP 上限
+     if (choice.id === 'str') updatedP1.attributes.str += 20;
+     else if (choice.id === 'con') {
+        updatedP1.attributes.con += 20;
+        updatedP1.maxHp += 200;
+        updatedP1.hp += 200;
+     }
+     else if (choice.id === 'int') updatedP1.attributes.int += 20;
+     else if (choice.id === 'agi') updatedP1.attributes.agi += 20;
+     else if (choice.id === 'luk') updatedP1.attributes.luk += 20;
+
+     // 通关波次额外获得 20% 生命值恢复
+     const healVal = Math.floor(updatedP1.maxHp * 0.20);
+     updatedP1.hp = Math.min(updatedP1.maxHp, updatedP1.hp + healVal);
+
+     setP1(updatedP1);
+     setWaveIndex(prev => prev + 1);
+
+     // 切入下一个对手战斗
+     setEncounterState('transitioning');
+     setTimeout(() => {
+        setupNextEnemy(updatedP1, leaderboardTeam, defeatedCount);
+     }, 1000);
+  };
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '1.5rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -746,7 +1334,7 @@ export default function EncounterArena() {
             江湖奇遇
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            风云突变遇豪侠，快意恩仇走天涯 <span style={{ fontSize: '0.8rem', color: 'var(--warn)', fontWeight: 'bold' }}>(今日剩余: {5 - (player.encountersToday || 0)} 次)</span>
+            逆袭破劫战群雄，肉鸽抉择成宗师 <span style={{ fontSize: '0.8rem', color: 'var(--warn)', fontWeight: 'bold' }}>(今日剩余: {5 - (player.encountersToday || 0)} 次)</span>
           </p>
         </div>
       </div>
@@ -754,13 +1342,151 @@ export default function EncounterArena() {
       {/* 渐变分割线 */}
       <div style={{ width: '80%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--warn), transparent)', margin: '0.2rem auto 0.8rem', opacity: 0.3 }} />
       
-
-
       {encounterState === 'idle' ? (
-         <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-         <p style={{ color: 'var(--text-main)', marginBottom: '2rem', fontSize: '1.1rem', lineHeight: '1.7' }}>你将连续挑战来自《江湖风云榜》的三人小队。<br/>血气虽会翻倍但在车轮战中绝不恢复！<br/>若能连胜，将有机会缴获敌方宝具。</p>
-         <button className="btn-primary" onClick={startEncounter} style={{ padding: '1rem 3rem', fontSize: '1.2rem', background: 'var(--warn)', color: '#000' }}>开启奇遇连战</button>
-       </div>
+         <div style={{ textAlign: 'center', marginTop: '1.5rem', padding: '1rem', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid var(--glass-border)', maxWidth: '680px', margin: '1.5rem auto' }}>
+           <h3 style={{ color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.35rem', marginBottom: '1.2rem', letterSpacing: '1px' }}>
+             【鸣剑破劫】Roguelike 闯关模式说明
+           </h3>
+           <ul style={{ color: 'var(--text-main)', textAlign: 'left', fontSize: '0.9rem', lineHeight: '1.8', listStyleType: 'none', paddingLeft: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+             <li>⚔️ <b>初始统一</b>：等级强制重置为 <b>15 级</b>，初始气血 <b>2000 HP</b>，五维属性全部重置为 <b>15点</b>。保留您当前装备的功法与秘宝（属性按15级重置）。</li>
+             <li>🏆 <b>逆袭风云榜</b>：从风云榜的最底端（第 60 席）依次向上发起车轮战，单场战斗结束后的剩余气血<b>不会自动恢复</b>。</li>
+             <li>✨ <b>奇遇加持</b>：每击败 3 名对手通关一个波次，气血恢复 <b>20%</b> 并获得一次奇遇增益（三选一），增益<b>可无限叠加</b>，助你构筑强力流派！</li>
+             <li>🎁 <b>里程碑大奖</b>：击败人数达 <b>6、12、30、42、48、51、54、57、60</b> 时派发大奖。通关全部 60 关将晋升限定专属名望【<b>鸣剑宗主</b>】！</li>
+           </ul>
+           <button className="btn-primary" onClick={startEncounter} style={{ marginTop: '2rem', padding: '1rem 3.5rem', fontSize: '1.2rem', background: 'var(--warn)', color: '#000', fontWeight: 'bold' }}>
+             开启奇遇闯关
+           </button>
+         </div>
+      ) : encounterState === 'buffSelection' ? (
+         <div style={{ textAlign: 'center', padding: '1rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+           <h2 style={{ fontSize: '1.8rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', marginBottom: '0.5rem' }}>
+             奇遇抉择
+           </h2>
+           <p style={{ color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '2.5rem' }}>
+             战绩斐然！大侠请在以下三项奇遇加持中抉择一项（增益可叠加，选择后恢复 20% 气血）：
+           </p>
+           
+           <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', flexWrap: 'wrap', width: '100%', maxWidth: '900px' }}>
+             {buffChoices.map((choice, idx) => (
+               <div 
+                 key={idx}
+                 onClick={() => applyRogueBuff(choice)}
+                 style={{
+                   flex: '1 1 240px',
+                   maxWidth: '280px',
+                   background: 'rgba(212, 175, 55, 0.04)',
+                   border: '1px solid rgba(212, 175, 55, 0.25)',
+                   borderRadius: '12px',
+                   padding: '2.5rem 1.5rem',
+                   cursor: 'pointer',
+                   transition: 'all 0.2s',
+                   display: 'flex',
+                   flexDirection: 'column',
+                   alignItems: 'center',
+                   justifyContent: 'space-between',
+                   gap: '15px',
+                   boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                 }}
+                 onMouseEnter={(e) => {
+                   e.currentTarget.style.transform = 'scale(1.05)';
+                   e.currentTarget.style.background = 'rgba(212, 175, 55, 0.08)';
+                   e.currentTarget.style.borderColor = 'var(--gold)';
+                 }}
+                 onMouseLeave={(e) => {
+                   e.currentTarget.style.transform = 'scale(1)';
+                   e.currentTarget.style.background = 'rgba(212, 175, 55, 0.04)';
+                   e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+                 }}
+               >
+                 <div style={{ fontSize: '2.5rem' }}>
+                   {choice.type === 'attr' ? '🧬' : choice.type === 'def' ? '🛡️' : choice.type === 'dodge' ? '💨' : choice.type === 'poison' ? '🧪' : choice.type === 'stun' ? '🌀' : choice.type === 'silence' ? '🔇' : '🗡️'}
+                 </div>
+                 <h3 style={{ color: 'var(--gold)', fontSize: '1.25rem', fontFamily: '"Ma Shan Zheng", cursive', margin: '0 0 10px 0' }}>
+                   {choice.name}
+                 </h3>
+                 <p style={{ color: '#d1d5db', fontSize: '0.88rem', lineHeight: '1.5', margin: 0, flex: 1, display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                   {choice.desc}
+                 </p>
+                 <div style={{ fontSize: '0.72rem', color: 'var(--gold)', background: 'rgba(212, 175, 55, 0.1)', padding: '3px 10px', borderRadius: '4px', border: '1px solid rgba(212, 175, 55, 0.2)', marginTop: '10px' }}>
+                   点击注入加持
+                 </div>
+               </div>
+             ))}
+           </div>
+         </div>
+      ) : encounterState === 'settlement' ? (
+         <div style={{ textAlign: 'center', padding: '1rem', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+           <div style={{ fontSize: '4.5rem', marginBottom: '0.5rem' }}>
+             {settlementInfo?.defeatedCount >= 60 ? '🥇' : '💀'}
+           </div>
+           
+           <h2 style={{ fontSize: '2.2rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', margin: '0 0 10px 0' }}>
+             {settlementInfo?.defeatedCount >= 60 ? '通关大捷！' : '挑战终结'}
+           </h2>
+           
+           <p style={{ color: 'var(--text-main)', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+             大侠本次一共击破了风云榜中的 <span style={{ color: 'var(--warn)', fontWeight: 'bold', fontSize: '1.5rem' }}>{settlementInfo?.defeatedCount}</span> 席对手！
+           </p>
+
+           <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', maxWidth: '500px', width: '100%', textAlign: 'left', marginBottom: '2.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+             <h4 style={{ color: 'var(--gold)', margin: '0 0 8px 0', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '6px', fontSize: '1rem' }}>🎁 获得结算奖励总览：</h4>
+             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '0.95rem' }}>
+               <span>获得修为：</span>
+               <span style={{ color: 'var(--jade)', fontWeight: 'bold' }}>+{settlementInfo?.exp} EXP</span>
+             </div>
+             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '0.95rem' }}>
+               <span>获得银两：</span>
+               <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>+{settlementInfo?.silver} 银两</span>
+             </div>
+             
+             {settlementInfo?.treasures && settlementInfo.treasures.length > 0 && (
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                 <span style={{ fontSize: '0.95rem' }}>缴获神兵秘宝：</span>
+                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+                   {settlementInfo.treasures.map((tr, i) => (
+                     <span key={i} className="wuxia-tag" style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--gold)', border: '1px solid rgba(212,175,55,0.3)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>
+                       📦 {tr.name} ({tr.rarity})
+                     </span>
+                   ))}
+                 </div>
+               </div>
+             )}
+
+             {settlementInfo?.titleUnlocked && (
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '8px 12px', borderRadius: '6px', marginTop: '8px' }}>
+                 <span style={{ color: 'var(--danger)', fontWeight: 'bold', fontSize: '0.9rem' }}>🎉 荣升专属称号：</span>
+                 <span className="wuxia-tag" style={{ background: 'var(--warn)', color: '#000', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                   {settlementInfo.titleUnlocked}
+                 </span>
+               </div>
+             )}
+
+             {settlementInfo?.milestones && settlementInfo.milestones.length > 0 && (
+               <div style={{ marginTop: '10px' }}>
+                 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>已解锁里程碑节点：</span>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                   {settlementInfo.milestones.map((ms, idx) => (
+                     <div key={idx}>✓ {ms}</div>
+                   ))}
+                 </div>
+               </div>
+             )}
+           </div>
+
+           <button 
+             className="btn-primary" 
+             onClick={() => {
+               SoundManager.play('sfx_click'); 
+               SoundManager.playMusic('bgm_menu'); 
+               setEncounterState('idle'); 
+               setLogs([]);
+               setSettlementInfo(null);
+             }}
+             style={{ padding: '0.8rem 2.5rem', fontSize: '1rem', background: 'var(--gold)', color: '#000', fontWeight: 'bold' }}
+           >
+             退下调息 (返回江湖)
+           </button>
+         </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {/* 角色立绘区域 */}
@@ -801,7 +1527,7 @@ export default function EncounterArena() {
                 borderRadius: '4px',
                 border: '1px solid rgba(212, 175, 55, 0.3)',
               }}>
-                第 {currentEnemyIndex.current + 1} / 3 战
+                第 {defeatedCount + 1} / 60 关
               </div>
             </div>
 
@@ -855,8 +1581,8 @@ export default function EncounterArena() {
           <div style={{ flex: 1, background: 'var(--bg-color)', border: '1px solid var(--glass-border)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem' }}>
             {logs.map((log, i) => (
               <div key={i} style={{ 
-                color: log.includes('大捷') || log.includes('宝物') ? '#facc15' : log.includes('===') ? 'var(--primary)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--danger)', 
-                fontWeight: log.includes('大捷') || log.includes('宝物') || log.includes('===') ? 'bold' : 'normal',
+                color: log.includes('大捷') || log.includes('宝物') || log.includes('奖励') ? '#facc15' : log.includes('===') ? 'var(--primary)' : log.includes(player.name) ? 'var(--text-main)' : 'var(--danger)', 
+                fontWeight: log.includes('大捷') || log.includes('宝物') || log.includes('===') || log.includes('奖励') ? 'bold' : 'normal',
                 whiteSpace: 'pre-line',
                 animation: 'slideUp 0.3s',
                 padding: log.includes('===') || log.includes('大捷') ? '8px' : '0',
@@ -868,9 +1594,29 @@ export default function EncounterArena() {
             ))}
           </div>
 
-          {(encounterState === 'win' || encounterState === 'lose') && (
-            <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => { SoundManager.play('sfx_click'); SoundManager.playMusic('bgm_menu'); setEncounterState('idle'); setLogs([]); }}>退下调息 (返回)</button>
-          )}
+          <div style={{ display: 'flex', gap: '15px', marginTop: '1rem' }}>
+            {encounterState === 'battling' && (
+              <button 
+                className="btn-primary" 
+                onClick={skipBattle} 
+                style={{ flex: 1, background: 'var(--gold)', color: '#000', fontWeight: 'bold' }}
+              >
+                直接结算 (跳过战斗)
+              </button>
+            )}
+            {encounterState === 'lose_settling' && (
+              <button 
+                className="btn-primary" 
+                onClick={() => handleRogueSettlement(defeatedCount)} 
+                style={{ flex: 1, background: 'var(--warn)', color: '#000', fontWeight: 'bold' }}
+              >
+                结算并领取奖励
+              </button>
+            )}
+            {(encounterState === 'win' || encounterState === 'lose') && (
+              <button className="btn-primary" style={{ flex: 1 }} onClick={() => { SoundManager.play('sfx_click'); SoundManager.playMusic('bgm_menu'); setEncounterState('idle'); setLogs([]); }}>退下调息 (返回)</button>
+            )}
+          </div>
         </div>
       )}
     </div>
