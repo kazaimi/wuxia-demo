@@ -775,7 +775,7 @@ export default function EncounterArena() {
                   handleRogueSettlement(nextDefeatedCount);
                } else if (nextDefeatedCount % 3 === 0) {
                   setEncounterState('buffSelection');
-                  const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
+                  const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 21);
                   setSelectedIndices([]);
                   setBuffChoices(choices);
                   setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
@@ -1342,7 +1342,7 @@ export default function EncounterArena() {
            handleRogueSettlement(nextDefeatedCount);
         } else if (nextDefeatedCount % 3 === 0) {
            setEncounterState('buffSelection');
-           const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 30);
+           const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount < 21);
            setSelectedIndices([]);
            setBuffChoices(choices);
            SoundManager.play('sfx_success');
@@ -1547,7 +1547,7 @@ export default function EncounterArena() {
 
   // 确认并批量注入所有已选中的奇遇加持，并恢复生命值与流转状态
   const confirmRogueBuffs = () => {
-      const maxChoices = defeatedCount < 30 ? 2 : 1;
+      const maxChoices = defeatedCount < 21 ? 2 : 1;
       if (selectedIndices.length !== maxChoices) {
          alert(`请选满 ${maxChoices} 个奇遇增益后再确认注入！`);
          return;
@@ -1739,13 +1739,13 @@ export default function EncounterArena() {
               奇遇抉择
             </h2>
             <p style={{ color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '2rem', maxWidth: '700px', lineHeight: '1.6' }}>
-              战绩斐然！大侠请注意：当前处于{defeatedCount < 30 ? <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【前期发育阶段，可任意挑选 2 项】</span> : <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>【中后期突围阶段，仅能精选 1 项】</span>}奇遇加持注入（增益可叠加，注入后获得 20% 气血恢复）：
+              战绩斐然！大侠请注意：当前处于{defeatedCount < 21 ? <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【前期发育阶段，可任意挑选 2 项】</span> : <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>【中后期突围阶段，仅能精选 1 项】</span>}奇遇加持注入（增益可叠加，注入后获得 20% 气血恢复）：
             </p>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', width: '100%', maxWidth: '1000px', marginBottom: '2rem' }}>
               {buffChoices.map((choice, idx) => {
                 const isSelected = selectedIndices.includes(idx);
-                const maxChoices = defeatedCount < 30 ? 2 : 1;
+                const maxChoices = defeatedCount < 21 ? 2 : 1;
                 return (
                   <div 
                     key={idx}
@@ -1862,7 +1862,7 @@ export default function EncounterArena() {
                    if (rerollsLeft <= 0) return;
                    SoundManager.play('sfx_click');
                    setRerollsLeft(prev => prev - 1);
-                   const choices = generateBuffChoices(player.equippedTreasure, defeatedCount < 30);
+                   const choices = generateBuffChoices(player.equippedTreasure, defeatedCount < 21);
                    setSelectedIndices([]);
                    setBuffChoices(choices);
                 }}
@@ -1883,22 +1883,22 @@ export default function EncounterArena() {
               <button
                 className="btn-primary glow-effect"
                 onClick={confirmRogueBuffs}
-                disabled={selectedIndices.length !== (defeatedCount < 30 ? 2 : 1)}
+                disabled={selectedIndices.length !== (defeatedCount < 21 ? 2 : 1)}
                 style={{
                   padding: '0.8rem 3.5rem',
                   fontSize: '1.1rem',
-                  background: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
-                  color: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
+                  background: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
+                  color: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
                   fontWeight: 'bold',
-                  cursor: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'pointer' : 'not-allowed',
-                  border: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                  filter: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? 'none' : 'grayscale(100%)',
-                  boxShadow: selectedIndices.length === (defeatedCount < 30 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
+                  cursor: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? 'pointer' : 'not-allowed',
+                  border: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  filter: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? 'none' : 'grayscale(100%)',
+                  boxShadow: selectedIndices.length === (defeatedCount < 21 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
                 }}
               >
-                {selectedIndices.length === (defeatedCount < 30 ? 2 : 1) 
+                {selectedIndices.length === (defeatedCount < 21 ? 2 : 1) 
                   ? '确立根基，注入奇遇加持' 
-                  : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount < 30 ? 2 : 1}）`}
+                  : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount < 21 ? 2 : 1}）`}
               </button>
             </div>
           </div>
