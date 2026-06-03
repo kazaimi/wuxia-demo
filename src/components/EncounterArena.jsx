@@ -393,8 +393,9 @@ export default function EncounterArena() {
 
   // 设置下一位挑战对手
   const setupNextEnemy = (currentP1, currentLeaderboard, totalDefeated) => {
-     const targetRank = 60 - totalDefeated;
-     let rawEnemy = currentLeaderboard.find(p => p.rankIndex === targetRank && p.isMock);
+     // 过滤出所有系统内置 NPC，并按照 NPC 等级升序排列，使挑战顺序严格从低等级到高等级递进
+     const mockNPCs = currentLeaderboard.filter(p => p.isMock).sort((a, b) => (a.level || 0) - (b.level || 0));
+     let rawEnemy = mockNPCs[totalDefeated];
      
      if (!rawEnemy) {
         // 缺少足够在线/真实玩家时，从底层倒序生成经典的强力武侠NPC
