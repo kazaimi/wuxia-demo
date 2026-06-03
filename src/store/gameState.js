@@ -196,7 +196,7 @@ export const useGameStore = create((set, get) => ({
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
-        : 'https://4f5d7504.r6.cpolar.cn';
+        : 'https://43cab49.r16.vip.cpolar.cn';
       socket = io(serverUrl, { transports: ['polling', 'websocket'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
