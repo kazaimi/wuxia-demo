@@ -160,7 +160,15 @@ const getLeaderboardData = () => {
 
     const npcs = MOCK_PLAYERS.map(mockP => {
         const onlineP = players.find(p => p.name === mockP.name && p.isMock);
-        return { ...(onlineP || mockP), isOnline: true, isMock: true };
+        const npcObj = { ...(onlineP || mockP), isOnline: true, isMock: true };
+        
+        // 排查重名：如果有名号与NPC同名的真实玩家，在NPC名称后追加微小中点“·”以示区别
+        const isNameConflict = realPlayersDB.some(rp => rp.name === mockP.name);
+        if (isNameConflict) {
+            npcObj.name = `${mockP.name}·`;
+        }
+        
+        return npcObj;
     });
 
     const all = [...realPlayers, ...npcs];

@@ -408,7 +408,7 @@ export default function EncounterArena() {
   // 设置下一位挑战对手
   const setupNextEnemy = (currentP1, currentLeaderboard, totalDefeated) => {
      const targetRank = 60 - totalDefeated;
-     let rawEnemy = currentLeaderboard.find(p => p.rankIndex === targetRank);
+     let rawEnemy = currentLeaderboard.find(p => p.rankIndex === targetRank && p.isMock);
      
      if (!rawEnemy) {
         // 缺少足够在线/真实玩家时，从底层倒序生成经典的强力武侠NPC
