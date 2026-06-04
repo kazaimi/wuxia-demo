@@ -101,31 +101,31 @@ const buildBuffChoice = (id, quality, treasureId) => {
    
    switch(id) {
       case 'str':
-         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
+         choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}力量之源`;
          choice.desc = `力量属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'con':
-         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
+         choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}体质之源`;
          choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 30}，并恢复等量生命)`;
          choice.type = 'attr';
          break;
       case 'int':
-         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
+         choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}智慧之源`;
          choice.desc = `智慧属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'agi':
-         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
+         choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}敏捷之源`;
          choice.desc = `敏捷属性增加 ${choice.val} 点`;
          choice.type = 'attr';
          break;
       case 'luk':
-         choice.val = quality === 'epic' ? 60 : quality === 'rare' ? 40 : 20;
+         choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}幸运之源`;
          choice.desc = `幸运属性增加 ${choice.val} 点`;
          choice.type = 'attr';
@@ -230,9 +230,9 @@ const generateBuffChoices = (treasureId, isEarly) => {
       qLabel: '【济世】',
       qColor: 'var(--warn)',
       name: '【济世】气血大还丹',
-      desc: '立即恢复当前气血 60% 最大生命值',
+      desc: '立即恢复当前气血 35% 最大生命值',
       type: 'heal',
-      val: 0.60
+      val: 0.35
    });
 
    return list;
@@ -470,6 +470,22 @@ export default function EncounterArena() {
     if (encounterState !== 'battling' || !p1 || !p2) return;
     if (p2.hp <= 0) return;
 
+    // 防止回合死循环的力竭天劫强制结算保护
+    if (logs.length >= 100) {
+       const p1Pct = p1.hp / p1.maxHp;
+       const p2Pct = p2.hp / p2.maxHp;
+       if (p1Pct >= p2Pct) {
+          const updatedP2 = { ...p2, hp: 0 };
+          setP2(updatedP2);
+          setLogs(prev => [...prev, `[力竭天劫] 激战过百回合不分胜负，进入天劫比拼内力！${p1.name} 气血占比更高，强行震碎了 ${p2.name} 的心脉！`]);
+       } else {
+          const updatedP1 = { ...p1, hp: 0 };
+          setP1(updatedP1);
+          setLogs(prev => [...prev, `[力竭天劫] 激战过百回合不分胜负，进入天劫比拼内力！${p2.name} 气血占比更高，一掌震碎了 ${p1.name} 的心脉！`]);
+       }
+       return;
+    }
+
     const timer = setTimeout(() => {
       const isP1Turn = Math.random() < (p1.attributes.agi / (p1.attributes.agi + p2.attributes.agi + 1));
 
@@ -590,7 +606,7 @@ export default function EncounterArena() {
                attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
             } else {
                const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-               let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
+               let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                
                if (isDodge) {
                   actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
@@ -1030,7 +1046,21 @@ export default function EncounterArena() {
         return false;
      };
 
+     let loopCount = 0;
      while (tempP1.hp > 0 && tempP2.hp > 0) {
+        loopCount++;
+        if (loopCount >= 100) {
+           const p1Pct = tempP1.hp / tempP1.maxHp;
+           const p2Pct = tempP2.hp / tempP2.maxHp;
+           if (p1Pct >= p2Pct) {
+              tempP2.hp = 0;
+              tempLogs.push(`[力竭天劫] 激战过百回合不分胜负，进入天劫比拼内力！${tempP1.name} 气血占比更高，强行震碎了 ${tempP2.name} 的心脉！`);
+           } else {
+              tempP1.hp = 0;
+              tempLogs.push(`[力竭天劫] 激战过百回合不分胜负，进入天劫比拼内力！${tempP2.name} 气血占比更高，一掌震碎了 ${tempP1.name} 的心脉！`);
+           }
+           break;
+        }
         const isP1Turn = Math.random() < (tempP1.attributes.agi / (tempP1.attributes.agi + tempP2.attributes.agi + 1));
         let attacker = { ... (isP1Turn ? tempP1 : tempP2) };
         let defender = { ... (isP1Turn ? tempP2 : tempP1) };
@@ -1140,7 +1170,7 @@ export default function EncounterArena() {
                  attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
               } else {
                  const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-                 let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < (defender.attributes.agi * 0.005) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
+                 let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                  
                  if (isDodge) {
                     actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
@@ -1537,8 +1567,8 @@ export default function EncounterArena() {
       if (choice.id === 'str') updatedP1.attributes.str += choice.val;
       else if (choice.id === 'con') {
          updatedP1.attributes.con += choice.val;
-         updatedP1.maxHp += choice.val * 10;
-         updatedP1.hp += choice.val * 10;
+         updatedP1.maxHp += choice.val * 30;
+         updatedP1.hp += choice.val * 30;
       }
       else if (choice.id === 'int') updatedP1.attributes.int += choice.val;
       else if (choice.id === 'agi') updatedP1.attributes.agi += choice.val;

@@ -12,14 +12,67 @@ function App() {
   const hasCreatedRole = useGameStore(state => state.hasCreatedRole);
   const loginChecked = useGameStore(state => state.loginChecked);
   const manualLogin = useGameStore(state => state.manualLogin);
+  const loginError = useGameStore(state => state.loginError);
   
   const [inputName, setInputName] = useState(localStorage.getItem('wuxia_username') || '');
   const [inputPassword, setInputPassword] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginTimer, setLoginTimer] = useState(null);
 
   useEffect(() => {
     initSocket();
   }, [initSocket]);
+
+  // 监听登录的异步反馈
+  useEffect(() => {
+    if (isLoggingIn) {
+      if (hasCreatedRole) {
+        setIsLoggingIn(false);
+        if (loginTimer) {
+          clearTimeout(loginTimer);
+          setLoginTimer(null);
+        }
+      } else if (loginError) {
+        setIsLoggingIn(false);
+        if (loginTimer) {
+          clearTimeout(loginTimer);
+          setLoginTimer(null);
+        }
+        
+        const trimmedName = inputName.trim();
+        if (loginError === '户籍未登入') {
+           const MOCK_NAMES = [
+             '扫地僧', '东方不败', '乔峰', '虚竹', '段誉', '无崖子', '张三丰', '张无忌', '独孤求败', '王重阳', 
+             '周伯通', '洪七公', '金轮法王', '郭靖', '黄药师', '欧阳锋', '令狐冲', '风清扬', '任我行', '邀月', 
+             '燕南天', '西门吹雪', '叶孤城', '绝无神', '雄霸', '步惊云', '聂风', '天山童姥', '李寻欢', '阿飞', 
+             '左冷禅', '岳不群', '丁春秋', '鸠摩智', '游坦之', '慕容复', '段延庆', '天机老人', '楚留香', '陆小凤', 
+             '胡铁花', '花无缺', '小鱼儿', '成昆', '谢逊', '灭绝师太', '林平之', '陈家洛', '袁承志', '狄云', 
+             '石破天', '丁典', '白自在', '胡一刀', '玄慈大师', '神雕大侠', '玉面飞龙', '血刀老祖', '苗人凤', '四大恶人'
+           ];
+           if (MOCK_NAMES.includes(trimmedName)) {
+              alert('此名号为武林名宿专属，新入世大侠不可冒用，请换个名号！');
+              localStorage.removeItem('wuxia_username');
+              localStorage.removeItem('wuxia_password');
+              useGameStore.setState({ loginError: null });
+              return;
+           }
+           setShowCreate(true);
+        } else {
+           alert(loginError);
+        }
+      }
+    }
+  }, [hasCreatedRole, loginError, isLoggingIn, loginTimer, inputName]);
+
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      if (loginTimer) {
+        clearTimeout(loginTimer);
+      }
+    };
+  }, [loginTimer]);
 
   // 全局用户交互以解锁浏览器自动播放机制，确保声音系统完全激活
   useEffect(() => {
@@ -62,34 +115,21 @@ function App() {
      const trimmedName = inputName.trim();
      const trimmedPassword = inputPassword.trim();
      if(trimmedName){
+        setIsLoggingIn(true);
+        if (loginTimer) clearTimeout(loginTimer);
+        
         // 尝试向服务器查询是否存在此账号
         manualLogin(trimmedName, trimmedPassword);
-        // 给一定时间让 websocket 通信返回是否成功
-        setTimeout(() => {
+        
+        // 5秒宽容度连接超时
+        const timer = setTimeout(() => {
            const state = useGameStore.getState();
            if (!state.hasCreatedRole) {
-              if (state.loginError && state.loginError !== '户籍未登入') {
-                 alert(state.loginError);
-                 return;
-              }
-              const MOCK_NAMES = [
-                '扫地僧', '东方不败', '乔峰', '虚竹', '段誉', '无崖子', '张三丰', '张无忌', '独孤求败', '王重阳', 
-                '周伯通', '洪七公', '金轮法王', '郭靖', '黄药师', '欧阳锋', '令狐冲', '风清扬', '任我行', '邀月', 
-                '燕南天', '西门吹雪', '叶孤城', '绝无神', '雄霸', '步惊云', '聂风', '天山童姥', '李寻欢', '阿飞', 
-                '左冷禅', '岳不群', '丁春秋', '鸠摩智', '游坦之', '慕容复', '段延庆', '天机老人', '楚留香', '陆小凤', 
-                '胡铁花', '花无缺', '小鱼儿', '成昆', '谢逊', '灭绝师太', '林平之', '陈家洛', '袁承志', '狄云', 
-                '石破天', '丁典', '白自在', '胡一刀', '玄慈大师', '神雕大侠', '玉面飞龙', '血刀老祖', '苗人凤', '四大恶人'
-              ];
-              if (MOCK_NAMES.includes(trimmedName)) {
-                 alert('此名号为武林名宿专属，新入世大侠不可冒用，请换个名号！');
-                 localStorage.removeItem('wuxia_username');
-                 localStorage.removeItem('wuxia_password');
-                 return;
-              }
-              // 服务器找不到或没有旧档，显示捏人页面
-              setShowCreate(true);
+              setIsLoggingIn(false);
+              alert('与信使局连接超时，请检查网络或确认服务器已开启！');
            }
-        }, 500);
+        }, 5000);
+        setLoginTimer(timer);
      }
   };
 
@@ -180,8 +220,9 @@ function App() {
                    onChange={e => setInputName(e.target.value)}
                    placeholder="请输入江湖名号..."
                    maxLength={12}
+                   disabled={isLoggingIn}
                    className="wuxia-input"
-                   style={{ width: '100%', marginBottom: '1rem', textAlign: 'center', fontSize: '1.1rem' }}
+                   style={{ width: '100%', marginBottom: '1rem', textAlign: 'center', fontSize: '1.1rem', opacity: isLoggingIn ? 0.6 : 1 }}
                  />
                  <input
                    type="password"
@@ -189,11 +230,12 @@ function App() {
                    onChange={e => setInputPassword(e.target.value)}
                    placeholder="请输入暗号/密码(老账号首次输入即绑定)..."
                    maxLength={20}
+                   disabled={isLoggingIn}
                    className="wuxia-input"
-                   style={{ width: '100%', marginBottom: '1.5rem', textAlign: 'center', fontSize: '1.1rem' }}
+                   style={{ width: '100%', marginBottom: '1.5rem', textAlign: 'center', fontSize: '1.1rem', opacity: isLoggingIn ? 0.6 : 1 }}
                  />
-                 <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.9rem', fontSize: '1.2rem' }}>
-                   踏入江湖
+                 <button type="submit" disabled={isLoggingIn} className="btn-primary" style={{ width: '100%', padding: '0.9rem', fontSize: '1.2rem', opacity: isLoggingIn ? 0.6 : 1 }}>
+                   {isLoggingIn ? '正在登入江湖...' : '踏入江湖'}
                  </button>
               </form>
            </div>
