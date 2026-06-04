@@ -312,6 +312,7 @@ export const useGameStore = create((set, get) => ({
   manualLogin: (name, password) => {
      localStorage.setItem('wuxia_username', name);
      localStorage.setItem('wuxia_password', password);
+     set({ loginError: null });
      if (socket) socket.emit('player_login', { name, password });
   },
 
