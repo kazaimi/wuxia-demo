@@ -44,9 +44,9 @@
       "ultimate": "s_dianxue",
       "inner": "s5"
     },
-    "id": "CnYCJyYVQjAtiTpiAAAG",
+    "id": "SWpYJ_blZd-dX1yMAAA6",
     "isBattling": false,
-    "rankIndex": 17,
+    "rankIndex": 19,
     "lastTaskDate": "Thu Jun 04 2026",
     "treasures": [
       "t3",
@@ -56,11 +56,11 @@
       "t11",
       "t9"
     ],
-    "encountersToday": 3,
+    "encountersToday": 5,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 30,
+    "dailyActivity": 50,
     "silver": 206,
     "skillMastery": {
       "s1": 5,
@@ -179,7 +179,7 @@
     "equippedTreasure": null,
     "id": "iTHsdNyofzscTc33AAAq",
     "isBattling": false,
-    "rankIndex": 63,
+    "rankIndex": 64,
     "dailyActivity": 0,
     "silver": 0
   },
@@ -216,7 +216,7 @@
     "equippedTreasure": null,
     "id": "p2Y-wt0PaUk9LZcbAAAt",
     "isBattling": false,
-    "rankIndex": 69,
+    "rankIndex": 70,
     "dailyActivity": 260,
     "secretRealmAttempts": 3,
     "dailyDebuffs": [
@@ -383,20 +383,20 @@
   {
     "name": "猫十一郎",
     "title": "肝帝真仙",
-    "level": 35,
-    "exp": 8216,
-    "maxExp": 10874,
+    "level": 40,
+    "exp": 1066,
+    "maxExp": 13576,
     "freePoints": 0,
     "taskCount": 35,
     "encountersToday": 5,
-    "lastTaskDate": "Wed Jun 03 2026",
-    "hp": 975,
-    "maxHp": 975,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "hp": 780,
+    "maxHp": 780,
     "attributes": {
-      "con": 35,
-      "str": 5,
+      "con": 8,
+      "str": 6,
       "int": 4,
-      "agi": 90,
+      "agi": 135,
       "luk": 5
     },
     "skills": [
@@ -413,7 +413,8 @@
       "s_dianxue",
       "s_xianglong",
       "s_tiyun",
-      "s5"
+      "s5",
+      "s_shenxing"
     ],
     "treasures": [
       "t9",
@@ -427,39 +428,39 @@
       "ultimate": "s_dugu"
     },
     "equippedTreasure": "t9",
-    "id": "6v0fxboEvwUCb510AAMX",
+    "id": "702tGuG1jLZKTAndAAFU",
     "isBattling": false,
-    "rankIndex": 18,
-    "dailyActivity": 320,
+    "rankIndex": 17,
+    "dailyActivity": 415,
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 109,
+    "silver": 83,
     "permanentAttributes": {
-      "con": 7,
-      "str": 5,
+      "con": 8,
+      "str": 6,
       "int": 4,
-      "agi": 6,
+      "agi": 8,
       "luk": 5
     }
   },
   {
     "name": "喵",
-    "title": "武林卷王",
-    "level": 27,
-    "exp": 3804,
-    "maxExp": 7106,
+    "title": "肝帝真仙",
+    "level": 31,
+    "exp": 3232,
+    "maxExp": 8903,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 03 2026",
-    "hp": 625,
-    "maxHp": 625,
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "hp": 705,
+    "maxHp": 705,
     "attributes": {
-      "con": 12,
-      "str": 19,
-      "int": 17,
-      "agi": 40,
-      "luk": 0
+      "con": 14,
+      "str": 15,
+      "int": 39,
+      "agi": 18,
+      "luk": 14
     },
     "skills": [
       "s1",
@@ -477,31 +478,34 @@
     ],
     "treasures": [
       "t8",
-      "t5"
+      "t5",
+      "t4"
     ],
     "equippedSkills": {
-      "inner": "s_yijin",
-      "outer": "s_kuangfeng",
-      "motion": "s_tiyun",
-      "ultimate": "s_dugu"
+      "inner": null,
+      "outer": null,
+      "motion": null,
+      "ultimate": null
     },
     "equippedTreasure": "t8",
-    "id": "wzCdTjgOgAwVH7z_AALZ",
+    "id": "l8XxqsduHj8VsIfjAAGT",
     "isBattling": false,
-    "rankIndex": 16,
-    "dailyActivity": 205,
-    "secretRealmAttempts": 2,
+    "rankIndex": 17,
+    "dailyActivity": 375,
+    "secretRealmAttempts": 3,
     "dailyDebuffs": [
+      "血枯劫",
       "心魔劫"
     ],
-    "silver": 368,
+    "silver": 418,
     "permanentAttributes": {
       "con": 0,
       "str": 0,
       "int": 0,
       "agi": 0,
       "luk": 0
-    }
+    },
+    "password": "000000"
   },
   {
     "name": "粑粑柑大侠",
@@ -574,21 +578,21 @@
     "equippedTreasure": null,
     "id": "j-JRfYwm8YFk4AM7AAAl",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 50,
     "silver": 38,
     "skillMastery": {}
   },
   {
     "name": "月影",
-    "title": "勤勉游侠",
+    "title": "初出茅庐",
     "level": 24,
-    "exp": 967,
+    "exp": 4495,
     "maxExp": 5875,
     "freePoints": 0,
-    "taskCount": 22,
+    "taskCount": 9,
     "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 03 2026",
+    "lastTaskDate": "Thu Jun 04 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "hp": 460,
@@ -625,11 +629,11 @@
       "ultimate": "s_dugu"
     },
     "equippedTreasure": "t11",
-    "id": "VeT9sfVWzQLGFI98AAMD",
+    "id": "f0XHW1uQx1r_I4ZoAABZ",
     "isBattling": false,
-    "rankIndex": 60,
-    "dailyActivity": 110,
-    "silver": 260,
+    "rankIndex": 61,
+    "dailyActivity": 45,
+    "silver": 276,
     "skillMastery": {},
     "permanentAttributes": {
       "con": 0,
@@ -711,7 +715,7 @@
     "equippedTreasure": null,
     "id": "kMSHEDzrC7kwuq2hAAAD",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 0,
     "silver": 0
   },
@@ -751,7 +755,7 @@
     "equippedTreasure": null,
     "id": "Q04Hrmi3Zxbr1ynkAAAe",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 235,
     "silver": 0
   },
@@ -789,7 +793,7 @@
     "equippedTreasure": null,
     "id": "aVhHVLmIxYX77gxgAAAN",
     "isBattling": true,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 5,
     "silver": 0
   },
@@ -827,7 +831,7 @@
     "equippedTreasure": null,
     "id": "_sNz0m6aSqKiJFf5AAAl",
     "isBattling": true,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 15,
     "silver": 0
   },
@@ -868,7 +872,7 @@
     "equippedTreasure": null,
     "id": "EPyn0cWCKzPWadpHAAAJ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 65
   },
   {
@@ -906,7 +910,7 @@
     "equippedTreasure": null,
     "id": "NH_XjGxlIymhmSjZAAAD",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 35
   },
   {
@@ -955,7 +959,7 @@
     "equippedTreasure": null,
     "id": "60PuTmUXQ_IW0caLAAAz",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 250,
     "skillMastery": {}
   },
@@ -1011,23 +1015,23 @@
   {
     "name": "田啵光",
     "title": "摸鱼小虾",
-    "level": 2,
-    "exp": 128,
-    "maxExp": 252,
+    "level": 5,
+    "exp": 537,
+    "maxExp": 621,
     "freePoints": 0,
     "taskCount": 0,
-    "encountersToday": 0,
-    "lastTaskDate": "Tue Jun 02 2026",
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "silver": 5,
-    "hp": 190,
-    "maxHp": 190,
+    "silver": 7,
+    "hp": 295,
+    "maxHp": 295,
     "attributes": {
-      "con": 6,
+      "con": 12,
       "str": 0,
       "int": 0,
-      "agi": 7,
+      "agi": 10,
       "luk": 0
     },
     "permanentAttributes": {
@@ -1050,11 +1054,12 @@
       "ultimate": null
     },
     "equippedTreasure": "t1",
-    "id": "NcDm3rhRGXy_5u5fAABn",
+    "id": "wjUVPs-2h14WJ60-AAAP",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 0,
-    "skillMastery": {}
+    "dailyActivity": 10,
+    "skillMastery": {},
+    "password": "636793"
   },
   {
     "name": "花花",
@@ -1106,17 +1111,16 @@
   },
   {
     "name": "小虾米",
-    "title": "肝帝真仙",
+    "title": "初出茅庐",
     "level": 3,
     "exp": 321,
     "maxExp": 358,
     "freePoints": 0,
-    "taskCount": 35,
-    "encountersToday": 3,
-    "lastTaskDate": "Wed Jun 03 2026",
-    "secretRealmAttempts": 3,
+    "taskCount": 1,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [
-      "心魔劫",
       "血枯劫"
     ],
     "silver": 0,
@@ -1149,10 +1153,11 @@
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "QqwblwQ9437ldmroAANb",
+    "id": "ve_XCrY7N42r7J7dAAMM",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 250
+    "dailyActivity": 35,
+    "password": "7800502"
   },
   {
     "name": "李易峰",
@@ -1199,7 +1204,7 @@
     "equippedTreasure": null,
     "id": "h3Tphd4qFOxvXAi1AAAH",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 230
   },
   {
@@ -1249,7 +1254,7 @@
     "equippedTreasure": null,
     "id": "RgjH-asi3v3VRlhMAAAJ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 240
   },
   {
@@ -1294,7 +1299,7 @@
     "equippedTreasure": null,
     "id": "MWj_bIjlDFnfOk2iAAAP",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 10
   },
   {
@@ -1346,7 +1351,7 @@
     "equippedTreasure": null,
     "id": "O8wVqG4hL-y6linSAACp",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 220
   },
   {
@@ -1391,7 +1396,7 @@
     "equippedTreasure": null,
     "id": "1HVAjKuRmyUHMmNoAAAV",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 30
   },
   {
@@ -1437,7 +1442,7 @@
     "equippedTreasure": null,
     "id": "SUIqB74hGngvbR3wAAA2",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 100
   },
   {
@@ -1485,24 +1490,24 @@
     "equippedTreasure": null,
     "id": "USvbBuziIfg7D74bAAA6",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 150
   },
   {
     "name": "大先生",
-    "title": "勤勉游侠",
+    "title": "初出茅庐",
     "level": 6,
     "exp": 456,
     "maxExp": 777,
     "freePoints": 0,
-    "taskCount": 7,
+    "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 03 2026",
+    "lastTaskDate": "Thu Jun 04 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [
       "心魔劫"
     ],
-    "silver": 8,
+    "silver": 9,
     "hp": 220,
     "maxHp": 220,
     "attributes": {
@@ -1525,7 +1530,8 @@
     ],
     "treasures": [
       "t5",
-      "t4"
+      "t4",
+      "t2"
     ],
     "equippedSkills": {
       "inner": "s_xixing",
@@ -1533,11 +1539,11 @@
       "motion": null,
       "ultimate": null
     },
-    "equippedTreasure": "t4",
-    "id": "4xKsb6o3QZ7rBorUAALb",
+    "equippedTreasure": "t5",
+    "id": "Xuul81khYXufqNjHAAAi",
     "isBattling": false,
-    "rankIndex": 10061,
-    "dailyActivity": 80
+    "rankIndex": 10062,
+    "dailyActivity": 45
   },
   {
     "name": "江楚寒",
@@ -1583,7 +1589,7 @@
     "equippedTreasure": null,
     "id": "GnRYWKKVy9ZhcYaaAABQ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 240
   },
   {
@@ -1634,7 +1640,7 @@
     "equippedTreasure": null,
     "id": "wYaeMfqPe8LbIfbxAAFf",
     "isBattling": false,
-    "rankIndex": 67,
+    "rankIndex": 68,
     "dailyActivity": 590
   },
   {
@@ -1679,7 +1685,7 @@
     "equippedTreasure": null,
     "id": "CvZNFkcOZVzWslHxAABg",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 20
   },
   {
@@ -1730,7 +1736,7 @@
     "equippedTreasure": null,
     "id": "bf1pLeg2kzR1M5oCAAB0",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 270
   },
   {
@@ -1775,7 +1781,7 @@
     "equippedTreasure": null,
     "id": "xBmgo8BbVcDhvNozAABw",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "岳老大",
@@ -1822,7 +1828,7 @@
     "equippedTreasure": null,
     "id": "-CUPzxC9b85hfmwgAAB6",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 240
   },
   {
@@ -1867,7 +1873,7 @@
     "equippedTreasure": null,
     "id": "xFUUG1z-OW4a016SAAB-",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "许愿",
@@ -1918,7 +1924,7 @@
     "equippedTreasure": "t9",
     "id": "Iam0UR3ETLwEOfuUAACG",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 230
   },
   {
@@ -1963,7 +1969,7 @@
     "equippedTreasure": null,
     "id": "7lBinoCqAg4G0hfiAACI",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 5
   },
   {
@@ -2010,7 +2016,7 @@
     "equippedTreasure": null,
     "id": "dV5KhW54V3dGqmSvAACE",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 55
   },
   {
@@ -2055,7 +2061,7 @@
     "equippedTreasure": null,
     "id": "cfqbRU8mKK1AtV0iAACO",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 20
   },
   {
@@ -2100,7 +2106,7 @@
     "equippedTreasure": null,
     "id": "9_1nyWATSSW39rRZAACQ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 115
   },
   {
@@ -2155,7 +2161,7 @@
     "equippedTreasure": "t9",
     "id": "81MamIne57rer258AAL9",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 165
   },
   {
@@ -2202,7 +2208,7 @@
     "equippedTreasure": null,
     "id": "-jJwB43nAoFF88XFAABL",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 270
   },
   {
@@ -2337,7 +2343,7 @@
     "equippedTreasure": null,
     "id": "zPQiLFYOLoINUp6mAAA5",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 175
   },
   {
@@ -2386,7 +2392,7 @@
     "equippedTreasure": null,
     "id": "YW0c_w_viZfvzyp9AAA7",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 175
   },
   {
@@ -2433,7 +2439,7 @@
     "equippedTreasure": null,
     "id": "-rJKfLzxLD95qaqtAAA_",
     "isBattling": false,
-    "rankIndex": 71,
+    "rankIndex": 74,
     "dailyActivity": 175
   },
   {
@@ -2478,7 +2484,7 @@
     "equippedTreasure": null,
     "id": "sQwlqOzH2Uqx6k2KAABD",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 10
   },
   {
@@ -2534,7 +2540,7 @@
     "equippedTreasure": "t1",
     "id": "78BQ7Px9ucDwmOB4AACP",
     "isBattling": false,
-    "rankIndex": 54,
+    "rankIndex": 55,
     "dailyActivity": 270
   },
   {
@@ -2579,7 +2585,7 @@
     "equippedTreasure": null,
     "id": "QxlLJtSRPoZ2RPf0AABX",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 35
   },
   {
@@ -2624,7 +2630,7 @@
     "equippedTreasure": null,
     "id": "sVPMbhuMhiyaoLUXAABl",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 185
   },
   {
@@ -2669,7 +2675,7 @@
     "equippedTreasure": null,
     "id": "hLwwYI9sTfTs3c-3AABw",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "丁灵琳",
@@ -2713,7 +2719,7 @@
     "equippedTreasure": null,
     "id": "wZcO6oUm_RoK0VqDAAB0",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 10
   },
   {
@@ -2758,7 +2764,7 @@
     "equippedTreasure": null,
     "id": "KiiUVe5fFyY1TKlLAAB4",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 30
   },
   {
@@ -2803,7 +2809,7 @@
     "equippedTreasure": null,
     "id": "b8Jw52t6Rq7VaAu0AAB8",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 30
   },
   {
@@ -2852,7 +2858,7 @@
     "equippedTreasure": null,
     "id": "4Q1ufvadlyNRrOzlAACC",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 220
   },
   {
@@ -2899,7 +2905,7 @@
     "equippedTreasure": null,
     "id": "rIfh-kobMPfDvOOjAACH",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 50
   },
   {
@@ -2944,30 +2950,30 @@
     "equippedTreasure": null,
     "id": "F4b2N6wh_1xUxIRNAACJ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 40
   },
   {
     "name": "天龙子",
     "title": "肝帝真仙",
-    "level": 36,
-    "exp": 8791,
-    "maxExp": 11393,
-    "freePoints": 0,
+    "level": 48,
+    "exp": 1181,
+    "maxExp": 18434,
+    "freePoints": 3,
     "taskCount": 35,
     "encountersToday": 5,
-    "lastTaskDate": "Thu Jun 04 2026",
+    "lastTaskDate": "Fri Jun 05 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 855,
-    "hp": 640,
-    "maxHp": 640,
+    "silver": 984,
+    "hp": 820,
+    "maxHp": 820,
     "attributes": {
       "con": 0,
-      "str": 20,
+      "str": 0,
       "int": 0,
-      "agi": 95,
-      "luk": 0
+      "agi": 0,
+      "luk": 148
     },
     "permanentAttributes": {
       "con": 0,
@@ -3007,15 +3013,15 @@
     ],
     "equippedSkills": {
       "inner": "s_xixing",
-      "outer": "s_taiji",
-      "motion": "s4",
-      "ultimate": "s_kuihua"
+      "outer": "s_anran",
+      "motion": "s_tiyun",
+      "ultimate": "s_dugu"
     },
     "equippedTreasure": "t7",
-    "id": "ROg6_irTkB1DbmOhAAAB",
+    "id": "Bwj65LwmDywLdzK1AAL1",
     "isBattling": false,
-    "rankIndex": 23,
-    "dailyActivity": 270,
+    "rankIndex": 16,
+    "dailyActivity": 285,
     "password": "123456"
   },
   {
@@ -3065,7 +3071,7 @@
     "equippedTreasure": null,
     "id": "4P4uB8tEzIykXSJaAACT",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 225
   },
   {
@@ -3110,7 +3116,7 @@
     "equippedTreasure": null,
     "id": "Z40T2AV-OCw_V1B_AACb",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 5
   },
   {
@@ -3155,7 +3161,7 @@
     "equippedTreasure": null,
     "id": "3HaGHxpcPTF7TQPCAACf",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 50
   },
   {
@@ -3200,7 +3206,7 @@
     "equippedTreasure": null,
     "id": "pE6DpCrEkJZtTtCyAACj",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 10
   },
   {
@@ -3245,7 +3251,7 @@
     "equippedTreasure": null,
     "id": "9lRB9_a2_MX8Nm5cAAC5",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 125
   },
   {
@@ -3293,23 +3299,21 @@
     "equippedTreasure": null,
     "id": "q-NMEntFKYB_7X-4AAFV",
     "isBattling": true,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 215
   },
   {
     "name": "仁王",
-    "title": "武林卷王",
+    "title": "摸鱼小虾",
     "level": 9,
     "exp": 49,
     "maxExp": 1332,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Tue Jun 02 2026",
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "心魔劫"
-    ],
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "silver": 3,
     "hp": 285,
     "maxHp": 285,
@@ -3345,10 +3349,10 @@
       "ultimate": "s_liumai"
     },
     "equippedTreasure": "t5",
-    "id": "zUp8_9EPCUTmFpWgAAGn",
+    "id": "Yi-SXREEw9yNbV1mAAFS",
     "isBattling": false,
-    "rankIndex": 73,
-    "dailyActivity": 235
+    "rankIndex": 76,
+    "dailyActivity": 0
   },
   {
     "name": "王小茂",
@@ -3396,7 +3400,7 @@
     "equippedTreasure": null,
     "id": "orEjbtjWQmSajhdIAADv",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 325
   },
   {
@@ -3441,29 +3445,32 @@
     "equippedTreasure": null,
     "id": "Ek65Ntl7TWTb7GXyAAD_",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "乱星海韩立",
     "title": "肝帝真仙",
-    "level": 9,
-    "exp": 1293,
-    "maxExp": 1332,
+    "level": 37,
+    "exp": 9892,
+    "maxExp": 11923,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 4,
-    "lastTaskDate": "Wed Jun 03 2026",
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
     "secretRealmAttempts": 3,
-    "dailyDebuffs": [],
-    "silver": 61,
-    "hp": 325,
-    "maxHp": 325,
+    "dailyDebuffs": [
+      "心魔劫",
+      "血枯劫"
+    ],
+    "silver": 74,
+    "hp": 795,
+    "maxHp": 795,
     "attributes": {
-      "con": 9,
-      "str": 14,
-      "int": 2,
-      "agi": 8,
-      "luk": 1
+      "con": 14,
+      "str": 32,
+      "int": 0,
+      "agi": 70,
+      "luk": 2
     },
     "permanentAttributes": {
       "con": 0,
@@ -3476,24 +3483,33 @@
       "s1",
       "s_kuangfeng",
       "s4",
-      "s3"
+      "s3",
+      "s_shihou",
+      "s_xixing",
+      "s_tiyun",
+      "s_anran",
+      "s_taiji"
     ],
     "treasures": [
       "t5",
       "t4",
-      "t1"
+      "t1",
+      "t3",
+      "t8",
+      "t6"
     ],
     "equippedSkills": {
-      "inner": null,
-      "outer": "s_kuangfeng",
+      "inner": "s_xixing",
+      "outer": "s_anran",
       "motion": "s4",
-      "ultimate": null
+      "ultimate": "s_liumai"
     },
     "equippedTreasure": "t5",
-    "id": "8jDup5UIOPrtAwDbAANF",
+    "id": "K4NwFl3o8VD-2waeAAJ7",
     "isBattling": false,
-    "rankIndex": 71,
-    "dailyActivity": 260
+    "rankIndex": 39,
+    "dailyActivity": 2250,
+    "password": "l4l699o665"
   },
   {
     "name": "无敌的我",
@@ -3540,7 +3556,7 @@
     "equippedTreasure": null,
     "id": "95lC3pJATR5rKFr4AAFn",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 220
   },
   {
@@ -3585,7 +3601,7 @@
     "equippedTreasure": null,
     "id": "RFOlvrv3E2adMb3dAAFl",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "醉逸仙",
@@ -3629,7 +3645,7 @@
     "equippedTreasure": null,
     "id": "JaNZwT73KhGF6IrMAAFv",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "江山",
@@ -3673,7 +3689,7 @@
     "equippedTreasure": null,
     "id": "KuG1EIst6m-B920bAAFz",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "空军航空",
@@ -3717,7 +3733,7 @@
     "equippedTreasure": null,
     "id": "fs5Ymf8vDPdBuBWpAAGB",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 10
   },
   {
@@ -3762,7 +3778,7 @@
     "equippedTreasure": null,
     "id": "l_QsHYTxjZkFBIhPAAGD",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 5
   },
   {
@@ -3809,7 +3825,7 @@
     "equippedTreasure": null,
     "id": "AB-Xu7gB34qqExSXAAGN",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 175
   },
   {
@@ -3857,23 +3873,21 @@
     "equippedTreasure": "t9",
     "id": "5LMi0T4VEoFy42p_AAGR",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 250
   },
   {
     "name": "叶凡",
-    "title": "",
+    "title": "摸鱼小虾",
     "level": 1,
     "exp": 0,
     "maxExp": 165,
     "freePoints": 0,
-    "taskCount": 0,
-    "encountersToday": 0,
-    "lastTaskDate": "Tue Jun 02 2026",
-    "secretRealmAttempts": 1,
-    "dailyDebuffs": [
-      "血枯劫"
-    ],
+    "taskCount": 1,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "silver": 0,
     "hp": 135,
     "maxHp": 135,
@@ -3902,9 +3916,9 @@
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "5nsp7tke8tLJ41VZAAIl",
+    "id": "KIW__6kO682Zrc7EAAJT",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 15
   },
   {
@@ -3949,7 +3963,7 @@
     "equippedTreasure": null,
     "id": "CcKxPvrF9SSiz6EeAAHf",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 30
   },
   {
@@ -3996,7 +4010,7 @@
     "equippedTreasure": null,
     "id": "wfqEvHsQsXAkee-UAAHB",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 145
   },
   {
@@ -4041,7 +4055,7 @@
     "equippedTreasure": null,
     "id": "T4ud41FGzEXWjwW0AALr",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 185
   },
   {
@@ -4089,7 +4103,7 @@
     "equippedTreasure": null,
     "id": "saNf0ZuQzMzi6tVWAAIn",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 230
   },
   {
@@ -4137,7 +4151,7 @@
     "equippedTreasure": null,
     "id": "Iz0zvodUjUtKOn_IAAHP",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 235
   },
   {
@@ -4182,7 +4196,7 @@
     "equippedTreasure": null,
     "id": "V6pwVZ15ehC70da7AAHF",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 55
   },
   {
@@ -4230,7 +4244,7 @@
     "equippedTreasure": null,
     "id": "U9lYZzuoJuy6692DAAHH",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 80
   },
   {
@@ -4277,7 +4291,7 @@
     "equippedTreasure": null,
     "id": "0ROUWVM9YvUBpMYbAAHJ",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 160
   },
   {
@@ -4327,7 +4341,7 @@
     "equippedTreasure": null,
     "id": "uADs2F8j8zrg1xOWAAHN",
     "isBattling": false,
-    "rankIndex": 10059,
+    "rankIndex": 10061,
     "dailyActivity": 230
   },
   {
@@ -4379,7 +4393,7 @@
     "equippedTreasure": "t6",
     "id": "7Lu-iTPwzCjF5xrjAAHb",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 230
   },
   {
@@ -4424,7 +4438,7 @@
     "equippedTreasure": null,
     "id": "4rzGGHoLWKLWkRDuAAHV",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "走走走",
@@ -4476,7 +4490,7 @@
     "equippedTreasure": "t3",
     "id": "fQ6t0seJnKNaC0UVAAIv",
     "isBattling": false,
-    "rankIndex": 10060,
+    "rankIndex": 10061,
     "dailyActivity": 230
   },
   {
@@ -4521,7 +4535,7 @@
     "equippedTreasure": null,
     "id": "J3bVxKwgpfG9EIiCAAHx",
     "isBattling": false,
-    "rankIndex": 10060
+    "rankIndex": 10061
   },
   {
     "name": "10086",
@@ -4568,7 +4582,7 @@
     "equippedTreasure": null,
     "id": "uNgaeFOsKIzXAok5AAHn",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 35
   },
   {
@@ -4616,7 +4630,7 @@
     "equippedTreasure": null,
     "id": "nhN-qRy09o7oKE-jAAIh",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 455
   },
   {
@@ -4661,31 +4675,29 @@
     "equippedTreasure": null,
     "id": "8UqTfQxtfS3WGyEgAAHz",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10062
   },
   {
     "name": "跑跑跑",
-    "title": "武林卷王",
-    "level": 11,
-    "exp": 1152,
-    "maxExp": 1773,
+    "title": "肝帝真仙",
+    "level": 14,
+    "exp": 873,
+    "maxExp": 2534,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 1,
-    "lastTaskDate": "Wed Jun 03 2026",
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "心魔劫"
-    ],
-    "silver": 36,
-    "hp": 295,
-    "maxHp": 295,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 37,
+    "hp": 340,
+    "maxHp": 340,
     "attributes": {
       "con": 3,
-      "str": 4,
+      "str": 7,
       "int": 4,
-      "agi": 5,
-      "luk": 24
+      "agi": 7,
+      "luk": 28
     },
     "permanentAttributes": {
       "con": 0,
@@ -4712,10 +4724,11 @@
       "ultimate": null
     },
     "equippedTreasure": "t4",
-    "id": "8RiU7Bq-u3q01DcUAAL_",
+    "id": "gjcKeIV2lf3bfcw1AACZ",
     "isBattling": false,
-    "rankIndex": 10061,
-    "dailyActivity": 230
+    "rankIndex": 10062,
+    "dailyActivity": 800,
+    "password": "hjh0110..."
   },
   {
     "name": "老周",
@@ -4759,7 +4772,7 @@
     "equippedTreasure": null,
     "id": "fJ-Dyf7yaDYOAKmHAAIt",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 5
   },
   {
@@ -4807,7 +4820,7 @@
     "equippedTreasure": null,
     "id": "C0MWdVA_U1HQnVcGAAJB",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 275
   },
   {
@@ -4853,7 +4866,7 @@
     "equippedTreasure": null,
     "id": "Zp7Qgy_oo54u7e72AAIz",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 195
   },
   {
@@ -4900,7 +4913,7 @@
     "equippedTreasure": "t4",
     "id": "c8LU3f19dxvPJSoEAAI3",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 15
   },
   {
@@ -4947,7 +4960,7 @@
     "equippedTreasure": null,
     "id": "7O64jvviRE47XkcKAAI5",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 50
   },
   {
@@ -4992,7 +5005,7 @@
     "equippedTreasure": null,
     "id": "LUUOUakoKX3s-d9EAAJh",
     "isBattling": false,
-    "rankIndex": 10059,
+    "rankIndex": 10061,
     "dailyActivity": 15
   },
   {
@@ -5037,7 +5050,7 @@
     "equippedTreasure": null,
     "id": "OMcYXkZeE4yGNQP6AAJl",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 35
   },
   {
@@ -5082,7 +5095,7 @@
     "equippedTreasure": null,
     "id": "mf649kMdOuESdrnjAAJr",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 10
   },
   {
@@ -5129,7 +5142,7 @@
     "equippedTreasure": null,
     "id": "Gvd60BLtclEaEwOiAAKH",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 200
   },
   {
@@ -5177,7 +5190,7 @@
     "equippedTreasure": null,
     "id": "o85eLr5UZyHS8jdJAAKX",
     "isBattling": false,
-    "rankIndex": 10060,
+    "rankIndex": 10061,
     "dailyActivity": 360
   },
   {
@@ -5227,7 +5240,7 @@
     "equippedTreasure": null,
     "id": "YWgHvzjxx58FEYSiAAKV",
     "isBattling": false,
-    "rankIndex": 10061,
+    "rankIndex": 10062,
     "dailyActivity": 505
   },
   {
@@ -5274,7 +5287,7 @@
     "equippedTreasure": null,
     "id": "sMRpYeiZFMLN4cDkAAKZ",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 50
   },
   {
@@ -5319,7 +5332,7 @@
     "equippedTreasure": null,
     "id": "Z-jzNLEmQFjTNXBPAAKd",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 95
   },
   {
@@ -5364,7 +5377,7 @@
     "equippedTreasure": null,
     "id": "BQHo_DhO382KLguPAALL",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 35
   },
   {
@@ -5409,7 +5422,7 @@
     "equippedTreasure": null,
     "id": "quamj-69XMMOGrghAALP",
     "isBattling": false,
-    "rankIndex": 10057,
+    "rankIndex": 10059,
     "dailyActivity": 115
   },
   {
@@ -5454,7 +5467,7 @@
     "equippedTreasure": null,
     "id": "4D2paXQ7X0qVNdTgAALT",
     "isBattling": false,
-    "rankIndex": 10057,
+    "rankIndex": 10059,
     "dailyActivity": 5
   },
   {
@@ -5502,7 +5515,7 @@
     "equippedTreasure": null,
     "id": "SnhuGWJao20GsCFgAALj",
     "isBattling": false,
-    "rankIndex": 10057,
+    "rankIndex": 10059,
     "dailyActivity": 85
   },
   {
@@ -5549,7 +5562,7 @@
     "equippedTreasure": null,
     "id": "fQsu6Rs5c8IWOwYjAALt",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 160
   },
   {
@@ -5596,27 +5609,30 @@
     "equippedTreasure": null,
     "id": "3Rm8_722NecXopqsAAL1",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 220
   },
   {
     "name": "11",
-    "title": "",
-    "level": 1,
-    "exp": 0,
-    "maxExp": 165,
+    "title": "肝帝真仙",
+    "level": 6,
+    "exp": 151,
+    "maxExp": 777,
     "freePoints": 0,
-    "taskCount": 2,
-    "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 03 2026",
-    "secretRealmAttempts": 0,
-    "dailyDebuffs": [],
-    "silver": 0,
-    "hp": 215,
-    "maxHp": 215,
+    "taskCount": 35,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫",
+      "血枯劫"
+    ],
+    "silver": 10,
+    "hp": 190,
+    "maxHp": 190,
     "attributes": {
-      "con": 10,
-      "str": 0,
+      "con": 0,
+      "str": 25,
       "int": 0,
       "agi": 0,
       "luk": 0
@@ -5629,20 +5645,22 @@
       "luk": 0
     },
     "skills": [
-      "s1"
+      "s1",
+      "s_shihou"
     ],
     "treasures": [],
     "equippedSkills": {
-      "inner": null,
+      "inner": "s_shihou",
       "outer": "s1",
       "motion": null,
       "ultimate": null
     },
     "equippedTreasure": null,
-    "id": "aliH71EiTneSzLQDAAL5",
+    "id": "jDE7i9NzJ1w7yAT0AAGf",
     "isBattling": false,
-    "rankIndex": 10057,
-    "dailyActivity": 10
+    "rankIndex": 10059,
+    "dailyActivity": 260,
+    "password": "11"
   },
   {
     "name": "宁缺",
@@ -5686,7 +5704,7 @@
     "equippedTreasure": null,
     "id": "8L6lWydZ6LRSUSjCAAMP",
     "isBattling": false,
-    "rankIndex": 10059,
+    "rankIndex": 10061,
     "dailyActivity": 115
   },
   {
@@ -5731,7 +5749,7 @@
     "equippedTreasure": null,
     "id": "dUKaNeKuJbP7Z2DKAAMT",
     "isBattling": false,
-    "rankIndex": 10058,
+    "rankIndex": 10060,
     "dailyActivity": 10
   },
   {
@@ -5779,32 +5797,33 @@
     "equippedTreasure": null,
     "id": "VCIDiya8-zZlZA7iAAMd",
     "isBattling": false,
-    "rankIndex": 10056,
+    "rankIndex": 10058,
     "dailyActivity": 205
   },
   {
     "name": "捏你小肥脸",
     "title": "肝帝真仙",
-    "level": 4,
-    "exp": 381,
-    "maxExp": 481,
+    "level": 22,
+    "exp": 147,
+    "maxExp": 5112,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 4,
-    "lastTaskDate": "Wed Jun 03 2026",
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [
-      "心魔劫"
+      "心魔劫",
+      "血枯劫"
     ],
-    "silver": 6,
-    "hp": 240,
-    "maxHp": 240,
+    "silver": 18,
+    "hp": 590,
+    "maxHp": 590,
     "attributes": {
-      "con": 8,
-      "str": 5,
-      "int": 2,
-      "agi": 1,
-      "luk": 3
+      "con": 16,
+      "str": 27,
+      "int": 7,
+      "agi": 12,
+      "luk": 11
     },
     "permanentAttributes": {
       "con": 0,
@@ -5815,20 +5834,27 @@
     },
     "skills": [
       "s1",
-      "s2"
+      "s2",
+      "s3",
+      "s4",
+      "s5"
     ],
-    "treasures": [],
+    "treasures": [
+      "t8",
+      "t3"
+    ],
     "equippedSkills": {
-      "inner": "s2",
-      "outer": "s1",
-      "motion": null,
+      "inner": "s5",
+      "outer": "s3",
+      "motion": "s4",
       "ultimate": null
     },
-    "equippedTreasure": null,
-    "id": "7lHOEuMOKg87tq_IAAM5",
+    "equippedTreasure": "t8",
+    "id": "2dQcVkMKHAEbYPG7AAAs",
     "isBattling": false,
-    "rankIndex": 10056,
-    "dailyActivity": 255
+    "rankIndex": 73,
+    "dailyActivity": 755,
+    "password": "bt666666"
   },
   {
     "name": "林明",
@@ -5872,7 +5898,7 @@
     "equippedTreasure": null,
     "id": "Fjl8SmGeFQLT9t6vAAM9",
     "isBattling": false,
-    "rankIndex": 10056,
+    "rankIndex": 10058,
     "dailyActivity": 175
   },
   {
@@ -5917,30 +5943,30 @@
     "equippedTreasure": null,
     "id": "DHdrKfOI5HrCiA9WAANR",
     "isBattling": false,
-    "rankIndex": 10056,
+    "rankIndex": 10058,
     "dailyActivity": 60
   },
   {
     "name": "北真",
     "title": "肝帝真仙",
-    "level": 12,
-    "exp": 116,
-    "maxExp": 2014,
+    "level": 16,
+    "exp": 1752,
+    "maxExp": 3105,
     "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 2,
-    "lastTaskDate": "Thu Jun 04 2026",
+    "encountersToday": 1,
+    "lastTaskDate": "Fri Jun 05 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 12,
-    "hp": 390,
-    "maxHp": 390,
+    "silver": 37,
+    "hp": 380,
+    "maxHp": 380,
     "attributes": {
-      "con": 11,
-      "str": 9,
-      "int": 9,
-      "agi": 10,
-      "luk": 4
+      "con": 4,
+      "str": 7,
+      "int": 27,
+      "agi": 8,
+      "luk": 9
     },
     "permanentAttributes": {
       "con": 0,
@@ -5954,23 +5980,27 @@
       "s_xixing",
       "s_taiji",
       "s5",
-      "s3"
+      "s3",
+      "s_shihou"
     ],
     "treasures": [
       "t2",
-      "t1"
+      "t1",
+      "t4",
+      "t9",
+      "t3"
     ],
     "equippedSkills": {
       "inner": "s_xixing",
       "outer": "s_taiji",
-      "motion": null,
+      "motion": "s4",
       "ultimate": null
     },
-    "equippedTreasure": "t2",
-    "id": "uNTUm1dTL8A-r0CfAAAB",
+    "equippedTreasure": "t9",
+    "id": "jEfuPjvMSbA-F6xlAAMD",
     "isBattling": false,
-    "rankIndex": 61,
-    "dailyActivity": 325,
+    "rankIndex": 62,
+    "dailyActivity": 340,
     "password": "pku1234567890"
   },
   {
@@ -6017,7 +6047,7 @@
     "equippedTreasure": null,
     "id": "xLUukaKBq_NBbpHhAANV",
     "isBattling": false,
-    "rankIndex": 10056,
+    "rankIndex": 10058,
     "dailyActivity": 20
   },
   {
@@ -6062,6 +6092,1522 @@
     "equippedTreasure": null,
     "id": "sC6DEMlMpe1wrjPoAANv",
     "isBattling": false,
-    "rankIndex": 10057
+    "rankIndex": 10059
+  },
+  {
+    "name": "吴迪",
+    "title": "勤勉游侠",
+    "level": 11,
+    "exp": 8,
+    "maxExp": 1773,
+    "freePoints": 3,
+    "taskCount": 3,
+    "encountersToday": 4,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 8,
+    "hp": 315,
+    "maxHp": 315,
+    "attributes": {
+      "con": 5,
+      "str": 7,
+      "int": 7,
+      "agi": 7,
+      "luk": 11
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s3"
+    ],
+    "treasures": [
+      "t2"
+    ],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s3",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": "t2",
+    "password": "123456",
+    "id": "smEiVVFSszQtKAKfAAAa",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 100
+  },
+  {
+    "name": "邑归",
+    "title": "",
+    "level": 1,
+    "exp": 50,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 3,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 10
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "Q10tID5CvaWmZzpyAAAT",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 15
+  },
+  {
+    "name": "孟楼",
+    "title": "勤勉游侠",
+    "level": 2,
+    "exp": 173,
+    "maxExp": 252,
+    "freePoints": 3,
+    "taskCount": 6,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "血枯劫"
+    ],
+    "silver": 3,
+    "hp": 140,
+    "maxHp": 140,
+    "attributes": {
+      "con": 1,
+      "str": 2,
+      "int": 2,
+      "agi": 2,
+      "luk": 3
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "eZLMELlecC3eeObuAAAw",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 85
+  },
+  {
+    "name": "zhouyou",
+    "title": "江湖劳模",
+    "level": 11,
+    "exp": 485,
+    "maxExp": 1773,
+    "freePoints": 0,
+    "taskCount": 5,
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "血枯劫",
+      "心魔劫"
+    ],
+    "silver": 9,
+    "hp": 335,
+    "maxHp": 335,
+    "attributes": {
+      "con": 7,
+      "str": 20,
+      "int": 2,
+      "agi": 2,
+      "luk": 9
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [
+      "t2",
+      "t1"
+    ],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": "t1",
+    "password": "Zhouyue",
+    "id": "4T48BgdUPy2hGwNDAAAu",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 135
+  },
+  {
+    "name": "Soofabh",
+    "title": "江湖劳模",
+    "level": 3,
+    "exp": 9,
+    "maxExp": 358,
+    "freePoints": 0,
+    "taskCount": 11,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 2,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 0,
+    "hp": 175,
+    "maxHp": 175,
+    "attributes": {
+      "con": 3,
+      "str": 2,
+      "int": 0,
+      "agi": 11,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "fvUtCBGdILnbiIFZAAAm",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 150
+  },
+  {
+    "name": "夫子",
+    "title": "武林卷王",
+    "level": 4,
+    "exp": 358,
+    "maxExp": 481,
+    "freePoints": 0,
+    "taskCount": 35,
+    "encountersToday": 2,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 9,
+    "hp": 160,
+    "maxHp": 160,
+    "attributes": {
+      "con": 0,
+      "str": 19,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_shihou"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": "s_shihou",
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "Hr_oC127n9zqg8oLAAKG",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 240
+  },
+  {
+    "name": "tandiwen",
+    "title": "",
+    "level": 1,
+    "exp": 20,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 1,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 135,
+    "maxHp": 135,
+    "attributes": {
+      "con": 2,
+      "str": 2,
+      "int": 2,
+      "agi": 2,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "SCJGsG43yrvaRRE3AABA",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 5
+  },
+  {
+    "name": "学海无涯",
+    "title": "肝帝真仙",
+    "level": 15,
+    "exp": 873,
+    "maxExp": 2813,
+    "freePoints": 0,
+    "taskCount": 29,
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 39,
+    "hp": 325,
+    "maxHp": 325,
+    "attributes": {
+      "con": 0,
+      "str": 52,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_kuangfeng",
+      "s3"
+    ],
+    "treasures": [
+      "t2"
+    ],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s_kuangfeng",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": "t2",
+    "password": "188452xu",
+    "id": "54g-6AJKSyBxaMN1AAHR",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 315
+  },
+  {
+    "name": "木木",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 10
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "12356789",
+    "id": "54KCZrbRXuZlBPyqAAFZ",
+    "isBattling": false,
+    "rankIndex": 10062
+  },
+  {
+    "name": "秋",
+    "title": "武林卷王",
+    "level": 2,
+    "exp": 93,
+    "maxExp": 252,
+    "freePoints": 0,
+    "taskCount": 12,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 3,
+    "hp": 130,
+    "maxHp": 130,
+    "attributes": {
+      "con": 0,
+      "str": 5,
+      "int": 2,
+      "agi": 4,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "sjishw",
+    "id": "p15kbH0hSLHytI6JAAIE",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 235
+  },
+  {
+    "name": "历史的尘埃",
+    "title": "江湖劳模",
+    "level": 13,
+    "exp": 1526,
+    "maxExp": 2267,
+    "freePoints": 0,
+    "taskCount": 8,
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫",
+      "血枯劫"
+    ],
+    "silver": 17,
+    "hp": 405,
+    "maxHp": 405,
+    "attributes": {
+      "con": 11,
+      "str": 10,
+      "int": 5,
+      "agi": 10,
+      "luk": 10
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_kuangfeng"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s_kuangfeng",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "Abc12345!",
+    "id": "2B-Khmz1I6UbaA2NAANs",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 145
+  },
+  {
+    "name": "132",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 1,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 125,
+    "maxHp": 125,
+    "attributes": {
+      "con": 1,
+      "str": 1,
+      "int": 1,
+      "agi": 6,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "3xSMygERXgIrGFvYAAJd",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 15
+  },
+  {
+    "name": "雪松",
+    "title": "肝帝真仙",
+    "level": 13,
+    "exp": 263,
+    "maxExp": 2267,
+    "freePoints": 0,
+    "taskCount": 35,
+    "encountersToday": 3,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 5,
+    "hp": 495,
+    "maxHp": 495,
+    "attributes": {
+      "con": 20,
+      "str": 20,
+      "int": 0,
+      "agi": 6,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s3"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": "s_shihou",
+      "outer": "s3",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "84324370",
+    "id": "NIydtbY29sW7cPeBAAAm",
+    "isBattling": false,
+    "rankIndex": 72,
+    "dailyActivity": 390
+  },
+  {
+    "name": "君莫忧",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 2,
+      "int": 0,
+      "agi": 8,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "OtNxITyvikjJLjBBAAN0",
+    "isBattling": false,
+    "rankIndex": 10062
+  },
+  {
+    "name": "大侠",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 0,
+    "hp": 125,
+    "maxHp": 125,
+    "attributes": {
+      "con": 1,
+      "str": 1,
+      "int": 1,
+      "agi": 5,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "bxVV53MR0ZZPsF-qAAAS",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 15
+  },
+  {
+    "name": "星风",
+    "title": "初出茅庐",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 2,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 0,
+    "hp": 125,
+    "maxHp": 125,
+    "attributes": {
+      "con": 1,
+      "str": 3,
+      "int": 3,
+      "agi": 2,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "ZRKngZHaxKEefH4wAAAi",
+    "isBattling": false,
+    "rankIndex": 10060,
+    "dailyActivity": 25
+  },
+  {
+    "name": "鸿烈",
+    "title": "肝帝真仙",
+    "level": 9,
+    "exp": 1114,
+    "maxExp": 1332,
+    "freePoints": 0,
+    "taskCount": 35,
+    "encountersToday": 5,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "血枯劫",
+      "心魔劫"
+    ],
+    "silver": 5,
+    "hp": 295,
+    "maxHp": 295,
+    "attributes": {
+      "con": 6,
+      "str": 13,
+      "int": 4,
+      "agi": 6,
+      "luk": 5
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_du"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s_du",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "R6ciMvkTLmRONXt8AAJ9",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 305
+  },
+  {
+    "name": "Jimsleezj",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 10
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "as19940701",
+    "id": "aPfgku06Kt4pB7BEAAAy",
+    "isBattling": false,
+    "rankIndex": 10061
+  },
+  {
+    "name": "晨风舞影",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 135,
+    "maxHp": 135,
+    "attributes": {
+      "con": 2,
+      "str": 2,
+      "int": 2,
+      "agi": 2,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "abc123456",
+    "id": "-QAPGAv4HPmMJJUaAAA0",
+    "isBattling": false,
+    "rankIndex": 10061
+  },
+  {
+    "name": "王麻子",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 1,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 10,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "qiM3_iN2BBagSO_0AAA4",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 5
+  },
+  {
+    "name": "道火不熄",
+    "title": "初出茅庐",
+    "level": 1,
+    "exp": 89,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 6,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 1,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 10
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "侠之大者，为国为民。码之大者，修到天明",
+    "id": "qINy4QACknfned2rAABB",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 30
+  },
+  {
+    "name": "王银月",
+    "title": "肝帝真仙",
+    "level": 9,
+    "exp": 135,
+    "maxExp": 1332,
+    "freePoints": 34,
+    "taskCount": 17,
+    "encountersToday": 2,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 17,
+    "hp": 235,
+    "maxHp": 235,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1",
+      "s_kuangfeng"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": "s_yijin",
+      "outer": "s_kuangfeng",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "Silver930719",
+    "id": "EqOfwFaed1qEwf2NAAEp",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 295
+  },
+  {
+    "name": "郭巨侠",
+    "title": "初出茅庐",
+    "level": 3,
+    "exp": 83,
+    "maxExp": 358,
+    "freePoints": 6,
+    "taskCount": 0,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 1,
+    "hp": 165,
+    "maxHp": 165,
+    "attributes": {
+      "con": 2,
+      "str": 3,
+      "int": 2,
+      "agi": 2,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "***",
+    "id": "EbEeyUERmUqaZHprAABN",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 25
+  },
+  {
+    "name": "巴拉猛戳",
+    "title": "初出茅庐",
+    "level": 1,
+    "exp": 27,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 3,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "血枯劫"
+    ],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 10,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "518518",
+    "id": "yjIKNMJGsQ0i-LyNAACh",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 45
+  },
+  {
+    "name": "新世纪菜b",
+    "title": "初出茅庐",
+    "level": 2,
+    "exp": 25,
+    "maxExp": 252,
+    "freePoints": 0,
+    "taskCount": 4,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 3,
+    "hp": 130,
+    "maxHp": 130,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 13
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "959424",
+    "id": "euxP5QOwSTZDVCSdAAFO",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 25
+  },
+  {
+    "name": "阿青",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 10,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "woshi1sb",
+    "id": "MXJr2rigF--_6W22AAKS",
+    "isBattling": false,
+    "rankIndex": 10062
+  },
+  {
+    "name": "789456123",
+    "title": "初出茅庐",
+    "level": 1,
+    "exp": 89,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 5,
+    "encountersToday": 2,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 1,
+    "hp": 135,
+    "maxHp": 135,
+    "attributes": {
+      "con": 2,
+      "str": 0,
+      "int": 5,
+      "agi": 2,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "dq920134",
+    "id": "dP2j0ygltGSWxaM1AAKM",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 50
+  },
+  {
+    "name": "寒江雪",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 145,
+    "maxHp": 145,
+    "attributes": {
+      "con": 3,
+      "str": 5,
+      "int": 0,
+      "agi": 0,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "qq12561011",
+    "id": "uw_7oslVGKCHVJcZAAKK",
+    "isBattling": false,
+    "rankIndex": 10062
+  },
+  {
+    "name": "小户",
+    "title": "初出茅庐",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 1,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 3,
+    "dailyDebuffs": [
+      "心魔劫"
+    ],
+    "silver": 0,
+    "hp": 125,
+    "maxHp": 125,
+    "attributes": {
+      "con": 1,
+      "str": 1,
+      "int": 6,
+      "agi": 1,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "xiaohu",
+    "id": "8hLyONap2shFT8xwAAKQ",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 50
+  },
+  {
+    "name": "君问归期未有期",
+    "title": "",
+    "level": 1,
+    "exp": 67,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 1,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 04 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 1,
+    "hp": 115,
+    "maxHp": 115,
+    "attributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 5,
+      "luk": 5
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "",
+    "id": "YCNFkr5wOW_o58UhAAKe",
+    "isBattling": false,
+    "rankIndex": 10062,
+    "dailyActivity": 5
+  },
+  {
+    "name": "懒懒丶",
+    "title": "",
+    "level": 1,
+    "exp": 108,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 2,
+    "encountersToday": 0,
+    "lastTaskDate": "Fri Jun 05 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 125,
+    "maxHp": 125,
+    "attributes": {
+      "con": 1,
+      "str": 3,
+      "int": 3,
+      "agi": 2,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "655133",
+    "id": "ZqSGgsnDcNDJpLkaAAMH",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 10
+  },
+  {
+    "name": "2802952785",
+    "title": "",
+    "level": 1,
+    "exp": 26,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 3,
+    "encountersToday": 0,
+    "lastTaskDate": "Fri Jun 05 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 145,
+    "maxHp": 145,
+    "attributes": {
+      "con": 3,
+      "str": 4,
+      "int": 1,
+      "agi": 1,
+      "luk": 1
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "password": "687293ZZm",
+    "id": "bDuqzNSJQuaE_pdVAAMN",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "dailyActivity": 15
   }
 ]
