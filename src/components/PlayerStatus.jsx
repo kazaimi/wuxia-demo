@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS, ATTR_MAP } from '../store/gameState';
 import { User, Star, AlertCircle } from 'lucide-react';
 import AttributeRadar from './AttributeRadar';
@@ -19,6 +19,24 @@ export default function PlayerStatus() {
   const equipTreasure = useGameStore(state => state.equipTreasure);
   const inBattle = useGameStore(state => state.battleState.inBattle);
   const { name, title, level, exp, maxExp, freePoints, attributes, permanentAttributes, skills, hp, maxHp, treasures, equippedSkills, equippedTreasure } = player;
+  
+  // 储物袋背包状态：选中的宝具ID
+  const [selectedTreasureId, setSelectedTreasureId] = useState(null);
+
+  // 背包数据堆叠统计
+  const inventory = (treasures || []).reduce((acc, tId) => {
+     acc[tId] = (acc[tId] || 0) + 1;
+     return acc;
+  }, {});
+
+  // 监听并确保 selectedTreasureId 的有效性
+  useEffect(() => {
+    if (selectedTreasureId && !treasures.includes(selectedTreasureId)) {
+      setSelectedTreasureId(equippedTreasure || (treasures.length > 0 ? treasures[0] : null));
+    } else if (!selectedTreasureId && (equippedTreasure || treasures.length > 0)) {
+      setSelectedTreasureId(equippedTreasure || treasures[0]);
+    }
+  }, [treasures, equippedTreasure]);
 
   // 监听玩家等级境界变化，播放突破音效
   const prevLevel = useRef(level);
@@ -179,55 +197,178 @@ export default function PlayerStatus() {
           })}
         </div>
 
-        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
-           <span style={{ color: 'var(--gold)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-             本命宝具
-           </span>
-           <select
-              value={equippedTreasure || ''}
-              onChange={e => equipTreasure(e.target.value || null)}
-              className="wuxia-select"
-              style={{ border: '1px solid var(--gold)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px', padding: '6px 8px', width: '100%', fontSize: '0.85rem' }}
-           >
-              <option value="">── 无羁绊 ──</option>
-              {(treasures || []).map(tId => {
+        {/* 储物袋背包系统 */}
+        <div style={{ marginTop: '1.2rem', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
+           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+             <span style={{ color: 'var(--gold)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
+               🎒 芥子储物袋
+             </span>
+             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+               容纳数: {treasures?.length || 0}
+             </span>
+           </div>
+
+           {/* 储物背包网格 Grid */}
+           <div style={{
+             display: 'grid',
+             gridTemplateColumns: 'repeat(5, 1fr)',
+             gap: '8px',
+             background: 'rgba(0, 0, 0, 0.4)',
+             padding: '10px',
+             borderRadius: '8px',
+             border: '1px solid var(--glass-border)',
+             minHeight: '68px'
+           }}>
+             {Object.keys(inventory).length === 0 ? (
+               <div style={{ gridColumn: 'span 5', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '10px 0' }}>
+                 空空如也，快去奇遇闯关寻宝吧！
+               </div>
+             ) : (
+               Object.entries(inventory).map(([tId, count]) => {
                  const t = TREASURES_DB?.find(tr => tr.id === tId);
-                 if (!t) return <option key={tId} value={tId}>{cleanText(tId)}</option>;
-                 // 去掉 [稀有度] 前缀以防下拉框溢出，只显示过滤后的宝具名字
-                 const displayText = cleanText(t.name);
-                 return <option key={tId} value={tId}>{displayText}</option>;
-              })}
-           </select>
-           {equippedTreasure && (() => {
-              const t = TREASURES_DB?.find(tr => tr.id === equippedTreasure);
-              if (!t) return null;
-              const rarityColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#a78bfa', '稀有': '#60a5fa', '普通': '#9ca3af' };
-              const baojuGlowClass = t.rarity === '神话' ? 'baoju-glow-mythic' : (t.rarity === '传说' ? 'baoju-glow-legend' : '');
-              const rarityIconText = t.rarity === '神话' ? '镇派' : t.rarity === '传说' ? '传世' : '绝品';
-              return (
-                <div className={`baoju-card ${baojuGlowClass}`} style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center', padding: '12px 14px' }}>
-                  <TreasureIcon id={t.id} size={56} />
-                  
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-                    <div style={{ fontSize: '0.9rem', color: rarityColors[t.rarity] || 'var(--text-muted)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                      <span style={{ fontWeight: 'bold' }}>{cleanText(t.name)}</span>
-                      <span style={{ fontSize: '0.75rem', opacity: 0.8, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px', whiteSpace: 'nowrap' }}>{t.rarity} · {rarityIconText}</span>
-                    </div>
-                    
-                    {/* 属性加成 */}
-                    {t.attrs && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--gold)', opacity: 0.9, fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
-                        {Object.entries(t.attrs).map(([k, v]) => `${ATTR_MAP[k] || k} +${v}`).join('  ')}
-                      </div>
-                    )}
-                    
-                    {/* 宝具效果描述 */}
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: '1.3', borderTop: '1px dashed rgba(194, 157, 56, 0.15)', paddingTop: '4px', marginTop: '2px', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
-                      {cleanText(t.desc)}
-                    </div>
-                  </div>
-                </div>
-              );
+                 if (!t) return null;
+                 const isSelected = selectedTreasureId === tId;
+                 const isEquipped = equippedTreasure === tId;
+                 
+                 const rarityColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#ec4899', '稀有': '#3b82f6', '普通': '#9ca3af' };
+                 const rarityBgs = {
+                   '神话': 'rgba(251, 191, 36, 0.12)',
+                   '传说': 'rgba(168, 85, 247, 0.12)',
+                   '史诗': 'rgba(236, 72, 153, 0.12)',
+                   '稀有': 'rgba(59, 130, 246, 0.12)',
+                   '普通': 'rgba(156, 163, 175, 0.12)'
+                 };
+
+                 return (
+                   <div
+                     key={tId}
+                     onClick={() => { SoundManager.play('sfx_click'); setSelectedTreasureId(tId); }}
+                     style={{
+                       position: 'relative',
+                       aspectRatio: '1',
+                       background: rarityBgs[t.rarity] || 'rgba(255, 255, 255, 0.05)',
+                       border: isSelected 
+                         ? '2px solid var(--gold)' 
+                         : (isEquipped ? '1px dashed var(--gold)' : `1px solid ${rarityColors[t.rarity]}30`),
+                       boxShadow: isSelected ? '0 0 10px rgba(194, 157, 56, 0.4)' : 'none',
+                       borderRadius: '6px',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s',
+                       transform: isSelected ? 'scale(1.05)' : 'none'
+                     }}
+                     title={t.name}
+                   >
+                     {/* 宝物小图标 */}
+                     <TreasureIcon id={tId} size={42} />
+
+                     {/* 装备中小金星 */}
+                     {isEquipped && (
+                       <span style={{
+                         position: 'absolute',
+                         top: '2px',
+                         left: '4px',
+                         fontSize: '0.8rem',
+                         textShadow: '0 0 3px #000'
+                       }}>
+                         ⭐
+                       </span>
+                     )}
+
+                     {/* 堆叠数量角标 */}
+                     {count > 1 && (
+                       <span style={{
+                         position: 'absolute',
+                         bottom: '2px',
+                         right: '3px',
+                         background: 'rgba(0, 0, 0, 0.75)',
+                         color: '#fff',
+                         fontSize: '0.65rem',
+                         padding: '1px 3.5px',
+                         borderRadius: '3px',
+                         lineHeight: '1',
+                         border: '1px solid rgba(255, 255, 255, 0.15)',
+                         fontWeight: 'bold'
+                       }}>
+                         {count}
+                       </span>
+                     )}
+                   </div>
+                 );
+               })
+             )}
+           </div>
+
+           {/* 选中宝具详情卡片及操作面板 */}
+           {(() => {
+             if (!selectedTreasureId) return null;
+             const t = TREASURES_DB?.find(tr => tr.id === selectedTreasureId);
+             if (!t) return null;
+             
+             const rarityColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#a78bfa', '稀有': '#60a5fa', '普通': '#9ca3af' };
+             const baojuGlowClass = t.rarity === '神话' ? 'baoju-glow-mythic' : (t.rarity === '传说' ? 'baoju-glow-legend' : '');
+             const rarityIconText = t.rarity === '神话' ? '镇派' : t.rarity === '传说' ? '传世' : '绝品';
+             const isEquipped = equippedTreasure === selectedTreasureId;
+             const isMultiple = inventory[selectedTreasureId] > 1;
+
+             return (
+               <div className={`baoju-card ${baojuGlowClass}`} style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '12px 14px', borderRadius: '8px' }}>
+                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                   <TreasureIcon id={t.id} size={52} />
+                   
+                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+                     <div style={{ fontSize: '0.9rem', color: rarityColors[t.rarity] || 'var(--text-muted)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                       <span style={{ fontWeight: 'bold' }}>{cleanText(t.name)}</span>
+                       <span style={{ fontSize: '0.75rem', opacity: 0.8, background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '3px', whiteSpace: 'nowrap' }}>
+                         {t.rarity} · {rarityIconText}
+                       </span>
+                     </div>
+                     
+                     {/* 属性加成 */}
+                     {t.attrs && (
+                       <div style={{ fontSize: '0.75rem', color: 'var(--gold)', opacity: 0.9, fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
+                         {Object.entries(t.attrs).map(([k, v]) => `${ATTR_MAP[k] || k} +${v}`).join('  ')}
+                       </div>
+                     )}
+                   </div>
+                 </div>
+
+                 {/* 宝物特效描述 */}
+                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4', borderTop: '1px dashed rgba(194, 157, 56, 0.15)', paddingTop: '6px', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
+                   {cleanText(t.desc)}
+                 </div>
+
+                 {/* 本命绑定/解绑操作区 */}
+                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginTop: '2px' }}>
+                   {isEquipped ? (
+                     <button
+                       className="btn-primary"
+                       onClick={() => { SoundManager.play('sfx_click'); equipTreasure(null); }}
+                       style={{ width: '100%', padding: '6px 12px', fontSize: '0.8rem', background: 'var(--warn)', color: '#000', fontWeight: 'bold' }}
+                     >
+                       卸下本命宝具
+                     </button>
+                   ) : (
+                     <button
+                       className="btn-primary"
+                       onClick={() => { SoundManager.play('sfx_click'); equipTreasure(selectedTreasureId); }}
+                       style={{ width: '100%', padding: '6px 12px', fontSize: '0.8rem', background: 'var(--gold)', color: '#000', fontWeight: 'bold' }}
+                     >
+                       确立本命羁绊
+                     </button>
+                   )}
+                 </div>
+
+                 {/* 复数出售提醒 */}
+                 {isMultiple && (
+                   <div style={{ fontSize: '0.72rem', color: '#10b981', display: 'flex', gap: '4px', alignItems: 'center', opacity: 0.9 }}>
+                     <span>💡 阁下已有多件此宝，可在【黑市拍卖行】将其上架换取银两。</span>
+                   </div>
+                 )}
+               </div>
+             );
            })()}
         </div>
       </div>

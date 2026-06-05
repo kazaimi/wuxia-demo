@@ -368,13 +368,51 @@ export const useGameStore = create((set, get) => ({
   }),
 
   gainTreasure: (tId) => set((state) => {
-     if (!state.player.treasures.includes(tId)) {
-        const p = { ...state.player, treasures: [...state.player.treasures, tId] };
-        if (!p.equippedTreasure) p.equippedTreasure = tId;
-        if (socket) socket.emit('update_player', p);
-        return { player: p };
-     }
-     return state;
+     const p = { ...state.player, treasures: [...state.player.treasures, tId] };
+     if (!p.equippedTreasure) p.equippedTreasure = tId;
+     if (socket) socket.emit('update_player', p);
+     return { player: p };
+  }),
+
+  gainEncounterRewards: (exp, silver, treasureIds) => set((state) => {
+    let { level, exp: currentExp, maxExp, freePoints, taskCount, ...rest } = state.player;
+    
+    let newExp = currentExp + exp;
+    let newLevel = level;
+    let newFreePoints = freePoints;
+    let newMaxExp = maxExp;
+    while (newExp >= newMaxExp) { 
+      newExp -= newMaxExp; 
+      newLevel += 1; 
+      newFreePoints += POINTS_PER_LEVEL;
+      newMaxExp = getNextExp(newLevel);
+    }
+    const finalMaxHp = calculateMaxHp(newLevel, rest.attributes.con);
+    
+    const newSilver = (rest.silver || 0) + silver;
+    
+    const newTreasures = [...(rest.treasures || [])];
+    let newEquippedTreasure = rest.equippedTreasure;
+    treasureIds.forEach(tId => {
+       newTreasures.push(tId);
+       if (!newEquippedTreasure) newEquippedTreasure = tId;
+    });
+    
+    const p = { 
+       ...rest, 
+       level: newLevel, 
+       exp: newExp, 
+       maxExp: newMaxExp, 
+       freePoints: newFreePoints, 
+       taskCount, 
+       hp: finalMaxHp, 
+       maxHp: finalMaxHp,
+       silver: newSilver,
+       treasures: newTreasures,
+       equippedTreasure: newEquippedTreasure
+    };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
   }),
 
   gainExp: (amount) => set((state) => {
