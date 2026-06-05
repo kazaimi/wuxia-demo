@@ -246,6 +246,7 @@ export default function EncounterArena() {
   const gainTreasure = useGameStore(state => state.gainTreasure);
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
+  const gainEncounterRewards = useGameStore(state => state.gainEncounterRewards);
 
   const cleanIcon = useCleanImage('/wuxia_encounter_icon.webp');
 
@@ -1509,9 +1510,9 @@ export default function EncounterArena() {
      droppedTreasures = droppedTreasures.slice(0, 2);
 
      // 结算派发奖励到主状态机
-     if (totalExp > 0) gainExp(totalExp);
-     if (totalSilver > 0) addSilver(totalSilver);
-     droppedTreasures.forEach(t => gainTreasure(t.id));
+     gainEncounterRewards(totalExp, totalSilver, droppedTreasures.map(t => t.id));
+     // 银两与秘宝已合并发放
+
 
      // 若战胜 60 位通关，授予特别名望
      if (finalDefeatedCount >= 60) {
