@@ -375,7 +375,7 @@ export const useGameStore = create((set, get) => ({
   }),
 
   gainEncounterRewards: (exp, silver, treasureIds) => set((state) => {
-    let { level, exp: currentExp, maxExp, freePoints, taskCount, hp, maxHp, ...rest } = state.player;
+    let { level, exp: currentExp, maxExp, freePoints, taskCount, ...rest } = state.player;
     
     let newExp = currentExp + exp;
     let newLevel = level;
