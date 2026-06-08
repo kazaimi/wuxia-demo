@@ -169,8 +169,10 @@ export default function Leaderboard() {
   
   const cleanIcon = useCleanImage('/wuxia_leader_icon.webp');
 
-  // 按照服务器指定的 rankIndex 升序排序
-  const fullBoard = [...onlinePlayers].sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));
+  // 按照服务器指定的 rankIndex 升序排序，并剔除“清风”
+  const fullBoard = onlinePlayers
+    .filter(u => u.name !== '清风')
+    .sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));
 
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>

@@ -146,7 +146,16 @@ export const useGameStore = create((set, get) => ({
     skills: ['s1'], 
     treasures: [],
     equippedSkills: { inner: null, outer: 's1', motion: null, ultimate: null },
-    equippedTreasure: null
+    equippedTreasure: null,
+    essence: 100,
+    inventoryMaterials: {
+      anomalyDust: 0, soulAshes: 0, anomalyCrystal: 0,
+      goldSand: 0, woodHerb: 0, waterFluid: 0, fireMarrow: 0, earthEssence: 0
+    },
+    equippedTreasureAttrs: {
+      extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+      extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+    }
   },
 
   onlinePlayers: isMockMode ? [
@@ -155,6 +164,21 @@ export const useGameStore = create((set, get) => ({
     { id: 'bot3', name: '东方不败', level: 92, isMock: true, rankIndex: 1, attributes: { con: 40, str: 35, int: 45, agi: 50, luk: 20 }, equippedTreasure: 't13' }
   ] : [],
   activeAuctions: [],
+  realmGhosts: [],
+  worldBossState: {
+     active: false,
+     signupOpen: false,
+     maxHp: 0,
+     hp: 0,
+     signups: [],
+     fighters: {},
+     lastHitBy: null,
+     auctionActive: false,
+     highestBid: 0,
+     highestBidder: null,
+     auctionEndTime: 0,
+     auctionItem: null
+  },
   auctionHistory: [],
   broadcastQueue: [],
   battleState: (isMockMode && (typeof window === 'undefined' || !window.location.search.includes('mock_encounter=1'))) ? {
@@ -232,6 +256,19 @@ export const useGameStore = create((set, get) => ({
          if (typeof playerData.silver === 'undefined') playerData.silver = 0;
          if (!playerData.equippedSkills) playerData.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
          if (!playerData.permanentAttributes) playerData.permanentAttributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+         if (typeof playerData.essence === 'undefined') playerData.essence = 100;
+         if (!playerData.inventoryMaterials) {
+             playerData.inventoryMaterials = {
+                anomalyDust: 0, soulAshes: 0, anomalyCrystal: 0,
+                goldSand: 0, woodHerb: 0, waterFluid: 0, fireMarrow: 0, earthEssence: 0
+             };
+         }
+         if (!playerData.equippedTreasureAttrs) {
+             playerData.equippedTreasureAttrs = {
+                extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+                extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+             };
+         }
          
          const today = new Date().toDateString();
          if (playerData.lastTaskDate !== today) {
@@ -259,10 +296,11 @@ export const useGameStore = create((set, get) => ({
       });
 
       socket.on('online_players', (playersList) => set((state) => {
-        const myPlayer = playersList.find(p => p.name === state.player.name);
+        const filteredList = (playersList || []).filter(p => p.name !== '清风');
+        const myPlayer = filteredList.find(p => p.name === state.player.name);
         if (myPlayer) {
            return {
-              onlinePlayers: playersList,
+              onlinePlayers: filteredList,
               player: {
                  ...state.player,
                  rankIndex: myPlayer.rankIndex,
@@ -276,7 +314,7 @@ export const useGameStore = create((set, get) => ({
               }
            };
         }
-        return { onlinePlayers: playersList };
+        return { onlinePlayers: filteredList };
       }));
       socket.on('battle_start', (data) => set({ battleState: { inBattle: true, roomId: data.roomId, p1: data.p1, p2: data.p2, logs: data.logs, winner: null } }));
       socket.on('battle_log', (actionData) => set(state => ({
@@ -292,9 +330,58 @@ export const useGameStore = create((set, get) => ({
             alert(`[大奇遇] 您在挑战中，爆出了绝学【${sk.name}】！`);
          }
       });
-      socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
-      socket.on('auction_history', (history) => set({ auctionHistory: history }));
-      socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
+      socket.on('auction_update', (auctions) => {
+         const cleanAuctions = (auctions || []).filter(a => a.sellerName !== '清风' && a.highestBidder !== '清风');
+         set({ activeAuctions: cleanAuctions });
+      });
+      socket.on('auction_history', (history) => {
+         const cleanHistory = (history || []).filter(h => h.sellerName !== '清风' && h.buyer !== '清风');
+         set({ auctionHistory: cleanHistory });
+      });
+      socket.on('broadcast_message', (msg) => {
+         if (msg && (msg.includes('清风') || msg.includes('清风大侠'))) return;
+         set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] }));
+      });
+      socket.on('realm_ghosts_list', (ghosts) => {
+         const cleanGhosts = (ghosts || []).filter(g => g.creatorName !== '清风');
+         set({ realmGhosts: cleanGhosts });
+      });
+      socket.on('update_player_success', (playerData) => set({ player: playerData }));
+      socket.on('deploy_ghost_result', (res) => {
+         if (res.success) {
+            alert("神魂设伏成功！你的怨灵残影已留存于此地。");
+         } else {
+            alert(res.reason);
+         }
+      });
+      const sanitizeWorldBossState = (bossState) => {
+         if (!bossState) return bossState;
+         const cleanFighters = { ...bossState.fighters };
+         if (cleanFighters['清风']) delete cleanFighters['清风'];
+         return {
+            ...bossState,
+            fighters: cleanFighters,
+            highestBidder: bossState.highestBidder === '清风' ? '匿名大侠' : bossState.highestBidder,
+            lastHitBy: bossState.lastHitBy === '清风' ? '匿名大侠' : bossState.lastHitBy,
+            signups: (bossState.signups || []).filter(name => name !== '清风')
+         };
+      };
+      socket.on('world_boss_state', (bossState) => set({ worldBossState: sanitizeWorldBossState(bossState) }));
+      socket.on('world_boss_state_change', (bossState) => set({ worldBossState: sanitizeWorldBossState(bossState) }));
+      socket.on('signup_world_boss_result', (res) => {
+         if (res.success) {
+            alert("投递请战帖登记参战成功！静候周五晚19:00大劫魔罗降临。");
+         } else {
+            alert(res.reason);
+         }
+      });
+      socket.on('bid_world_boss_auction_result', (res) => {
+         if (res.success) {
+            alert("大尊拍卖：叫价出资成功！");
+         } else {
+            alert(res.reason);
+         }
+      });
     }
   },
 
@@ -361,11 +448,18 @@ export const useGameStore = create((set, get) => ({
      return { player: p };
   }),
 
-  equipTreasure: (tId) => set((state) => {
-     const p = { ...state.player, equippedTreasure: tId };
-     if (socket) socket.emit('update_player', p);
-     return { player: p };
-  }),
+    equipTreasure: (tId) => set((state) => {
+       const p = { ...state.player };
+       if (p.equippedTreasure !== tId) {
+          p.equippedTreasure = tId;
+          p.equippedTreasureAttrs = {
+             extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+             extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
+          };
+       }
+       if (socket) socket.emit('update_player', p);
+       return { player: p };
+    }),
 
   gainTreasure: (tId) => set((state) => {
      const p = { ...state.player, treasures: [...state.player.treasures, tId] };
@@ -432,6 +526,22 @@ export const useGameStore = create((set, get) => ({
 
   addSilver: (amount) => set((state) => {
     const p = { ...state.player, silver: (state.player.silver || 0) + amount };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
+  gainEssence: (amount) => set((state) => {
+    const curEssence = state.player.essence || 0;
+    const newEssence = Math.min(200, curEssence + amount);
+    const p = { ...state.player, essence: newEssence };
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
+  gainMaterial: (materialKey, amount) => set((state) => {
+    const materials = { ...(state.player.inventoryMaterials || {}) };
+    materials[materialKey] = (materials[materialKey] || 0) + amount;
+    const p = { ...state.player, inventoryMaterials: materials };
     if (socket) socket.emit('update_player', p);
     return { player: p };
   }),
@@ -536,15 +646,39 @@ export const useGameStore = create((set, get) => ({
       Math.random() > 0.5 ? (Math.random() > 0.5 ? 1 : 2) : (Math.random() > 0.8 ? 5 : 4)
     ];
 
+    const TASK_TEMPLATE = {
+      str: {
+        title: "铁匠铺锤炼",
+        desc: "【力量悬赏】协助铁匠铺锻造百炼寒铁，锤击千次以提炼金精砂。"
+      },
+      con: {
+        title: "险峰采芝",
+        desc: "【体质悬赏】跋涉险峰采集野生灵芝，锤炼肉身筋骨以获取乙木芝。"
+      },
+      agi: {
+        title: "凌空送信",
+        desc: "【轻功悬赏】运用踏雪无痕身法限时飞鸽传书，凌空取回玄水液。"
+      },
+      int: {
+        title: "静室坐禅",
+        desc: "【智慧悬赏】在烈火静室中静坐参禅参悟武学奥义，获赠地火髓。"
+      },
+      luk: {
+        title: "布施积德",
+        desc: "【幸运悬赏】为遭遇天灾的百姓解签布施积德行善，偶得厚土精。"
+      }
+    };
+
     starConfigs.forEach(stars => {
        const attr = attrs[Math.floor(Math.random()*attrs.length)];
        const difficulty = state.player.level * (1.2 + stars * 0.2) + stars * 2;
        const expReward = Math.floor(stars * 20 + state.player.level * Math.random() * 15);
        
+       const temp = TASK_TEMPLATE[attr];
        tasks.push({
          id: 'task_' + Math.random().toString(36).substr(2, 6),
-         title: `${'★'.repeat(stars)}${'☆'.repeat(5-stars)} ${stars>=4?'血印':'飞鸽'}委托`,
-         desc: `成功率受【${ATTR_MAP[attr]}】影响。推荐门槛：${Math.floor(difficulty)}`,
+         title: `${'★'.repeat(stars)}${'☆'.repeat(5-stars)} ${temp.title}`,
+         desc: `${temp.desc} 成功率受【${ATTR_MAP[attr]}】影响。推荐门槛：${Math.floor(difficulty)}`,
          stars, reqAttr: attr, difficulty, expReward, completed: false
        });
     });
@@ -645,7 +779,37 @@ export const useGameStore = create((set, get) => ({
     return { player: p };
   }),
 
+  fetchRealmGhosts: () => {
+      if (socket) socket.emit('get_realm_ghosts');
+  },
+  deployGhostRemnant: (layerIndex, message) => {
+      if (socket) socket.emit('deploy_ghost_remnant', { layerIndex, message });
+  },
+  ghostWinDividend: (ghostId) => {
+      if (socket) socket.emit('ghost_win_dividend', { ghostId });
+  },
+  defeatRealmGhost: (ghostId) => {
+      if (socket) socket.emit('defeat_realm_ghost', { ghostId });
+  },
+
+  fetchWorldBossState: () => {
+      if (socket) socket.emit('get_world_boss_state');
+  },
+  signupWorldBoss: () => {
+      if (socket) socket.emit('signup_world_boss');
+  },
+  challengeWorldBoss: (damage) => {
+      if (socket) socket.emit('challenge_world_boss', { damage });
+  },
+  bidWorldBossAuction: (price) => {
+      if (socket) socket.emit('bid_world_boss_auction', { price });
+  },
+  devControlWorldBoss: (action) => {
+      if (socket) socket.emit('dev_control_world_boss', { action });
+  },
+
   challengePlayer: (targetId) => { if (socket) socket.emit('challenge', targetId); },
   sendBattleAction: (roomId, actionData) => { if (socket) socket.emit('battle_action', { roomId, actionData }); },
   exitBattle: () => set({ battleState: { inBattle: false, roomId: null, p1: null, p2: null, logs: [], winner: null } })
 }));
+export const getSocket = () => socket;

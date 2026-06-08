@@ -109,7 +109,7 @@ const buildBuffChoice = (id, quality, treasureId) => {
       case 'con':
          choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}体质之源`;
-         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 30}，并恢复等量生命)`;
+         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 5}，并恢复等量生命)`;
          choice.type = 'attr';
          break;
       case 'int':
@@ -337,7 +337,9 @@ export default function EncounterArena() {
      }
 
      // 风云榜降序排列（席位从大到小，即从底部倒序挑战）
-     const sortedLeaderboard = [...onlinePlayers].sort((a, b) => (b.rankIndex || 9999) - (a.rankIndex || 9999));
+     const sortedLeaderboard = onlinePlayers
+       .filter(u => u.name !== '清风')
+       .sort((a, b) => (b.rankIndex || 9999) - (a.rankIndex || 9999));
      if (sortedLeaderboard.length < 3) {
          alert("江湖风云榜高手尚且不足，无法开启挑战。");
          return;
@@ -380,7 +382,7 @@ export default function EncounterArena() {
          ...player, 
          level: 10,
          attributes: { con: 20, str: 12, int: 6, agi: 18, luk: 6 },
-         hp: 2000, maxHp: 2000,
+         hp: 700, maxHp: 700,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -488,10 +490,30 @@ export default function EncounterArena() {
     }
 
     const timer = setTimeout(() => {
-      const isP1Turn = Math.random() < (p1.attributes.agi / (p1.attributes.agi + p2.attributes.agi + 1));
+      const p1Agi = (p1.attributes.agi || 0) + (p1.equippedTreasureAttrs?.extraAgi || 0);
+      const p2Agi = (p2.attributes.agi || 0) + (p2.equippedTreasureAttrs?.extraAgi || 0);
+      const isP1Turn = Math.random() < (p1Agi / (p1Agi + p2Agi + 1));
 
       let attacker = { ... (isP1Turn ? p1 : p2) };
       let defender = { ... (isP1Turn ? p2 : p1) };
+
+      attacker.attributes = { ...attacker.attributes };
+      defender.attributes = { ...defender.attributes };
+
+      const aAttrs = attacker.equippedTreasureAttrs || {};
+      const dAttrs = defender.equippedTreasureAttrs || {};
+
+      attacker.attributes.str = (attacker.attributes.str || 0) + (aAttrs.extraStr || 0);
+      attacker.attributes.con = (attacker.attributes.con || 0) + (aAttrs.extraCon || 0);
+      attacker.attributes.agi = (attacker.attributes.agi || 0) + (aAttrs.extraAgi || 0);
+      attacker.attributes.int = (attacker.attributes.int || 0) + (aAttrs.extraInt || 0);
+      attacker.attributes.luk = (attacker.attributes.luk || 0) + (aAttrs.extraLuk || 0);
+
+      defender.attributes.str = (defender.attributes.str || 0) + (dAttrs.extraStr || 0);
+      defender.attributes.con = (defender.attributes.con || 0) + (dAttrs.extraCon || 0);
+      defender.attributes.agi = (defender.attributes.agi || 0) + (dAttrs.extraAgi || 0);
+      defender.attributes.int = (defender.attributes.int || 0) + (dAttrs.extraInt || 0);
+      defender.attributes.luk = (defender.attributes.luk || 0) + (dAttrs.extraLuk || 0);
 
       const getTreasure = (id) => TREASURES_DB?.find(t=>t.id===id);
       const aTreasure = getTreasure(attacker.equippedTreasure);
@@ -580,7 +602,7 @@ export default function EncounterArena() {
             const skill = pickSkill();
             
             const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
-            const dDefBase = defender.attributes.con * 2 + defender.level * 2;
+            const dDefBase = defender.attributes.con * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
             const aMod = 1 + attacker.level * 0.05;
             const adjustedSkillPwr = skill.power * aMod;
 
@@ -607,7 +629,8 @@ export default function EncounterArena() {
                attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
             } else {
                const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-               let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
+               const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+            let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                
                if (isDodge) {
                   actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
@@ -704,7 +727,7 @@ export default function EncounterArena() {
                            actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
                         }
                      }
-                     if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                      if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
                         const poisonChance = 0.15 + 0.10 * tBoostA;
                         if (Math.random() <= poisonChance) {
                            defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
@@ -722,6 +745,21 @@ export default function EncounterArena() {
                      if (aTreasure?.effect === 'xuanTie' && Math.random() <= (0.20 + 0.10 * tBoostA) && !checkImmune(defender, dTreasure, 'internalWound')) {
                          defender.debuffs.internalWound = 2;
                          actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                     }
+
+                     // 额外判定洗炼的中毒率和击晕率词条
+                     if (aAttrs.poisonRate > 0 && Math.random() <= (aAttrs.poisonRate * 0.01) && !checkImmune(defender, dTreasure, 'poison')) {
+                        if (defender.debuffs.poison < 3) {
+                           defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
+                           defender.debuffs.poisonPercent = 0.03 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                           actionLog += ` \n[注灵剧毒] 附魔剧毒生效，${defender.name} 陷入毒发！`;
+                        }
+                     }
+                     if (aAttrs.stunRate > 0 && Math.random() <= (aAttrs.stunRate * 0.01) && !checkImmune(defender, dTreasure, 'stun')) {
+                        if (defender.debuffs.stun < 1) {
+                           defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                           actionLog += ` \n[注灵震慑] 附魔晕慑生效，${defender.name} 被震慑防守！`;
+                        }
                      }
                   }
                }
@@ -774,10 +812,11 @@ export default function EncounterArena() {
                const nextDefeatedCount = defeatedCount + 1;
                setDefeatedCount(nextDefeatedCount);
 
-               // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+               // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线）
                const newLevel = 10 + nextDefeatedCount * 0.9;
                const oldMaxHp = finalP1.maxHp;
-               const newMaxHp = 2000 + (newLevel - 10) * 80 + (finalP1.attributes.con - 20) * 30;
+               const progress = Math.min(nextDefeatedCount / 60, 1);
+               const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (finalP1.attributes.con - 20) * 5);
                finalP1.level = newLevel;
                finalP1.maxHp = newMaxHp;
                finalP1.hp = Math.min(newMaxHp, finalP1.hp + (newMaxHp - oldMaxHp));
@@ -1062,9 +1101,31 @@ export default function EncounterArena() {
            }
            break;
         }
-        const isP1Turn = Math.random() < (tempP1.attributes.agi / (tempP1.attributes.agi + tempP2.attributes.agi + 1));
-        let attacker = { ... (isP1Turn ? tempP1 : tempP2) };
-        let defender = { ... (isP1Turn ? tempP2 : tempP1) };
+         const tempP1Agi = (tempP1.attributes.agi || 0) + (tempP1.equippedTreasureAttrs?.extraAgi || 0);
+         const tempP2Agi = (tempP2.attributes.agi || 0) + (tempP2.equippedTreasureAttrs?.extraAgi || 0);
+         const isP1Turn = Math.random() < (tempP1Agi / (tempP1Agi + tempP2Agi + 1));
+         
+         let attacker = { ... (isP1Turn ? tempP1 : tempP2) };
+         let defender = { ... (isP1Turn ? tempP2 : tempP1) };
+
+         // 临时深克隆 attributes 字典
+         attacker.attributes = { ...attacker.attributes };
+         defender.attributes = { ...defender.attributes };
+
+         const aAttrs = attacker.equippedTreasureAttrs || {};
+         const dAttrs = defender.equippedTreasureAttrs || {};
+
+         attacker.attributes.str = (attacker.attributes.str || 0) + (aAttrs.extraStr || 0);
+         attacker.attributes.con = (attacker.attributes.con || 0) + (aAttrs.extraCon || 0);
+         attacker.attributes.agi = (attacker.attributes.agi || 0) + (aAttrs.extraAgi || 0);
+         attacker.attributes.int = (attacker.attributes.int || 0) + (aAttrs.extraInt || 0);
+         attacker.attributes.luk = (attacker.attributes.luk || 0) + (aAttrs.extraLuk || 0);
+
+         defender.attributes.str = (defender.attributes.str || 0) + (dAttrs.extraStr || 0);
+         defender.attributes.con = (defender.attributes.con || 0) + (dAttrs.extraCon || 0);
+         defender.attributes.agi = (defender.attributes.agi || 0) + (dAttrs.extraAgi || 0);
+         defender.attributes.int = (defender.attributes.int || 0) + (dAttrs.extraInt || 0);
+         defender.attributes.luk = (defender.attributes.luk || 0) + (dAttrs.extraLuk || 0);
 
         const aTreasure = getTreasure(attacker.equippedTreasure);
         const dTreasure = getTreasure(defender.equippedTreasure);
@@ -1143,7 +1204,7 @@ export default function EncounterArena() {
               const skill = pickSkill();
               
               const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
-              const dDefBase = defender.attributes.con * 2 + defender.level * 2;
+              const dDefBase = defender.attributes.con * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
               const aMod = 1 + attacker.level * 0.05;
               const mastery = getSkillMastery(skill.id, isP1Turn ? (player.masteryMap || {}) : (attacker.masteryMap || {}));
               const adjustedSkillPwr = skill.power * aMod * (1 + mastery.bonus);
@@ -1171,7 +1232,8 @@ export default function EncounterArena() {
                  attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
               } else {
                  const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-                 let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
+                 const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+                 let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                  
                  if (isDodge) {
                     actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
@@ -1203,6 +1265,26 @@ export default function EncounterArena() {
                     if (aTreasure?.effect === 'jiMie' && Math.random() < (0.05 + 0.02 * tBoostA)) {
                         dmg = Math.floor(defender.hp * 0.5);
                         actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
+                    }
+                    
+                    if (aTreasure?.effect === 'xuanTie' && Math.random() <= (0.20 + 0.10 * tBoostA) && !checkImmune(defender, dTreasure, 'internalWound')) {
+                        defender.debuffs.internalWound = 2;
+                        actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                    }
+
+                    // 额外判定洗炼的中毒率和击晕率词条
+                    if (aAttrs.poisonRate > 0 && Math.random() <= (aAttrs.poisonRate * 0.01) && !checkImmune(defender, dTreasure, 'poison')) {
+                       if (defender.debuffs.poison < 3) {
+                          defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
+                          defender.debuffs.poisonPercent = 0.03 + (isP1Turn ? rogueBuffs.poisonDmgPct : 0);
+                          actionLog += ` \n[注灵剧毒] 附魔剧毒生效，${defender.name} 陷入毒发！`;
+                       }
+                    }
+                    if (aAttrs.stunRate > 0 && Math.random() <= (aAttrs.stunRate * 0.01) && !checkImmune(defender, dTreasure, 'stun')) {
+                       if (defender.debuffs.stun < 1) {
+                          defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
+                          actionLog += ` \n[注灵震慑] 附魔晕慑生效，${defender.name} 被震慑防守！`;
+                       }
                     }
 
                     if (defender.buffs.shield > 0) {
@@ -1270,7 +1352,7 @@ export default function EncounterArena() {
                              actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
                           }
                        }
-                       if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                      if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
                           const poisonChance = 0.15 + 0.10 * tBoostA;
                           if (Math.random() <= poisonChance) {
                              defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
@@ -1360,10 +1442,11 @@ export default function EncounterArena() {
      if (p1Won) {
         setDefeatedCount(nextDefeatedCount);
          
-         // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+         // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线，与正常战斗一致）
          const newLevel = 10 + nextDefeatedCount * 0.9;
          const oldMaxHp = result.p1.maxHp;
-         const newMaxHp = 2000 + (newLevel - 10) * 80 + (result.p1.attributes.con - 20) * 30;
+         const progress = Math.min(nextDefeatedCount / 60, 1);
+         const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (result.p1.attributes.con - 20) * 5);
          result.p1.level = newLevel;
          result.p1.maxHp = newMaxHp;
          result.p1.hp = Math.min(newMaxHp, result.p1.hp + (newMaxHp - oldMaxHp));
@@ -1568,8 +1651,8 @@ export default function EncounterArena() {
       if (choice.id === 'str') updatedP1.attributes.str += choice.val;
       else if (choice.id === 'con') {
          updatedP1.attributes.con += choice.val;
-         updatedP1.maxHp += choice.val * 30;
-         updatedP1.hp += choice.val * 30;
+         updatedP1.maxHp += choice.val * 5;
+         updatedP1.hp += choice.val * 5;
       }
       else if (choice.id === 'int') updatedP1.attributes.int += choice.val;
       else if (choice.id === 'agi') updatedP1.attributes.agi += choice.val;

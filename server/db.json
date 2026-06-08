@@ -1,20 +1,20 @@
 [
   {
     "name": "ALEX",
-    "title": "摸鱼小虾",
-    "level": 42,
-    "exp": 14233,
-    "maxExp": 14729,
+    "title": "初出茅庐",
+    "level": 43,
+    "exp": 2504,
+    "maxExp": 15321,
     "freePoints": 0,
     "taskCount": 0,
-    "hp": 760,
-    "maxHp": 760,
+    "hp": 1165,
+    "maxHp": 1165,
     "attributes": {
-      "con": 3,
-      "str": 1,
-      "int": 4,
-      "agi": 134,
-      "luk": 2
+      "con": 42,
+      "str": 14,
+      "int": 16,
+      "agi": 69,
+      "luk": 6
     },
     "skills": [
       "s1",
@@ -42,26 +42,27 @@
       "motion": "s_shenxing",
       "outer": "s_du",
       "ultimate": "s_dianxue",
-      "inner": "s5"
+      "inner": "s_shihou"
     },
-    "id": "_wnINj1VBBXmAKkaAAMo",
+    "id": "bCcs3ol0Ba8Tbl04AAAB",
     "isBattling": false,
     "rankIndex": 22,
-    "lastTaskDate": "Fri Jun 05 2026",
+    "lastTaskDate": "Mon Jun 08 2026",
     "treasures": [
       "t3",
       "t5",
       "t4",
       "t1",
       "t11",
-      "t9"
+      "t9",
+      "t13"
     ],
-    "encountersToday": 0,
+    "encountersToday": 3,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 0,
-    "silver": 206,
+    "dailyActivity": 30,
+    "silver": 109,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,
@@ -78,7 +79,33 @@
       "agi": 1,
       "luk": 2
     },
-    "password": "636793"
+    "password": "636793",
+    "essence": 70,
+    "inventoryMaterials": {
+      "anomalyDust": 7,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0,
+      "bossDamageBoost": 0
+    },
+    "lastLoginTime": 1780933654485,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Mon Jun 08 2026"
   },
   {
     "name": "芙蓉女侠",
@@ -142,7 +169,30 @@
       "int": 32,
       "agi": 37,
       "luk": 39
-    }
+    },
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "阿紫",
@@ -181,7 +231,30 @@
     "isBattling": false,
     "rankIndex": 66,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "隐世高手",
@@ -222,7 +295,30 @@
     "dailyDebuffs": [
       "心魔劫"
     ],
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "nan",
@@ -270,7 +366,30 @@
       "int": 0,
       "agi": 0,
       "luk": 0
-    }
+    },
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "Akira",
@@ -306,7 +425,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "喵喵喵",
@@ -342,7 +484,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "董存瑞",
@@ -378,7 +543,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "猫十一郎",
@@ -448,7 +636,30 @@
       "int": 4,
       "agi": 10,
       "luk": 6
-    }
+    },
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "喵",
@@ -517,7 +728,30 @@
       "agi": 0,
       "luk": 0
     },
-    "password": "000000"
+    "password": "000000",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "粑粑柑大侠",
@@ -553,7 +787,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "马云",
@@ -593,7 +850,30 @@
     "rankIndex": 10063,
     "dailyActivity": 50,
     "silver": 38,
-    "skillMastery": {}
+    "skillMastery": {},
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "月影",
@@ -653,7 +933,30 @@
       "int": 0,
       "agi": 0,
       "luk": 0
-    }
+    },
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "半勺咖啡豆",
@@ -691,7 +994,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 20,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "black school",
@@ -729,7 +1055,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 0,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "SuperB",
@@ -769,7 +1118,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 235,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "hhh",
@@ -807,7 +1179,30 @@
     "isBattling": true,
     "rankIndex": 10063,
     "dailyActivity": 5,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "北国风萧萧",
@@ -845,7 +1240,30 @@
     "isBattling": true,
     "rankIndex": 10063,
     "dailyActivity": 15,
-    "silver": 0
+    "silver": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "同花顺",
@@ -885,7 +1303,30 @@
     "id": "EPyn0cWCKzPWadpHAAAJ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 65
+    "dailyActivity": 65,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "flappysue",
@@ -923,7 +1364,30 @@
     "id": "NH_XjGxlIymhmSjZAAAD",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 35
+    "dailyActivity": 35,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "糊涂蛋",
@@ -973,7 +1437,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 250,
-    "skillMastery": {}
+    "skillMastery": {},
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "哈哈",
@@ -1022,7 +1509,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 240,
-    "skillMastery": {}
+    "skillMastery": {},
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "田啵光",
@@ -1071,7 +1581,30 @@
     "rankIndex": 10063,
     "dailyActivity": 30,
     "skillMastery": {},
-    "password": "636793"
+    "password": "636793",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "花花",
@@ -1119,7 +1652,30 @@
     "id": "wFday3ejYncSMis3AAA0",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 135
+    "dailyActivity": 135,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "小虾米",
@@ -1169,7 +1725,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 35,
-    "password": "7800502"
+    "password": "7800502",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "李易峰",
@@ -1217,7 +1796,30 @@
     "id": "h3Tphd4qFOxvXAi1AAAH",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "店小二",
@@ -1267,7 +1869,30 @@
     "id": "RgjH-asi3v3VRlhMAAAJ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 240
+    "dailyActivity": 240,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "胖虎",
@@ -1312,7 +1937,30 @@
     "id": "MWj_bIjlDFnfOk2iAAAP",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "闷闷不乐",
@@ -1364,7 +2012,30 @@
     "id": "O8wVqG4hL-y6linSAACp",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 220
+    "dailyActivity": 220,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "我了个豆",
@@ -1409,7 +2080,30 @@
     "id": "1HVAjKuRmyUHMmNoAAAV",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "铁公鸡",
@@ -1455,7 +2149,30 @@
     "id": "SUIqB74hGngvbR3wAAA2",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 100
+    "dailyActivity": 100,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "尘封",
@@ -1503,7 +2220,30 @@
     "id": "USvbBuziIfg7D74bAAA6",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 150
+    "dailyActivity": 150,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "大先生",
@@ -1555,7 +2295,30 @@
     "id": "Xuul81khYXufqNjHAAAi",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 45
+    "dailyActivity": 45,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "江楚寒",
@@ -1602,7 +2365,30 @@
     "id": "GnRYWKKVy9ZhcYaaAABQ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 240
+    "dailyActivity": 240,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "江楚帆",
@@ -1653,7 +2439,30 @@
     "id": "wYaeMfqPe8LbIfbxAAFf",
     "isBattling": false,
     "rankIndex": 70,
-    "dailyActivity": 590
+    "dailyActivity": 590,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "山东人",
@@ -1698,7 +2507,30 @@
     "id": "CvZNFkcOZVzWslHxAABg",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 20
+    "dailyActivity": 20,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "花踤缴",
@@ -1749,7 +2581,30 @@
     "id": "bf1pLeg2kzR1M5oCAAB0",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 270
+    "dailyActivity": 270,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "杨斐",
@@ -1793,7 +2648,30 @@
     "equippedTreasure": null,
     "id": "xBmgo8BbVcDhvNozAABw",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "岳老大",
@@ -1841,7 +2719,30 @@
     "id": "-CUPzxC9b85hfmwgAAB6",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 240
+    "dailyActivity": 240,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "哈宝宝",
@@ -1885,7 +2786,30 @@
     "equippedTreasure": null,
     "id": "xFUUG1z-OW4a016SAAB-",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "许愿",
@@ -1937,7 +2861,30 @@
     "id": "Iam0UR3ETLwEOfuUAACG",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "龍九",
@@ -1982,7 +2929,30 @@
     "id": "7lBinoCqAg4G0hfiAACI",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "花残冰",
@@ -2029,7 +2999,30 @@
     "id": "dV5KhW54V3dGqmSvAACE",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 55
+    "dailyActivity": 55,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "醉帅",
@@ -2074,7 +3067,30 @@
     "id": "cfqbRU8mKK1AtV0iAACO",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 20
+    "dailyActivity": 20,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "李大侠",
@@ -2119,7 +3135,30 @@
     "id": "9_1nyWATSSW39rRZAACQ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 115
+    "dailyActivity": 115,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "我无敌",
@@ -2174,7 +3213,30 @@
     "id": "81MamIne57rer258AAL9",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 165
+    "dailyActivity": 165,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "杨湛",
@@ -2221,7 +3283,30 @@
     "id": "-jJwB43nAoFF88XFAABL",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 270
+    "dailyActivity": 270,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "许咋办",
@@ -2265,7 +3350,30 @@
     "equippedTreasure": null,
     "id": "VXVs_G2vaMS9G4UAAACa",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "凉皮蛋卷",
@@ -2309,7 +3417,30 @@
     "equippedTreasure": null,
     "id": "yCInzf5iCCzvGjW6AACe",
     "isBattling": false,
-    "rankIndex": 10064
+    "rankIndex": 10064,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "黄龙",
@@ -2356,7 +3487,30 @@
     "id": "zPQiLFYOLoINUp6mAAA5",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 175
+    "dailyActivity": 175,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "黄元元",
@@ -2405,7 +3559,30 @@
     "id": "YW0c_w_viZfvzyp9AAA7",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 175
+    "dailyActivity": 175,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "黄元",
@@ -2452,7 +3629,30 @@
     "id": "-rJKfLzxLD95qaqtAAA_",
     "isBattling": false,
     "rankIndex": 77,
-    "dailyActivity": 175
+    "dailyActivity": 175,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "张合",
@@ -2497,7 +3697,30 @@
     "id": "sQwlqOzH2Uqx6k2KAABD",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "天机子",
@@ -2565,7 +3788,30 @@
     "isBattling": false,
     "rankIndex": 56,
     "dailyActivity": 550,
-    "password": "123456"
+    "password": "123456",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "枫桥泊石",
@@ -2610,7 +3856,30 @@
     "id": "QxlLJtSRPoZ2RPf0AABX",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 35
+    "dailyActivity": 35,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "小虾仁",
@@ -2655,7 +3924,30 @@
     "id": "sVPMbhuMhiyaoLUXAABl",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 185
+    "dailyActivity": 185,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "哦豁",
@@ -2699,7 +3991,30 @@
     "equippedTreasure": null,
     "id": "hLwwYI9sTfTs3c-3AABw",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "丁灵琳",
@@ -2744,7 +4059,30 @@
     "id": "wZcO6oUm_RoK0VqDAAB0",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "茶茶不泡爷",
@@ -2789,7 +4127,30 @@
     "id": "KiiUVe5fFyY1TKlLAAB4",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "孤独的根号三",
@@ -2834,7 +4195,30 @@
     "id": "b8Jw52t6Rq7VaAu0AAB8",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "刘承宗",
@@ -2883,7 +4267,30 @@
     "id": "4Q1ufvadlyNRrOzlAACC",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 220
+    "dailyActivity": 220,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "小爷笑一个",
@@ -2930,7 +4337,30 @@
     "id": "rIfh-kobMPfDvOOjAACH",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "无名",
@@ -2975,7 +4405,30 @@
     "id": "F4b2N6wh_1xUxIRNAACJ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 40
+    "dailyActivity": 40,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "天龙子",
@@ -3048,7 +4501,30 @@
     "isBattling": false,
     "rankIndex": 18,
     "dailyActivity": 550,
-    "password": "123456"
+    "password": "123456",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "鱼子酱",
@@ -3098,7 +4574,30 @@
     "id": "4P4uB8tEzIykXSJaAACT",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 225
+    "dailyActivity": 225,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "铎爺",
@@ -3143,7 +4642,30 @@
     "id": "Z40T2AV-OCw_V1B_AACb",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "12",
@@ -3188,7 +4710,30 @@
     "id": "3HaGHxpcPTF7TQPCAACf",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "帝释天",
@@ -3233,7 +4778,30 @@
     "id": "pE6DpCrEkJZtTtCyAACj",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "二月大雪",
@@ -3278,7 +4846,30 @@
     "id": "9lRB9_a2_MX8Nm5cAAC5",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 125
+    "dailyActivity": 125,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "十绝老人",
@@ -3326,7 +4917,30 @@
     "id": "q-NMEntFKYB_7X-4AAFV",
     "isBattling": true,
     "rankIndex": 10063,
-    "dailyActivity": 215
+    "dailyActivity": 215,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "仁王",
@@ -3378,7 +4992,30 @@
     "id": "Yi-SXREEw9yNbV1mAAFS",
     "isBattling": false,
     "rankIndex": 79,
-    "dailyActivity": 0
+    "dailyActivity": 0,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "王小茂",
@@ -3427,7 +5064,30 @@
     "id": "orEjbtjWQmSajhdIAADv",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 325
+    "dailyActivity": 325,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "白华浪",
@@ -3471,7 +5131,30 @@
     "equippedTreasure": null,
     "id": "Ek65Ntl7TWTb7GXyAAD_",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "乱星海韩立",
@@ -3542,7 +5225,30 @@
     "isBattling": false,
     "rankIndex": 21,
     "dailyActivity": 1480,
-    "password": "l4l699o665"
+    "password": "l4l699o665",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "无敌的我",
@@ -3590,7 +5296,30 @@
     "id": "95lC3pJATR5rKFr4AAFn",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 220
+    "dailyActivity": 220,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "叶青",
@@ -3634,7 +5363,30 @@
     "equippedTreasure": null,
     "id": "RFOlvrv3E2adMb3dAAFl",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "醉逸仙",
@@ -3678,7 +5430,30 @@
     "equippedTreasure": null,
     "id": "JaNZwT73KhGF6IrMAAFv",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "江山",
@@ -3722,7 +5497,30 @@
     "equippedTreasure": null,
     "id": "KuG1EIst6m-B920bAAFz",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "空军航空",
@@ -3767,7 +5565,30 @@
     "id": "fs5Ymf8vDPdBuBWpAAGB",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "乱舞无双",
@@ -3812,7 +5633,30 @@
     "id": "l_QsHYTxjZkFBIhPAAGD",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "你大爷",
@@ -3859,7 +5703,30 @@
     "id": "AB-Xu7gB34qqExSXAAGN",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 175
+    "dailyActivity": 175,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "上官探花",
@@ -3907,7 +5774,30 @@
     "id": "5LMi0T4VEoFy42p_AAGR",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 250
+    "dailyActivity": 250,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "叶凡",
@@ -3952,7 +5842,30 @@
     "id": "KIW__6kO682Zrc7EAAJT",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "少卿游",
@@ -3997,7 +5910,30 @@
     "id": "CcKxPvrF9SSiz6EeAAHf",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "锋天赐",
@@ -4044,7 +5980,30 @@
     "id": "wfqEvHsQsXAkee-UAAHB",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 145
+    "dailyActivity": 145,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "123",
@@ -4089,7 +6048,30 @@
     "id": "T4ud41FGzEXWjwW0AALr",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 185
+    "dailyActivity": 185,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "薛云",
@@ -4137,7 +6119,30 @@
     "id": "saNf0ZuQzMzi6tVWAAIn",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "五毛",
@@ -4185,7 +6190,30 @@
     "id": "Iz0zvodUjUtKOn_IAAHP",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 235
+    "dailyActivity": 235,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "舒少秋",
@@ -4230,7 +6258,30 @@
     "id": "V6pwVZ15ehC70da7AAHF",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 55
+    "dailyActivity": 55,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "大劲霸",
@@ -4278,7 +6329,30 @@
     "id": "U9lYZzuoJuy6692DAAHH",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 80
+    "dailyActivity": 80,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "云中漫步",
@@ -4325,7 +6399,30 @@
     "id": "0ROUWVM9YvUBpMYbAAHJ",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 160
+    "dailyActivity": 160,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "来来来",
@@ -4375,7 +6472,30 @@
     "id": "uADs2F8j8zrg1xOWAAHN",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "去去去",
@@ -4427,7 +6547,30 @@
     "id": "7Lu-iTPwzCjF5xrjAAHb",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "叶寒星",
@@ -4471,7 +6614,30 @@
     "equippedTreasure": null,
     "id": "4rzGGHoLWKLWkRDuAAHV",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "走走走",
@@ -4524,7 +6690,30 @@
     "id": "fQ6t0seJnKNaC0UVAAIv",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "杜见星",
@@ -4568,7 +6757,30 @@
     "equippedTreasure": null,
     "id": "J3bVxKwgpfG9EIiCAAHx",
     "isBattling": false,
-    "rankIndex": 10062
+    "rankIndex": 10062,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "10086",
@@ -4616,7 +6828,30 @@
     "id": "uNgaeFOsKIzXAok5AAHn",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 35
+    "dailyActivity": 35,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "雷杰",
@@ -4664,7 +6899,30 @@
     "id": "nhN-qRy09o7oKE-jAAIh",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 455
+    "dailyActivity": 455,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "千絾",
@@ -4708,7 +6966,30 @@
     "equippedTreasure": null,
     "id": "8UqTfQxtfS3WGyEgAAHz",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "跑跑跑",
@@ -4762,7 +7043,30 @@
     "isBattling": false,
     "rankIndex": 10063,
     "dailyActivity": 735,
-    "password": "hjh0110..."
+    "password": "hjh0110...",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "老周",
@@ -4807,7 +7111,30 @@
     "id": "fJ-Dyf7yaDYOAKmHAAIt",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "王小二",
@@ -4855,7 +7182,30 @@
     "id": "C0MWdVA_U1HQnVcGAAJB",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 275
+    "dailyActivity": 275,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "阎魔德迦",
@@ -4901,7 +7251,30 @@
     "id": "2fkKIo09HJGYh6rAAAHx",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "李黑",
@@ -4948,7 +7321,30 @@
     "id": "c8LU3f19dxvPJSoEAAI3",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "洱翼",
@@ -4995,7 +7391,30 @@
     "id": "7O64jvviRE47XkcKAAI5",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "上官云顿",
@@ -5040,7 +7459,30 @@
     "id": "LUUOUakoKX3s-d9EAAJh",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "hby",
@@ -5085,7 +7527,30 @@
     "id": "OMcYXkZeE4yGNQP6AAJl",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 35
+    "dailyActivity": 35,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "逍遥游",
@@ -5130,7 +7595,30 @@
     "id": "mf649kMdOuESdrnjAAJr",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "八神",
@@ -5177,7 +7665,30 @@
     "id": "Gvd60BLtclEaEwOiAAKH",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 200
+    "dailyActivity": 200,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "红糖姜茶",
@@ -5225,7 +7736,30 @@
     "id": "o85eLr5UZyHS8jdJAAKX",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 360
+    "dailyActivity": 360,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "9527",
@@ -5275,7 +7809,30 @@
     "id": "YWgHvzjxx58FEYSiAAKV",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 505
+    "dailyActivity": 505,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "纯阳孚佑",
@@ -5322,7 +7879,30 @@
     "id": "sMRpYeiZFMLN4cDkAAKZ",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "无名小卒",
@@ -5367,7 +7947,30 @@
     "id": "Z-jzNLEmQFjTNXBPAAKd",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 95
+    "dailyActivity": 95,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "逍遥王",
@@ -5412,7 +8015,30 @@
     "id": "BQHo_DhO382KLguPAALL",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 35
+    "dailyActivity": 35,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "宁不凡",
@@ -5457,7 +8083,30 @@
     "id": "quamj-69XMMOGrghAALP",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 115
+    "dailyActivity": 115,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "侠者",
@@ -5502,7 +8151,30 @@
     "id": "4D2paXQ7X0qVNdTgAALT",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "大禹",
@@ -5550,7 +8222,30 @@
     "id": "SnhuGWJao20GsCFgAALj",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 85
+    "dailyActivity": 85,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "无敌至尊",
@@ -5597,7 +8292,30 @@
     "id": "fQsu6Rs5c8IWOwYjAALt",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 160
+    "dailyActivity": 160,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "不会玩",
@@ -5644,7 +8362,30 @@
     "id": "3Rm8_722NecXopqsAAL1",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 220
+    "dailyActivity": 220,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "11",
@@ -5694,7 +8435,30 @@
     "isBattling": false,
     "rankIndex": 10061,
     "dailyActivity": 260,
-    "password": "11"
+    "password": "11",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "宁缺",
@@ -5739,7 +8503,30 @@
     "id": "8L6lWydZ6LRSUSjCAAMP",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 115
+    "dailyActivity": 115,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "阿秋",
@@ -5784,7 +8571,30 @@
     "id": "dUKaNeKuJbP7Z2DKAAMT",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "耶加雪拉菲",
@@ -5835,7 +8645,30 @@
     "isBattling": false,
     "rankIndex": 73,
     "dailyActivity": 765,
-    "password": "lvtianyi"
+    "password": "lvtianyi",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "捏你小肥脸",
@@ -5888,7 +8721,30 @@
     "isBattling": false,
     "rankIndex": 76,
     "dailyActivity": 0,
-    "password": "bt666666"
+    "password": "bt666666",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "林明",
@@ -5933,7 +8789,30 @@
     "id": "Fjl8SmGeFQLT9t6vAAM9",
     "isBattling": false,
     "rankIndex": 10060,
-    "dailyActivity": 175
+    "dailyActivity": 175,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "樊川",
@@ -5978,7 +8857,30 @@
     "id": "DHdrKfOI5HrCiA9WAANR",
     "isBattling": false,
     "rankIndex": 10060,
-    "dailyActivity": 60
+    "dailyActivity": 60,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "北真",
@@ -6035,7 +8937,30 @@
     "isBattling": false,
     "rankIndex": 64,
     "dailyActivity": 340,
-    "password": "pku1234567890"
+    "password": "pku1234567890",
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "情和",
@@ -6082,7 +9007,30 @@
     "id": "xLUukaKBq_NBbpHhAANV",
     "isBattling": false,
     "rankIndex": 10060,
-    "dailyActivity": 20
+    "dailyActivity": 20,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "倚墙待杏",
@@ -6126,7 +9074,30 @@
     "equippedTreasure": null,
     "id": "sC6DEMlMpe1wrjPoAANv",
     "isBattling": false,
-    "rankIndex": 10061
+    "rankIndex": 10061,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "吴迪",
@@ -6177,7 +9148,30 @@
     "id": "smEiVVFSszQtKAKfAAAa",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 100
+    "dailyActivity": 100,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "邑归",
@@ -6223,7 +9217,30 @@
     "id": "Q10tID5CvaWmZzpyAAAT",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "孟楼",
@@ -6271,7 +9288,30 @@
     "id": "eZLMELlecC3eeObuAAAw",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 85
+    "dailyActivity": 85,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "zhouyou",
@@ -6323,7 +9363,30 @@
     "id": "4T48BgdUPy2hGwNDAAAu",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 135
+    "dailyActivity": 135,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "Soofabh",
@@ -6371,7 +9434,30 @@
     "id": "fvUtCBGdILnbiIFZAAAm",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 150
+    "dailyActivity": 150,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "夫子",
@@ -6421,7 +9507,30 @@
     "id": "BsfnTb5tsDLAPa6JAAA3",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 330
+    "dailyActivity": 330,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "tandiwen",
@@ -6467,7 +9576,30 @@
     "id": "SCJGsG43yrvaRRE3AABA",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "学海无涯",
@@ -6519,7 +9651,30 @@
     "id": "54g-6AJKSyBxaMN1AAHR",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 315
+    "dailyActivity": 315,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "木木",
@@ -6564,7 +9719,30 @@
     "password": "12356789",
     "id": "54KCZrbRXuZlBPyqAAFZ",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "秋",
@@ -6612,7 +9790,30 @@
     "id": "p15kbH0hSLHytI6JAAIE",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 235
+    "dailyActivity": 235,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "历史的尘埃",
@@ -6662,7 +9863,30 @@
     "id": "2B-Khmz1I6UbaA2NAANs",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 145
+    "dailyActivity": 145,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "132",
@@ -6708,7 +9932,30 @@
     "id": "3xSMygERXgIrGFvYAAJd",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "雪松",
@@ -6757,7 +10004,30 @@
     "id": "NIydtbY29sW7cPeBAAAm",
     "isBattling": false,
     "rankIndex": 75,
-    "dailyActivity": 390
+    "dailyActivity": 390,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "君莫忧",
@@ -6802,7 +10072,30 @@
     "password": "",
     "id": "OtNxITyvikjJLjBBAAN0",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "大侠",
@@ -6850,7 +10143,30 @@
     "id": "bxVV53MR0ZZPsF-qAAAS",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "星风",
@@ -6898,7 +10214,30 @@
     "id": "ZRKngZHaxKEefH4wAAAi",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 25
+    "dailyActivity": 25,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "鸿烈",
@@ -6954,7 +10293,30 @@
     "id": "sEuA0SK2LrHVAfhgAAK5",
     "isBattling": false,
     "rankIndex": 61,
-    "dailyActivity": 765
+    "dailyActivity": 765,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "Jimsleezj",
@@ -6999,7 +10361,30 @@
     "password": "as19940701",
     "id": "aPfgku06Kt4pB7BEAAAy",
     "isBattling": false,
-    "rankIndex": 10062
+    "rankIndex": 10062,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "晨风舞影",
@@ -7044,7 +10429,30 @@
     "password": "abc123456",
     "id": "-QAPGAv4HPmMJJUaAAA0",
     "isBattling": false,
-    "rankIndex": 10062
+    "rankIndex": 10062,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "王麻子",
@@ -7090,7 +10498,30 @@
     "id": "qiM3_iN2BBagSO_0AAA4",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "道火不熄",
@@ -7136,7 +10567,30 @@
     "id": "qINy4QACknfned2rAABB",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "王银月",
@@ -7185,7 +10639,30 @@
     "id": "EqOfwFaed1qEwf2NAAEp",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 295
+    "dailyActivity": 295,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "郭巨侠",
@@ -7233,7 +10710,30 @@
     "id": "EbEeyUERmUqaZHprAABN",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 25
+    "dailyActivity": 25,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "巴拉猛戳",
@@ -7281,7 +10781,30 @@
     "id": "yjIKNMJGsQ0i-LyNAACh",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 45
+    "dailyActivity": 45,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "新世纪菜b",
@@ -7327,7 +10850,30 @@
     "id": "euxP5QOwSTZDVCSdAAFO",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 25
+    "dailyActivity": 25,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "阿青",
@@ -7372,7 +10918,30 @@
     "password": "woshi1sb",
     "id": "MXJr2rigF--_6W22AAKS",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "789456123",
@@ -7418,7 +10987,30 @@
     "id": "dP2j0ygltGSWxaM1AAKM",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "寒江雪",
@@ -7463,7 +11055,30 @@
     "password": "qq12561011",
     "id": "uw_7oslVGKCHVJcZAAKK",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "小户",
@@ -7511,7 +11126,30 @@
     "id": "8hLyONap2shFT8xwAAKQ",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "君问归期未有期",
@@ -7561,7 +11199,30 @@
     "id": "yq5BBMSYgK-oIEloAAI9",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 240
+    "dailyActivity": 240,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "懒懒丶",
@@ -7607,7 +11268,30 @@
     "id": "ZqSGgsnDcNDJpLkaAAMH",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "2802952785",
@@ -7653,7 +11337,30 @@
     "id": "bDuqzNSJQuaE_pdVAAMN",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "矫健",
@@ -7698,7 +11405,30 @@
     "password": "jiaojian",
     "id": "TtLhMAWJ8X2ASVzoAAJa",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "我爱萝",
@@ -7747,7 +11477,30 @@
     "id": "VoWAbV7YoEjrRwYnAAMW",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 110
+    "dailyActivity": 110,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "年糕来了",
@@ -7793,7 +11546,30 @@
     "id": "SSpi-ql9Ej8X02ztAAMg",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "小年糕",
@@ -7839,7 +11615,30 @@
     "id": "TWiKQQZR9b266DPyAAD7",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 185
+    "dailyActivity": 185,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "人间国宝",
@@ -7884,7 +11683,30 @@
     "password": "hjj1982",
     "id": "noqguFc9LpJOERm6AAMz",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "山海任我行",
@@ -7933,7 +11755,30 @@
     "id": "VQ90pMkfzYBoCo3RAANE",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 65
+    "dailyActivity": 65,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "q1262190220",
@@ -7989,7 +11834,30 @@
     "id": "IWl2ZVSRoI2XkX5UAAIl",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 570
+    "dailyActivity": 570,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "零",
@@ -8035,7 +11903,30 @@
     "id": "KW73Sj5DEfT5P12oAAUC",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "欧琳",
@@ -8085,7 +11976,30 @@
     "id": "hOCyYBQLEKEH9FGAAAT8",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 450
+    "dailyActivity": 450,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "橘子汽水",
@@ -8132,7 +12046,30 @@
     "id": "6kxOKhxeCgDRQx-gAAVO",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "q1262190221",
@@ -8183,7 +12120,30 @@
     "id": "RKqHg1mfxTTI4QzZAAVs",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 230
+    "dailyActivity": 230,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "清风",
@@ -8254,7 +12214,30 @@
     "id": "PrQUzHie9QkTzedzAAI_",
     "isBattling": false,
     "rankIndex": 3,
-    "dailyActivity": 1105
+    "dailyActivity": 1105,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "半仙老大",
@@ -8305,7 +12288,30 @@
     "id": "gYDMs5U5z1e9P7bwAAY4",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 155
+    "dailyActivity": 155,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "龙傲天",
@@ -8353,7 +12359,30 @@
     "id": "wiLlEkZok0nVlcrjAAbu",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 705
+    "dailyActivity": 705,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "无始",
@@ -8399,7 +12428,30 @@
     "id": "R_A1dF38BU3is9F4AAb-",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 25
+    "dailyActivity": 25,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "阿尼枚",
@@ -8445,7 +12497,30 @@
     "id": "jVVjPMgjr3XqvVndAAFa",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 15
+    "dailyActivity": 15,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "zw6350",
@@ -8491,7 +12566,30 @@
     "id": "fLb2RlJLtDuzPg9WAAFM",
     "isBattling": false,
     "rankIndex": 10064,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "巴啦啦小魔仙",
@@ -8537,7 +12635,30 @@
     "id": "5M_cHF8DZ_ODcs-CAAFO",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 20
+    "dailyActivity": 20,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "一梦千年",
@@ -8582,7 +12703,30 @@
     "password": "",
     "id": "8ZFtGE9kvKvwcFTsAAFY",
     "isBattling": false,
-    "rankIndex": 10063
+    "rankIndex": 10063,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "地方",
@@ -8628,7 +12772,30 @@
     "id": "gz7NkS1fWBTgEX4IAAFp",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "1332131",
@@ -8674,7 +12841,30 @@
     "id": "_WzMtLuINFXTMEalAAGN",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 5
+    "dailyActivity": 5,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "陆翻云",
@@ -8722,7 +12912,30 @@
     "id": "bxQgW2MyXj4jRW2DAAGR",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 30
+    "dailyActivity": 30,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "陈康",
@@ -8772,7 +12985,30 @@
     "id": "7yvw7_sLsV6IyYAUAAHl",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 50
+    "dailyActivity": 50,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "晚林",
@@ -8820,7 +13056,30 @@
     "id": "vt4FToJfQ_NMxcePAAHv",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 25
+    "dailyActivity": 25,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "玥舒",
@@ -8865,7 +13124,30 @@
     "password": "123456",
     "id": "wSclDehof2QVT-YLAAIR",
     "isBattling": false,
-    "rankIndex": 10062
+    "rankIndex": 10062,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "看看",
@@ -8911,7 +13193,30 @@
     "id": "gDrFDXuHUGXeAstGAAId",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 10
+    "dailyActivity": 10,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "sai2010te",
@@ -8958,7 +13263,30 @@
     "id": "ZmVYKbJQ4l5yElSiAAJP",
     "isBattling": false,
     "rankIndex": 10060,
-    "dailyActivity": 205
+    "dailyActivity": 205,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
   },
   {
     "name": "有木",
@@ -9011,6 +13339,97 @@
     "id": "jM0o-qXRZPCPaxSzAAJ7",
     "isBattling": false,
     "rankIndex": 10061,
-    "dailyActivity": 350
+    "dailyActivity": 350,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "lastLoginTime": 1780926003748
+  },
+  {
+    "name": "AlexNewHero",
+    "title": "",
+    "level": 1,
+    "exp": 0,
+    "maxExp": 165,
+    "freePoints": 0,
+    "taskCount": 0,
+    "encountersToday": 0,
+    "lastTaskDate": "Mon Jun 08 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 0,
+    "hp": 135,
+    "maxHp": 135,
+    "attributes": {
+      "con": 2,
+      "str": 2,
+      "int": 2,
+      "agi": 2,
+      "luk": 2
+    },
+    "permanentAttributes": {
+      "con": 0,
+      "str": 0,
+      "int": 0,
+      "agi": 0,
+      "luk": 0
+    },
+    "skills": [
+      "s1"
+    ],
+    "treasures": [],
+    "equippedSkills": {
+      "inner": null,
+      "outer": "s1",
+      "motion": null,
+      "ultimate": null
+    },
+    "equippedTreasure": null,
+    "essence": 100,
+    "inventoryMaterials": {
+      "anomalyDust": 0,
+      "soulAshes": 0,
+      "anomalyCrystal": 0,
+      "goldSand": 0,
+      "woodHerb": 0,
+      "waterFluid": 0,
+      "fireMarrow": 0,
+      "earthEssence": 0
+    },
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "password": "password123",
+    "id": "E-Ktc05k-HBIPCr9AAAF",
+    "isBattling": false,
+    "rankIndex": 10061,
+    "lastLoginTime": 1780928024686
   }
 ]

@@ -16,6 +16,8 @@ export default function TaskHall() {
   const incrementTaskCount = useGameStore(state => state.incrementTaskCount);
   const checkDailyReset = useGameStore(state => state.checkDailyReset);
   const player = useGameStore(state => state.player);
+  const gainEssence = useGameStore(state => state.gainEssence);
+  const gainMaterial = useGameStore(state => state.gainMaterial);
 
   const cleanIcon = useCleanImage('/wuxia_tasks_icon.webp');
 
@@ -50,8 +52,22 @@ export default function TaskHall() {
     
     completeTask(task.id);
 
+    const MATERIAL_MAP = {
+      str: { key: 'goldSand', name: '金精砂' },
+      con: { key: 'woodHerb', name: '乙木芝' },
+      agi: { key: 'waterFluid', name: '玄水液' },
+      int: { key: 'fireMarrow', name: '地火髓' },
+      luk: { key: 'earthEssence', name: '厚土精' }
+    };
+
+    const targetMat = MATERIAL_MAP[task.reqAttr];
+
     if (isSuccess) {
-      let msg = `任务成功！获得了 ${task.expReward} 点经验。`;
+      const essenceReward = task.stars * 2;
+      gainEssence(essenceReward);
+      gainMaterial(targetMat.key, 1);
+
+      let msg = `任务成功！获得了 ${task.expReward} 点经验，提炼出 1 个【${targetMat.name}】，吸纳了 ${essenceReward} 点武道精魂！`;
       gainExp(task.expReward);
       
       let gotSilver = 0;
@@ -106,7 +122,10 @@ export default function TaskHall() {
 
       alert(msg);
     } else {
-      let failMsg = `很遗憾，由于你这趟【${ATTR_MAP[task.reqAttr]}】未能突破门槛约束，任务执行失败，一无所获且消耗了一次体力！`;
+      const failEssence = Math.ceil(task.stars / 2);
+      gainEssence(failEssence);
+
+      let failMsg = `很遗憾，由于你这趟【${ATTR_MAP[task.reqAttr]}】未能突破门槛约束，任务执行失败！好在磨炼意志，依然获得了 ${failEssence} 点保底武道精魂！`;
       if (upgradedTitle) {
          failMsg += ` (但随着你四处奔波苦劳积攒，名头反而晋升为了【${upgradedTitle}】！)`;
          SoundManager.play('sfx_levelup');
@@ -166,6 +185,12 @@ export default function TaskHall() {
           let showRate = 0.5 + attrBonus + 0.35 * (1 - Math.exp(-player.attributes.luk * 0.07));
           showRate = Math.floor(Math.max(0.1, Math.min(0.95, showRate)) * 100);
 
+          const MATERIAL_MAP = {
+            str: '金精砂', con: '乙木芝', agi: '玄水液', int: '地火髓', luk: '厚土精'
+          };
+          const matName = MATERIAL_MAP[task.reqAttr];
+          const estEssence = task.stars * 2;
+
           return (
           <div key={task.id} className="wuxia-card" style={{
             padding: '1rem',
@@ -185,14 +210,16 @@ export default function TaskHall() {
               </div>
             )}
 
-            <div>
+            <div style={{ flex: 1, minWidth: 0, paddingRight: '1.5rem' }}>
               <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--crimson)' : 'var(--text-main)'), fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px' }}>
                 {task.title}
               </h4>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{task.desc}</p>
 
-              <div style={{ fontSize: '0.8rem', marginTop: '0.6rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ fontSize: '0.8rem', marginTop: '0.6rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'var(--gold)' }}><Gift size={14} style={{ verticalAlign: 'sub' }}/> +{task.expReward} 修为</span>
+                {!task.completed && <span style={{ color: '#c084fc' }}>掉落: 1x {matName}</span>}
+                {!task.completed && <span style={{ color: '#fbbf24' }}>精魂: +{estEssence}</span>}
                 <span title="预估成功率" style={{ color: showRate > 60 ? 'var(--jade)' : 'var(--crimson)' }}>
                   成功率: {showRate}%
                 </span>
@@ -203,7 +230,7 @@ export default function TaskHall() {
               className="btn-primary"
               onClick={() => handleAction(task)}
               disabled={task.completed || player.taskCount >= 35}
-              style={{ padding: '0.5rem 1rem', filter: task.completed ? 'grayscale(1)' : 'none' }}
+              style={{ padding: '0.5rem 1rem', filter: task.completed ? 'grayscale(1)' : 'none', flexShrink: 0 }}
             >
               {task.completed ? '已揭榜' : '接取委托'}
             </button>

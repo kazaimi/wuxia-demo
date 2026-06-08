@@ -8,6 +8,10 @@ import EncounterArena from './EncounterArena';
 import SecretRealm from './SecretRealm';
 import AuctionHouse from './AuctionHouse';
 import BlackMarket from './BlackMarket';
+import WorldBossArena from './WorldBossArena';
+import AlchemyFurnace from './AlchemyFurnace';
+import WuxiaSkillsBook from './WuxiaSkillsBook';
+import WuxiaBackpack from './WuxiaBackpack';
 import { ShoppingBag, Target, Swords, Trophy, Skull, Map, Gavel } from 'lucide-react';
 
 const tokenStyles = `
@@ -138,6 +142,9 @@ export default function MainMenu() {
     return 'tasks';
   });
   const [showBlackMarket, setShowBlackMarket] = useState(false);
+  const [showSkillsBook, setShowSkillsBook] = useState(false);
+  const [skillsBookFilter, setSkillsBookFilter] = useState('all');
+  const [showBackpack, setShowBackpack] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const inBattle = useGameStore(state => state.battleState.inBattle);
 
@@ -219,7 +226,13 @@ export default function MainMenu() {
             <Target size={18} /> 个人信息
           </summary>
           <div style={{ padding: '0 1rem 1rem' }}>
-            <PlayerStatus />
+            <PlayerStatus
+              onOpenSkills={(filter) => {
+                setSkillsBookFilter(filter || 'all');
+                setShowSkillsBook(true);
+              }}
+              onOpenBackpack={() => setShowBackpack(true)}
+            />
           </div>
         </details>
 
@@ -231,6 +244,8 @@ export default function MainMenu() {
           {activeTab === 'encounter' && <EncounterArena />}
           {activeTab === 'realm' && <SecretRealm />}
           {activeTab === 'auction' && <AuctionHouse />}
+          {activeTab === 'boss' && <WorldBossArena />}
+          {activeTab === 'furnace' && <AlchemyFurnace />}
         </div>
 
         {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
@@ -241,13 +256,45 @@ export default function MainMenu() {
           className="black-market-token-alien-img-btn" 
           style={{
             position: 'fixed', bottom: '20px', right: '20px', zIndex: 8000,
-            width: '110px', height: '110px'
+            width: '85px', height: '85px'
           }}
           title="进入黑市"
         >
           <div className="token-image-wrapper">
-            <img src="/dark_wuxia_token.webp" alt="黑市密令" />
+            <img src="/dark_merchant_token.png" alt="黑市密令" />
             <div className="token-glow-overlay"></div>
+          </div>
+        </button>
+
+        {/* 世界Boss入口 - 极致暗黑异形纹理令牌 */}
+        <button 
+          onClick={() => setActiveTab('boss')} 
+          className="black-market-token-alien-img-btn" 
+          style={{
+            position: 'fixed', bottom: '105px', right: '20px', zIndex: 8000,
+            width: '85px', height: '85px'
+          }}
+          title="进入世界Boss"
+        >
+          <div className="token-image-wrapper">
+            <img src="/dark_boss_token.png" alt="世界Boss" />
+            <div className="token-glow-overlay" style={{ background: 'radial-gradient(circle, rgba(239, 68, 68, 0.65) 0%, rgba(0, 0, 0, 0) 70%)' }}></div>
+          </div>
+        </button>
+
+        {/* 太上神炉入口 - 极致暗黑异形纹理令牌 */}
+        <button 
+          onClick={() => setActiveTab('furnace')} 
+          className="black-market-token-alien-img-btn" 
+          style={{
+            position: 'fixed', bottom: '190px', right: '20px', zIndex: 8000,
+            width: '85px', height: '85px'
+          }}
+          title="进入太上神炉"
+        >
+          <div className="token-image-wrapper">
+            <img src="/dark_furnace_token.png" alt="太上神炉" />
+            <div className="token-glow-overlay" style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.65) 0%, rgba(0, 0, 0, 0) 70%)' }}></div>
           </div>
         </button>
       </div>
@@ -258,7 +305,13 @@ export default function MainMenu() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 300px) 1fr', gap: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
       <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <PlayerStatus />
+        <PlayerStatus
+          onOpenSkills={(filter) => {
+            setSkillsBookFilter(filter || 'all');
+            setShowSkillsBook(true);
+          }}
+          onOpenBackpack={() => setShowBackpack(true)}
+        />
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -316,9 +369,24 @@ export default function MainMenu() {
         {activeTab === 'encounter' && <EncounterArena />}
         {activeTab === 'realm' && <SecretRealm />}
         {activeTab === 'auction' && <AuctionHouse />}
+        {activeTab === 'boss' && <WorldBossArena />}
+        {activeTab === 'furnace' && <AlchemyFurnace />}
       </div>
 
       {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
+      
+      {showSkillsBook && (
+        <WuxiaSkillsBook
+          initialFilter={skillsBookFilter}
+          onClose={() => setShowSkillsBook(false)}
+        />
+      )}
+      
+      {showBackpack && (
+        <WuxiaBackpack
+          onClose={() => setShowBackpack(false)}
+        />
+      )}
 
       {/* 确保PC端也加载相同的样式 */}
       <style>{tokenStyles}</style>
@@ -328,13 +396,45 @@ export default function MainMenu() {
         className="black-market-token-alien-img-btn" 
         style={{
           position: 'fixed', bottom: '30px', right: '30px', zIndex: 8000,
-          width: '160px', height: '160px'
+          width: '130px', height: '130px'
         }}
         title="进入黑市"
       >
         <div className="token-image-wrapper">
-          <img src="/dark_wuxia_token.webp" alt="黑市密令" />
+          <img src="/dark_merchant_token.png" alt="黑市密令" />
           <div className="token-glow-overlay"></div>
+        </div>
+      </button>
+
+      {/* 世界Boss入口 - 极致暗黑异形纹理令牌 */}
+      <button 
+        onClick={() => setActiveTab('boss')} 
+        className="black-market-token-alien-img-btn" 
+        style={{
+          position: 'fixed', bottom: '160px', right: '30px', zIndex: 8000,
+          width: '130px', height: '130px'
+        }}
+        title="进入世界Boss"
+      >
+        <div className="token-image-wrapper">
+          <img src="/dark_boss_token.png" alt="世界Boss" />
+          <div className="token-glow-overlay" style={{ background: 'radial-gradient(circle, rgba(239, 68, 68, 0.65) 0%, rgba(0, 0, 0, 0) 70%)' }}></div>
+        </div>
+      </button>
+
+      {/* 太上神炉入口 - 极致暗黑异形纹理令牌 */}
+      <button 
+        onClick={() => setActiveTab('furnace')} 
+        className="black-market-token-alien-img-btn" 
+        style={{
+          position: 'fixed', bottom: '290px', right: '30px', zIndex: 8000,
+          width: '130px', height: '130px'
+        }}
+        title="进入太上神炉"
+      >
+        <div className="token-image-wrapper">
+          <img src="/dark_furnace_token.png" alt="太上神炉" />
+          <div className="token-glow-overlay" style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.65) 0%, rgba(0, 0, 0, 0) 70%)' }}></div>
         </div>
       </button>
     </div>
