@@ -181,8 +181,6 @@ export default function MainMenu() {
     { id: 'encounter', label: '江湖奇遇', img: '/wuxia_encounter_icon.webp' },
     { id: 'realm', label: '秘境寻宝', img: '/wuxia_realm_icon.webp', color: '#f97316' },
     { id: 'auction', label: '拍卖风云', img: '/wuxia_auction_icon.webp', color: '#c29d38' },
-    { id: 'boss', label: '世界Boss', img: '/wuxia_battle_icon.webp', color: '#ef4444' },
-    { id: 'furnace', label: '太上神炉', img: '/wuxia_realm_icon.webp', color: '#10b981' },
   ];
 
   // 移动端布局
