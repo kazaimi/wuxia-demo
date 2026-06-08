@@ -161,7 +161,7 @@ function App() {
           fontFamily: '"Ma Shan Zheng", cursive',
           opacity: 0.8
         }}>
-          ═══ v2.1 无尽血战 ═══
+          ═══ v2.7 魔罗降世 ═══
         </div>
         {/* 装饰性剑纹 - 仅PC端显示 */}
         <div className="sword-decoration-left" style={{
