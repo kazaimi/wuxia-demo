@@ -31,12 +31,13 @@ export default function PlayerStatus() {
      return acc;
   }, {});
 
-  // 监听并确保 selectedTreasureId 的有效性
+  // 监听并确保 selectedTreasureId 的有效性，增加防空值保护以防登录时白屏崩盘
   useEffect(() => {
-    if (selectedTreasureId && !treasures.includes(selectedTreasureId)) {
-      setSelectedTreasureId(equippedTreasure || (treasures.length > 0 ? treasures[0] : null));
-    } else if (!selectedTreasureId && (equippedTreasure || treasures.length > 0)) {
-      setSelectedTreasureId(equippedTreasure || treasures[0]);
+    const list = treasures || [];
+    if (selectedTreasureId && !list.includes(selectedTreasureId)) {
+      setSelectedTreasureId(equippedTreasure || (list.length > 0 ? list[0] : null));
+    } else if (!selectedTreasureId && (equippedTreasure || list.length > 0)) {
+      setSelectedTreasureId(equippedTreasure || list[0]);
     }
   }, [treasures, equippedTreasure]);
 
@@ -63,6 +64,22 @@ export default function PlayerStatus() {
   return (
     <div style={bgStyle} className="glass-panel">
       <WuxiaIconStyles />
+      <style>{`
+        .wuxia-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .wuxia-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.15);
+          border-radius: 2px;
+        }
+        .wuxia-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(212, 175, 55, 0.35);
+          border-radius: 2px;
+        }
+        .wuxia-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(212, 175, 55, 0.65);
+        }
+      `}</style>
       {/* 顶部金线装饰 */}
       <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', opacity: 0.5 }} />
 
@@ -237,16 +254,21 @@ export default function PlayerStatus() {
            </div>
 
            {/* 储物背包网格 Grid */}
-           <div style={{
-             display: 'grid',
-             gridTemplateColumns: 'repeat(5, 1fr)',
-             gap: '8px',
-             background: 'rgba(0, 0, 0, 0.4)',
-             padding: '10px',
-             borderRadius: '8px',
-             border: '1px solid var(--glass-border)',
-             minHeight: '68px'
-           }}>
+           <div 
+             className="wuxia-scrollbar"
+             style={{
+               display: 'grid',
+               gridTemplateColumns: 'repeat(5, 1fr)',
+               gap: '8px',
+               background: 'rgba(0, 0, 0, 0.55)',
+               padding: '10px',
+               borderRadius: '8px',
+               border: '1px solid rgba(212, 175, 55, 0.2)',
+               maxHeight: '190px',
+               overflowY: 'auto',
+               minHeight: '68px'
+             }}
+           >
              {Object.keys(inventory).length === 0 ? (
                <div style={{ gridColumn: 'span 5', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '10px 0' }}>
                  空空如也，快去奇遇闯关寻宝吧！
@@ -342,7 +364,16 @@ export default function PlayerStatus() {
              const isMultiple = inventory[selectedTreasureId] > 1;
 
              return (
-               <div className={`baoju-card ${baojuGlowClass}`} style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '12px 14px', borderRadius: '8px' }}>
+               <div className={`baoju-card ${baojuGlowClass}`} style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  padding: '12px 14px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(180deg, rgba(22, 22, 33, 0.85), rgba(12, 12, 18, 0.96))',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
+                  boxShadow: 'inset 0 0 10px rgba(212, 175, 55, 0.05), 0 4px 15px rgba(0,0,0,0.5)'
+               }}>
                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                    <TreasureIcon id={t.id} size={52} />
                    
@@ -364,8 +395,19 @@ export default function PlayerStatus() {
                  </div>
 
                  {/* 宝物特效描述 */}
-                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4', borderTop: '1px dashed rgba(194, 157, 56, 0.15)', paddingTop: '6px', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif' }}>
-                   {cleanText(t.desc)}
+                 <div style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-muted)',
+                    lineHeight: '1.4',
+                    borderTop: '1px dashed rgba(212, 175, 55, 0.25)',
+                    paddingTop: '6px',
+                    fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '3px'
+                 }}>
+                   <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>⚡ 器灵特技:</span>
+                   <span>{cleanText(t.desc)}</span>
                  </div>
 
                  {/* 本命绑定/解绑操作区 */}

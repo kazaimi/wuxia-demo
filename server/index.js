@@ -1275,11 +1275,17 @@ setInterval(() => {
                    seller.silver += auction.price;
                    saveDB();
 
-                   // 发送个人通知
-                   const buyerSocket = io.sockets.sockets.get(players.find(p => p.name === buyer.name)?.id);
-                   const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
-                   if (buyerSocket) buyerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'buyer' });
-                   if (sellerSocket) sellerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'seller' });
+                    // 发送个人通知及最新的PlayerData状态，确保背包和钱币实时更新
+                    const buyerSocket = io.sockets.sockets.get(players.find(p => p.name === buyer.name)?.id);
+                    const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
+                    if (buyerSocket) {
+                       buyerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'buyer' });
+                       buyerSocket.emit('update_player_success', buyer);
+                    }
+                    if (sellerSocket) {
+                       sellerSocket.emit('auction_result', { success: true, itemName: auction.itemName, price: auction.price, type: 'seller' });
+                       sellerSocket.emit('update_player_success', seller);
+                    }
 
                    io.emit('broadcast_message', `*【一锤定音】恭喜 [${buyer.name}] 以 ${auction.price} 银两拍得 [${auction.itemName}]！*`);
                    const sIndex = players.findIndex(p => p.name === seller.name);
@@ -1303,9 +1309,12 @@ setInterval(() => {
                    // 功法流拍不需要处理，因为原典保留在卖家手中
 
                    saveDB();
-                   // 发送流拍通知给卖家
-                   const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
-                   if (sellerSocket) sellerSocket.emit('auction_result', { success: false, itemName: auction.itemName, type: 'seller' });
+                    // 发送流拍通知给卖家，同步状态
+                    const sellerSocket = io.sockets.sockets.get(players.find(p => p.name === seller.name)?.id);
+                    if (sellerSocket) {
+                       sellerSocket.emit('auction_result', { success: false, itemName: auction.itemName, type: 'seller' });
+                       sellerSocket.emit('update_player_success', seller);
+                    }
 
                    const sIndex = players.findIndex(p => p.name === seller.name);
                    if(sIndex >= 0) players[sIndex] = seller;
