@@ -210,7 +210,7 @@ export default function TaskHall() {
               </div>
             )}
 
-            <div>
+            <div style={{ flex: 1, minWidth: 0, paddingRight: '1.5rem' }}>
               <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem', color: task.completed ? 'var(--text-muted)' : (task.stars>=4 ? 'var(--crimson)' : 'var(--text-main)'), fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', letterSpacing: '1px' }}>
                 {task.title}
               </h4>
@@ -230,7 +230,7 @@ export default function TaskHall() {
               className="btn-primary"
               onClick={() => handleAction(task)}
               disabled={task.completed || player.taskCount >= 35}
-              style={{ padding: '0.5rem 1rem', filter: task.completed ? 'grayscale(1)' : 'none' }}
+              style={{ padding: '0.5rem 1rem', filter: task.completed ? 'grayscale(1)' : 'none', flexShrink: 0 }}
             >
               {task.completed ? '已揭榜' : '接取委托'}
             </button>

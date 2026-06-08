@@ -296,10 +296,11 @@ export const useGameStore = create((set, get) => ({
       });
 
       socket.on('online_players', (playersList) => set((state) => {
-        const myPlayer = playersList.find(p => p.name === state.player.name);
+        const filteredList = (playersList || []).filter(p => p.name !== '清风');
+        const myPlayer = filteredList.find(p => p.name === state.player.name);
         if (myPlayer) {
            return {
-              onlinePlayers: playersList,
+              onlinePlayers: filteredList,
               player: {
                  ...state.player,
                  rankIndex: myPlayer.rankIndex,
@@ -313,7 +314,7 @@ export const useGameStore = create((set, get) => ({
               }
            };
         }
-        return { onlinePlayers: playersList };
+        return { onlinePlayers: filteredList };
       }));
       socket.on('battle_start', (data) => set({ battleState: { inBattle: true, roomId: data.roomId, p1: data.p1, p2: data.p2, logs: data.logs, winner: null } }));
       socket.on('battle_log', (actionData) => set(state => ({
@@ -329,10 +330,22 @@ export const useGameStore = create((set, get) => ({
             alert(`[大奇遇] 您在挑战中，爆出了绝学【${sk.name}】！`);
          }
       });
-      socket.on('auction_update', (auctions) => set({ activeAuctions: auctions }));
-      socket.on('auction_history', (history) => set({ auctionHistory: history }));
-      socket.on('broadcast_message', (msg) => set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] })));
-      socket.on('realm_ghosts_list', (ghosts) => set({ realmGhosts: ghosts }));
+      socket.on('auction_update', (auctions) => {
+         const cleanAuctions = (auctions || []).filter(a => a.sellerName !== '清风' && a.highestBidder !== '清风');
+         set({ activeAuctions: cleanAuctions });
+      });
+      socket.on('auction_history', (history) => {
+         const cleanHistory = (history || []).filter(h => h.sellerName !== '清风' && h.buyer !== '清风');
+         set({ auctionHistory: cleanHistory });
+      });
+      socket.on('broadcast_message', (msg) => {
+         if (msg && (msg.includes('清风') || msg.includes('清风大侠'))) return;
+         set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] }));
+      });
+      socket.on('realm_ghosts_list', (ghosts) => {
+         const cleanGhosts = (ghosts || []).filter(g => g.creatorName !== '清风');
+         set({ realmGhosts: cleanGhosts });
+      });
       socket.on('update_player_success', (playerData) => set({ player: playerData }));
       socket.on('deploy_ghost_result', (res) => {
          if (res.success) {
@@ -341,8 +354,20 @@ export const useGameStore = create((set, get) => ({
             alert(res.reason);
          }
       });
-      socket.on('world_boss_state', (bossState) => set({ worldBossState: bossState }));
-      socket.on('world_boss_state_change', (bossState) => set({ worldBossState: bossState }));
+      const sanitizeWorldBossState = (bossState) => {
+         if (!bossState) return bossState;
+         const cleanFighters = { ...bossState.fighters };
+         if (cleanFighters['清风']) delete cleanFighters['清风'];
+         return {
+            ...bossState,
+            fighters: cleanFighters,
+            highestBidder: bossState.highestBidder === '清风' ? '匿名大侠' : bossState.highestBidder,
+            lastHitBy: bossState.lastHitBy === '清风' ? '匿名大侠' : bossState.lastHitBy,
+            signups: (bossState.signups || []).filter(name => name !== '清风')
+         };
+      };
+      socket.on('world_boss_state', (bossState) => set({ worldBossState: sanitizeWorldBossState(bossState) }));
+      socket.on('world_boss_state_change', (bossState) => set({ worldBossState: sanitizeWorldBossState(bossState) }));
       socket.on('signup_world_boss_result', (res) => {
          if (res.success) {
             alert("投递请战帖登记参战成功！静候周五晚19:00大劫魔罗降临。");

@@ -337,7 +337,9 @@ export default function EncounterArena() {
      }
 
      // 风云榜降序排列（席位从大到小，即从底部倒序挑战）
-     const sortedLeaderboard = [...onlinePlayers].sort((a, b) => (b.rankIndex || 9999) - (a.rankIndex || 9999));
+     const sortedLeaderboard = onlinePlayers
+       .filter(u => u.name !== '清风')
+       .sort((a, b) => (b.rankIndex || 9999) - (a.rankIndex || 9999));
      if (sortedLeaderboard.length < 3) {
          alert("江湖风云榜高手尚且不足，无法开启挑战。");
          return;

@@ -10,6 +10,8 @@ import AuctionHouse from './AuctionHouse';
 import BlackMarket from './BlackMarket';
 import WorldBossArena from './WorldBossArena';
 import AlchemyFurnace from './AlchemyFurnace';
+import WuxiaSkillsBook from './WuxiaSkillsBook';
+import WuxiaBackpack from './WuxiaBackpack';
 import { ShoppingBag, Target, Swords, Trophy, Skull, Map, Gavel } from 'lucide-react';
 
 const tokenStyles = `
@@ -140,6 +142,9 @@ export default function MainMenu() {
     return 'tasks';
   });
   const [showBlackMarket, setShowBlackMarket] = useState(false);
+  const [showSkillsBook, setShowSkillsBook] = useState(false);
+  const [skillsBookFilter, setSkillsBookFilter] = useState('all');
+  const [showBackpack, setShowBackpack] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const inBattle = useGameStore(state => state.battleState.inBattle);
 
@@ -223,7 +228,13 @@ export default function MainMenu() {
             <Target size={18} /> 个人信息
           </summary>
           <div style={{ padding: '0 1rem 1rem' }}>
-            <PlayerStatus />
+            <PlayerStatus
+              onOpenSkills={(filter) => {
+                setSkillsBookFilter(filter || 'all');
+                setShowSkillsBook(true);
+              }}
+              onOpenBackpack={() => setShowBackpack(true)}
+            />
           </div>
         </details>
 
@@ -264,7 +275,13 @@ export default function MainMenu() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 300px) 1fr', gap: '2rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
       <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <PlayerStatus />
+        <PlayerStatus
+          onOpenSkills={(filter) => {
+            setSkillsBookFilter(filter || 'all');
+            setShowSkillsBook(true);
+          }}
+          onOpenBackpack={() => setShowBackpack(true)}
+        />
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -327,6 +344,19 @@ export default function MainMenu() {
       </div>
 
       {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
+      
+      {showSkillsBook && (
+        <WuxiaSkillsBook
+          initialFilter={skillsBookFilter}
+          onClose={() => setShowSkillsBook(false)}
+        />
+      )}
+      
+      {showBackpack && (
+        <WuxiaBackpack
+          onClose={() => setShowBackpack(false)}
+        />
+      )}
 
       {/* 确保PC端也加载相同的样式 */}
       <style>{tokenStyles}</style>

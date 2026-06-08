@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { useGameStore, SKILLS_DB } from '../store/gameState';
-import { X, BookOpen, Swords, Shield, Activity, Sparkles, Award } from 'lucide-react';
+import { useGameStore, SKILLS_DB, getSkillMastery } from '../store/gameState';
+import { X, BookOpen, Swords, Shield, Activity, Sparkles } from 'lucide-react';
+import { SoundManager } from '../utils/SoundManager';
 
-export default function WuxiaSkillsBook({ onClose }) {
+export default function WuxiaSkillsBook({ onClose, initialFilter = 'all' }) {
   const player = useGameStore(state => state.player);
-  const [activeFilter, setActiveFilter] = useState('all'); // all, inner, outer, motion, ultimate
+  const equipSkill = useGameStore(state => state.equipSkill);
+  const [activeFilter, setActiveFilter] = useState(initialFilter); // all, inner, outer, motion, ultimate
 
   // 获取玩家属性（包含洗炼词条）以检测功法条件是否达标
   const attrs = player?.equippedTreasureAttrs || {};
@@ -296,7 +298,6 @@ export default function WuxiaSkillsBook({ onClose }) {
                   fontSize: '0.8rem',
                   color: '#ccc',
                   lineHeight: '1.4',
-                  flex: 1,
                   background: 'rgba(255, 255, 255, 0.01)',
                   padding: '6px',
                   borderRadius: '4px',
@@ -304,6 +305,65 @@ export default function WuxiaSkillsBook({ onClose }) {
                 }}>
                   {skill.desc}
                 </p>
+
+                {/* 熟练度与研习状态 / 操作 */}
+                <div style={{ marginTop: 'auto', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {isOwned ? (
+                    (() => {
+                      const isEquipped = player?.equippedSkills?.[skill.type] === skill.id;
+                      const masteryInfo = getSkillMastery(skill.id, player?.skillMastery);
+                      
+                      return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
+                          {/* 熟练度信息 */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                            <span>参悟境界: <span style={{ color: badge.color }}>{masteryInfo?.label || '初学乍练'}</span></span>
+                            <span>{masteryInfo?.wins || 0} 胜</span>
+                          </div>
+                          
+                          {/* 装备/卸下按钮 */}
+                          <button
+                            onClick={() => {
+                              SoundManager.play('sfx_click');
+                              if (isEquipped) {
+                                equipSkill(skill.type, null);
+                              } else {
+                                equipSkill(skill.type, skill.id);
+                              }
+                            }}
+                            className="btn-primary"
+                            style={{
+                              width: '100%',
+                              padding: '4px 8px',
+                              fontSize: '0.75rem',
+                              background: isEquipped ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                              color: isEquipped ? '#ff4d4d' : '#10b981',
+                              border: isEquipped ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(16, 185, 129, 0.4)',
+                              fontWeight: 'bold',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {isEquipped ? '卸下此招' : '装配上阵'}
+                          </button>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      textAlign: 'center',
+                      fontSize: '0.75rem',
+                      color: 'var(--text-muted)',
+                      border: '1px dashed rgba(255,255,255,0.06)',
+                      padding: '4px 0',
+                      borderRadius: '4px'
+                    }}>
+                      未掌握 (奇遇或任务获取)
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}

@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, TREASURES_DB, getSocket } from '../store/gameState';
-import { Hammer, Sparkles, Flame, RefreshCw, Zap, Shield, HelpCircle } from 'lucide-react';
+import { Hammer, Sparkles, Flame, RefreshCw, Zap, Shield, HelpCircle, Compass } from 'lucide-react';
 
 export default function AlchemyFurnace() {
   const player = useGameStore(state => state.player);
+  
+  if (!player) {
+    return (
+      <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <p>数据加载中，请大侠先行登入江湖...</p>
+      </div>
+    );
+  }
+
   const [activeMode, setActiveMode] = useState('synthesize'); // synthesize (重铸) 或 refine (洗炼)
 
   // ==================== 重铸状态 ====================
@@ -63,7 +72,7 @@ export default function AlchemyFurnace() {
   };
 
   // 五行属性材料名称对照表
-  const五行名称 = {
+  const 五行名称 = {
     goldSand: '炽阳金沙',
     woodHerb: '枯木灵芝',
     waterFluid: '无根净水',
@@ -72,7 +81,28 @@ export default function AlchemyFurnace() {
   };
 
   // 获取宝物详细数据
-  const getTreasureData = (id) => TREASURES_DB.find(t => t.id === id);
+  const getTreasureData = (id) => {
+     if (!id || !Array.isArray(TREASURES_DB)) return null;
+     return TREASURES_DB.find(t => t.id === id) || null;
+  };
+
+  // 一键切换标签页辅助函数
+  const navigateToTab = (tabLabel) => {
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const target = buttons.find(b => b.textContent && b.textContent.includes(tabLabel));
+    if (target) {
+      target.click();
+    }
+  };
+
+  // 过滤出储物袋中的有效宝物
+  const validTreasures = (player.treasures || []).filter(tId => getTreasureData(tId) !== null);
+
+  // 过滤出适合作为副胚的高阶宝物（史诗及以上）
+  const validSubTreasures = validTreasures.filter(tId => {
+    const data = getTreasureData(tId);
+    return data && ['史诗', '传说', '神话'].includes(data.rarity);
+  });
 
   // ==================== 重铸判定 ====================
   // 根据选中的宝物列表判断是否符合重铸规则（同品质且3~5件）
@@ -124,7 +154,7 @@ export default function AlchemyFurnace() {
       [...selectedSynthIds, id].forEach(tId => {
         neededCounts[tId] = (neededCounts[tId] || 0) + 1;
       });
-      const hasCount = (player.treasures || []).filter(tId => tId === id).length;
+      const hasCount = validTreasures.filter(tId => tId === id).length;
       if (neededCounts[id] > hasCount) {
          alert('储物袋中没有更多相同的这件宝物了！');
          return;
@@ -139,7 +169,7 @@ export default function AlchemyFurnace() {
     if (!refineSubId) return { valid: false, reason: '请放入副宝胚子' };
     if (refineMainId === refineSubId) {
       // 如果主副宝物ID相同，检查背包里是否有至少两件
-      const count = (player.treasures || []).filter(tId => tId === refineMainId).length;
+      const count = validTreasures.filter(tId => tId === refineMainId).length;
       if (count < 2) {
          return { valid: false, reason: '至少需有两件同种宝具以作洗炼主副胚' };
       }
@@ -327,27 +357,61 @@ export default function AlchemyFurnace() {
               <Hammer size={18} /> 选择重铸原料 (3 ~ 5件同品质宝具)
             </div>
             
-            {(!player.treasures || player.treasures.length === 0) ? (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '3rem' }}>
-                储物袋里空空如也，大侠可前往日常任务或秘境寻找宝物。
+            {validTreasures.length === 0 ? (
+              <div className="glass-panel animate-scale-up" style={{
+                textAlign: 'center',
+                padding: '2.5rem 1.5rem',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px dashed rgba(212, 175, 55, 0.25)',
+                borderRadius: '12px',
+                boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.4)'
+              }}>
+                <div style={{ marginBottom: '1.2rem', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{
+                    width: '56px', height: '56px', borderRadius: '50%',
+                    background: 'rgba(212, 175, 55, 0.05)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid rgba(212, 175, 55, 0.18)',
+                    boxShadow: '0 0 12px rgba(212, 175, 55, 0.1)'
+                  }}>
+                    <Flame size={28} style={{ color: 'var(--gold)', opacity: 0.85 }} />
+                  </div>
+                </div>
+                <h3 style={{ fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.3rem', color: 'var(--gold)', marginBottom: '0.6rem', letterSpacing: '1px' }}>
+                  神炉沉寂，尚无炼材
+                </h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', maxWidth: '340px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+                  八卦神炉需吸纳天地之灵宝。重铸宝物需放入 <span style={{ color: 'var(--gold)' }}>3 ~ 5 件相同品质</span> 的宝物，大侠储物袋中目前空空如也。
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxWidth: '220px', margin: '0 auto' }}>
+                  <button onClick={() => navigateToTab('任务大厅')} className="btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <Compass size={14} /> 前往任务大厅 (日常悬赏)
+                  </button>
+                  <button onClick={() => navigateToTab('秘境寻宝')} className="btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', borderColor: '#f97316', color: '#f97316' }}>
+                    <Compass size={14} /> 前往秘境寻宝 (探秘夺宝)
+                  </button>
+                  <button onClick={() => navigateToTab('拍卖风云')} className="btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', borderColor: '#c29d38', color: '#c29d38' }}>
+                    <Compass size={14} /> 前往拍卖风云 (淘换宝物)
+                  </button>
+                </div>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '0.8rem', maxHeight: '350px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                {player.treasures.map((tId, idx) => {
+                {validTreasures.map((tId, idx) => {
                   const data = getTreasureData(tId);
                   if (!data) return null;
                   const countSelected = selectedSynthIds.filter(id => id === tId).length;
-                  const totalCountInInv = player.treasures.filter(id => id === tId).length;
+                  const totalCountInInv = validTreasures.filter(id => id === tId).length;
                   const isAlreadyFullSelected = countSelected >= totalCountInInv;
-
+ 
                   // 检查是否是被选中的那个特定位置索引（我们这里通过已选数量过滤）
                   const currentSelectedCount = selectedSynthIds.filter(id => id === tId).length;
                   
                   // 为同一种宝物做多件选择支持
                   const isSelected = selectedSynthIds.includes(tId);
-
+ 
                   const rColor = rarityColors[data.rarity] || { color: '#fff', border: 'transparent' };
-
+ 
                   return (
                     <div
                       key={`${tId}_${idx}`}
@@ -483,14 +547,26 @@ export default function AlchemyFurnace() {
             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--gold)' }}>
               1. 放入待洗炼主宝物 (决定词条的载体)
             </div>
-            {(!player.treasures || player.treasures.length === 0) ? (
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>暂无宝具</div>
+            {validTreasures.length === 0 ? (
+              <div style={{
+                textAlign: 'center',
+                padding: '1.5rem 1rem',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px dashed rgba(255, 255, 255, 0.08)',
+                borderRadius: '8px',
+                color: 'var(--text-muted)',
+                fontSize: '0.85rem',
+                marginBottom: '1.5rem'
+              }}>
+                <div style={{ color: 'var(--gold)', marginBottom: '0.4rem', fontWeight: 'bold' }}>暂无可选主宝物</div>
+                <div style={{ scale: 0.9 }}>大侠储物袋内尚无宝物，请先去历练寻宝吧</div>
+              </div>
             ) : (
               <div style={{
                 display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem',
                 borderBottom: '1px dashed rgba(255,255,255,0.05)'
               }}>
-                {player.treasures.map((tId, idx) => {
+                {validTreasures.map((tId, idx) => {
                   const data = getTreasureData(tId);
                   if (!data) return null;
                   const isSelected = refineMainId === tId;
@@ -524,16 +600,35 @@ export default function AlchemyFurnace() {
             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--gold)' }}>
               2. 放入副宝胚子 (洗炼将被消耗，仅限【史诗】及以上)
             </div>
-            {(!player.treasures || player.treasures.length === 0) ? (
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>暂无副胚</div>
+            {validSubTreasures.length === 0 ? (
+              <div className="glass-panel animate-scale-up" style={{
+                textAlign: 'center',
+                padding: '1.8rem 1rem',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px dashed rgba(212, 175, 55, 0.2)',
+                borderRadius: '8px',
+                marginBottom: '1.5rem'
+              }}>
+                <div style={{ color: 'var(--gold)', marginBottom: '0.4rem', fontWeight: 'bold', fontSize: '0.9rem' }}>暂无符合品质的副宝胚</div>
+                <div style={{ scale: 0.9, color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '0.8rem' }}>
+                  洗炼需消耗一件 <span style={{ color: '#a855f7' }}>【史诗】</span>、<span style={{ color: '#f97316' }}>【传说】</span> 或 <span style={{ color: '#ef4444' }}>【神话】</span> 品质的宝物作为副胚。
+                </div>
+                <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center' }}>
+                  <button onClick={() => navigateToTab('秘境寻宝')} className="btn-primary" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderColor: '#f97316', color: '#f97316' }}>
+                    前往秘境寻宝 (探秘夺宝)
+                  </button>
+                  <button onClick={() => navigateToTab('拍卖风云')} className="btn-primary" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderColor: '#c29d38', color: '#c29d38' }}>
+                    前往拍卖风云 (淘换宝物)
+                  </button>
+                </div>
+              </div>
             ) : (
               <div style={{
                 display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem',
                 borderBottom: '1px dashed rgba(255,255,255,0.05)'
               }}>
-                {player.treasures.map((tId, idx) => {
+                {validSubTreasures.map((tId, idx) => {
                   const data = getTreasureData(tId);
-                  if (!data || !['史诗', '传说', '神话'].includes(data.rarity)) return null;
                   const isSelected = refineSubId === tId;
                   const rColor = rarityColors[data.rarity] || { color: '#fff' };
 
@@ -544,7 +639,7 @@ export default function AlchemyFurnace() {
                         setRefineSubId(tId);
                         if (refineMainId === tId) {
                            // 只有当背包里有两件以上时才允许主副同ID
-                           const count = player.treasures.filter(id => id === tId).length;
+                           const count = validTreasures.filter(id => id === tId).length;
                            if (count < 2) {
                               setRefineMainId(null);
                            }

@@ -399,7 +399,7 @@ const getLeaderboardData = () => {
         return { ...(onlineP || mockP), isOnline: true, isMock: true };
     });
 
-    const all = [...realPlayers, ...npcs];
+    const all = [...realPlayers, ...npcs].filter(u => u.name !== '清风');
     return all.sort((a, b) => (a.rankIndex || 9999) - (b.rankIndex || 9999));
 };
 
@@ -471,8 +471,17 @@ io.on('connection', (socket) => {
          }
           socket.username = data.name; // 保存当前连接的玩家名号
           data.rankIndex = 10000 + players.length;
-          if (typeof data.silver === 'undefined') data.silver = 0;
+          
+          // 强制安全初始化所有玩家关键属性，杜绝创号时篡改数值
+          data.level = 1;
+          data.exp = 0;
+          data.silver = 0;
           data.essence = 100;
+          data.treasures = [];
+          data.skills = ['s1'];
+          data.equippedSkills = { inner: null, outer: 's1', motion: null, ultimate: null };
+          data.equippedTreasure = null;
+
           data.inventoryMaterials = {
              anomalyDust: 0,
              soulAshes: 0,
@@ -517,20 +526,81 @@ io.on('connection', (socket) => {
   });
 
   socket.on('update_player', (data) => {
+      // 1. 越权校验：防止篡改其他玩家的数据
+      if (!socket.username || data.name !== socket.username) {
+         console.warn(`[防作弊警报] 客户端连接 ${socket.id} 尝试非法修改其他玩家 ${data.name} 的数据，操作被拦截！`);
+         return;
+      }
+
       const pIndex = players.findIndex(p => p.name === data.name);
-     if (pIndex >= 0) {
-       Object.assign(players[pIndex], data);
-       const dbPlayer = realPlayersDB.find(db => db.name === data.name);
-       if (dbPlayer) {
-          Object.assign(dbPlayer, data);
-          saveDB();
-          if (data.silver !== undefined && dbPlayer.silver !== data.silver) {
-              dbPlayer.silver = data.silver; 
-              saveDB();
-          }
-       }
-       io.emit('online_players', getLeaderboardData());
-     }
+      if (pIndex >= 0) {
+         const dbPlayer = realPlayersDB.find(db => db.name === data.name);
+         if (dbPlayer) {
+            const todayStr = new Date().toDateString();
+            
+            // 兼容初始化每日配额计数器
+            if (dbPlayer.lastResetDate !== todayStr) {
+               dbPlayer.dailySilverAdd = 0;
+               dbPlayer.lastResetDate = todayStr;
+            }
+
+            // 2. 每日金钱（银两）增量额度池防作弊校验
+            if (data.silver !== undefined) {
+               const oldSilver = dbPlayer.silver || 0;
+               const newSilver = parseInt(data.silver, 10) || 0;
+               const diff = newSilver - oldSilver;
+               
+               if (diff > 0) {
+                  const DAILY_SILVER_LIMIT = 500; // 设定单日客户端可获取上限为 500 两
+                  const currentAdded = dbPlayer.dailySilverAdd || 0;
+                  
+                  if (currentAdded + diff > DAILY_SILVER_LIMIT) {
+                     const allowedDiff = Math.max(0, DAILY_SILVER_LIMIT - currentAdded);
+                     const forceSilver = oldSilver + allowedDiff;
+                     console.warn(`[防作弊警报] 玩家 ${data.name} 尝试增加银两 ${diff}，已超出今日额度上限 (今日已加: ${currentAdded}, 允许增加: ${allowedDiff})。已拦截并强制设定为: ${forceSilver}`);
+                     
+                     data.silver = forceSilver;
+                     dbPlayer.dailySilverAdd = DAILY_SILVER_LIMIT;
+                     socket.emit('broadcast_message', `*【天理昭昭】今日修行获取机缘已达极限，多余的银两化为飞灰！*`);
+                  } else {
+                     dbPlayer.dailySilverAdd = currentAdded + diff;
+                  }
+               }
+            }
+
+            // 3. 经验/等级防作弊校验
+            if (data.level !== undefined) {
+               const oldLevel = dbPlayer.level || 1;
+               const newLevel = parseInt(data.level, 10) || 1;
+                if (oldLevel >= 20 && newLevel > oldLevel + 5) {
+                  console.warn(`[防作弊警报] 玩家 ${data.name} 尝试单次非法修改等级 ${oldLevel} -> ${newLevel}，已被强制拦截！`);
+                  data.level = oldLevel;
+                  data.exp = dbPlayer.exp || 0;
+               }
+            }
+
+            // 4. 属性值防作弊校验
+            if (data.attributes) {
+               const oldAttrs = dbPlayer.attributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+               const newAttrs = data.attributes;
+               const level = parseInt(data.level, 10) || dbPlayer.level || 1;
+               const permTotal = Object.values(dbPlayer.permanentAttributes || {}).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
+               const maxTotal = 10 + (level - 1) * 3 + permTotal;
+               
+               const newTotal = Object.values(newAttrs).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
+               if (newTotal > maxTotal) {
+                  console.warn(`[防作弊警报] 玩家 ${data.name} 尝试非法篡改属性，总属性点 ${newTotal} 超过上限 ${maxTotal}，已被强制拦截并重置属性！`);
+                  data.attributes = { ...oldAttrs };
+                  data.freePoints = dbPlayer.freePoints || 0;
+               }
+            }
+
+            Object.assign(players[pIndex], data);
+            Object.assign(dbPlayer, data);
+            saveDB();
+         }
+         io.emit('online_players', getLeaderboardData());
+      }
   });
 
   socket.on('get_realm_ghosts', () => {
