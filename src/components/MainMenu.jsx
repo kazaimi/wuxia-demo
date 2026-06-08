@@ -261,7 +261,7 @@ export default function MainMenu() {
           title="进入黑市"
         >
           <div className="token-image-wrapper">
-            <img src="/dark_wuxia_token.webp" alt="黑市密令" />
+            <img src="/dark_merchant_token.png" alt="黑市密令" />
             <div className="token-glow-overlay"></div>
           </div>
         </button>
@@ -401,7 +401,7 @@ export default function MainMenu() {
         title="进入黑市"
       >
         <div className="token-image-wrapper">
-          <img src="/dark_wuxia_token.webp" alt="黑市密令" />
+          <img src="/dark_merchant_token.png" alt="黑市密令" />
           <div className="token-glow-overlay"></div>
         </div>
       </button>
