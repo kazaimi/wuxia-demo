@@ -3,7 +3,7 @@
     "name": "ALEX",
     "title": "初出茅庐",
     "level": 43,
-    "exp": 1004,
+    "exp": 2504,
     "maxExp": 15321,
     "freePoints": 0,
     "taskCount": 0,
@@ -62,7 +62,7 @@
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
     "dailyActivity": 30,
-    "silver": 107,
+    "silver": 109,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,
@@ -103,7 +103,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1780932495627,
+    "lastLoginTime": 1780933654485,
     "dailySilverAdd": 0,
     "lastResetDate": "Mon Jun 08 2026"
   },
