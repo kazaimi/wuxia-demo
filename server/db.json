@@ -1,19 +1,19 @@
 [
   {
     "name": "ALEX",
-    "title": "摸鱼小虾",
-    "level": 42,
-    "exp": 14233,
-    "maxExp": 14729,
+    "title": "初出茅庐",
+    "level": 43,
+    "exp": 1004,
+    "maxExp": 15321,
     "freePoints": 0,
     "taskCount": 0,
-    "hp": 880,
-    "maxHp": 880,
+    "hp": 1165,
+    "maxHp": 1165,
     "attributes": {
-      "con": 15,
-      "str": 32,
-      "int": 40,
-      "agi": 51,
+      "con": 42,
+      "str": 14,
+      "int": 16,
+      "agi": 69,
       "luk": 6
     },
     "skills": [
@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "__8HtK_SkaCILEgYAAAJ",
+    "id": "bCcs3ol0Ba8Tbl04AAAB",
     "isBattling": false,
     "rankIndex": 22,
     "lastTaskDate": "Mon Jun 08 2026",
@@ -57,12 +57,12 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 1,
+    "encountersToday": 3,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 10,
-    "silver": 105,
+    "dailyActivity": 30,
+    "silver": 107,
     "skillMastery": {
       "s1": 5,
       "s_taiji": 5,
@@ -103,7 +103,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1780930798605,
+    "lastLoginTime": 1780932495627,
     "dailySilverAdd": 0,
     "lastResetDate": "Mon Jun 08 2026"
   },

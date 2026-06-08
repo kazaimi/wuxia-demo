@@ -109,7 +109,7 @@ const buildBuffChoice = (id, quality, treasureId) => {
       case 'con':
          choice.val = quality === 'epic' ? 25 : quality === 'rare' ? 15 : 8;
          choice.name = `${qLabel}体质之源`;
-         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 30}，并恢复等量生命)`;
+         choice.desc = `体质增加 ${choice.val} 点 (最大生命增加 ${choice.val * 5}，并恢复等量生命)`;
          choice.type = 'attr';
          break;
       case 'int':
@@ -1442,10 +1442,11 @@ export default function EncounterArena() {
      if (p1Won) {
         setDefeatedCount(nextDefeatedCount);
          
-         // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+         // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线，与正常战斗一致）
          const newLevel = 10 + nextDefeatedCount * 0.9;
          const oldMaxHp = result.p1.maxHp;
-         const newMaxHp = 2000 + (newLevel - 10) * 80 + (result.p1.attributes.con - 20) * 30;
+         const progress = Math.min(nextDefeatedCount / 60, 1);
+         const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (result.p1.attributes.con - 20) * 5);
          result.p1.level = newLevel;
          result.p1.maxHp = newMaxHp;
          result.p1.hp = Math.min(newMaxHp, result.p1.hp + (newMaxHp - oldMaxHp));
@@ -1650,8 +1651,8 @@ export default function EncounterArena() {
       if (choice.id === 'str') updatedP1.attributes.str += choice.val;
       else if (choice.id === 'con') {
          updatedP1.attributes.con += choice.val;
-         updatedP1.maxHp += choice.val * 30;
-         updatedP1.hp += choice.val * 30;
+         updatedP1.maxHp += choice.val * 5;
+         updatedP1.hp += choice.val * 5;
       }
       else if (choice.id === 'int') updatedP1.attributes.int += choice.val;
       else if (choice.id === 'agi') updatedP1.attributes.agi += choice.val;
