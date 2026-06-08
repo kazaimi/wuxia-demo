@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore, SKILLS_DB, TREASURES_DB, getSkillMastery, getSkillInfo, MASTERY_TIERS, ATTR_MAP } from '../store/gameState';
-import { User, Star, AlertCircle } from 'lucide-react';
+import { User, Star, AlertCircle, BookOpen } from 'lucide-react';
 import AttributeRadar from './AttributeRadar';
 import { GongfaIcon, TreasureIcon, WuxiaIconStyles } from './WuxiaIcon';
 import { SoundManager } from '../utils/SoundManager';
+import WuxiaSkillsBook from './WuxiaSkillsBook';
 
 const cleanText = (text) => {
   if (!text) return '';
@@ -22,6 +23,7 @@ export default function PlayerStatus() {
   
   // 储物袋背包状态：选中的宝具ID
   const [selectedTreasureId, setSelectedTreasureId] = useState(null);
+  const [showSkillsBook, setShowSkillsBook] = useState(false);
 
   // 背包数据堆叠统计
   const inventory = (treasures || []).reduce((acc, tId) => {
@@ -148,7 +150,33 @@ export default function PlayerStatus() {
       )}
 
       <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-        <h4 style={{ fontSize: '1rem', marginBottom: '0.8rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px' }}>武学与宝具羁绊</h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+          <h4 style={{ fontSize: '1rem', color: 'var(--gold)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '2px', margin: 0 }}>
+            武学与宝具羁绊
+          </h4>
+          <button
+             onClick={() => { SoundManager.play('sfx_click'); setShowSkillsBook(true); }}
+             style={{
+                background: 'rgba(212, 175, 55, 0.15)',
+                border: '1px solid var(--gold)',
+                color: 'var(--gold)',
+                borderRadius: '4px',
+                padding: '3px 8px',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontFamily: '"Ma Shan Zheng", cursive',
+                letterSpacing: '1px',
+                transition: 'all 0.2s ease'
+             }}
+             onMouseEnter={e => { e.currentTarget.style.background = 'var(--gold)'; e.currentTarget.style.color = '#000'; }}
+             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)'; e.currentTarget.style.color = 'var(--gold)'; }}
+          >
+             <BookOpen size={12} /> 武学宝典
+          </button>
+        </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9rem' }}>
           {['inner', 'outer', 'motion', 'ultimate'].map(type => {
@@ -370,8 +398,9 @@ export default function PlayerStatus() {
                </div>
              );
            })()}
-        </div>
-      </div>
-    </div>
-  );
-}
+         </div>
+         {showSkillsBook && <WuxiaSkillsBook onClose={() => setShowSkillsBook(false)} />}
+       </div>
+     </div>
+   );
+ }
