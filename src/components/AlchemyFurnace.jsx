@@ -80,6 +80,15 @@ export default function AlchemyFurnace() {
     earthEssence: '玄黄土精'
   };
 
+  // 五行属性材料图标对照表
+  const elementIcons = {
+    goldSand: '/elem_gold.png',
+    woodHerb: '/elem_wood.png',
+    waterFluid: '/elem_water.png',
+    fireMarrow: '/elem_fire.png',
+    earthEssence: '/elem_earth.png'
+  };
+
   // 获取宝物详细数据
   const getTreasureData = (id) => {
      if (!id || !Array.isArray(TREASURES_DB)) return null;
@@ -339,12 +348,17 @@ export default function AlchemyFurnace() {
           <div>异变玄晶: <span style={{ color: materials.anomalyCrystal >= 2 ? '#10b981' : '#ef4444' }}>{materials.anomalyCrystal}个</span></div>
           <div>怨魂余烬: <span style={{ color: materials.soulAshes >= 2 ? '#10b981' : '#ef4444' }}>{materials.soulAshes}个</span></div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '0.8rem', marginTop: '0.6rem', borderTop: '1px dashed rgba(255,255,255,0.05)', paddingTop: '0.6rem' }}>
-          <div>炽阳金沙: <span>{materials.goldSand || 0}</span></div>
-          <div>枯木灵芝: <span>{materials.woodHerb || 0}</span></div>
-          <div>无根净水: <span>{materials.waterFluid || 0}</span></div>
-          <div>赤炎地髓: <span>{materials.fireMarrow || 0}</span></div>
-          <div>玄黄土精: <span>{materials.earthEssence || 0}</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.8rem', marginTop: '0.6rem', borderTop: '1px dashed rgba(255,255,255,0.05)', paddingTop: '0.6rem' }}>
+          {Object.entries(五行名称).map(([key, name]) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <img 
+                src={elementIcons[key]} 
+                alt={name} 
+                style={{ width: '20px', height: '20px', objectFit: 'contain', mixBlendMode: 'screen', filter: 'drop-shadow(0 0 3px rgba(255,255,255,0.1))' }} 
+              />
+              <span>{name}: <span style={{ color: '#fff', fontWeight: 'bold' }}>{materials[key] || 0}</span></span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -681,11 +695,27 @@ export default function AlchemyFurnace() {
                       borderRadius: '4px',
                       fontSize: '0.75rem',
                       cursor: 'pointer',
-                      textAlign: 'center'
+                      textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px'
                     }}
                   >
+                    <img 
+                      src={elementIcons[key]} 
+                      alt={name} 
+                      style={{ 
+                        width: '28px', 
+                        height: '28px', 
+                        objectFit: 'contain', 
+                        mixBlendMode: 'screen',
+                        filter: isSelected ? 'drop-shadow(0 0 4px rgba(212,175,55,0.6))' : 'grayscale(0.3)'
+                      }} 
+                    />
                     <div>{name}</div>
-                    <div style={{ fontSize: '0.65rem', scale: 0.9, marginTop: '2px' }}>持有: {materials[key] || 0}</div>
+                    <div style={{ fontSize: '0.65rem', scale: 0.9 }}>持有: {materials[key] || 0}</div>
                   </button>
                 );
               })}
