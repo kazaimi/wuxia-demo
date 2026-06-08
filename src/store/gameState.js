@@ -423,11 +423,18 @@ export const useGameStore = create((set, get) => ({
      return { player: p };
   }),
 
-  equipTreasure: (tId) => set((state) => {
-     const p = { ...state.player, equippedTreasure: tId };
-     if (socket) socket.emit('update_player', p);
-     return { player: p };
-  }),
+    equipTreasure: (tId) => set((state) => {
+       const p = { ...state.player };
+       if (p.equippedTreasure !== tId) {
+          p.equippedTreasure = tId;
+          p.equippedTreasureAttrs = {
+             extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+             extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
+          };
+       }
+       if (socket) socket.emit('update_player', p);
+       return { player: p };
+    }),
 
   gainTreasure: (tId) => set((state) => {
      const p = { ...state.player, treasures: [...state.player.treasures, tId] };

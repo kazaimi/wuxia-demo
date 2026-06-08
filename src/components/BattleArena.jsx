@@ -361,13 +361,34 @@ export default function BattleArena() {
     if (p1.name !== player.name) return;
 
     const timer = setTimeout(() => {
-      const isP1Turn = Math.random() < (p1.attributes.agi / (p1.attributes.agi + p2.attributes.agi + 1));
+      const p1Agi = (p1.attributes.agi || 0) + (p1.equippedTreasureAttrs?.extraAgi || 0);
+      const p2Agi = (p2.attributes.agi || 0) + (p2.equippedTreasureAttrs?.extraAgi || 0);
+      const isP1Turn = Math.random() < (p1Agi / (p1Agi + p2Agi + 1));
       let actionData = {};
 
       let attacker = { ... (isP1Turn ? p1 : p2) };
       let defender = { ... (isP1Turn ? p2 : p1) };
       const attackerKey = isP1Turn ? 'p1' : 'p2';
       const defenderKey = isP1Turn ? 'p2' : 'p1';
+
+      // 融合洗炼器灵五行基础属性加成
+      attacker.attributes = { ...attacker.attributes };
+      defender.attributes = { ...defender.attributes };
+
+      const aAttrs = attacker.equippedTreasureAttrs || {};
+      const dAttrs = defender.equippedTreasureAttrs || {};
+
+      attacker.attributes.str = (attacker.attributes.str || 0) + (aAttrs.extraStr || 0);
+      attacker.attributes.con = (attacker.attributes.con || 0) + (aAttrs.extraCon || 0);
+      attacker.attributes.agi = (attacker.attributes.agi || 0) + (aAttrs.extraAgi || 0);
+      attacker.attributes.int = (attacker.attributes.int || 0) + (aAttrs.extraInt || 0);
+      attacker.attributes.luk = (attacker.attributes.luk || 0) + (aAttrs.extraLuk || 0);
+
+      defender.attributes.str = (defender.attributes.str || 0) + (dAttrs.extraStr || 0);
+      defender.attributes.con = (defender.attributes.con || 0) + (dAttrs.extraCon || 0);
+      defender.attributes.agi = (defender.attributes.agi || 0) + (dAttrs.extraAgi || 0);
+      defender.attributes.int = (defender.attributes.int || 0) + (dAttrs.extraInt || 0);
+      defender.attributes.luk = (defender.attributes.luk || 0) + (dAttrs.extraLuk || 0);
 
       if (!attacker.buffs) attacker.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
       if (!defender.buffs) defender.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
@@ -458,7 +479,7 @@ export default function BattleArena() {
          const dCon = defender.dailyDebuffs?.includes('散功劫') ? Math.max(0, defender.attributes.con - 5) : defender.attributes.con;
 
          const pAtk = aStr * 2 + attacker.level * 5;
-         const dDefBase = dCon * 2 + defender.level * 2;
+         const dDefBase = dCon * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
          const aMod = 1 + attacker.level * 0.05;
          const adjustedSkillPwr = skill.power * aMod;
 
@@ -486,12 +507,12 @@ export default function BattleArena() {
             attacker.buffs.dodge = 2;
             actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
          } else {
-            let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
-            let isDodge = false;
-            if (canDodge) {
-               isDodge = Math.random() < (defender.attributes.agi * 0.005);
-               if (defender.buffs.dodge > 0) isDodge = Math.random() < 0.45;
-            }
+             let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
+             let isDodge = false;
+             if (canDodge) {
+                const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+                isDodge = Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false);
+             }
 
             if (isDodge) {
                actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
@@ -591,6 +612,20 @@ export default function BattleArena() {
                   if (aTreasure?.effect === 'xuanTie' && Math.random() <= 0.20 && !checkImmune(defender, dTreasure, 'internalWound')) {
                      defender.debuffs.internalWound = 2;
                      actionLog += ` \n[宝具] 玄铁重剑霸道无比，震得 ${defender.name} 吐血内伤！`;
+                  }
+
+                  // 额外判定洗炼的中毒率和击晕率词条
+                  if (aAttrs.poisonRate > 0 && Math.random() <= (aAttrs.poisonRate * 0.01) && !checkImmune(defender, dTreasure, 'poison')) {
+                     if (defender.debuffs.poison < 3) {
+                        defender.debuffs.poison = 3;
+                        actionLog += ` \n[注灵剧毒] 附魔剧毒生效，${defender.name} 陷入毒发！`;
+                     }
+                  }
+                  if (aAttrs.stunRate > 0 && Math.random() <= (aAttrs.stunRate * 0.01) && !checkImmune(defender, dTreasure, 'stun')) {
+                     if (defender.debuffs.stun < 1) {
+                        defender.debuffs.stun = 1;
+                        actionLog += ` \n[注灵震慑] 附魔晕眩生效，${defender.name} 被震慑防守！`;
+                     }
                   }
                }
             }

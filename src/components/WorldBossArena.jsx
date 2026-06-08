@@ -78,7 +78,7 @@ export default function WorldBossArena() {
 
      // 检测玩家是否洗练出词条
      const attrs = player.equippedTreasureAttrs || {};
-     const hasPo破魔 = (attrs.extraInt >= 10) || (player.treasures.some(t => ['t13', 't14'].includes(t))); // 假设有对应破魔词条
+     const hasPo破魔 = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || (player.treasures.some(t => ['t13', 't14'].includes(t))); // 包含破魔词条或特定神兵
      const hasPoison = attrs.poisonRate > 0;
      const hasStun = attrs.stunRate > 0;
      const hasAntiStun = attrs.extraLuk >= 10; // 幸运达标作为防晕
@@ -98,7 +98,6 @@ export default function WorldBossArena() {
         
         // 玩家受到的负面影响判定
         let isStunned = false;
-        let pAttacks = true;
 
         // 1. Boss 攻击前戏与技能施放轴
         if (turn === 3 || turn === 8) {
@@ -128,8 +127,8 @@ export default function WorldBossArena() {
 
         // 2. 玩家出手
         if (!isStunned && userHp > 0) {
-           // 计算伤害，破魔词条无视免伤，否则打出 20% 伤害 (80% 免伤)
-           let baseDmg = player.attributes.str * 4 + 100 + Math.random() * 100;
+           const playerStr = (player.attributes.str || 0) + (attrs.extraStr || 0);
+           let baseDmg = playerStr * 4 + 100 + Math.random() * 100;
            
            // 读取装备的外功威力
            const outerId = player.equippedSkills?.outer;
@@ -144,7 +143,7 @@ export default function WorldBossArena() {
            let damageToBoss = Math.floor(baseDmg);
            
            // 破魔判定
-           const isPoMa = attrs.extraInt >= 10 || player.equippedTreasure === 't14';
+           const isPoMa = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || ['t13', 't14'].includes(player.equippedTreasure);
            if (!isPoMa) {
               // Boss 默认有 80% 免伤
               damageToBoss = Math.floor(damageToBoss * 0.2);
@@ -168,7 +167,8 @@ export default function WorldBossArena() {
 
            // 中毒流血判定 (PVE 高额固定伤害)
            if (hasPoison || player.equippedTreasure === 't6') {
-              const poisonDmg = player.attributes.int * 3 * 15;
+              const playerInt = (player.attributes.int || 0) + (attrs.extraInt || 0);
+              const poisonDmg = playerInt * 3 * 15;
               bossHp = Math.max(0, bossHp - poisonDmg);
               accumulatedDmg += poisonDmg;
               turnLog += `✦ 毒素蚀骨！魔罗每回合流血，受到了 ${poisonDmg} 点固定中毒伤害。\n`;

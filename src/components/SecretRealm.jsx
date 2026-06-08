@@ -71,36 +71,77 @@ export default function SecretRealm() {
            return;
         }
 
-        const userSpeed = player.attributes.agi;
-        const ghostSpeed = ghost.attributes.agi;
+        const userAttrs = player.equippedTreasureAttrs || {};
+        const ghostAttrs = ghost.equippedTreasureAttrs || {};
+
+        const userAgi = (player.attributes.agi || 0) + (userAttrs.extraAgi || 0);
+        const ghostAgi = (ghost.attributes.agi || 0) + (ghostAttrs.extraAgi || 0);
+
+        const userStr = (player.attributes.str || 0) + (userAttrs.extraStr || 0);
+        const userCon = (player.attributes.con || 0) + (userAttrs.extraCon || 0);
+
+        const ghostStr = (ghost.attributes.str || 0) + (ghostAttrs.extraStr || 0);
+        const ghostCon = (ghost.attributes.con || 0) + (ghostAttrs.extraCon || 0);
+
+        const userSpeed = userAgi;
+        const ghostSpeed = ghostAgi;
         const userFirst = userSpeed >= ghostSpeed;
 
-        const calcDmg = (str, con) => {
+        const calcDmg = (str, con, extraDef) => {
            const raw = str * 3.5 + 40 + Math.random() * 40;
-           const def = con * 1.1;
+           const def = con * 1.1 + (extraDef || 0);
            return Math.max(35, Math.floor(raw - def));
         };
 
         let turnLog = `【第 ${turn} 回合】\n`;
-        if (userFirst) {
-           const dmgToGhost = calcDmg(player.attributes.str, ghost.attributes.con);
-           curHpGhost = Math.max(0, curHpGhost - dmgToGhost);
-           turnLog += `你 眼神如电率先出招，对怨灵造成 ${dmgToGhost} 点伤害。(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+        
+        // 闪避几率计算 (饱和渐近闪避 + 洗炼额外闪避)
+        const ghostDodgeChance = (ghostAgi / (ghostAgi + 120)) * 0.5 + (ghostAttrs.extraDodge || 0) * 0.01;
+        const userDodgeChance = (userAgi / (userAgi + 120)) * 0.5 + (userAttrs.extraDodge || 0) * 0.01;
 
+        if (userFirst) {
+           // 玩家攻击怨灵
+           const isGhostDodge = Math.random() < ghostDodgeChance;
+           if (isGhostDodge) {
+              turnLog += `你 势如破竹出招，却被怨灵神魂虚影飘晃躲过！(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+           } else {
+              const dmgToGhost = calcDmg(userStr, ghostCon, ghostAttrs.extraDef);
+              curHpGhost = Math.max(0, curHpGhost - dmgToGhost);
+              turnLog += `你 眼神如电率先出招，对怨灵造成 ${dmgToGhost} 点伤害。(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+           }
+
+           // 怨灵反击
            if (curHpGhost > 0) {
-              const dmgToUser = calcDmg(ghost.attributes.str, player.attributes.con);
-              curHpUser = Math.max(0, curHpUser - dmgToUser);
-              turnLog += `\n怨灵神魂 阴冷反击，对你造成 ${dmgToUser} 点伤害。(你的血量: ${curHpUser}/${maxHpUser})`;
+              const isUserDodge = Math.random() < userDodgeChance;
+              if (isUserDodge) {
+                 turnLog += `\n怨灵神魂 阴冷反击，却被你灵动异常的身形一闪，巧妙避开！(你的血量: ${curHpUser}/${maxHpUser})`;
+              } else {
+                 const dmgToUser = calcDmg(ghostStr, userCon, userAttrs.extraDef);
+                 curHpUser = Math.max(0, curHpUser - dmgToUser);
+                 turnLog += `\n怨灵神魂 阴冷反击，对你造成 ${dmgToUser} 点伤害。(你的血量: ${curHpUser}/${maxHpUser})`;
+              }
            }
         } else {
-           const dmgToUser = calcDmg(ghost.attributes.str, player.attributes.con);
-           curHpUser = Math.max(0, curHpUser - dmgToUser);
-           turnLog += `怨灵神魂 身法更快抢先出手，对你造成 ${dmgToUser} 点伤害。(你的血量: ${curHpUser}/${maxHpUser})`;
+           // 怨灵抢攻
+           const isUserDodge = Math.random() < userDodgeChance;
+           if (isUserDodge) {
+              turnLog += `怨灵神魂 抢先冷厉出击，你早已洞烛机先，翩然一闪避开！(你的血量: ${curHpUser}/${maxHpUser})`;
+           } else {
+              const dmgToUser = calcDmg(ghostStr, userCon, userAttrs.extraDef);
+              curHpUser = Math.max(0, curHpUser - dmgToUser);
+              turnLog += `怨灵神魂 身法更快抢先出手，对你造成 ${dmgToUser} 点伤害。(你的血量: ${curHpUser}/${maxHpUser})`;
+           }
 
+           // 玩家反击
            if (curHpUser > 0) {
-              const dmgToGhost = calcDmg(player.attributes.str, ghost.attributes.con);
-              curHpGhost = Math.max(0, curHpGhost - dmgToGhost);
-              turnLog += `\n你 咬牙稳住架势，一招重击对怨灵造成 ${dmgToGhost} 点伤害。(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+              const isGhostDodge = Math.random() < ghostDodgeChance;
+              if (isGhostDodge) {
+                 turnLog += `\n你 咬牙蓄力打出一记掌风，却被怨灵神魂飘摇躲过！(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+              } else {
+                 const dmgToGhost = calcDmg(userStr, ghostCon, ghostAttrs.extraDef);
+                 curHpGhost = Math.max(0, curHpGhost - dmgToGhost);
+                 turnLog += `\n你 咬牙稳住架势，一招重击对怨灵造成 ${dmgToGhost} 点伤害。(怨灵血量: ${curHpGhost}/${maxHpGhost})`;
+              }
            }
         }
 
