@@ -382,7 +382,7 @@ export default function EncounterArena() {
          ...player, 
          level: 10,
          attributes: { con: 20, str: 12, int: 6, agi: 18, luk: 6 },
-         hp: 2000, maxHp: 2000,
+         hp: 700, maxHp: 700,
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -727,7 +727,7 @@ export default function EncounterArena() {
                            actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
                         }
                      }
-                     if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                      if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
                         const poisonChance = 0.15 + 0.10 * tBoostA;
                         if (Math.random() <= poisonChance) {
                            defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);
@@ -758,7 +758,7 @@ export default function EncounterArena() {
                      if (aAttrs.stunRate > 0 && Math.random() <= (aAttrs.stunRate * 0.01) && !checkImmune(defender, dTreasure, 'stun')) {
                         if (defender.debuffs.stun < 1) {
                            defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
-                           actionLog += ` \n[注灵震慑] 附魔晕眩生效，${defender.name} 被震慑防守！`;
+                           actionLog += ` \n[注灵震慑] 附魔晕慑生效，${defender.name} 被震慑防守！`;
                         }
                      }
                   }
@@ -812,10 +812,11 @@ export default function EncounterArena() {
                const nextDefeatedCount = defeatedCount + 1;
                setDefeatedCount(nextDefeatedCount);
 
-               // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血
+               // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线）
                const newLevel = 10 + nextDefeatedCount * 0.9;
                const oldMaxHp = finalP1.maxHp;
-               const newMaxHp = 2000 + (newLevel - 10) * 80 + (finalP1.attributes.con - 20) * 30;
+               const progress = Math.min(nextDefeatedCount / 60, 1);
+               const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (finalP1.attributes.con - 20) * 5);
                finalP1.level = newLevel;
                finalP1.maxHp = newMaxHp;
                finalP1.hp = Math.min(newMaxHp, finalP1.hp + (newMaxHp - oldMaxHp));
@@ -1282,7 +1283,7 @@ export default function EncounterArena() {
                     if (aAttrs.stunRate > 0 && Math.random() <= (aAttrs.stunRate * 0.01) && !checkImmune(defender, dTreasure, 'stun')) {
                        if (defender.debuffs.stun < 1) {
                           defender.debuffs.stun = 1 + (isP1Turn ? rogueBuffs.stunDuration : 0);
-                          actionLog += ` \n[注灵震慑] 附魔晕眩生效，${defender.name} 被震慑防守！`;
+                          actionLog += ` \n[注灵震慑] 附魔晕慑生效，${defender.name} 被震慑防守！`;
                        }
                     }
 
@@ -1351,7 +1352,7 @@ export default function EncounterArena() {
                              actionLog += ` \n[宝具] ${defender.name} 被判官笔点中要穴 ${defender.debuffs.silence} 回合！`;
                           }
                        }
-                       if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
+                      if (aTreasure?.effect === 'juDu' && !checkImmune(defender, dTreasure, 'poison')) {
                           const poisonChance = 0.15 + 0.10 * tBoostA;
                           if (Math.random() <= poisonChance) {
                              defender.debuffs.poison = 3 + (isP1Turn ? rogueBuffs.poisonDuration : 0);

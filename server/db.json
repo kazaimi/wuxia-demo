@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "S9a0b39R9wE06bdgAAAH",
+    "id": "__8HtK_SkaCILEgYAAAJ",
     "isBattling": false,
     "rankIndex": 22,
     "lastTaskDate": "Mon Jun 08 2026",
@@ -57,11 +57,11 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 0,
+    "encountersToday": 1,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 0,
+    "dailyActivity": 10,
     "silver": 105,
     "skillMastery": {
       "s1": 5,
@@ -103,7 +103,9 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1780929920333
+    "lastLoginTime": 1780930798605,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Mon Jun 08 2026"
   },
   {
     "name": "芙蓉女侠",
