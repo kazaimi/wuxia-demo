@@ -90,11 +90,25 @@ if (fs.existsSync(AUCTION_HISTORY_FILE)) {
 }
 
 const saveAuctionHistory = () => {
-   fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
+   const tempPath = AUCTION_HISTORY_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(auctionHistory, null, 2));
+      fs.renameSync(tempPath, AUCTION_HISTORY_FILE);
+   } catch (e) {
+      console.error("Failed to save auction history atomically:", e);
+      fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
+   }
 };
 
 const saveDB = () => {
-   fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2));
+   const tempPath = DB_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(realPlayersDB, null, 2));
+      fs.renameSync(tempPath, DB_FILE);
+   } catch (e) {
+      console.error("Failed to save DB atomically:", e);
+      fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2));
+   }
 };
 
 const GHOSTS_FILE = path.join(__dirname, 'ghosts.json');
@@ -119,11 +133,25 @@ if (fs.existsSync(SIGNUPS_FILE)) {
 }
 
 const saveGhosts = () => {
-   fs.writeFileSync(GHOSTS_FILE, JSON.stringify(secretRealmGhosts, null, 2));
+   const tempPath = GHOSTS_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(secretRealmGhosts, null, 2));
+      fs.renameSync(tempPath, GHOSTS_FILE);
+   } catch (e) {
+      console.error("Failed to save ghosts atomically:", e);
+      fs.writeFileSync(GHOSTS_FILE, JSON.stringify(secretRealmGhosts, null, 2));
+   }
 };
 
 const saveSignups = () => {
-   fs.writeFileSync(SIGNUPS_FILE, JSON.stringify(worldBossSignups, null, 2));
+   const tempPath = SIGNUPS_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(worldBossSignups, null, 2));
+      fs.renameSync(tempPath, SIGNUPS_FILE);
+   } catch (e) {
+      console.error("Failed to save signups atomically:", e);
+      fs.writeFileSync(SIGNUPS_FILE, JSON.stringify(worldBossSignups, null, 2));
+   }
 };
 
 // 宝物品质与级别常量定义
@@ -572,7 +600,7 @@ io.on('connection', (socket) => {
             if (data.level !== undefined) {
                const oldLevel = dbPlayer.level || 1;
                const newLevel = parseInt(data.level, 10) || 1;
-                if (oldLevel >= 20 && newLevel > oldLevel + 5) {
+                if (oldLevel >= 20 && newLevel > oldLevel + 30) {
                   console.warn(`[防作弊警报] 玩家 ${data.name} 尝试单次非法修改等级 ${oldLevel} -> ${newLevel}，已被强制拦截！`);
                   data.level = oldLevel;
                   data.exp = dbPlayer.exp || 0;
@@ -598,6 +626,7 @@ io.on('connection', (socket) => {
             Object.assign(players[pIndex], data);
             Object.assign(dbPlayer, data);
             saveDB();
+            socket.emit('update_player_success', dbPlayer);
          }
          io.emit('online_players', getLeaderboardData());
       }
@@ -882,13 +911,22 @@ io.on('connection', (socket) => {
       if (bidPrice <= auction.price) return; // 出价必须高于当前价格
       if (dbPlayer.silver < bidPrice) return; // 银两不足
 
-      // 退还前一个出价者的银两
+      // 退还前一个出价者的银两并实时通知其客户端同步
       if (auction.highestBidder) {
          const prevBidder = realPlayersDB.find(p => p.name === auction.highestBidder);
          if (prevBidder) {
             prevBidder.silver += auction.price;
             const prevIndex = players.findIndex(p => p.name === prevBidder.name);
             if (prevIndex >= 0) players[prevIndex] = prevBidder;
+            
+            // 实时通知退款
+            const onlinePrev = players.find(p => p.name === prevBidder.name && !p.isMock);
+            if (onlinePrev) {
+               const socketPrev = io.sockets.sockets.get(onlinePrev.id);
+               if (socketPrev) {
+                  socketPrev.emit('update_player_success', prevBidder);
+               }
+            }
          }
       }
 
@@ -1180,6 +1218,12 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const username = socket.username;
+    
+    // 如果是真人玩家，从在线玩家列表中移除
+    if (username) {
+       players = players.filter(p => p.name !== username || p.isMock);
+    }
+
     // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
     if (username && MOCK_NAMES.includes(username)) {
        const originalMock = MOCK_PLAYERS.find(p => p.name === username);
