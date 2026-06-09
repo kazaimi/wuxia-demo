@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "初出茅庐",
+    "title": "摸鱼小虾",
     "level": 43,
     "exp": 2504,
     "maxExp": 15321,
@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "bCcs3ol0Ba8Tbl04AAAB",
+    "id": "w8MtBwL6TuaD8MioAAAD",
     "isBattling": false,
     "rankIndex": 22,
-    "lastTaskDate": "Mon Jun 08 2026",
+    "lastTaskDate": "Tue Jun 09 2026",
     "treasures": [
       "t3",
       "t5",
@@ -57,11 +57,11 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 3,
+    "encountersToday": 0,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 30,
+    "dailyActivity": 0,
     "silver": 109,
     "skillMastery": {
       "s1": 5,
@@ -103,7 +103,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1780933654485,
+    "lastLoginTime": 1781019996156,
     "dailySilverAdd": 0,
     "lastResetDate": "Mon Jun 08 2026"
   },

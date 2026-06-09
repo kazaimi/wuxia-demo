@@ -2,10 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore, getSocket, SKILLS_DB, TREASURES_DB, getSkillInfo } from '../store/gameState';
 import { Sword, Users, ShieldAlert, Award, Play, Shield, FlaskConical } from 'lucide-react';
 import { SoundManager } from '../utils/SoundManager';
+import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
+import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
+import { useCleanImage } from '../utils/imageProcess';
 
 export default function WorldBossArena() {
   const player = useGameStore(state => state.player);
   const worldBossState = useGameStore(state => state.worldBossState);
+  const cleanBossPic = useCleanImage('/boss_mola_portrait.png', 20, 20);
   const fetchWorldBossState = useGameStore(state => state.fetchWorldBossState);
   const signupWorldBoss = useGameStore(state => state.signupWorldBoss);
   const challengeWorldBoss = useGameStore(state => state.challengeWorldBoss);
@@ -26,7 +30,38 @@ export default function WorldBossArena() {
   
   // 滚动日志和 Toast
   const [strikeToast, setStrikeToast] = useState(null);
-  const logsEndRef = useRef(null);
+  const logsContainerRef = useRef(null);
+
+  // New visual and animation state variables
+  const [activeVfx, setActiveVfx] = useState('none'); // 'none', 'chaos', 'shadow', 'roar', 'extinction'
+  const [isBossHit, setIsBossHit] = useState(false);
+  const [isPlayerHit, setIsPlayerHit] = useState(false);
+  const [isBossAttacking, setIsBossAttacking] = useState(false);
+  const [isPlayerAttacking, setIsPlayerAttacking] = useState(false);
+  const [activeSkillName, setActiveSkillName] = useState('');
+  const [skillCaster, setSkillCaster] = useState(''); // 'player', 'boss'
+  const [isScreenShaking, setIsScreenShaking] = useState(false);
+
+  // 复用遭遇战核心特效数据源
+  const [effects, setEffects] = useState([]);
+  const [damageNumbers, setDamageNumbers] = useState([]);
+  const [currentBattleState, setCurrentBattleState] = useState({});
+  const [skillCast, setSkillCast] = useState(null);
+
+  const addEffect = (type, position, intensity = 1, skillName = '', skillId = '') => {
+    const id = Date.now() + Math.random();
+    setEffects(prev => [...prev, { id, type, position, intensity, skillName, skillId }]);
+  };
+  const removeEffect = (id) => {
+    setEffects(prev => prev.filter(e => e.id !== id));
+  };
+  const addDamageNumber = (damage, position, isHeal = false) => {
+    const id = Date.now() + Math.random();
+    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal }]);
+  };
+  const removeDamageNumber = (id) => {
+    setDamageNumbers(prev => prev.filter(d => d.id !== id));
+  };
 
   useEffect(() => {
     fetchWorldBossState();
@@ -49,8 +84,8 @@ export default function WorldBossArena() {
   }, [fetchWorldBossState]);
 
   useEffect(() => {
-     if (logsEndRef.current) {
-        logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+     if (logsContainerRef.current) {
+        logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
      }
   }, [battleLogs]);
 
@@ -67,6 +102,20 @@ export default function WorldBossArena() {
      setCurBossHp(worldBossState.hp);
      setCurUserHp(player.maxHp);
      setBattleDmg(0);
+     setActiveVfx('none');
+     setIsBossHit(false);
+     setIsPlayerHit(false);
+     setIsBossAttacking(false);
+     setIsPlayerAttacking(false);
+     setActiveSkillName('');
+     setSkillCaster('');
+     setIsScreenShaking(false);
+     
+     // 遭遇战特效状态重置
+     setEffects([]);
+     setDamageNumbers([]);
+     setCurrentBattleState({});
+     setSkillCast(null);
      
      let logs = [`====== 挑战开始：御敌太古魔殿 ======`, `你深吸一口气，踏入大殿，直面浮空狂笑的太古噬魂魔罗！`];
      setBattleLogs(logs);
@@ -91,6 +140,17 @@ export default function WorldBossArena() {
            challengeWorldBoss(accumulatedDmg);
            SoundManager.play('sfx_success');
            setBattleLogs(prev => [...prev, `\n>> 挑战结束！共对魔罗造成了 ${accumulatedDmg} 点伤害。`, `你精疲力竭，在漫天飞灰中退回大殿。`]);
+           setActiveVfx('none');
+           setIsBossHit(false);
+           setIsPlayerHit(false);
+           setIsBossAttacking(false);
+           setIsPlayerAttacking(false);
+           setIsScreenShaking(false);
+
+           setEffects([]);
+           setDamageNumbers([]);
+           setCurrentBattleState({});
+           setSkillCast(null);
            return;
         }
 
@@ -98,100 +158,327 @@ export default function WorldBossArena() {
         
         // 玩家受到的负面影响判定
         let isStunned = false;
+        let playerDodgeTurn = false;
+
+        // 重置瞬时动作状态，但不重置长效全屏特效
+        setIsBossHit(false);
+        setIsPlayerHit(false);
+        setIsBossAttacking(false);
+        setIsPlayerAttacking(false);
+        setCurrentBattleState({});
 
         // 1. Boss 攻击前戏与技能施放轴
         if (turn === 3 || turn === 8) {
            turnLog += `👹 魔罗魔眼怒张，施展了【魔罗乱神】！心魔干扰袭来，你运转周天的功法几率下降 30%。\n`;
+           setActiveVfx('chaos');
+           SoundManager.play('sfx_silence', 0.65);
+           setActiveSkillName('魔罗乱神');
+           setSkillCaster('boss');
+           setIsBossAttacking(true);
+           setTimeout(() => setIsBossAttacking(false), 500);
+           setTimeout(() => setActiveVfx('none'), 1200);
+
+           // 大展神威：大招漫画特写与 debuff 特效
+           setSkillCast({ characterName: '太古魔罗', skillName: '魔罗乱神', skillId: 'boss_chaos', skillDesc: '太古怨魂直透识海，心魔纷扰导致施法几率大幅下降。', position: 'right' });
+           setTimeout(() => {
+              addEffect('debuff', 'left', 1.5);
+           }, 500);
         }
-        if (turn === 5 || turn === 12) {
+        else if (turn === 5 || turn === 12) {
            turnLog += `👹 魔罗周身煞气暴涨，施展了【邪煞夺魄】重创于你！`;
            const dot = Math.floor(player.maxHp * 0.08);
            userHp = Math.max(0, userHp - dot);
            turnLog += `你染上了魔毒，损失 ${dot} 点气血。魔罗张开了【血魂护盾】！\n`;
+           setActiveVfx('shadow');
+           SoundManager.play('sfx_poison', 0.50);
+           setActiveSkillName('邪煞夺魄');
+           setSkillCaster('boss');
+           setIsBossAttacking(true);
+           setTimeout(() => setIsBossAttacking(false), 500);
+           setTimeout(() => setActiveVfx('none'), 1200);
+
+           // 漫画大招特写与血流毒蚀特效
+           setSkillCast({ characterName: '太古魔罗', skillName: '邪煞夺魄', skillId: 'boss_shadow', skillDesc: '周身煞气暴涨，掠夺气血！染上腐骨魔毒，并张开本命血盾', position: 'right' });
+           setTimeout(() => {
+              addEffect('poison', 'left', 2.0);
+              addEffect('buff', 'right', 1.5);
+              addDamageNumber(dot, 'left');
+           }, 500);
         }
-        if (turn === 7 || turn === 14) {
+        else if (turn === 7 || turn === 14) {
            turnLog += `👹 魔罗爆发大范围太古魔啸！`;
+           setActiveVfx('roar');
+           setIsScreenShaking(true);
+           SoundManager.play('sfx_stun', 0.45);
+           setActiveSkillName('太古魔啸');
+           setSkillCaster('boss');
+           setIsBossAttacking(true);
+           setTimeout(() => setIsBossAttacking(false), 500);
+           setTimeout(() => setActiveVfx('none'), 1200);
+           setTimeout(() => setIsScreenShaking(false), 1000);
+
            if (hasAntiStun) {
               turnLog += `幸而你身怀【防晕免控】秘法，稳住身形，免疫了咆哮震慑！\n`;
            } else if (Math.random() <= 0.35) {
               turnLog += `你心神被魔啸震慑，陷入了【眩晕】状态，本回合无法出手！\n`;
               isStunned = true;
-           } else {
+} else {
               turnLog += `你咬紧牙关，在风暴中立住了脚步！\n`;
            }
+
+           // 漫画特写与眩晕心神震散特效
+           setSkillCast({ characterName: '太古魔罗', skillName: '太古魔啸', skillId: 'boss_roar', skillDesc: '魔心力啸震天，撕裂气脉！狂暴邪声震耳，令敌眩晕失守', position: 'right' });
+           setTimeout(() => {
+              addEffect('stun', 'left', 2.0);
+              if (isStunned) {
+                 addEffect('debuff', 'left', 1.0);
+              }
+           }, 500);
         }
-        if (turn === 15) {
+        else if (turn === 15) {
            turnLog += `👹 【诸神寂灭】！！魔罗在第 15 回合爆发灭世神雷，对你造成 99,999 点真实伤害，你瞬间失去知觉！\n`;
            userHp = 0;
+           setActiveVfx('extinction');
+           SoundManager.play('sfx_magic', 0.35);
+           setActiveSkillName('诸神寂灭');
+           setSkillCaster('boss');
+           setIsBossAttacking(true);
+           setTimeout(() => setIsBossAttacking(false), 500);
+           setTimeout(() => setActiveVfx('none'), 1200);
+
+           // 大招特写与致死雷轰
+           setSkillCast({ characterName: '太古魔罗', skillName: '诸神寂灭', skillId: 'boss_extinction', skillDesc: '太古灭世神雷，摧枯拉朽！万法寂灭，对敌造成致死性真实重击', position: 'right' });
+           setTimeout(() => {
+              addEffect('ultimateBurst', 'left', 3.0, '诸神寂灭', 'boss_extinction');
+              addDamageNumber(99999, 'left');
+           }, 580);
         }
 
-        // 2. 玩家出手
-        if (!isStunned && userHp > 0) {
-           const playerStr = (player.attributes.str || 0) + (attrs.extraStr || 0);
-           let baseDmg = playerStr * 4 + 100 + Math.random() * 100;
-           
-           // 读取装备的外功威力
-           const outerId = player.equippedSkills?.outer;
-           const outerSkill = SKILLS_DB.find(s => s.id === outerId);
-           if (outerSkill) {
-              baseDmg += outerSkill.power * 2;
-           }
+         // 2. 玩家出手
+         if (!isStunned && userHp > 0) {
+            // 挑技能逻辑（与 EncounterArena/BattleArena 完全对齐）
+            const eq = player.equippedSkills || {};
+            // 过滤空值，若为空默认为普通攻击
+            let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
+            
+            const playerInt = (player.attributes.int || 0) + (attrs.extraInt || 0);
+            
+            const pickSkill = () => {
+               if (skillIds.length === 0) return { id: 's1', name: '基本拳脚', type: 'outer', power: 10, desc: '入门招式。外功。' };
+               let totalWeight = 0;
+               const weighted = skillIds.map(sId => {
+                  const sk = SKILLS_DB.find(s => s.id === sId) || SKILLS_DB[0];
+                  // 威力越大的技能在智慧高的玩家身上更容易催动
+                  const weight = 100 + (sk.power / 10) * playerInt * 1.5;
+                  totalWeight += weight;
+                  return { skill: sk, weight };
+               });
+               let rand = Math.random() * totalWeight;
+               for (const item of weighted) {
+                  if (rand < item.weight) return item.skill;
+                  rand -= item.weight;
+               }
+               return weighted[weighted.length - 1].skill;
+            };
+            
+            const skill = pickSkill();
+            setActiveSkillName(skill.name);
+            setSkillCaster('player');
 
-           let isCrit = Math.random() < 0.25; // 25%几率暴击
-           if (isCrit) baseDmg *= 1.8;
+            // 区分技能类型执行不同的效果
+            if (skill.type === 'inner') {
+               // 内功/防御
+               setIsPlayerAttacking(true);
+               setTimeout(() => setIsPlayerAttacking(false), 500);
 
-           let damageToBoss = Math.floor(baseDmg);
-           
-           // 破魔判定
-           const isPoMa = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || ['t13', 't14'].includes(player.equippedTreasure);
-           if (!isPoMa) {
-              // Boss 默认有 80% 免伤
-              damageToBoss = Math.floor(damageToBoss * 0.2);
-              turnLog += `你 施展全力对魔罗轰出一记重招，但魔罗周身【九重邪光】闪烁，抵消了80%受创，造成了 ${damageToBoss} 点伤害。${isCrit ? '(暴击!)' : ''}\n`;
-           } else {
-              turnLog += `你 激发了神兵中的【破魔】威能，刀光撕裂魔障！无视免伤对魔罗造成了 ${damageToBoss} 点伤害！${isCrit ? '(暴击!)' : ''}\n`;
-           }
+               if (skill.id === 's_yijin') {
+                  const healAmt = Math.floor(player.maxHp * 0.15);
+                  userHp = Math.min(player.maxHp, userHp + healAmt);
+                  turnLog += `你 运转【易筋经】神功，浑身经脉贯通！体内腐骨魔毒被瞬间逼出，并恢复了 ${healAmt} 点气血！\n`;
+                  SoundManager.play('sfx_heal');
+                  addEffect('heal', 'left', 1.5);
+                  addDamageNumber(healAmt, 'left', true);
+               } else if (skill.id === 's5') {
+                  turnLog += `你 催动【九阳神功】，周身隐现烈日金轮！九阳真气护体，防御力巨幅提升！\n`;
+                  SoundManager.play('sfx_shield');
+                  addEffect('buff', 'left', 1.5);
+               } else if (skill.id === 's_shengxin') {
+                  turnLog += `你 催动【圣心诀】，祥云缭绕，生死二气运转护体，伤势大幅好转！\n`;
+                  SoundManager.play('sfx_revive');
+                  const healAmt = Math.floor(player.maxHp * 0.1);
+                  userHp = Math.min(player.maxHp, userHp + healAmt);
+                  addEffect('revive', 'left', 1.5);
+                  addDamageNumber(healAmt, 'left', true);
+               } else {
+                  const healAmt = 150 + playerInt * 3;
+                  userHp = Math.min(player.maxHp, userHp + healAmt);
+                  turnLog += `你 运转【${skill.name}】进行呼吸调理，气息顺畅，恢复了 ${healAmt} 点气血。\n`;
+                  SoundManager.play('sfx_heal');
+                  addEffect('heal', 'left', 1.0);
+                  addDamageNumber(healAmt, 'left', true);
+               }
+               setCurrentBattleState({ attacker: player.name, lastHit: null, effectType: 'heal' });
 
-           // 反伤护盾
-           if (turn === 5 || turn === 12) {
-              const reflect = Math.floor(damageToBoss * 0.2);
-              userHp = Math.max(0, userHp - reflect);
-              turnLog += `你被魔罗的【血魂护盾】反弹了 ${reflect} 点伤害！\n`;
-           }
+            } else if (skill.type === 'motion') {
+               // 身法
+               setIsPlayerAttacking(true);
+               setTimeout(() => setIsPlayerAttacking(false), 500);
 
-           // 击晕抵抗转破招判定
-           const stunProc = Math.random() * 100 <= (attrs.stunRate || 0);
-           if (stunProc) {
-              turnLog += `✦ 你的器灵触发【击晕】威能！魔罗受威压震慑无法眩晕，但进入了“破招威压”状态，本回合输出降低 50%！\n`;
-           }
+               turnLog += `你 施展起【${skill.name}】，身姿如风似幻，留下一道道虚影！\n`;
+               SoundManager.play('sfx_dodge');
+               addEffect('dodge', 'left', 1.2);
+               playerDodgeTurn = true;
+               setCurrentBattleState({ attacker: player.name, lastHit: null, effectType: 'dodge' });
 
-           // 中毒流血判定 (PVE 高额固定伤害)
-           if (hasPoison || player.equippedTreasure === 't6') {
-              const playerInt = (player.attributes.int || 0) + (attrs.extraInt || 0);
-              const poisonDmg = playerInt * 3 * 15;
-              bossHp = Math.max(0, bossHp - poisonDmg);
-              accumulatedDmg += poisonDmg;
-              turnLog += `✦ 毒素蚀骨！魔罗每回合流血，受到了 ${poisonDmg} 点固定中毒伤害。\n`;
-           }
+            } else {
+               // 伤害性技能 (外功 & 绝招)
+               const playerStr = (player.attributes.str || 0) + (attrs.extraStr || 0);
+               const aMod = 1 + player.level * 0.05;
+               const adjustedSkillPwr = skill.power * aMod;
+               let baseDmg = playerStr * 4 + adjustedSkillPwr + Math.random() * 100;
+               
+               let isCrit = Math.random() < 0.25;
+               if (isCrit) baseDmg *= 1.8;
+               let damageToBoss = Math.floor(baseDmg);
+               
+               // 破魔判定
+               const isPoMa = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || ['t13', 't14'].includes(player.equippedTreasure);
+               if (!isPoMa) {
+                  damageToBoss = Math.floor(damageToBoss * 0.2);
+                  turnLog += `你 施展【${skill.name}】狂轰而去，但魔罗周身【九重邪光】闪烁，抵消了80%受创，造成了 ${damageToBoss} 点伤害。${isCrit ? '(暴击!)' : ''}\n`;
+               } else {
+                  turnLog += `你 激发【破魔】威能催动【${skill.name}】，无视防御重创魔罗，造成了 ${damageToBoss} 点伤害！${isCrit ? '(暴击!)' : ''}\n`;
+               }
 
-           bossHp = Math.max(0, bossHp - damageToBoss);
-           accumulatedDmg += damageToBoss;
-        }
+               setIsBossHit(true);
+               setTimeout(() => setIsBossHit(false), 200);
+               
+               setIsPlayerAttacking(true);
+               setTimeout(() => setIsPlayerAttacking(false), 500);
 
-        // 3. Boss 普通反击 (非15回合秒杀且未死)
-        if (bossHp > 0 && userHp > 0 && turn < 15) {
-           let bossBaseDmg = 120 + turn * 20 - player.attributes.con * 0.8;
-           bossBaseDmg = Math.max(40, Math.floor(bossBaseDmg));
-           userHp = Math.max(0, userHp - bossBaseDmg);
-           turnLog += `魔罗 对你发出一记邪灵煞气，造成了 ${bossBaseDmg} 点反伤创击。(剩余HP: ${userHp}/${player.maxHp})`;
-        }
+               // 判定招式特效类型
+               let effectType = 'swordSlash';
+               if (skill.type === 'ultimate') {
+                  effectType = 'ultimateBurst';
+               } else if (
+                  skill.name.includes('拳') ||
+                  skill.name.includes('掌') ||
+                  skill.name.includes('脚') ||
+                  skill.name.includes('指') ||
+                  skill.name.includes('手')
+               ) {
+                  effectType = 'fistPunch';
+               }
 
+               // 播放动作打击音效
+               if (effectType === 'ultimateBurst') {
+                  SoundManager.play('sfx_magic', 1.1);
+               } else if (effectType === 'fistPunch') {
+                  SoundManager.play('sfx_fist', 1.0);
+               } else {
+                  if (skill.name.includes('刀') || skill.name.includes('斩') || skill.name.includes('劈')) {
+                     SoundManager.play('sfx_blade', 1.0);
+                  } else {
+                     SoundManager.play('sfx_sword', 1.0);
+                  }
+               }
+
+               // 特效与伤害显示
+               if (effectType === 'ultimateBurst') {
+                  setSkillCast({ characterName: player.name, skillName: skill.name, skillId: skill.id, skillDesc: skill.desc || '招式神妙，威力骇人', position: 'left' });
+                  setTimeout(() => {
+                     addEffect('ultimateBurst', 'right', isCrit ? 2.5 : 1.5, skill.name, skill.id);
+                     addDamageNumber(damageToBoss, 'right');
+                  }, 580);
+               } else {
+                  let delay = 0;
+                  if (effectType === 'fistPunch') delay = 400;
+
+                  addEffect(effectType, 'right', isCrit ? 2 : 1, skill.name, skill.id);
+                  if (delay > 0) {
+                     setTimeout(() => {
+                        addDamageNumber(damageToBoss, 'right');
+                     }, delay);
+                  } else {
+                     addDamageNumber(damageToBoss, 'right');
+                  }
+               }
+
+               setCurrentBattleState({ attacker: player.name, lastHit: '太古噬魂魔罗', effectType });
+
+               // 反伤护盾
+               if (turn === 5 || turn === 12) {
+                  const reflect = Math.floor(damageToBoss * 0.2);
+                  userHp = Math.max(0, userHp - reflect);
+                  turnLog += `你被魔罗的【血魂护盾】反弹了 ${reflect} 点伤害！\n`;
+                  setIsPlayerHit(true);
+                  setTimeout(() => setIsPlayerHit(false), 200);
+
+                  setTimeout(() => {
+                     addEffect('heavyHit', 'left', 1.0);
+                     addDamageNumber(reflect, 'left');
+                  }, 150);
+               }
+
+               // 击晕抵抗转破招判定
+               const stunProc = Math.random() * 100 <= (attrs.stunRate || 0);
+               if (stunProc) {
+                  turnLog += `✦ 你的器灵触发【击晕】威能！魔罗受威压震慑无法眩晕，但进入了“破招威压”状态，本回合输出降低 50% ! \n`;
+                  setTimeout(() => {
+                     addEffect('debuff', 'right', 1.0);
+                  }, 200);
+               }
+
+               // 中毒流血判定
+               if (hasPoison || player.equippedTreasure === 't6') {
+                  const poisonDmg = playerInt * 3 * 15;
+                  bossHp = Math.max(0, bossHp - poisonDmg);
+                  accumulatedDmg += poisonDmg;
+                  turnLog += `✦ 毒素蚀骨！魔罗每回合流血，受到了 ${poisonDmg} 点固定中毒伤害。\n`;
+
+                  setTimeout(() => {
+                     addEffect('poison', 'right', 1.0);
+                     addDamageNumber(poisonDmg, 'right');
+                  }, 300);
+               }
+
+               bossHp = Math.max(0, bossHp - damageToBoss);
+               accumulatedDmg += damageToBoss;
+            }
+         }
+
+         // 3. Boss 普通反击 (非15回合秒杀且未死)
+         if (bossHp > 0 && userHp > 0 && turn < 15) {
+            let bossBaseDmg = 120 + turn * 20 - player.attributes.con * 0.8;
+            bossBaseDmg = Math.max(40, Math.floor(bossBaseDmg));
+
+            if (playerDodgeTurn) {
+               turnLog += `魔罗 紧接着对你轰出一记邪灵煞气，但你运转闪避身法，身轻如燕巧妙躲开！`;
+               SoundManager.play('sfx_dodge');
+               addEffect('dodge', 'left', 1.0);
+               setCurrentBattleState({ attacker: '太古噬魂魔罗', lastHit: null, dodger: player.name, effectType: 'dodge' });
+            } else {
+               userHp = Math.max(0, userHp - bossBaseDmg);
+               turnLog += `魔罗 对你发出一记邪灵煞气，造成了 ${bossBaseDmg} 点反伤创击。(剩余HP: ${userHp}/${player.maxHp})`;
+               
+               setIsPlayerHit(true);
+               setTimeout(() => setIsPlayerHit(false), 200);
+               SoundManager.play('sfx_fist', 0.60);
+
+               setIsBossAttacking(true);
+               setTimeout(() => setIsBossAttacking(false), 500);
+
+               addEffect('heavyHit', 'left', 1.2);
+               addDamageNumber(bossBaseDmg, 'left');
+               setCurrentBattleState({ attacker: '太古噬魂魔罗', lastHit: player.name, effectType: 'heavyHit' });
+            }
+         }
         setCurBossHp(bossHp);
         setCurUserHp(userHp);
         setBattleDmg(accumulatedDmg);
         setBattleLogs(prev => [...prev, turnLog]);
         turn++;
-     }, 600);
+     }, 1200);
   };
 
   // 出价处理
@@ -267,8 +554,8 @@ export default function WorldBossArena() {
   };
 
   return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #09090b 0%, #030303 100%)', color: '#eaeaea', border: '1px solid rgba(239, 68, 68, 0.25)', position: 'relative', overflow: 'hidden' }}>
-      
+    <div className={`glass-panel animate-slide-up ${isScreenShaking ? 'arena-shake' : ''}`} style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #09090b 0%, #030303 100%)', color: '#eaeaea', border: '1px solid rgba(239, 68, 68, 0.25)', position: 'relative', overflow: 'hidden' }}>
+
       {/* 水墨刀光特效层 */}
       <div className="water-ink-bg" style={{
          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -336,8 +623,192 @@ export default function WorldBossArena() {
                </div>
             </div>
 
+            {/* 双雄对局立绘展示区 */}
+            <div style={{
+               display: 'flex',
+               justifyContent: 'space-between',
+               alignItems: 'center',
+               height: '260px',
+               marginBottom: '1.5rem',
+               padding: '0 2rem',
+               background: 'radial-gradient(ellipse at center, rgba(15, 10, 10, 0.9) 0%, rgba(3, 3, 3, 0.98) 100%)',
+               border: '1px solid rgba(239, 68, 68, 0.12)',
+               borderRadius: '8px',
+               position: 'relative',
+               overflow: 'hidden'
+            }}>
+               {/* 背景水墨纹理 */}
+               <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.04), transparent 70%)',
+                  pointerEvents: 'none'
+               }} />
+
+               {/* 左侧：玩家卡片 */}
+               <div 
+                  className={`duel-card ${isPlayerHit ? 'hit-player' : ''} ${isPlayerAttacking ? 'player-attack' : ''}`}
+                  style={{
+                     width: '130px',
+                     height: '180px',
+                     position: 'relative',
+                     transition: 'all 0.15s ease',
+                     transform: 'scale(1.1)',
+                     zIndex: 2
+                  }}
+               >
+                  <EnhancedWarriorAvatar 
+                     player={{
+                        ...player,
+                        hp: curUserHp
+                     }}
+                     isLeft={true}
+                     isAttacking={isPlayerAttacking}
+                     isHit={isPlayerHit}
+                     isDead={curUserHp <= 0}
+                  />
+
+                  {/* 玩家正在施展功法字牌 */}
+                  {activeSkillName && skillCaster === 'player' && (
+                     <div className="animate-pulse" style={{
+                        position: 'absolute', top: '-20px', right: '-30px',
+                        background: 'linear-gradient(90deg, #10b981, #059669)',
+                        color: '#fff', padding: '4px 10px', borderRadius: '4px',
+                        fontSize: '0.85rem', fontWeight: 'bold', zIndex: 60,
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        boxShadow: '0 4px 10px rgba(16, 185, 129, 0.4)'
+                     }}>
+                        {activeSkillName}
+                     </div>
+                  )}
+               </div>
+
+               {/* 中间：VS 特效 */}
+               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+                  <div style={{
+                     fontFamily: '"Ma Shan Zheng", cursive',
+                     fontSize: '3rem',
+                     fontWeight: 'bold',
+                     fontStyle: 'italic',
+                     color: '#ef4444',
+                     textShadow: '0 0 15px rgba(239, 68, 68, 0.8)',
+                     animation: 'pulse 1.5s infinite',
+                     letterSpacing: '2px'
+                  }}>
+                     VS
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px', letterSpacing: '1px' }}>
+                     御敌魔殿
+                  </div>
+               </div>
+
+               {/* 右侧：世界 Boss 抠图立绘 */}
+               <div 
+                  className={`duel-card ${isBossHit ? 'hit-boss' : ''} ${isBossAttacking ? 'boss-attack' : ''}`}
+                  style={{
+                     width: '280px',
+                     height: '240px',
+                     display: 'flex',
+                     alignItems: 'center',
+                     justifyContent: 'center',
+                     position: 'relative',
+                     zIndex: 2,
+                     transition: 'all 0.15s ease'
+                  }}
+               >
+                  {/* 魔罗背后威压重力波涟漪 */}
+                  <div style={{
+                     position: 'absolute', width: '220px', height: '220px', borderRadius: '50%',
+                     background: 'radial-gradient(circle, rgba(162, 28, 175, 0.25) 0%, transparent 70%)',
+                     zIndex: 0,
+                     animation: 'auraPulse 2s ease-in-out infinite'
+                  }} />
+                  <div style={{
+                     position: 'absolute', width: '260px', height: '260px', borderRadius: '50%',
+                     border: '1px solid rgba(239, 68, 68, 0.1)',
+                     zIndex: 0,
+                     animation: 'auraPulse 3s ease-in-out infinite',
+                     animationDelay: '0.5s'
+                  }} />
+
+                  {/* 魔罗立绘 (物理抠图透明化，完美融入背景) */}
+                  <img 
+                     src={cleanBossPic} 
+                     alt="太古噬魂魔罗"
+                     style={{
+                        height: '260px',
+                        objectFit: 'contain',
+                        zIndex: 1,
+                        filter: isBossHit 
+                           ? 'brightness(1.8) sepia(1) saturate(8) hue-rotate(-50deg) drop-shadow(0 0 25px red)' 
+                           : 'drop-shadow(0 0 15px rgba(162, 28, 175, 0.7))',
+                        animation: 'bossFloat 4s ease-in-out infinite',
+                        transition: 'filter 0.15s ease'
+                     }}
+                  />
+
+                  {/* 魔罗正在施展功法字牌 */}
+                  {activeSkillName && skillCaster === 'boss' && (
+                     <div className="animate-pulse" style={{
+                        position: 'absolute', top: '-20px', left: '-30px',
+                        background: 'linear-gradient(90deg, #991b1b, #ef4444)',
+                        color: '#fff', padding: '6px 14px', borderRadius: '4px',
+                        fontSize: '0.95rem', fontWeight: 'bold', zIndex: 60,
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.6)',
+                        fontFamily: '"Ma Shan Zheng", cursive',
+                        letterSpacing: '1px'
+                     }}>
+                        👹 {activeSkillName}
+                     </div>
+                  )}
+               </div>
+
+               {/* 战斗动效层 */}
+               {effects.map(effect => (
+                  <BattleEffects
+                     key={effect.id}
+                     effectType={effect.type}
+                     intensity={effect.intensity}
+                     position={effect.position}
+                     skillName={effect.skillName}
+                     skillId={effect.skillId}
+                     onComplete={() => removeEffect(effect.id)}
+                  />
+               ))}
+
+               {/* 伤害数字 */}
+               {damageNumbers.map(d => (
+                  <DamageFloatNumber
+                     key={d.id}
+                     damage={d.damage}
+                     position={d.position}
+                     isHeal={d.isHeal}
+                     onComplete={() => removeDamageNumber(d.id)}
+                  />
+               ))}
+
+               {/* 物理碰撞碎屑粒子层 */}
+               <ClashParticles
+                  active={!!currentBattleState.lastHit}
+                  position={currentBattleState.lastHit === player.name ? 'left' : 'right'}
+                  effectType={currentBattleState?.effectType}
+               />
+
+               {/* 漫画大招特写层 */}
+               {skillCast && (
+                  <MangaSkillPop
+                     characterName={skillCast.characterName}
+                     skillName={skillCast.skillName}
+                     skillId={skillCast.skillId}
+                     skillDesc={skillCast.skillDesc}
+                     position={skillCast.position}
+                     onComplete={() => setSkillCast(null)}
+                  />
+               )}
+            </div>
+
             {/* 对决滚屏日志 */}
-            <div style={{ flex: 1, background: 'rgba(5, 5, 5, 0.95)', border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem', lineHeight: '1.7', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.9)' }}>
+            <div ref={logsContainerRef} style={{ flex: 1, background: 'rgba(5, 5, 5, 0.95)', border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '8px', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: '"Courier New", monospace', fontSize: '1rem', lineHeight: '1.7', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.9)' }}>
                {battleLogs.map((log, i) => (
                   <div key={i} style={{
                      color: log.startsWith('==') ? 'var(--gold)' : log.startsWith('👹') ? 'var(--crimson)' : log.includes('暴击!') ? '#fbbf24' : log.startsWith('✦') ? '#c084fc' : '#ccc',
@@ -347,7 +818,6 @@ export default function WorldBossArena() {
                      {log}
                   </div>
                ))}
-               <div ref={logsEndRef} />
             </div>
 
             {/* 底部按钮 */}
@@ -496,19 +966,142 @@ export default function WorldBossArena() {
          </div>
       )}
 
-      {/* 底部开发者调试控制面板 */}
-      <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 1, background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '6px' }}>
-         <h5 style={{ color: 'var(--gold)', fontSize: '0.8rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <ShieldAlert size={12} /> 【开发调试控制台】（仅用于本功能联调测试）：
-         </h5>
-         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('open_signup')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>开启请战帖登记</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('spawn_boss')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制Boss显化降世</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('trigger_auction')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制开启爆装竞拍</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('force_auction_end')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制竞拍截止(分红/发放)</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('reset')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--danger)' }}>重置清空状态</button>
-         </div>
-      </div>
+      {/* 底部开发者调试控制面板已在生产环境中隐藏 */}
+
+      <style>{`
+        @keyframes arena-shake {
+          0% { transform: translate(1px, 1px) rotate(0deg); }
+          10% { transform: translate(-1px, -2px) rotate(-1deg); }
+          20% { transform: translate(-3px, 0px) rotate(1deg); }
+          30% { transform: translate(0px, 2px) rotate(0deg); }
+          40% { transform: translate(1px, -1px) rotate(1deg); }
+          50% { transform: translate(-1px, 2px) rotate(-1deg); }
+          60% { transform: translate(-3px, 1px) rotate(0deg); }
+          70% { transform: translate(2px, 1px) rotate(-1deg); }
+          80% { transform: translate(-1px, -1px) rotate(1deg); }
+          90% { transform: translate(2px, 2px) rotate(0deg); }
+          100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .arena-shake {
+          animation: arena-shake 0.15s infinite;
+        }
+
+        @keyframes bossFloat {
+          0%, 100% { transform: translateY(0px) scale(1.0); }
+          50% { transform: translateY(-8px) scale(1.03); }
+        }
+
+        @keyframes auraPulse {
+          0%, 100% { transform: scale(0.9); opacity: 0.15; }
+          50% { transform: scale(1.3); opacity: 0.4; }
+        }
+
+        @keyframes bossHitShake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-10px); }
+          40%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes playerHitShake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateY(-6px) translateX(-6px); }
+          75% { transform: translateY(6px) translateX(6px); }
+        }
+
+        /* 全屏特效 */
+        .vfx-overlay {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          z-index: 9999;
+          transition: all 0.3s ease;
+        }
+
+        /* 魔罗乱神：幽紫色心魔力场 */
+        .vfx-chaos {
+          background: radial-gradient(circle, rgba(147, 51, 234, 0.55) 0%, rgba(88, 28, 135, 0.75) 75%, rgba(10, 5, 15, 0.9) 100%);
+          animation: vfxChaosPulse 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes vfxChaosPulse {
+          0% { opacity: 0.6; filter: hue-rotate(0deg) blur(3px); }
+          100% { opacity: 0.95; filter: hue-rotate(30deg) blur(6px); }
+        }
+
+        /* 邪煞夺魄：暗红魔影撕咬 */
+        .vfx-shadow {
+          background: radial-gradient(circle, rgba(220, 38, 38, 0.85) 10%, rgba(127, 29, 29, 0.9) 65%, rgba(10, 2, 2, 0.95) 100%);
+          animation: vfxShadowFade 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        @keyframes vfxShadowFade {
+          0% { transform: scale(0.7); opacity: 0; }
+          20% { transform: scale(1.15); opacity: 1; filter: brightness(1.6); }
+          100% { transform: scale(1.0); opacity: 0; }
+        }
+
+        /* 太古魔啸：震荡与音波 */
+        .vfx-roar {
+          background: repeating-linear-gradient(90deg, rgba(220, 38, 38, 0.25), rgba(220, 38, 38, 0.35) 20px, rgba(15, 5, 5, 0.5) 40px);
+          animation: vfxRoarWave 0.2s linear infinite;
+          opacity: 0.9;
+        }
+        @keyframes vfxRoarWave {
+          0% { background-position: 0px 0; }
+          100% { background-position: 80px 0; }
+        }
+
+        /* 诸神寂灭：灭世雷电 */
+        .vfx-extinction {
+          background: #000;
+          animation: vfxExtinctionLightning 1.2s ease-in-out forwards;
+        }
+        @keyframes vfxExtinctionLightning {
+          0% { background: #000; opacity: 1; }
+          15% { background: #fff; opacity: 1; }
+          20% { background: #120024; opacity: 1; }
+          35% { background: #fff; opacity: 1; }
+          40% { background: #000; opacity: 1; }
+          45% { background: #a855f7; opacity: 1; }
+          100% { background: #000; opacity: 0; }
+        }
+
+        /* 对决卡片样式 */
+        .duel-card {
+          transition: all 0.2s ease;
+        }
+        .duel-card.hit-boss {
+          animation: bossHitShake 0.2s ease-in-out;
+        }
+        .duel-card.hit-player {
+          animation: playerHitShake 0.2s ease-in-out;
+        }
+        @keyframes playerAttack {
+          0% { transform: scale(1) translate(0, 0); }
+          15% { transform: scale(0.96) translate(-30px, 8px) rotate(-5deg); }
+          35% { transform: scale(1.1) translate(120px, -20px) rotate(8deg); filter: brightness(1.3) drop-shadow(0 0 15px var(--gold)); }
+          60% { transform: scale(1.02) translate(20px, -5px) rotate(3deg); }
+          100% { transform: scale(1) translate(0, 0); }
+        }
+        .duel-card.player-attack {
+          animation: playerAttack 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        @keyframes bossAttack {
+          0% { transform: translateX(0) scale(1.0); }
+          25% { transform: translateX(-120px) translateY(5px) scale(1.05); }
+          50% { transform: translateX(15px) translateY(-2px) scale(0.98); }
+          100% { transform: translateX(0) scale(1.0); }
+        }
+        .duel-card.boss-attack {
+          animation: bossAttack 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+      `}</style>
+
+      {/* 全屏功法特效层 */}
+      {activeVfx !== 'none' && (
+         <div className={`vfx-overlay vfx-${activeVfx}`} style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none', zIndex: 9999
+         }} />
+      )}
     </div>
   );
 }
