@@ -570,22 +570,22 @@
   },
   {
     "name": "猫十一郎",
-    "title": "肝帝真仙",
-    "level": 43,
-    "exp": 3926,
-    "maxExp": 15321,
-    "freePoints": 3,
+    "title": "武林卷王",
+    "level": 44,
+    "exp": 12696,
+    "maxExp": 15924,
+    "freePoints": 0,
     "taskCount": 35,
-    "encountersToday": 5,
-    "lastTaskDate": "Fri Jun 05 2026",
-    "hp": 845,
-    "maxHp": 845,
+    "encountersToday": 1,
+    "lastTaskDate": "Wed Jun 10 2026",
+    "hp": 860,
+    "maxHp": 860,
     "attributes": {
       "con": 10,
-      "str": 6,
+      "str": 7,
       "int": 4,
-      "agi": 10,
-      "luk": 139
+      "agi": 13,
+      "luk": 141
     },
     "skills": [
       "s1",
@@ -623,10 +623,10 @@
       "ultimate": "s_liumai"
     },
     "equippedTreasure": "t9",
-    "id": "DuA8VQ-kZivQhj6LAAJc",
+    "id": "Wc-uWaSxDcFbydkMAAAn",
     "isBattling": false,
     "rankIndex": 19,
-    "dailyActivity": 270,
+    "dailyActivity": 230,
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
     "silver": 73,
@@ -637,16 +637,16 @@
       "agi": 10,
       "luk": 6
     },
-    "essence": 100,
+    "essence": 194,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
+      "goldSand": 9,
       "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "waterFluid": 7,
+      "fireMarrow": 9,
+      "earthEssence": 6
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -659,26 +659,28 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781096224334,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "喵",
-    "title": "肝帝真仙",
-    "level": 37,
-    "exp": 7293,
-    "maxExp": 11923,
-    "freePoints": 0,
+    "title": "江湖劳模",
+    "level": 40,
+    "exp": 1282,
+    "maxExp": 13576,
+    "freePoints": 6,
     "taskCount": 35,
-    "encountersToday": 5,
-    "lastTaskDate": "Fri Jun 05 2026",
-    "hp": 955,
-    "maxHp": 955,
+    "encountersToday": 2,
+    "lastTaskDate": "Wed Jun 10 2026",
+    "hp": 1100,
+    "maxHp": 1100,
     "attributes": {
-      "con": 30,
-      "str": 20,
-      "int": 0,
-      "agi": 68,
-      "luk": 0
+      "con": 40,
+      "str": 18,
+      "int": 26,
+      "agi": 49,
+      "luk": 3
     },
     "skills": [
       "s1",
@@ -693,7 +695,8 @@
       "s_dugu",
       "s_dugu_deg1",
       "s5_deg1",
-      "s_shenxing"
+      "s_shenxing",
+      "s_shengxin"
     ],
     "treasures": [
       "t8",
@@ -709,36 +712,34 @@
       "inner": "s_yijin",
       "outer": "s_kuangfeng",
       "motion": "s_shenxing",
-      "ultimate": "s_dugu"
+      "ultimate": "s_liumai"
     },
     "equippedTreasure": "t8",
-    "id": "5szGNiKRduYK4XPnAAFU",
+    "id": "2n-lT9TagdtxxlBaAAAp",
     "isBattling": false,
     "rankIndex": 19,
-    "dailyActivity": 460,
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "心魔劫"
-    ],
-    "silver": 473,
+    "dailyActivity": 195,
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
+    "silver": 83,
     "permanentAttributes": {
-      "con": 0,
-      "str": 0,
+      "con": 6,
+      "str": 5,
       "int": 0,
-      "agi": 0,
-      "luk": 0
+      "agi": 1,
+      "luk": 3
     },
     "password": "000000",
-    "essence": 100,
+    "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
-      "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "goldSand": 7,
+      "woodHerb": 9,
+      "waterFluid": 4,
+      "fireMarrow": 4,
+      "earthEssence": 4
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -751,7 +752,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781096289697,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "粑粑柑大侠",
@@ -877,24 +880,24 @@
   },
   {
     "name": "月影",
-    "title": "摸鱼小虾",
-    "level": 24,
-    "exp": 4495,
-    "maxExp": 5875,
-    "freePoints": 62,
-    "taskCount": 0,
+    "title": "勤勉游侠",
+    "level": 25,
+    "exp": 2843,
+    "maxExp": 6274,
+    "freePoints": 0,
+    "taskCount": 15,
     "encountersToday": 0,
     "lastTaskDate": "Wed Jun 10 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "hp": 460,
-    "maxHp": 460,
+    "hp": 1295,
+    "maxHp": 1295,
     "attributes": {
-      "con": 0,
+      "con": 82,
       "str": 0,
-      "int": 6,
+      "int": 0,
       "agi": 0,
-      "luk": 11
+      "luk": 0
     },
     "skills": [
       "s1",
@@ -921,10 +924,10 @@
       "ultimate": "s_dugu"
     },
     "equippedTreasure": "t11",
-    "id": "HSwd-VCIeHYzc7LhAAAG",
+    "id": "Y5V7Cy4LtFq53Q-SAAAO",
     "isBattling": false,
     "rankIndex": 63,
-    "dailyActivity": 0,
+    "dailyActivity": 75,
     "silver": 276,
     "skillMastery": {},
     "permanentAttributes": {
@@ -934,13 +937,13 @@
       "agi": 0,
       "luk": 0
     },
-    "essence": 100,
+    "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
-      "woodHerb": 0,
+      "goldSand": 7,
+      "woodHerb": 5,
       "waterFluid": 0,
       "fireMarrow": 0,
       "earthEssence": 0
@@ -956,7 +959,7 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781079062226,
+    "lastLoginTime": 1781089135858,
     "dailySilverAdd": 0,
     "lastResetDate": "Wed Jun 10 2026"
   },
@@ -5169,27 +5172,25 @@
   },
   {
     "name": "乱星海韩立",
-    "title": "肝帝真仙",
+    "title": "摸鱼小虾",
     "level": 47,
     "exp": 9571,
     "maxExp": 17791,
-    "freePoints": 0,
-    "taskCount": 35,
-    "encountersToday": 5,
-    "lastTaskDate": "Fri Jun 05 2026",
-    "secretRealmAttempts": 3,
-    "dailyDebuffs": [
-      "血枯劫"
-    ],
+    "freePoints": 10,
+    "taskCount": 1,
+    "encountersToday": 0,
+    "lastTaskDate": "Wed Jun 10 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "silver": 93,
-    "hp": 1095,
-    "maxHp": 1095,
+    "hp": 805,
+    "maxHp": 805,
     "attributes": {
-      "con": 29,
-      "str": 17,
-      "int": 1,
-      "agi": 100,
-      "luk": 1
+      "con": 0,
+      "str": 118,
+      "int": 0,
+      "agi": 1,
+      "luk": 19
     },
     "permanentAttributes": {
       "con": 0,
@@ -5227,15 +5228,15 @@
     ],
     "equippedSkills": {
       "inner": "s_xixing",
-      "outer": "s_anran",
+      "outer": "s_taiji",
       "motion": "s4",
       "ultimate": "s_kuihua"
     },
     "equippedTreasure": "t9",
-    "id": "bNzRHHi6AKyxGvx1AAK0",
+    "id": "U4UOSF9gBo56e0EqAAAw",
     "isBattling": false,
     "rankIndex": 21,
-    "dailyActivity": 1480,
+    "dailyActivity": 0,
     "password": "l4l699o665",
     "essence": 100,
     "inventoryMaterials": {
@@ -5259,7 +5260,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781102262730,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "无敌的我",
