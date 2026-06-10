@@ -1237,22 +1237,24 @@ export default function WorldBossArena() {
       )}
 
       {/* 底部开发者调试控制面板 */}
-      <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 1, background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '6px' }}>
-         <h5 style={{ color: 'var(--gold)', fontSize: '0.8rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <ShieldAlert size={12} /> 【开发调试控制台】（仅用于本功能联调测试）：
-         </h5>
-         <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('open_signup')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>开启请战帖登记</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('spawn_boss')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制Boss显化降世</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('trigger_auction')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制开启爆装竞拍</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('force_auction_end')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制竞拍截止(分红/发放)</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_weakened')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--jade)', color: 'var(--jade)' }}>强制设为虚弱相态</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_frenzied')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--crimson)', color: 'var(--crimson)' }}>强制设为狂暴相态</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_shielded')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: '#c084fc', color: '#c084fc' }}>强制设为法盾相态</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_normal')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>重置为常态</button>
-            <button className="btn-secondary" onClick={() => devControlWorldBoss('reset')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--danger)' }}>重置清空状态</button>
+      {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+         <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 1, background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '6px' }}>
+            <h5 style={{ color: 'var(--gold)', fontSize: '0.8rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+               <ShieldAlert size={12} /> 【开发调试控制台】（仅用于本功能联调测试）：
+            </h5>
+            <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('open_signup')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>开启请战帖登记</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('spawn_boss')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制Boss显化降世</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('trigger_auction')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制开启爆装竞拍</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('force_auction_end')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>强制竞拍截止(分红/发放)</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_weakened')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--jade)', color: 'var(--jade)' }}>强制设为虚弱相态</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_frenzied')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--crimson)', color: 'var(--crimson)' }}>强制设为狂暴相态</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_shielded')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: '#c084fc', color: '#c084fc' }}>强制设为法盾相态</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('set_stance_normal')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem' }}>重置为常态</button>
+               <button className="btn-secondary" onClick={() => devControlWorldBoss('reset')} style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderColor: 'var(--danger)' }}>重置清空状态</button>
+            </div>
          </div>
-      </div>
+      )}
 
       <style>{`
         @keyframes arena-shake {
