@@ -221,7 +221,168 @@ let worldBossState = {
    highestBid: 0,
    highestBidder: null,
    auctionEndTime: 0,
-   auctionItem: null
+   auctionItem: null,
+   stance: 'normal',
+   stanceRemainingHp: 0
+};
+
+// NPC 战局模拟器定时器
+let npcChallengeInterval = null;
+
+const startNpcChallengeSimulator = () => {
+   if (npcChallengeInterval) return;
+   console.log("[世界BOSS] 启动 NPC 战局模拟挑战器...");
+   npcChallengeInterval = setInterval(() => {
+      if (!worldBossState.active || worldBossState.hp <= 0) {
+         stopNpcChallengeSimulator();
+         return;
+      }
+      
+      // 30% 概率触发 NPC 挑战
+      if (Math.random() > 0.3) return;
+      
+      // 随机抽取一个 MOCK_PLAYER
+      const npc = MOCK_PLAYERS[Math.floor(Math.random() * MOCK_PLAYERS.length)];
+      if (!npc) return;
+      
+      // 模拟 NPC 战斗表现
+      const npcLevel = npc.level || 30;
+      // 基础伤害计算
+      const baseDmg = (npc.attributes.str || 15) * 8 + npcLevel * 300 + Math.floor(Math.random() * 5000);
+      let damage = Math.floor(baseDmg);
+      
+      // 根据当前 Stance 修正模拟伤害
+      if (worldBossState.stance === 'weakened') {
+         damage = damage * 2;
+      } else if (worldBossState.stance === 'shielded') {
+         damage = Math.floor(damage * 0.6);
+      } else if (worldBossState.stance === 'frenzied') {
+         damage = Math.floor(damage * 1.3);
+      }
+      
+      // 模拟暴击/最大单段/回血
+      const isCrit = Math.random() < 0.20;
+      const maxSingleHit = Math.floor(damage * (isCrit ? 0.45 : 0.25));
+      const totalHeal = npc.equippedSkills.inner !== 's2' ? Math.floor(npcLevel * 40 + Math.random() * 400) : 0;
+      
+      // 技能提取
+      const castSkills = [];
+      if (npc.equippedSkills.inner) castSkills.push('inner');
+      if (npc.equippedSkills.ultimate) castSkills.push('ultimate');
+      
+      const runData = {
+         damage,
+         maxSingleHit,
+         totalHeal,
+         equippedTreasure: npc.equippedTreasure,
+         isCrit,
+         castSkills,
+         luk: npc.attributes.luk || 10
+      };
+      
+      // 1. 扣减 HP 并处理 Stance
+      const name = npc.name;
+      if (!worldBossState.fighters[name]) {
+         worldBossState.fighters[name] = { damage: 0, count: 0 };
+      }
+      worldBossState.fighters[name].damage += damage;
+      worldBossState.fighters[name].count += 1;
+      
+      const { stanceChanged, announcement } = processBossStanceUpdate(name, npcLevel, runData);
+      
+      // 判定最后一击
+      let isKill = false;
+      if (worldBossState.hp <= 0 && !worldBossState.lastHitBy) {
+         worldBossState.lastHitBy = name;
+         isKill = true;
+      }
+      
+      // 广播状态更新
+      io.emit('world_boss_state_change', worldBossState);
+      io.emit('online_players', getLeaderboardData());
+      
+      // 触发打击播报
+      io.emit('boss_fighter_strike', {
+         playerName: name,
+         damage: damage,
+         skillName: npc.signatureSkill ? (SKILLS_DB_MOCK.find(s => s.id === npc.signatureSkill)?.name || '无双重击') : '无双重击'
+      });
+      
+      // 广播状态变化消息
+      if (stanceChanged && announcement) {
+         io.emit('broadcast_message', announcement);
+      }
+      
+      if (isKill) {
+         io.emit('broadcast_message', `*【天劫破除】太古噬魂魔罗已被江湖宿老 [${name}] 完成最后一击（Last Hit）剿灭！*`);
+         startWorldBossAuction();
+      }
+   }, 30000); // 每 30 秒执行一次判定
+};
+
+const stopNpcChallengeSimulator = () => {
+   if (npcChallengeInterval) {
+      console.log("[世界BOSS] 停止 NPC 战局模拟挑战器。");
+      clearInterval(npcChallengeInterval);
+      npcChallengeInterval = null;
+   }
+};
+
+const processBossStanceUpdate = (playerName, level, runData) => {
+   const name = playerName;
+   const damage = runData.damage || 0;
+   
+   // 扣减世界BOSS总血量
+   worldBossState.hp = Math.max(0, worldBossState.hp - damage);
+   
+   let stanceChanged = false;
+   let announcement = '';
+   
+   // 处于特殊相态中，扣除相态剩余血量，跳过新相态触发
+   if (worldBossState.stance && worldBossState.stance !== 'normal') {
+      worldBossState.stanceRemainingHp = Math.max(0, worldBossState.stanceRemainingHp - damage);
+      if (worldBossState.stanceRemainingHp <= 0) {
+         const oldStance = worldBossState.stance;
+         worldBossState.stance = 'normal';
+         worldBossState.stanceRemainingHp = 0;
+         stanceChanged = true;
+         const stanceNames = { weakened: '封印虚弱', frenzied: '混沌狂魔', shielded: '幽冥法盾' };
+         announcement = `*【魔威平息】太古噬魂魔罗受到重创发泄完毕，从【${stanceNames[oldStance] || oldStance}】相态中解脱，恢复为常态！*`;
+      }
+   } else {
+      // 处于常态，进行新状态触发判定
+      const isWeakenedTrigger = 
+         (runData.maxSingleHit >= level * 300 + 2000) || 
+         (runData.isCrit && Math.random() < (0.05 + ((runData.luk || 0) / 100))) ||
+         (['t13', 't14', 't15'].includes(runData.equippedTreasure) && Math.random() < 0.15);
+         
+      const isFrenziedTrigger = 
+         (damage >= level * 1500 + 10000) || 
+         ((runData.castSkills || []).includes('ultimate') && Math.random() < 0.10);
+         
+      const isShieldedTrigger = 
+         (runData.totalHeal >= level * 50 + 500) || 
+         ((runData.castSkills || []).includes('inner') && Math.random() < 0.10);
+         
+      if (isWeakenedTrigger) {
+         worldBossState.stance = 'weakened';
+         worldBossState.stanceRemainingHp = 60000;
+         stanceChanged = true;
+         announcement = `*【神兵破天】大侠 [${name}] 凭借超凡招式和锋芒，强力震散了魔罗魔气！魔罗陷入【封印虚弱】状态（全服攻击伤害变为200%），持续至魔罗再承受 60,000 创伤！*`;
+      } else if (isFrenziedTrigger) {
+         worldBossState.stance = 'frenzied';
+         worldBossState.stanceRemainingHp = 40000;
+         stanceChanged = true;
+         announcement = `*【魔尊狂怒】大侠 [${name}] 攻势太猛，彻底激怒了大魔罗！魔罗进入【混沌狂魔】状态（BOSS输出提升但承伤增加），持续至魔罗再承受 40,000 创伤！*`;
+      } else if (isShieldedTrigger) {
+         worldBossState.stance = 'shielded';
+         worldBossState.stanceRemainingHp = 50000;
+         stanceChanged = true;
+         announcement = `*【邪能反噬】大侠 [${name}] 的重重守势触动了魔殿法阵，魔罗张开【幽冥法盾】（BOSS获得免伤且反弹伤害），持续至魔罗再承受 50,000 创伤！*`;
+      }
+   }
+   
+   return { stanceChanged, announcement };
 };
 
 // 周五时钟轮转判定
@@ -247,12 +408,16 @@ const checkWorldBossSchedule = () => {
             worldBossState.hp = worldBossState.maxHp;
             worldBossState.fighters = {};
             worldBossState.lastHitBy = null;
+            worldBossState.stance = 'normal';
+            worldBossState.stanceRemainingHp = 0;
             io.emit('world_boss_state_change', worldBossState);
             io.emit('broadcast_message', `*【天劫降临】太古噬魂魔罗已降临魔殿！全服血量锁定为 ${worldBossState.maxHp}，速往讨伐！*`);
+            startNpcChallengeSimulator();
          }
       } else if (hour >= 23 && hour < 24) {
          if (worldBossState.active) {
             worldBossState.active = false;
+            stopNpcChallengeSimulator();
             startWorldBossAuction();
          }
       } else {
@@ -268,6 +433,7 @@ const checkWorldBossSchedule = () => {
 };
 
 const resetWorldBossState = () => {
+   stopNpcChallengeSimulator();
    worldBossState = {
       active: false,
       signupOpen: false,
@@ -280,7 +446,9 @@ const resetWorldBossState = () => {
       highestBid: 0,
       highestBidder: null,
       auctionEndTime: 0,
-      auctionItem: null
+      auctionItem: null,
+      stance: 'normal',
+      stanceRemainingHp: 0
    };
    worldBossSignups = [];
    saveSignups();
@@ -675,25 +843,31 @@ io.on('connection', (socket) => {
                   const tasksDiff = (data.taskCount || 0) - (dbPlayer.taskCount || 0);
                   let maxAllowed = 0;
                   if (encountersDiff > 0) maxAllowed += encountersDiff * 100;
-                  if (tasksDiff > 0) maxAllowed += tasksDiff * 5;
+                  if (tasksDiff > 0) maxAllowed += tasksDiff * 10;
+                  
+                  // 针对客户端分步发送更新（如先扣减次数，后下发奖励），当次数无变化时，单次增加不超过 30 银两均视为合理
+                  if (maxAllowed === 0 && diff <= 30) {
+                     maxAllowed = 30;
+                  }
                   
                   if (diff > maxAllowed) {
                      console.warn(`[防作弊警报] 玩家 ${data.name} 企图在未打通奇遇/悬赏时获取银两增量 ${diff} (合理上限 ${maxAllowed})，操作被拦截！`);
                      data.silver = oldSilver;
-                  }
-                  const DAILY_SILVER_LIMIT = 500;
-                  const currentAdded = dbPlayer.dailySilverAdd || 0;
-                  
-                  if (currentAdded + diff > DAILY_SILVER_LIMIT) {
-                     const allowedDiff = Math.max(0, DAILY_SILVER_LIMIT - currentAdded);
-                     const forceSilver = oldSilver + allowedDiff;
-                     console.warn(`[防作弊警报] 玩家 ${data.name} 尝试增加银两 ${diff}，已超出今日额度上限 (今日已加: ${currentAdded}, 允许增加: ${allowedDiff})。已拦截并强制设定为: ${forceSilver}`);
-                     
-                     data.silver = forceSilver;
-                     dbPlayer.dailySilverAdd = DAILY_SILVER_LIMIT;
-                     socket.emit('broadcast_message', `*【天理昭昭】今日修行获取机缘已达极限，多余的银两化为飞灰！*`);
                   } else {
-                     dbPlayer.dailySilverAdd = currentAdded + diff;
+                     const DAILY_SILVER_LIMIT = 500;
+                     const currentAdded = dbPlayer.dailySilverAdd || 0;
+                     
+                     if (currentAdded + diff > DAILY_SILVER_LIMIT) {
+                        const allowedDiff = Math.max(0, DAILY_SILVER_LIMIT - currentAdded);
+                        const forceSilver = oldSilver + allowedDiff;
+                        console.warn(`[防作弊警报] 玩家 ${data.name} 尝试增加银两 ${diff}，已超出今日额度上限 (今日已加: ${currentAdded}, 允许增加: ${allowedDiff})。已拦截并强制设定为: ${forceSilver}`);
+                        
+                        data.silver = forceSilver;
+                        dbPlayer.dailySilverAdd = DAILY_SILVER_LIMIT;
+                        socket.emit('broadcast_message', `*【天理昭昭】今日修行获取机缘已达极限，多余的银两化为飞灰！*`);
+                     } else {
+                        dbPlayer.dailySilverAdd = currentAdded + diff;
+                     }
                   }
                }
             }
@@ -756,9 +930,8 @@ io.on('connection', (socket) => {
                 
                 if (newTreasures.length > oldTreasures.length) {
                    const diffCount = newTreasures.length - oldTreasures.length;
-                   const encDiff = (data.encountersToday || 0) - (dbPlayer.encountersToday || 0);
                    
-                   if (encDiff === 1 && diffCount <= 3) {
+                   if (diffCount <= 3) {
                       // 检查新增的宝物 ID 是否都在 TREASURES_DB_MOCK 中是合法的
                       const allValid = newTreasures.slice(oldTreasures.length).every(tId => TREASURES_DB_MOCK.some(t => t.id === tId));
                       if (!allValid) {
@@ -766,7 +939,7 @@ io.on('connection', (socket) => {
                          data.treasures = [...oldTreasures];
                       }
                    } else {
-                      console.warn(`[防作弊警报] 玩家 ${data.name} 尝试在未打奇遇或溢出奖励的情况下添加宝物 (新增数: ${diffCount}, 奇遇次数变化: ${encDiff})，操作已被拦截并还原！`);
+                      console.warn(`[防作弊警报] 玩家 ${data.name} 尝试单次添加过多的宝物 (新增数: ${diffCount} > 3)，操作已被拦截并还原！`);
                       data.treasures = [...oldTreasures];
                    }
                 }
@@ -882,7 +1055,7 @@ io.on('connection', (socket) => {
       socket.emit('signup_world_boss_result', { success: true });
   });
 
-  socket.on('challenge_world_boss', ({ damage, skillName, isCrit }) => {
+  socket.on('challenge_world_boss', ({ damage, maxSingleHit, totalHeal, equippedTreasure, isCrit, castSkills, skillName }) => {
       const p = realPlayersDB.find(p => p.name === socket.username);
       if (!p) return;
       if (!worldBossState.active) {
@@ -912,12 +1085,24 @@ io.on('connection', (socket) => {
       worldBossState.fighters[name].damage += damage;
       worldBossState.fighters[name].count += 1;
 
-      worldBossState.hp = Math.max(0, worldBossState.hp - damage);
+      // 调用相态流转公共函数计算 HP 扣减与 Stance 变化
+      const runData = {
+         damage,
+         maxSingleHit: maxSingleHit || 0,
+         totalHeal: totalHeal || 0,
+         equippedTreasure: equippedTreasure || null,
+         isCrit: isCrit || false,
+         castSkills: castSkills || [],
+         luk: p.attributes.luk || 10
+      };
+      
+      const { stanceChanged, announcement } = processBossStanceUpdate(name, p.level || 1, runData);
 
       let isKill = false;
       if (worldBossState.hp <= 0 && !worldBossState.lastHitBy) {
          worldBossState.lastHitBy = name;
          isKill = true;
+         stopNpcChallengeSimulator();
       }
 
       io.emit('world_boss_state_change', worldBossState);
@@ -931,6 +1116,10 @@ io.on('connection', (socket) => {
             damage: damage,
             skillName: skillName || '无双重击'
          });
+      }
+
+      if (stanceChanged && announcement) {
+         io.emit('broadcast_message', announcement);
       }
 
       if (isKill) {
@@ -1000,20 +1189,45 @@ io.on('connection', (socket) => {
          worldBossState.hp = worldBossState.maxHp;
          worldBossState.fighters = {};
          worldBossState.lastHitBy = null;
+         worldBossState.stance = 'normal';
+         worldBossState.stanceRemainingHp = 0;
          io.emit('world_boss_state_change', worldBossState);
          io.emit('broadcast_message', `*【开发调试】太古噬魂魔罗已由开发者强制召降降世！*`);
+         startNpcChallengeSimulator();
       } else if (action === 'trigger_auction') {
          worldBossState.signupOpen = false;
          worldBossState.active = false;
+         stopNpcChallengeSimulator();
          startWorldBossAuction();
       } else if (action === 'force_auction_end') {
          if (worldBossState.auctionActive) {
             worldBossState.auctionEndTime = Date.now() - 1000;
+            stopNpcChallengeSimulator();
             checkWorldBossAuctionEnd();
          }
       } else if (action === 'reset') {
          resetWorldBossState();
          io.emit('broadcast_message', `*【开发调试】世界 Boss 状态已被开发者重置清空。*`);
+      } else if (action === 'set_stance_weakened') {
+         worldBossState.stance = 'weakened';
+         worldBossState.stanceRemainingHp = 60000;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【开发调试】开发者强制将魔罗相态设定为【封印虚弱】状态！*`);
+      } else if (action === 'set_stance_frenzied') {
+         worldBossState.stance = 'frenzied';
+         worldBossState.stanceRemainingHp = 40000;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【开发调试】开发者强制将魔罗相态设定为【混沌狂魔】状态！*`);
+      } else if (action === 'set_stance_shielded') {
+         worldBossState.stance = 'shielded';
+         worldBossState.stanceRemainingHp = 50000;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【开发调试】开发者强制将魔罗相态设定为【幽冥法盾】状态！*`);
+      } else if (action === 'set_stance_normal') {
+         worldBossState.stance = 'normal';
+         worldBossState.stanceRemainingHp = 0;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【开发调试】开发者强制将魔罗相态设定回【常态】状态。*`);
       }
   });
 

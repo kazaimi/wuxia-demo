@@ -1,1 +1,114 @@
-[]
+[
+  {
+    "id": "ghost_1781019096607_560",
+    "creatorName": "ALEX",
+    "layerIndex": 3,
+    "attributes": {
+      "con": 3,
+      "str": 1,
+      "int": 4,
+      "agi": 66,
+      "luk": 73
+    },
+    "skills": [
+      "s1",
+      "s_taiji",
+      "s_kuihua",
+      "s_xianglong",
+      "s3",
+      "s4",
+      "s_kuangfeng",
+      "s_shihou",
+      "s_xixing",
+      "s_anran",
+      "s_liumai",
+      "s5",
+      "s_dianxue",
+      "s_shenxing",
+      "s_tiyun",
+      "s_du",
+      "s_dugu"
+    ],
+    "equippedSkills": {
+      "0": "s1",
+      "1": "s_taiji",
+      "2": "s_kuihua",
+      "motion": "s_shenxing",
+      "outer": "s_du",
+      "ultimate": "s_dianxue",
+      "inner": "s_shihou"
+    },
+    "equippedTreasure": "t11",
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0,
+      "bossDamageBoost": 0
+    },
+    "level": 43,
+    "message": "感受痛苦吧",
+    "createdAt": 1781019096607
+  },
+  {
+    "id": "ghost_1781097415740_470",
+    "creatorName": "ALEX",
+    "layerIndex": 12,
+    "attributes": {
+      "con": 78,
+      "str": 1,
+      "int": 4,
+      "agi": 62,
+      "luk": 2
+    },
+    "skills": [
+      "s1",
+      "s_taiji",
+      "s_kuihua",
+      "s_xianglong",
+      "s3",
+      "s4",
+      "s_kuangfeng",
+      "s_shihou",
+      "s_xixing",
+      "s_anran",
+      "s_liumai",
+      "s5",
+      "s_dianxue",
+      "s_shenxing",
+      "s_tiyun",
+      "s_du",
+      "s_dugu"
+    ],
+    "equippedSkills": {
+      "0": "s1",
+      "1": "s_taiji",
+      "2": "s_kuihua",
+      "motion": "s_shenxing",
+      "outer": "s_du",
+      "ultimate": "s_dianxue",
+      "inner": "s_shihou"
+    },
+    "equippedTreasure": "t11",
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0,
+      "bossDamageBoost": 0
+    },
+    "level": 43,
+    "message": "看看你后面",
+    "createdAt": 1781097415740
+  }
+]
