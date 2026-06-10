@@ -324,7 +324,7 @@ class SoundManagerClass {
   }
 
   // 播放 SFX 音效：支持并发重叠播放和缓存实例池化复用
-  play(sfxId) {
+  play(sfxId, playbackRate = 1.0) {
     if (!AUDIO_RESOURCES[sfxId]) {
       console.warn(`未注册的音效 ID: ${sfxId}`);
       return;
@@ -360,11 +360,13 @@ class SoundManagerClass {
       audio.currentTime = 0;
       audio.muted = this.isMuted;
       audio.volume = targetVolume;
+      audio.playbackRate = playbackRate;
     } else {
       // 2. 无空闲实例可用，检查是否超出该音效的池上限
       if (pool.length < this.maxPoolSizePerSfx) {
         audio = this._createAudioWithFallback(sfxId, 'sfx');
         if (audio) {
+          audio.playbackRate = playbackRate;
           pool.push(audio);
         }
       } else {
@@ -375,6 +377,7 @@ class SoundManagerClass {
           audio.currentTime = 0;
           audio.muted = this.isMuted;
           audio.volume = targetVolume;
+          audio.playbackRate = playbackRate;
           pool.push(audio); // 放回队尾
         }
       }

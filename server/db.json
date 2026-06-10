@@ -1,7 +1,7 @@
 [
   {
     "name": "ALEX",
-    "title": "初出茅庐",
+    "title": "摸鱼小虾",
     "level": 43,
     "exp": 2504,
     "maxExp": 15321,
@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "bCcs3ol0Ba8Tbl04AAAB",
+    "id": "w8MtBwL6TuaD8MioAAAD",
     "isBattling": false,
     "rankIndex": 22,
-    "lastTaskDate": "Mon Jun 08 2026",
+    "lastTaskDate": "Tue Jun 09 2026",
     "treasures": [
       "t3",
       "t5",
@@ -57,11 +57,11 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 3,
+    "encountersToday": 0,
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t11",
-    "dailyActivity": 30,
+    "dailyActivity": 0,
     "silver": 109,
     "skillMastery": {
       "s1": 5,
@@ -103,7 +103,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1780933654485,
+    "lastLoginTime": 1781019996156,
     "dailySilverAdd": 0,
     "lastResetDate": "Mon Jun 08 2026"
   },
@@ -4432,25 +4432,25 @@
   },
   {
     "name": "天龙子",
-    "title": "肝帝真仙",
+    "title": "勤勉游侠",
     "level": 49,
-    "exp": 7003,
+    "exp": 11965,
     "maxExp": 19086,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 17,
     "encountersToday": 0,
-    "lastTaskDate": "Fri Jun 05 2026",
-    "secretRealmAttempts": 3,
+    "lastTaskDate": "Tue Jun 09 2026",
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "silver": 977,
+    "silver": 1017,
     "hp": 835,
     "maxHp": 835,
     "attributes": {
       "con": 0,
       "str": 0,
       "int": 0,
-      "agi": 154,
-      "luk": 0
+      "agi": 0,
+      "luk": 154
     },
     "permanentAttributes": {
       "con": 0,
@@ -4497,21 +4497,21 @@
       "ultimate": "s_dugu"
     },
     "equippedTreasure": "t7",
-    "id": "S0x7dxr8NlzMJcoQAAGL",
+    "id": "vASSvwP4kcQP9pVCAAAT",
     "isBattling": false,
     "rankIndex": 18,
-    "dailyActivity": 550,
+    "dailyActivity": 65,
     "password": "123456",
-    "essence": 100,
+    "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
-      "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "goldSand": 3,
+      "woodHerb": 2,
+      "waterFluid": 2,
+      "fireMarrow": 3,
+      "earthEssence": 2
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -4524,7 +4524,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1780968098127,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Tue Jun 09 2026"
   },
   {
     "name": "鱼子酱",

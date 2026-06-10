@@ -90,16 +90,28 @@ if (fs.existsSync(AUCTION_HISTORY_FILE)) {
 }
 
 const saveAuctionHistory = () => {
-   fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
+   const tempPath = AUCTION_HISTORY_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(auctionHistory, null, 2));
+      fs.renameSync(tempPath, AUCTION_HISTORY_FILE);
+   } catch (e) {
+      console.error("Failed to save auction history atomically:", e);
+      fs.writeFileSync(AUCTION_HISTORY_FILE, JSON.stringify(auctionHistory, null, 2));
+   }
 };
 
 const saveDB = () => {
-   const tmpFile = DB_FILE + '.tmp';
+   const tempPath = DB_FILE + '.tmp';
    try {
-      fs.writeFileSync(tmpFile, JSON.stringify(realPlayersDB, null, 2), 'utf-8');
-      fs.renameSync(tmpFile, DB_FILE);
-   } catch (err) {
-      console.error("[系统错误] 保存玩家数据库时遭遇I/O异常:", err);
+      fs.writeFileSync(tempPath, JSON.stringify(realPlayersDB, null, 2), 'utf-8');
+      fs.renameSync(tempPath, DB_FILE);
+   } catch (e) {
+      console.error("[系统错误] 原子保存玩家数据库失败，尝试常规保存:", e);
+      try {
+         fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2), 'utf-8');
+      } catch (err) {
+         console.error("[系统错误] 常规保存玩家数据库亦失败:", err);
+      }
    }
 };
 
@@ -125,11 +137,25 @@ if (fs.existsSync(SIGNUPS_FILE)) {
 }
 
 const saveGhosts = () => {
-   fs.writeFileSync(GHOSTS_FILE, JSON.stringify(secretRealmGhosts, null, 2));
+   const tempPath = GHOSTS_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(secretRealmGhosts, null, 2));
+      fs.renameSync(tempPath, GHOSTS_FILE);
+   } catch (e) {
+      console.error("Failed to save ghosts atomically:", e);
+      fs.writeFileSync(GHOSTS_FILE, JSON.stringify(secretRealmGhosts, null, 2));
+   }
 };
 
 const saveSignups = () => {
-   fs.writeFileSync(SIGNUPS_FILE, JSON.stringify(worldBossSignups, null, 2));
+   const tempPath = SIGNUPS_FILE + '.tmp';
+   try {
+      fs.writeFileSync(tempPath, JSON.stringify(worldBossSignups, null, 2));
+      fs.renameSync(tempPath, SIGNUPS_FILE);
+   } catch (e) {
+      console.error("Failed to save signups atomically:", e);
+      fs.writeFileSync(SIGNUPS_FILE, JSON.stringify(worldBossSignups, null, 2));
+   }
 };
 
 // 宝物品质与级别常量定义
@@ -676,7 +702,7 @@ io.on('connection', (socket) => {
             if (data.level !== undefined) {
                const oldLevel = dbPlayer.level || 1;
                const newLevel = parseInt(data.level, 10) || 1;
-                if (oldLevel >= 20 && newLevel > oldLevel + 5) {
+                if (oldLevel >= 20 && newLevel > oldLevel + 30) {
                   console.warn(`[防作弊警报] 玩家 ${data.name} 尝试单次非法修改等级 ${oldLevel} -> ${newLevel}，已被强制拦截！`);
                   data.level = oldLevel;
                   data.exp = dbPlayer.exp || 0;
@@ -749,6 +775,7 @@ io.on('connection', (socket) => {
             Object.assign(players[pIndex], data);
             Object.assign(dbPlayer, data);
             saveDB();
+            socket.emit('update_player_success', dbPlayer);
          }
          io.emit('online_players', getLeaderboardData());
       }
@@ -1130,7 +1157,7 @@ io.on('connection', (socket) => {
          return;
       }
 
-      // 退还前一个出价者的银两并实时通知刷新
+      // 退还前一个出价者的银两并实时通知其客户端同步
       if (auction.highestBidder) {
          const prevBidder = realPlayersDB.find(p => p.name === auction.highestBidder);
          if (prevBidder) {
@@ -1138,13 +1165,12 @@ io.on('connection', (socket) => {
             const prevIndex = players.findIndex(p => p.name === prevBidder.name);
             if (prevIndex >= 0) players[prevIndex] = prevBidder;
             
-            // 实时同步退款钱币到前出价者的前端
-            const prevOnline = players.find(p => p.name === prevBidder.name);
-            if (prevOnline) {
-               const prevSocket = io.sockets.sockets.get(prevOnline.id);
-               if (prevSocket) {
-                  prevSocket.emit('update_player_success', prevBidder);
-                  prevSocket.emit('broadcast_message', `*【竞价出局】有同道对 [${auction.itemName}] 出了更高价格，已退还您 ${auction.price} 银两！*`);
+            const onlinePrev = players.find(p => p.name === prevBidder.name && !p.isMock);
+            if (onlinePrev) {
+               const socketPrev = io.sockets.sockets.get(onlinePrev.id);
+               if (socketPrev) {
+                  socketPrev.emit('update_player_success', prevBidder);
+                  socketPrev.emit('broadcast_message', *【竞价出局】有同道对 [] 出了更高价格，已退还您  银两！*);
                }
             }
          }
@@ -1576,19 +1602,17 @@ io.on('connection', (socket) => {
       io.emit('online_players', getLeaderboardData());
    });
 
-   socket.on('disconnect', () => {
-     const username = socket.username;
-     // 从全局在线 players 列表中彻底移除下线的真实玩家，防止假在线/僵尸号
-     if (username) {
-        const index = players.findIndex(p => p.name === username && !p.isMock);
-        if (index >= 0) {
-           players.splice(index, 1);
-           console.log(`[网络提醒] 真实玩家 【${username}】 离线，已从在线内存列表中清理。`);
-        }
-     }
-     
-     // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
-     if (username && MOCK_NAMES.includes(username)) {
+  socket.on('disconnect', () => {
+    const username = socket.username;
+    
+    // 如果是真人玩家，从在线玩家列表中移除
+    if (username) {
+       players = players.filter(p => p.name !== username || p.isMock);
+       console.log(`[网络提醒] 真实玩家 【${username}】 离线，已从在线内存列表中清理。`);
+    }
+
+    // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
+    if (username && MOCK_NAMES.includes(username)) {
        const originalMock = MOCK_PLAYERS.find(p => p.name === username);
        const isAlreadyBack = players.some(p => p.name === username && p.isMock);
        if (originalMock && !isAlreadyBack) {

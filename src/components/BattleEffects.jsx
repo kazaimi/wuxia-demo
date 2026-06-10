@@ -1515,6 +1515,18 @@ const getSkillColorConfig = (skillName, skillId) => {
   const name = skillName || '';
   const id = skillId || '';
   if (
+    name.includes('魔罗') || name.includes('邪煞') || name.includes('诸神') || name.includes('魔啸') ||
+    id.startsWith('boss_')
+  ) {
+    // 太古魔煞 - 幽紫深红邪光 (Dark Evil Purple/Crimson)
+    return {
+      color: '#c084fc', // 幽紫
+      textShadow: '3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 4px 4px 0 #000, 0 0 20px rgba(162, 28, 175, 0.95)',
+      glow: 'rgba(162, 28, 175, 0.55)',
+      theme: 'evil'
+    };
+  }
+  if (
     name.includes('易筋经') || name.includes('圣心诀') || name.includes('神行百变') ||
     id === 's_yijin' || id === 's_shengxin' || id === 's_shenxing'
   ) {
