@@ -92,6 +92,10 @@ export default function BattleArena() {
   // 监听决斗胜负，播放成功/失败结算音效
   useEffect(() => {
     if (winner && p1) {
+      if (winner === 'aborted') {
+         alert("【比武告示】大侠的对手由于身有急事离奇退场（断开连接），切磋就此取消！");
+         return;
+      }
       const isPlayerWinner = (winner === 'p1' && p1.name === player.name) || (winner === 'p2' && p2.name === player.name);
       if (isPlayerWinner) {
         SoundManager.play('sfx_success');

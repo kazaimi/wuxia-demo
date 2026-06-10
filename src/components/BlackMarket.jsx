@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGameStore, SKILLS_DB, TREASURES_DB, ATTR_MAP } from '../store/gameState';
+import { useGameStore, SKILLS_DB, TREASURES_DB, ATTR_MAP, getSocket } from '../store/gameState';
 import { ShoppingBag, Coffee, Package, X, Sparkles, AlertCircle, BookOpen, Key, GlassWater } from 'lucide-react';
 import { SoundManager } from '../utils/SoundManager';
 
@@ -52,6 +52,32 @@ export default function BlackMarket({ onClose }) {
     return () => clearInterval(timer);
   }, []);
 
+  // 监听黑市购买的后端回执
+  useEffect(() => {
+     const socket = getSocket();
+     if (!socket) return;
+     
+     const handleResult = (res) => {
+        if (res.success) {
+           SoundManager.play('sfx_success');
+           setTimeout(() => {
+              SoundManager.play('sfx_coin');
+           }, 150);
+           if (res.feedbackDialogue) setDialogue(res.feedbackDialogue);
+           if (res.alertMsg) alert(res.alertMsg);
+        } else {
+           SoundManager.play('sfx_fail');
+           setDialogue("兜里就这么几文钱，也想买老夫的心头好？去去去！");
+           alert(res.reason || "交易失败！");
+        }
+     };
+     
+     socket.on('buy_black_market_item_result', handleResult);
+     return () => {
+        socket.off('buy_black_market_item_result', handleResult);
+     };
+  }, []);
+
   useEffect(() => {
      const items = [
        { id: 'item_coffee', name: '【特供】橙C美式', price: 99, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee size={18} color="#f97316" />, type: 'coffee' },
@@ -75,81 +101,10 @@ export default function BlackMarket({ onClose }) {
          return;
      }
 
-     if (item.type === 'coffee') {
-         const p = useGameStore.getState().player;
-         p.taskCount = 0;
-         p.encountersToday = 0;
-         p.secretRealmAttempts = 0;
-         addSilver(-item.price);
-         useGameStore.setState({ player: { ...p } });
-         setDialogue("好酒量！这西洋仙水味道古怪，但确有奇效，拿去用吧！");
-         alert("冰爽美式下肚，疲惫一扫而空！你今天的所有的副今回数已完全刷新！");
-     } else if (item.type === 'skill_box1') {
-         const pool = SKILLS_DB.filter(s => s.type !== 'ultimate' && s.type !== 'motion' && s.reqLvl <= 15);
-         const sk = pool[Math.floor(Math.random()*pool.length)];
-         learnSkill(sk.id);
-         addSilver(-item.price);
-         setDialogue(`财货两清，这本《${cleanText(sk.name)}》就归你了，切莫外传！`);
-         alert(`你打开破旧箱子，里面竟然是【${cleanText(sk.name)}】！`);
-     } else if (item.type === 'attr_drug') {
-         const allAttrs = Object.keys(ATTR_MAP);
-         const shuffled = [...allAttrs].sort(() => Math.random() - 0.5);
-         const count = 3 + Math.floor(Math.random() * 3);
-         const chosen = shuffled.slice(0, count);
-         const boosts = {};
-         const lines = [];
-         chosen.forEach(attr => {
-             const val = 1 + Math.floor(Math.random() * 3);
-             boosts[attr] = val;
-             lines.push(`${ATTR_MAP[attr]} +${val}`);
-         });
-         addSilver(-item.price);
-         addAttributes(boosts);
-         setDialogue("丹药入腹，感觉浑身经脉发胀了吧？回去好生消化！");
-         alert(`你一口吞下十全大补丸，顿觉真气涌动！\n\n永久获得：\n${lines.join('\n')}`);
-     } else if (item.type === 'treasure_box') {
-         const pool = TREASURES_DB.filter(t => t.rarity === '史诗' || t.rarity === '传说');
-         const t = pool[Math.floor(Math.random()*pool.length)];
-         gainTreasure(t.id);
-         addSilver(-item.price);
-         setDialogue(`啧啧啧，这可是老夫的压箱底宝贝【${cleanText(t.name)}】，便宜你这小子了！`);
-         alert(`光芒大作！你从盲盒中开出了绝世珍宝【${cleanText(t.name)}】！`);
-     } else if (item.type === 'purify') {
-         clearDailyDebuffs();
-         addSilver(-item.price);
-         setDialogue("符纸燃尽，怨魂退散。你头顶的那缕黑气已经消散了。");
-         alert("净心符燃尽，恶兆消散！你感觉身心重新变得清明。");
-     } else if (item.type === 'reset_pill') {
-         resetPoints();
-         addSilver(-item.price);
-         setDialogue("脱胎换骨，伐毛洗髓！大侠现在可以重新划分你的属性潜能了！");
-         alert("洗髓成功！你身上的常规分配点数已全部重置并退还为自由潜能点，大补丸的修持加成已为你妥善保留。");
-     } else if (item.type === 'heaven_token') {
-         const p = useGameStore.getState().player;
-         p.secretRealmAttempts = Math.max(0, (p.secretRealmAttempts || 0) - 5);
-         addSilver(-item.price);
-         useGameStore.setState({ player: { ...p } });
-         setDialogue("拿好令牌，琅嬛福地的护法长老见此令如见庄主，去吧！");
-         alert("你激活了通天令牌，今日秘境探索已扣减 5 次使用记录（即额外获得 5 次秘境机会）！");
-     } else if (item.type === 'peach_nectar') {
-         gainExp(1000);
-         addSilver(-item.price);
-         setDialogue("琼浆玉液，造化无穷！是不是顿觉周身真气澎湃、瓶颈松动了？");
-         alert("你仰头痛饮下万寿蟠桃露，修为瞬间暴涨，获得了 1000 点修为经验！");
-     } else if (item.type === 'heaven_scroll') {
-         const pool = SKILLS_DB.filter(s => s.type === 'ultimate');
-         const sk = pool[Math.floor(Math.random() * pool.length)];
-         learnSkill(sk.id);
-         addSilver(-item.price);
-         setDialogue(`天机造化，这本《${cleanText(sk.name)}》乃本门不传之秘，望大侠好生研习！`);
-         alert(`你徐徐展开金光流转的天书密卷，在神识震撼中，顿悟参透了绝学【${cleanText(sk.name)}】！`);
+     const socket = getSocket();
+     if (socket) {
+        socket.emit('buy_black_market_item', { itemId: item.id });
      }
-
-     // 交易成功，播放交易大吉与金币洒落音效
-     SoundManager.play('sfx_success');
-     setTimeout(() => {
-        SoundManager.play('sfx_coin');
-     }, 150);
   };
 
   return (

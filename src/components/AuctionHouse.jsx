@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGameStore, getSkillInfo, TREASURES_DB } from '../store/gameState';
+import { useGameStore, getSkillInfo, TREASURES_DB, getSocket } from '../store/gameState';
 import { Gavel, Clock, ArrowRight, ArrowUpRight, CheckCircle2, XCircle } from 'lucide-react';
 import { useCleanImage } from '../utils/imageProcess';
 import { SoundManager } from '../utils/SoundManager';
@@ -30,6 +30,47 @@ export default function AuctionHouse() {
   useEffect(() => {
      const timer = setInterval(() => setNow(Date.now()), 1000);
      return () => clearInterval(timer);
+  }, []);
+
+  // 监听拍卖行上架与竞买的后端结果回执
+  useEffect(() => {
+     const socket = getSocket();
+     if (!socket) return;
+
+     const handleListResult = (res) => {
+        if (res.success) {
+           SoundManager.play('sfx_gavel');
+           SoundManager.play('sfx_success');
+           alert("上架成功！你的拍品已进入全服竞拍席！");
+           setTab('market');
+           // 清空当前选项
+           setSelectedItem('');
+        } else {
+           SoundManager.play('sfx_fail');
+           alert(res.reason || "上架失败！");
+        }
+     };
+
+     const handleBidResult = (res) => {
+        if (res.success) {
+           SoundManager.play('sfx_gavel');
+           setTimeout(() => {
+              SoundManager.play('sfx_coin');
+           }, 150);
+           alert("出价成功！阁下已成为当前最高叫价人。");
+        } else {
+           SoundManager.play('sfx_fail');
+           alert(res.reason || "出价失败！");
+        }
+     };
+
+     socket.on('list_auction_result', handleListResult);
+     socket.on('place_bid_result', handleBidResult);
+
+     return () => {
+        socket.off('list_auction_result', handleListResult);
+        socket.off('place_bid_result', handleBidResult);
+     };
   }, []);
 
   const handleList = () => {
@@ -64,9 +105,6 @@ export default function AuctionHouse() {
      }
 
      listAuction(sellType, itemToTrade, itemName, parseInt(startPrice, 10));
-     SoundManager.play('sfx_gavel'); // 确认上架，落槌定音
-     alert("上架成功！你的拍品已进入全服竞拍席！");
-     setTab('market');
   };
 
   const handleBid = (auction) => {
@@ -80,11 +118,6 @@ export default function AuctionHouse() {
              alert("银两不足！"); return;
          }
          placeBid(auction.id, bidPrice);
-         // 播放竞拍落槌与金币支付声
-         SoundManager.play('sfx_gavel');
-         setTimeout(() => {
-            SoundManager.play('sfx_coin');
-         }, 150);
      }
   };
 

@@ -103,11 +103,15 @@ const saveAuctionHistory = () => {
 const saveDB = () => {
    const tempPath = DB_FILE + '.tmp';
    try {
-      fs.writeFileSync(tempPath, JSON.stringify(realPlayersDB, null, 2));
+      fs.writeFileSync(tempPath, JSON.stringify(realPlayersDB, null, 2), 'utf-8');
       fs.renameSync(tempPath, DB_FILE);
    } catch (e) {
-      console.error("Failed to save DB atomically:", e);
-      fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2));
+      console.error("[系统错误] 原子保存玩家数据库失败，尝试常规保存:", e);
+      try {
+         fs.writeFileSync(DB_FILE, JSON.stringify(realPlayersDB, null, 2), 'utf-8');
+      } catch (err) {
+         console.error("[系统错误] 常规保存玩家数据库亦失败:", err);
+      }
    }
 };
 
@@ -163,6 +167,47 @@ const TREASURES_RARITY_MAP = {
   t13: '神话', t14: '神话', t15: '神话'
 };
 const RARITY_LEVELS = ['普通', '稀有', '史诗', '传说', '神话'];
+
+const SKILLS_DB_MOCK = [
+  { id: 's1', name: '基本拳脚', type: 'outer', reqLvl: 1 },
+  { id: 's2', name: '吐纳法', type: 'inner', reqLvl: 1 },
+  { id: 's3', name: '铁砂掌', type: 'outer', reqLvl: 3 },
+  { id: 's4', name: '凌波微步', type: 'motion', reqLvl: 5 },
+  { id: 's5', name: '九阳神功', type: 'inner', reqLvl: 8 },
+  { id: 's_kuihua', name: '葵花宝典', type: 'ultimate', reqLvl: 10 },
+  { id: 's_xianglong', name: '降龙十八掌', type: 'ultimate', reqLvl: 10 },
+  { id: 's_dugu', name: '独孤九剑', type: 'ultimate', reqLvl: 15 },
+  { id: 's_taiji', name: '太极拳', type: 'outer', reqLvl: 12 },
+  { id: 's_kuangfeng', name: '狂风快剑', type: 'outer', reqLvl: 10 },
+  { id: 's_du', name: '千蛛万毒手', type: 'outer', reqLvl: 15 },
+  { id: 's_anran', name: '黯然销魂掌', type: 'outer', reqLvl: 18 },
+  { id: 's_shihou', name: '狮吼功', type: 'inner', reqLvl: 12 },
+  { id: 's_yijin', name: '易筋经', type: 'inner', reqLvl: 20 },
+  { id: 's_xixing', name: '吸星大法', type: 'inner', reqLvl: 15 },
+  { id: 's_tiyun', name: '梯云纵', type: 'motion', reqLvl: 10 },
+  { id: 's_shenxing', name: '神行百变', type: 'motion', reqLvl: 20 },
+  { id: 's_dianxue', name: '葵花点穴手', type: 'ultimate', reqLvl: 20 },
+  { id: 's_liumai', name: '六脉神剑', type: 'ultimate', reqLvl: 25 },
+  { id: 's_shengxin', name: '圣心诀', type: 'ultimate', reqLvl: 30 }
+];
+
+const TREASURES_DB_MOCK = [
+  { id: 't1', name: '木质佛珠', rarity: '普通' },
+  { id: 't2', name: '粗布披风', rarity: '普通' },
+  { id: 't3', name: '生锈铁剑', rarity: '普通' },
+  { id: 't4', name: '白玉短笛', rarity: '稀有' },
+  { id: 't5', name: '判官双笔', rarity: '稀有' },
+  { id: 't6', name: '冰魄银针', rarity: '稀有' },
+  { id: 't7', name: '打狗棒', rarity: '史诗' },
+  { id: 't8', name: '金蛇剑', rarity: '史诗' },
+  { id: 't9', name: '软猬甲', rarity: '史诗' },
+  { id: 't10', name: '倚天剑', rarity: '传说' },
+  { id: 't11', name: '屠龙刀', rarity: '传说' },
+  { id: 't12', name: '玄铁重剑', rarity: '传说' },
+  { id: 't13', name: '圣火令', rarity: '神话' },
+  { id: 't14', name: '绝世好剑', rarity: '神话' },
+  { id: 't15', name: '达摩舍利', rarity: '神话' }
+];
 
 let worldBossState = {
    active: false,
@@ -456,11 +501,34 @@ io.on('connection', (socket) => {
               return;
           }
 
+          // 同名挤线踢人逻辑
+          const activeOnline = players.find(p => p.name === username && !p.isMock);
+          if (activeOnline && activeOnline.id !== socket.id) {
+             const prevSocket = io.sockets.sockets.get(activeOnline.id);
+             if (prevSocket) {
+                prevSocket.emit('kick_out', { reason: '大侠的名号已在别处入世，此地连接已切断。' });
+                prevSocket.disconnect();
+             }
+          }
+
           // 如果老玩家没有密码，且这次输入了密码，则为其自动绑定该密码
           if (!dbPlayer.password && password) {
               dbPlayer.password = password;
               saveDB();
               console.log(`[调试] 玩家 【${username}】 首次输入密码，已在数据库自动绑定该密码`);
+          }
+
+          // 跨天数据强制在后端刷新清零
+          const todayStr = new Date().toDateString();
+          if (dbPlayer.lastResetDate !== todayStr) {
+             dbPlayer.taskCount = 0;
+             dbPlayer.encountersToday = 0;
+             dbPlayer.secretRealmAttempts = 0;
+             dbPlayer.dailyDebuffs = [];
+             dbPlayer.dailySilverAdd = 0;
+             dbPlayer.lastResetDate = todayStr;
+             saveDB();
+             console.log(`[每日刷新] 玩家 【${username}】 跨天数据已在后端重置为满额状态！`);
           }
 
           dbPlayer.lastLoginTime = Date.now();
@@ -491,6 +559,16 @@ io.on('connection', (socket) => {
       data.id = socket.id;
       data.isBattling = false;
       
+      // 同名挤线踢人逻辑
+      const activeOnline = players.find(p => p.name === data.name && !p.isMock);
+      if (activeOnline && activeOnline.id !== socket.id) {
+         const prevSocket = io.sockets.sockets.get(activeOnline.id);
+         if (prevSocket) {
+            prevSocket.emit('kick_out', { reason: '大侠的名号已在别处入世，此地连接已切断。' });
+            prevSocket.disconnect();
+         }
+      }
+
       if (!dbPlayer) {
          // 禁止玩家使用与 NPC 列表中重名的名号创建新账号
          if (MOCK_NAMES.includes(data.name)) {
@@ -535,6 +613,7 @@ io.on('connection', (socket) => {
           realPlayersDB.push(data);
           saveDB();
           players.push(data);
+          socket.emit('login_success', data);
       } else {
           // 已有同名玩家，但如果是以 player_join 重新加入，需要校验密码
           if (dbPlayer.password && dbPlayer.password !== data.password) {
@@ -546,9 +625,22 @@ io.on('connection', (socket) => {
           if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
           dbPlayer.id = socket.id;
           dbPlayer.lastLoginTime = Date.now();
+          
+          // 跨天数据强制在后端刷新清零
+          const todayStr = new Date().toDateString();
+          if (dbPlayer.lastResetDate !== todayStr) {
+             dbPlayer.taskCount = 0;
+             dbPlayer.encountersToday = 0;
+             dbPlayer.secretRealmAttempts = 0;
+             dbPlayer.dailyDebuffs = [];
+             dbPlayer.dailySilverAdd = 0;
+             dbPlayer.lastResetDate = todayStr;
+             console.log(`[每日刷新] 玩家 【${dbPlayer.name}】 创角重新进入时跨天数据已在后端重置为满额状态！`);
+          }
           saveDB();
           const i = players.findIndex(p => p.name === data.name);
           if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
+          socket.emit('login_success', dbPlayer);
       }
       io.emit('online_players', getLeaderboardData());
   });
@@ -579,7 +671,17 @@ io.on('connection', (socket) => {
                const diff = newSilver - oldSilver;
                
                if (diff > 0) {
-                  const DAILY_SILVER_LIMIT = 500; // 设定单日客户端可获取上限为 500 两
+                  const encountersDiff = (data.encountersToday || 0) - (dbPlayer.encountersToday || 0);
+                  const tasksDiff = (data.taskCount || 0) - (dbPlayer.taskCount || 0);
+                  let maxAllowed = 0;
+                  if (encountersDiff > 0) maxAllowed += encountersDiff * 100;
+                  if (tasksDiff > 0) maxAllowed += tasksDiff * 5;
+                  
+                  if (diff > maxAllowed) {
+                     console.warn(`[防作弊警报] 玩家 ${data.name} 企图在未打通奇遇/悬赏时获取银两增量 ${diff} (合理上限 ${maxAllowed})，操作被拦截！`);
+                     data.silver = oldSilver;
+                  }
+                  const DAILY_SILVER_LIMIT = 500;
                   const currentAdded = dbPlayer.dailySilverAdd || 0;
                   
                   if (currentAdded + diff > DAILY_SILVER_LIMIT) {
@@ -622,6 +724,53 @@ io.on('connection', (socket) => {
                   data.freePoints = dbPlayer.freePoints || 0;
                }
             }
+
+             // 5. 对装备器灵和装备武学防篡改校验 (不能装备自己没有的器灵/武学)
+             if (data.equippedTreasure) {
+                if (!dbPlayer.treasures || !dbPlayer.treasures.includes(data.equippedTreasure)) {
+                   data.equippedTreasure = dbPlayer.equippedTreasure || null;
+                   data.equippedTreasureAttrs = dbPlayer.equippedTreasureAttrs || {
+                      extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+                      extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+                   };
+                }
+             }
+             if (data.equippedSkills) {
+                for (const type in data.equippedSkills) {
+                   const sId = data.equippedSkills[type];
+                   if (sId && (!dbPlayer.skills || !dbPlayer.skills.includes(sId))) {
+                      data.equippedSkills[type] = dbPlayer.equippedSkills[type] || null;
+                   }
+                }
+             }
+
+             // 6. 技能列表强校验（不允许客户端自定义塞入新技能）
+             if (data.skills) {
+                data.skills = dbPlayer.skills || ['s1'];
+             }
+
+             // 7. 宝物列表增量合理性审查 (仅允许奇遇战通关增量，且数量≤3，ID合法)
+             if (data.treasures) {
+                const oldTreasures = dbPlayer.treasures || [];
+                const newTreasures = data.treasures;
+                
+                if (newTreasures.length > oldTreasures.length) {
+                   const diffCount = newTreasures.length - oldTreasures.length;
+                   const encDiff = (data.encountersToday || 0) - (dbPlayer.encountersToday || 0);
+                   
+                   if (encDiff === 1 && diffCount <= 3) {
+                      // 检查新增的宝物 ID 是否都在 TREASURES_DB_MOCK 中是合法的
+                      const allValid = newTreasures.slice(oldTreasures.length).every(tId => TREASURES_DB_MOCK.some(t => t.id === tId));
+                      if (!allValid) {
+                         console.warn(`[防作弊警报] 玩家 ${data.name} 尝试添加了非法的宝物ID，操作被拦截！`);
+                         data.treasures = [...oldTreasures];
+                      }
+                   } else {
+                      console.warn(`[防作弊警报] 玩家 ${data.name} 尝试在未打奇遇或溢出奖励的情况下添加宝物 (新增数: ${diffCount}, 奇遇次数变化: ${encDiff})，操作已被拦截并还原！`);
+                      data.treasures = [...oldTreasures];
+                   }
+                }
+             }
 
             Object.assign(players[pIndex], data);
             Object.assign(dbPlayer, data);
@@ -671,9 +820,15 @@ io.on('connection', (socket) => {
       io.emit('online_players', getLeaderboardData());
   });
 
-  socket.on('ghost_win_dividend', ({ ghostId }) => {
-      const ghost = secretRealmGhosts.find(g => g.id === ghostId);
-      if (!ghost) return;
+   socket.on('ghost_win_dividend', ({ ghostId }) => {
+       const ghost = secretRealmGhosts.find(g => g.id === ghostId);
+       if (!ghost) return;
+       
+       // 防作弊校验：发出战胜消息者不能是该神魂的主人自己
+       if (socket.username === ghost.creatorName) {
+          console.warn(`[防作弊警报] 玩家 ${socket.username} 企图利用自己的神魂残影作弊分红，已被强制拦截！`);
+          return;
+       }
       
       const author = realPlayersDB.find(p => p.name === ghost.creatorName);
       if (author) {
@@ -692,7 +847,11 @@ io.on('connection', (socket) => {
          io.emit('online_players', getLeaderboardData());
       }
 
-      secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
+      // 2. 累加触发红利次数，满 3 次时该神魂残影才彻底消散移出
+      ghost.dividendCount = (ghost.dividendCount || 0) + 1;
+      if (ghost.dividendCount >= 3) {
+         secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
+      }
       saveGhosts();
   });
 
@@ -867,36 +1026,104 @@ io.on('connection', (socket) => {
   });
 
   socket.on('list_auction', (itemData) => {
-     const dbPlayer = realPlayersDB.find(p => p.name === itemData.sellerName);
-     if (!dbPlayer) return;
-     const auction = {
-        id: "auc_" + Date.now() + "_" + Math.floor(Math.random()*1000),
-        sellerName: itemData.sellerName,
-        type: itemData.type,
-        itemToTrade: itemData.itemToTrade, 
-        itemName: itemData.itemName,
-        price: itemData.startPrice,
-        highestBidder: null,
-        endTime: Date.now() + 4 * 60 * 60 * 1000 // 4 hours
-     };
-     if (itemData.type === 'treasure') {
-         dbPlayer.treasures = dbPlayer.treasures.filter(t => t !== itemData.itemToTrade);
-         if (dbPlayer.equippedTreasure === itemData.itemToTrade) dbPlayer.equippedTreasure = null;
-         saveDB();
-         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
-         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
-     } else if (itemData.type === 'points') {
-         if(itemData.itemToTrade.item === 'task') dbPlayer.taskCount += itemData.itemToTrade.count;
-         if(itemData.itemToTrade.item === 'encounter') dbPlayer.encountersToday += itemData.itemToTrade.count;
-         if(itemData.itemToTrade.item === 'realm') dbPlayer.secretRealmAttempts += itemData.itemToTrade.count;
-         saveDB();
-         const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
-         if (existingIndex >= 0) players[existingIndex] = dbPlayer;
-     }
-     activeAuctions.push(auction);
-     io.emit('auction_update', activeAuctions);
-     let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${itemData.startPrice}银两！*`;
-     io.emit('broadcast_message', msg);
+      const dbPlayer = realPlayersDB.find(p => p.name === itemData.sellerName);
+      if (!dbPlayer) return;
+
+      // 1. 起拍价正整数校验
+      const startPrice = Math.floor(itemData.startPrice);
+      if (isNaN(startPrice) || startPrice <= 0) {
+         socket.emit('list_auction_result', { success: false, reason: '上架失败：起拍价格必须为大于0的正整数！' });
+         return;
+      }
+
+      // 2. 所有权和扣除强校验
+      if (itemData.type === 'treasure') {
+          // 强校验背包里确实含有该秘宝
+          if (!dbPlayer.treasures || !dbPlayer.treasures.includes(itemData.itemToTrade)) {
+             socket.emit('list_auction_result', { success: false, reason: '上架失败：储物袋中并未拥有该宝物！' });
+             return;
+          }
+          // 从背包移走
+          const idx = dbPlayer.treasures.indexOf(itemData.itemToTrade);
+          dbPlayer.treasures.splice(idx, 1);
+          
+          // 若是穿着的器灵，则脱下并重置洗炼词条属性，防止属性残留
+          if (dbPlayer.equippedTreasure === itemData.itemToTrade) {
+             dbPlayer.equippedTreasure = null;
+             dbPlayer.equippedTreasureAttrs = {
+                extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
+                extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
+             };
+          }
+          saveDB();
+          const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+          if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+          
+      } else if (itemData.type === 'points') {
+          // 强校验让渡次数为正数且卖家剩余次数充足
+          const count = Math.floor(itemData.itemToTrade.count);
+          if (isNaN(count) || count <= 0) {
+             socket.emit('list_auction_result', { success: false, reason: '上架失败：让渡次数必须为正整数！' });
+             return;
+          }
+          const limits = { task: 10, encounter: 5, realm: 3 };
+          const limit = limits[itemData.itemToTrade.item];
+          if (!limit) {
+             socket.emit('list_auction_result', { success: false, reason: '上架失败：未知的次数类型让渡！' });
+             return;
+          }
+          
+          let currentUsed = 0;
+          if (itemData.itemToTrade.item === 'task') currentUsed = dbPlayer.taskCount || 0;
+          else if (itemData.itemToTrade.item === 'encounter') currentUsed = dbPlayer.encountersToday || 0;
+          else if (itemData.itemToTrade.item === 'realm') currentUsed = dbPlayer.secretRealmAttempts || 0;
+          
+          if (currentUsed + count > limit) {
+             socket.emit('list_auction_result', { success: false, reason: '上架失败：您今日的可让渡次数不足！' });
+             return;
+          }
+          
+          // 卖家已用计数增加（表示可用次数扣除）
+          if (itemData.itemToTrade.item === 'task') dbPlayer.taskCount = (dbPlayer.taskCount || 0) + count;
+          else if (itemData.itemToTrade.item === 'encounter') dbPlayer.encountersToday = (dbPlayer.encountersToday || 0) + count;
+          else if (itemData.itemToTrade.item === 'realm') dbPlayer.secretRealmAttempts = (dbPlayer.secretRealmAttempts || 0) + count;
+          
+          saveDB();
+          const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
+          if (existingIndex >= 0) players[existingIndex] = dbPlayer;
+      } else if (itemData.type === 'skill') {
+          // 强校验卖家是否已习得该门武学，且原典保留在卖家手中，不扣除卖家功法
+          const baseId = itemData.itemToTrade.split('_deg')[0];
+          const hasSkill = dbPlayer.skills && dbPlayer.skills.some(s => s.split('_deg')[0] === baseId);
+          if (!hasSkill) {
+             socket.emit('list_auction_result', { success: false, reason: '上架失败：大侠并未习得该门武学，无法刻录手抄本！' });
+             return;
+          }
+      } else {
+          socket.emit('list_auction_result', { success: false, reason: '上架失败：不支持上架的物品类型！' });
+          return;
+      }
+
+      const auction = {
+         id: "auc_" + Date.now() + "_" + Math.floor(Math.random()*1000),
+         sellerName: itemData.sellerName,
+         type: itemData.type,
+         itemToTrade: itemData.itemToTrade, 
+         itemName: itemData.itemName,
+         price: startPrice,
+         highestBidder: null,
+         endTime: Date.now() + 4 * 60 * 60 * 1000 // 4 hours
+      };
+      
+      activeAuctions.push(auction);
+      saveDB(); // 将上架成功的变化存库
+      
+      socket.emit('list_auction_result', { success: true });
+      socket.emit('update_player_success', dbPlayer); // 实时更新卖家的背包和属性状态！
+      io.emit('auction_update', activeAuctions);
+      
+      let msg = `*【破劫公告】玩家 [${itemData.sellerName}] 正在黑市上架 [${itemData.itemName}]，起拍价：${startPrice}银两！*`;
+      io.emit('broadcast_message', msg);
   });
 
    socket.on('place_bid', ({ auctionId, bidderName, bidPrice }) => {
@@ -908,8 +1135,27 @@ io.on('connection', (socket) => {
       if (!dbPlayer) return;
       if (auction.sellerName === bidderName) return; // 不能竞拍自己的物品
       if (auction.highestBidder === bidderName) return; // 已经是最高出价者
-      if (bidPrice <= auction.price) return; // 出价必须高于当前价格
-      if (dbPlayer.silver < bidPrice) return; // 银两不足
+
+      // 拍卖到期竞态校验拦截
+      if (Date.now() >= auction.endTime) {
+         socket.emit('place_bid_result', { success: false, reason: '竞价失败：该拍卖已结束，正在进行结算！' });
+         return;
+      }
+
+      // 竞拍价格正整数校验与溢出拦截
+      const validatedPrice = Math.floor(bidPrice);
+      if (isNaN(validatedPrice) || validatedPrice <= 0) {
+         socket.emit('place_bid_result', { success: false, reason: '竞价失败：出价必须是大于0的正整数！' });
+         return;
+      }
+      if (validatedPrice <= auction.price) {
+         socket.emit('place_bid_result', { success: false, reason: '竞价失败：出价必须高于当前最高竞拍价格！' });
+         return;
+      }
+      if (dbPlayer.silver < validatedPrice) {
+         socket.emit('place_bid_result', { success: false, reason: '竞价失败：大侠的银两不足以支撑此次出价！' });
+         return;
+      }
 
       // 退还前一个出价者的银两并实时通知其客户端同步
       if (auction.highestBidder) {
@@ -919,30 +1165,170 @@ io.on('connection', (socket) => {
             const prevIndex = players.findIndex(p => p.name === prevBidder.name);
             if (prevIndex >= 0) players[prevIndex] = prevBidder;
             
-            // 实时通知退款
             const onlinePrev = players.find(p => p.name === prevBidder.name && !p.isMock);
             if (onlinePrev) {
                const socketPrev = io.sockets.sockets.get(onlinePrev.id);
                if (socketPrev) {
                   socketPrev.emit('update_player_success', prevBidder);
+                  socketPrev.emit('broadcast_message', '【竞价出局】有同道对 [] 出了更高价格，已退还您  银两！');
                }
             }
          }
       }
 
       // 扣除当前出价者的银两
-      dbPlayer.silver -= bidPrice;
+      dbPlayer.silver -= validatedPrice;
 
       // 更新拍卖信息
       auction.highestBidder = bidderName;
-      auction.price = bidPrice;
+      auction.price = validatedPrice;
 
       saveDB();
+      
+      socket.emit('place_bid_result', { success: true });
+      socket.emit('update_player_success', dbPlayer); // 实时更新当前出价者的钱包银两！
       io.emit('auction_update', activeAuctions);
 
       const existingIndex = players.findIndex(p => p.name === dbPlayer.name);
       if (existingIndex >= 0) players[existingIndex] = dbPlayer;
       io.emit('online_players', getLeaderboardData());
+   });
+
+   socket.on('buy_black_market_item', ({ itemId }) => {
+       const p = realPlayersDB.find(pl => pl.name === socket.username);
+       if (!p) return;
+       
+       const prices = {
+          item_coffee: 99,
+          item_purify: 55,
+          item_box1: 8,
+          item_drug: 120,
+          item_reset_pill: 50,
+          item_heaven_token: 30,
+          item_peach_nectar: 100,
+          item_heaven_scroll: 150,
+          item_box2: 100
+       };
+       
+       const price = prices[itemId];
+       if (price === undefined) {
+          socket.emit('buy_black_market_item_result', { success: false, reason: '未知的黑市商品！' });
+          return;
+       }
+       
+       if ((p.silver || 0) < price) {
+          socket.emit('buy_black_market_item_result', { success: false, reason: '银两不足！' });
+          return;
+       }
+       
+       p.silver -= price;
+       
+       let alertMsg = "";
+       let feedbackDialogue = "货款两讫，好生利用！";
+       
+       if (itemId === 'item_coffee') {
+          p.taskCount = 0;
+          p.encountersToday = 0;
+          p.secretRealmAttempts = 0;
+          alertMsg = "冰爽美式下肚，疲惫一扫而空！你今天的悬赏、奇遇、秘境挑战次数已全数刷新！";
+          feedbackDialogue = "好酒量！这西洋仙水味道古怪，但确有醒神奇效，大侠走好！";
+       } else if (itemId === 'item_purify') {
+          p.dailyDebuffs = [];
+          alertMsg = "净心符燃尽，恶兆消散！你感觉全身筋骨舒泰，负面劫难悉数退去。";
+          feedbackDialogue = "符纸燃尽，元神清明。大侠额头的那缕恶兆黑气已然消散。";
+       } else if (itemId === 'item_box1') {
+          const pool = SKILLS_DB_MOCK.filter(s => s.type !== 'ultimate' && s.type !== 'motion' && s.reqLvl <= 15);
+          const sk = pool[Math.floor(Math.random() * pool.length)];
+          if (!p.skills) p.skills = ['s1'];
+          if (!p.skills.includes(sk.id)) p.skills.push(sk.id);
+          alertMsg = `你打开破旧残卷箱，里面竟然是外功残本【${sk.name}】！`;
+          feedbackDialogue = `财货两清，这本《${sk.name}》可别被其他人偷学了去！`;
+       } else if (itemId === 'item_drug') {
+          const allAttrs = ['con', 'str', 'int', 'agi', 'luk'];
+          const shuffled = [...allAttrs].sort(() => Math.random() - 0.5);
+          const count = 3 + Math.floor(Math.random() * 3);
+          const chosen = shuffled.slice(0, count);
+          const lines = [];
+          const attrNames = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
+          
+          if (!p.permanentAttributes) p.permanentAttributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+          if (!p.attributes) p.attributes = { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+          
+          chosen.forEach(attr => {
+              const val = 1 + Math.floor(Math.random() * 3);
+              p.permanentAttributes[attr] = (p.permanentAttributes[attr] || 0) + val;
+              p.attributes[attr] = (p.attributes[attr] || 0) + val;
+              lines.push(`${attrNames[attr]} +${val}`);
+          });
+          p.maxHp = calculateMaxHp(p.level || 1, p.attributes.con);
+          p.hp = p.maxHp;
+          
+          alertMsg = `大补丸入口即化！你感到内功周天激荡，永久获得属性：\n${lines.join('\n')}`;
+          feedbackDialogue = "老夫炼制的宝丹药力极强，感觉浑身经脉发热了吧？好生消纳！";
+       } else if (itemId === 'item_reset_pill') {
+          const totalPoints = 10 + ((p.level || 1) - 1) * 3;
+          p.freePoints = totalPoints;
+          p.attributes = { ...(p.permanentAttributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 }) };
+          p.maxHp = calculateMaxHp(p.level || 1, p.attributes.con);
+          p.hp = p.maxHp;
+          
+          alertMsg = "洗髓成功！你身上的常规分配点数已全部归零重置并全额返还，仙药加点正常保留。";
+          feedbackDialogue = "伐毛洗髓，脱胎换骨！大侠现在可以重新划分你的武学潜能点数了！";
+       } else if (itemId === 'item_heaven_token') {
+          p.secretRealmAttempts = Math.max(0, (p.secretRealmAttempts || 0) - 5);
+          alertMsg = "你出示了通天令牌，今日秘境探索已扣减 5 次使用记录（相当于获得 5 次额外秘境机会）！";
+          feedbackDialogue = "令出福地开，拿着令牌去找探索长老吧，祝大侠满载而归！";
+       } else if (itemId === 'item_peach_nectar') {
+          let newExp = (p.exp || 0) + 1000;
+          let newLevel = p.level || 1;
+          let newFreePoints = p.freePoints || 0;
+          const getNextExp = (lvl) => Math.min(100000, Math.floor(100 * Math.pow(1.2, lvl - 1)));
+          let newMaxExp = getNextExp(newLevel);
+          
+          while (newExp >= newMaxExp) { 
+             newExp -= newMaxExp; 
+             newLevel += 1; 
+             newFreePoints += 3;
+             newMaxExp = getNextExp(newLevel);
+          }
+          p.level = newLevel;
+          p.exp = newExp;
+          p.maxExp = newMaxExp;
+          p.freePoints = newFreePoints;
+          p.maxHp = calculateMaxHp(p.level, p.attributes?.con || 0);
+          p.hp = p.maxHp;
+          
+          alertMsg = "你饮尽蟠桃琼浆，丹田真气沸腾爆发，获得了 1000 点修为阅历！";
+          feedbackDialogue = "仙酿入喉，延寿长生！想必大侠已感瓶颈有所松动了吧，妙哉！";
+       } else if (itemId === 'item_heaven_scroll') {
+          const pool = SKILLS_DB_MOCK.filter(s => s.type === 'ultimate');
+          const sk = pool[Math.floor(Math.random() * pool.length)];
+          if (!p.skills) p.skills = ['s1'];
+          if (!p.skills.includes(sk.id)) p.skills.push(sk.id);
+          alertMsg = `金字密文悬空入脑！你从天书密卷中豁然开悟，参透了绝学【${sk.name}】！`;
+          feedbackDialogue = `此卷记载了震古烁今的武功奥义，望大侠戒骄戒躁，勤加修持！`;
+       } else if (itemId === 'item_box2') {
+          const pool = TREASURES_DB_MOCK.filter(t => t.rarity === '史诗' || t.rarity === '传说');
+          const t = pool[Math.floor(Math.random() * pool.length)];
+          if (!p.treasures) p.treasures = [];
+          p.treasures.push(t.id);
+          alertMsg = `盲盒裂开，流光夺目！你获得了绝世器灵宝具【${t.name}】！`;
+          feedbackDialogue = `好眼力！这可是老夫千辛万苦从琅嬛禁地倒腾出来的宝贝，拿好！`;
+       }
+
+       saveDB();
+       
+       const onlineP = players.find(pl => pl.name === p.name);
+       if (onlineP) Object.assign(onlineP, p);
+       
+       socket.emit('update_player_success', p);
+       socket.emit('buy_black_market_item_result', {
+          success: true,
+          itemId,
+          alertMsg,
+          feedbackDialogue
+       });
+       io.emit('online_players', getLeaderboardData());
    });
 
    // 太上神炉：本命宝物重铸接口
@@ -1222,6 +1608,7 @@ io.on('connection', (socket) => {
     // 如果是真人玩家，从在线玩家列表中移除
     if (username) {
        players = players.filter(p => p.name !== username || p.isMock);
+       console.log(`[网络提醒] 真实玩家 【${username}】 离线，已从在线内存列表中清理。`);
     }
 
     // 如果断开连接的玩家占用了 NPC 的名字，在 players 列表中还原对应的 NPC
@@ -1240,9 +1627,18 @@ io.on('connection', (socket) => {
        const battle = battles[roomId];
        if (battle.p1.id === socket.id || battle.p2.id === socket.id) {
           const otherId = battle.p1.id === socket.id ? battle.p2.id : battle.p1.id;
-          const otherPlayer = players.find(p => p.id === otherId);
-          if (otherPlayer) otherPlayer.isBattling = false;
-          delete battles[roomId];
+           const otherPlayer = players.find(p => p.id === otherId);
+           if (otherPlayer) {
+              otherPlayer.isBattling = false;
+              const otherSocket = io.sockets.sockets.get(otherId);
+              if (otherSocket) {
+                 otherSocket.emit('battle_log', { 
+                    log: `[比武告示] 大侠的对手由于身有急事离奇退场（断开连接），切磋就此取消！`, 
+                    winner: 'aborted' 
+                 });
+              }
+           }
+           delete battles[roomId];
        }
     }
     io.emit('online_players', getLeaderboardData());
@@ -1377,7 +1773,9 @@ setInterval(() => {
                if (buyer && seller) {
                    if (auction.type === 'skill') {
                        if (!buyer.skills) buyer.skills = [];
-                       buyer.skills.push(auction.itemToTrade);
+                       if (!buyer.skills.includes(auction.itemToTrade)) {
+                           buyer.skills.push(auction.itemToTrade);
+                       }
                    } else if (auction.type === 'treasure') {
                        if (!buyer.treasures) buyer.treasures = [];
                        buyer.treasures.push(auction.itemToTrade);

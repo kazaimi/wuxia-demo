@@ -221,7 +221,7 @@ export const useGameStore = create((set, get) => ({
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
-        : 'https://cafa83e.r6.cpolar.cn';
+        : 'https://6f060d46.r16.vip.cpolar.cn';
       socket = io(serverUrl, { transports: ['polling', 'websocket'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
@@ -384,6 +384,29 @@ export const useGameStore = create((set, get) => ({
             alert(res.reason);
          }
       });
+      socket.on('kick_out', (res) => {
+         localStorage.removeItem('wuxia_username');
+         localStorage.removeItem('wuxia_password');
+         set({ 
+            hasCreatedRole: false, 
+            player: { name: '', level: 1, exp: 0, maxExp: 100, freePoints: 10, attributes: { con: 10, str: 10, int: 10, agi: 10, luk: 10 }, hp: 100, maxHp: 100, silver: 10, skills: ['s1'], equippedSkills: { active1: 's1' }, treasures: [] },
+            loginError: res.reason || '大侠已在别处入世，此地连接已切断。'
+         });
+         alert(res.reason || "大侠的名号已在别处入世，此地连接已切断！");
+      });
+      socket.on('auction_result', (res) => {
+         if (res.success) {
+            if (res.type === 'buyer') {
+               alert(`【拍卖喜报】恭喜大侠！您在拍卖行中成功竞得拍品【${res.itemName}】！`);
+            } else if (res.type === 'seller') {
+               alert(`【拍卖喜报】大喜！您上架的拍品【${res.itemName}】已成功售出，扣除印花税费，共入账 ${res.price} 银两！`);
+            }
+         } else {
+            if (res.type === 'seller') {
+               alert(`【流拍退回】大侠，您上架的拍品【${res.itemName}】因无人竞价不幸流拍，物品已原样退回储物袋中。`);
+            }
+         }
+      });
     }
   },
 
@@ -395,7 +418,7 @@ export const useGameStore = create((set, get) => ({
     localStorage.setItem('wuxia_username', name);
     localStorage.setItem('wuxia_password', password);
     if (socket) socket.emit('player_join', newPlayer);
-    return { hasCreatedRole: true, player: newPlayer, loginError: null };
+    return { loginError: null };
   }),
 
   manualLogin: (name, password) => {
