@@ -492,6 +492,19 @@ io.on('connection', (socket) => {
               console.log(`[调试] 玩家 【${username}】 首次输入密码，已在数据库自动绑定该密码`);
           }
 
+          // 跨天数据强制在后端刷新清零
+          const todayStr = new Date().toDateString();
+          if (dbPlayer.lastResetDate !== todayStr) {
+             dbPlayer.taskCount = 0;
+             dbPlayer.encountersToday = 0;
+             dbPlayer.secretRealmAttempts = 0;
+             dbPlayer.dailyDebuffs = [];
+             dbPlayer.dailySilverAdd = 0;
+             dbPlayer.lastResetDate = todayStr;
+             saveDB();
+             console.log(`[每日刷新] 玩家 【${username}】 跨天数据已在后端重置为满额状态！`);
+          }
+
           dbPlayer.lastLoginTime = Date.now();
           saveDB();
 
@@ -586,6 +599,18 @@ io.on('connection', (socket) => {
           if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
           dbPlayer.id = socket.id;
           dbPlayer.lastLoginTime = Date.now();
+          
+          // 跨天数据强制在后端刷新清零
+          const todayStr = new Date().toDateString();
+          if (dbPlayer.lastResetDate !== todayStr) {
+             dbPlayer.taskCount = 0;
+             dbPlayer.encountersToday = 0;
+             dbPlayer.secretRealmAttempts = 0;
+             dbPlayer.dailyDebuffs = [];
+             dbPlayer.dailySilverAdd = 0;
+             dbPlayer.lastResetDate = todayStr;
+             console.log(`[每日刷新] 玩家 【${dbPlayer.name}】 创角重新进入时跨天数据已在后端重置为满额状态！`);
+          }
           saveDB();
           const i = players.findIndex(p => p.name === data.name);
           if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
@@ -620,7 +645,17 @@ io.on('connection', (socket) => {
                const diff = newSilver - oldSilver;
                
                if (diff > 0) {
-                  const DAILY_SILVER_LIMIT = 500; // 设定单日客户端可获取上限为 500 两
+                  const encountersDiff = (data.encountersToday || 0) - (dbPlayer.encountersToday || 0);
+                  const tasksDiff = (data.taskCount || 0) - (dbPlayer.taskCount || 0);
+                  let maxAllowed = 0;
+                  if (encountersDiff > 0) maxAllowed += encountersDiff * 100;
+                  if (tasksDiff > 0) maxAllowed += tasksDiff * 5;
+                  
+                  if (diff > maxAllowed) {
+                     console.warn(`[防作弊警报] 玩家 ${data.name} 企图在未打通奇遇/悬赏时获取银两增量 ${diff} (合理上限 ${maxAllowed})，操作被拦截！`);
+                     data.silver = oldSilver;
+                  }
+                  const DAILY_SILVER_LIMIT = 500;
                   const currentAdded = dbPlayer.dailySilverAdd || 0;
                   
                   if (currentAdded + diff > DAILY_SILVER_LIMIT) {
@@ -758,9 +793,15 @@ io.on('connection', (socket) => {
       io.emit('online_players', getLeaderboardData());
   });
 
-  socket.on('ghost_win_dividend', ({ ghostId }) => {
-      const ghost = secretRealmGhosts.find(g => g.id === ghostId);
-      if (!ghost) return;
+   socket.on('ghost_win_dividend', ({ ghostId }) => {
+       const ghost = secretRealmGhosts.find(g => g.id === ghostId);
+       if (!ghost) return;
+       
+       // 防作弊校验：发出战胜消息者不能是该神魂的主人自己
+       if (socket.username === ghost.creatorName) {
+          console.warn(`[防作弊警报] 玩家 ${socket.username} 企图利用自己的神魂残影作弊分红，已被强制拦截！`);
+          return;
+       }
       
       const author = realPlayersDB.find(p => p.name === ghost.creatorName);
       if (author) {
@@ -779,7 +820,11 @@ io.on('connection', (socket) => {
          io.emit('online_players', getLeaderboardData());
       }
 
-      secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
+      // 2. 累加触发红利次数，满 3 次时该神魂残影才彻底消散移出
+      ghost.dividendCount = (ghost.dividendCount || 0) + 1;
+      if (ghost.dividendCount >= 3) {
+         secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
+      }
       saveGhosts();
   });
 
@@ -1558,9 +1603,18 @@ io.on('connection', (socket) => {
        const battle = battles[roomId];
        if (battle.p1.id === socket.id || battle.p2.id === socket.id) {
           const otherId = battle.p1.id === socket.id ? battle.p2.id : battle.p1.id;
-          const otherPlayer = players.find(p => p.id === otherId);
-          if (otherPlayer) otherPlayer.isBattling = false;
-          delete battles[roomId];
+           const otherPlayer = players.find(p => p.id === otherId);
+           if (otherPlayer) {
+              otherPlayer.isBattling = false;
+              const otherSocket = io.sockets.sockets.get(otherId);
+              if (otherSocket) {
+                 otherSocket.emit('battle_log', { 
+                    log: `[比武告示] 大侠的对手由于身有急事离奇退场（断开连接），切磋就此取消！`, 
+                    winner: 'aborted' 
+                 });
+              }
+           }
+           delete battles[roomId];
        }
     }
     io.emit('online_players', getLeaderboardData());
