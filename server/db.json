@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "MdY6NitMF1UBGdHpAAAC",
+    "id": "ALQ4IKNJvwOUSBD-AAAL",
     "isBattling": false,
     "rankIndex": 22,
-    "lastTaskDate": "Tue Jun 09 2026",
+    "lastTaskDate": "Wed Jun 10 2026",
     "treasures": [
       "t3",
       "t5",
@@ -103,9 +103,9 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781020546708,
+    "lastLoginTime": 1781080031419,
     "dailySilverAdd": 0,
-    "lastResetDate": "Mon Jun 08 2026"
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "芙蓉女侠",
@@ -877,14 +877,14 @@
   },
   {
     "name": "月影",
-    "title": "初出茅庐",
+    "title": "摸鱼小虾",
     "level": 24,
     "exp": 4495,
     "maxExp": 5875,
-    "freePoints": 0,
-    "taskCount": 9,
+    "freePoints": 62,
+    "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Thu Jun 04 2026",
+    "lastTaskDate": "Wed Jun 10 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "hp": 460,
@@ -892,9 +892,9 @@
     "attributes": {
       "con": 0,
       "str": 0,
-      "int": 0,
+      "int": 6,
       "agi": 0,
-      "luk": 79
+      "luk": 11
     },
     "skills": [
       "s1",
@@ -921,10 +921,10 @@
       "ultimate": "s_dugu"
     },
     "equippedTreasure": "t11",
-    "id": "f0XHW1uQx1r_I4ZoAABZ",
+    "id": "HSwd-VCIeHYzc7LhAAAG",
     "isBattling": false,
     "rankIndex": 63,
-    "dailyActivity": 45,
+    "dailyActivity": 0,
     "silver": 276,
     "skillMastery": {},
     "permanentAttributes": {
@@ -956,7 +956,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781079062226,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "半勺咖啡豆",
@@ -3724,13 +3726,13 @@
   },
   {
     "name": "天机子",
-    "title": "勤勉游侠",
+    "title": "江湖劳模",
     "level": 27,
-    "exp": 3273,
+    "exp": 4245,
     "maxExp": 7106,
     "freePoints": 0,
-    "taskCount": 9,
-    "encountersToday": 1,
+    "taskCount": 4,
+    "encountersToday": 0,
     "lastTaskDate": "Wed Jun 10 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
@@ -3739,9 +3741,9 @@
     "maxHp": 505,
     "attributes": {
       "con": 0,
-      "str": 88,
+      "str": 0,
       "int": 0,
-      "agi": 0,
+      "agi": 88,
       "luk": 0
     },
     "permanentAttributes": {
@@ -3787,21 +3789,21 @@
       "ultimate": "s_shengxin"
     },
     "equippedTreasure": "t7",
-    "id": "eviB5j2SVfXsRHsAAAAW",
+    "id": "uxj9FMomDmpsJVj6AAAC",
     "isBattling": false,
     "rankIndex": 56,
-    "dailyActivity": 80,
+    "dailyActivity": 145,
     "password": "123456",
-    "essence": 179,
+    "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
       "goldSand": 0,
-      "woodHerb": 0,
-      "waterFluid": 1,
+      "woodHerb": 1,
+      "waterFluid": 2,
       "fireMarrow": 1,
-      "earthEssence": 2
+      "earthEssence": 4
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -3814,9 +3816,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781021634675,
+    "lastLoginTime": 1781078622766,
     "dailySilverAdd": 0,
-    "lastResetDate": "Tue Jun 09 2026"
+    "lastResetDate": "Wed Jun 10 2026"
   },
   {
     "name": "枫桥泊石",
