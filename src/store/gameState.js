@@ -557,7 +557,7 @@ export const useGameStore = create((set, get) => ({
 
   gainEssence: (amount) => set((state) => {
     const curEssence = state.player.essence || 0;
-    const newEssence = Math.min(200, curEssence + amount);
+    const newEssence = Math.min(500, curEssence + amount);
     const p = { ...state.player, essence: newEssence };
     if (socket) socket.emit('update_player', p);
     return { player: p };
@@ -823,8 +823,14 @@ export const useGameStore = create((set, get) => ({
   signupWorldBoss: () => {
       if (socket) socket.emit('signup_world_boss');
   },
-  challengeWorldBoss: (damage) => {
-      if (socket) socket.emit('challenge_world_boss', { damage });
+  challengeWorldBoss: (payload) => {
+      if (socket) {
+         if (typeof payload === 'object') {
+            socket.emit('challenge_world_boss', payload);
+         } else {
+            socket.emit('challenge_world_boss', { damage: payload });
+         }
+      }
   },
   bidWorldBossAuction: (price) => {
       if (socket) socket.emit('bid_world_boss_auction', { price });

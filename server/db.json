@@ -1,20 +1,20 @@
 [
   {
     "name": "ALEX",
-    "title": "摸鱼小虾",
+    "title": "勤勉游侠",
     "level": 43,
-    "exp": 2504,
+    "exp": 8385,
     "maxExp": 15321,
     "freePoints": 0,
-    "taskCount": 0,
-    "hp": 1165,
-    "maxHp": 1165,
+    "taskCount": 12,
+    "hp": 1085,
+    "maxHp": 1085,
     "attributes": {
-      "con": 42,
-      "str": 14,
-      "int": 16,
-      "agi": 69,
-      "luk": 6
+      "con": 34,
+      "str": 12,
+      "int": 4,
+      "agi": 95,
+      "luk": 2
     },
     "skills": [
       "s1",
@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "ALQ4IKNJvwOUSBD-AAAL",
+    "id": "CrW9jXQYq5ojKwj8AAAB",
     "isBattling": false,
     "rankIndex": 22,
     "lastTaskDate": "Wed Jun 10 2026",
@@ -57,11 +57,13 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 0,
-    "secretRealmAttempts": 0,
-    "dailyDebuffs": [],
+    "encountersToday": 2,
+    "secretRealmAttempts": 1,
+    "dailyDebuffs": [
+      "血枯劫"
+    ],
     "equippedTreasure": "t11",
-    "dailyActivity": 0,
+    "dailyActivity": 95,
     "silver": 109,
     "skillMastery": {
       "s1": 5,
@@ -80,16 +82,16 @@
       "luk": 2
     },
     "password": "636793",
-    "essence": 70,
+    "essence": 79,
     "inventoryMaterials": {
-      "anomalyDust": 7,
+      "anomalyDust": 75,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
+      "goldSand": 3,
       "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "waterFluid": 3,
+      "fireMarrow": 1,
+      "earthEssence": 4
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -103,7 +105,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781080031419,
+    "lastLoginTime": 1781102252237,
     "dailySilverAdd": 0,
     "lastResetDate": "Wed Jun 10 2026"
   },

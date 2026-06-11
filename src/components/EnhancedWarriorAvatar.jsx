@@ -422,10 +422,6 @@ const EnhancedWarriorAvatar = ({
     const attrs = player?.attributes || { con: 10, str: 10, agi: 10 };
     const level = player?.level || 1;
 
-    // 身高体型缩放（根据力量、体质、敏捷）
-    const scaleY = 1 + Math.max(-0.12, Math.min(0.18, ((attrs.agi || 10) - 10) * 0.015));
-    const scaleX = 1 + Math.max(-0.12, Math.min(0.2, ((attrs.str || 10) + (attrs.con || 10) - 20) * 0.01));
-
     // 内功偏色滤镜
     let colorFilter = '';
     if (fallbackActive && npcConfig) {
@@ -453,7 +449,7 @@ const EnhancedWarriorAvatar = ({
     }
 
     return {
-      transform: `scale(${scaleX}, ${scaleY})`,
+      // 移除 transform 缩放，保持立绘原始比例，杜绝因极端属性导致拉伸变形
       filter: colorFilter,
     };
   };
