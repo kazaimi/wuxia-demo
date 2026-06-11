@@ -684,14 +684,7 @@ export default function WorldBossArena() {
                   }, 150);
                }
 
-               // 击晕抵抗转破招判定
-               const stunProc = Math.random() * 100 <= (attrs.stunRate || 0);
-               if (stunProc) {
-                  turnLog += `✦ 你的器灵触发【击晕】威能！魔罗受威压震慑无法眩晕，但进入了“破招威压”状态，本回合输出降低 50% ! \n`;
-                  setTimeout(() => {
-                     addEffect('debuff', 'right', 1.0);
-                  }, 200);
-               }
+   
 
                // 中毒流血判定
                if (hasPoison || player.equippedTreasure === 't6') {
