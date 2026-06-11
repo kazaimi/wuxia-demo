@@ -99,7 +99,7 @@ export default function WorldBossArena() {
      }
   }, [battleLogs]);
 
-  // 15 回合 Boss 战模拟器
+  // 30 回合 Boss 战模拟器
   const startBossFight = () => {
      if (player.essence < 10) {
         alert("你的武道精魂不足 10 点，无法挑战大魔罗！");
@@ -156,7 +156,7 @@ export default function WorldBossArena() {
      const hasAntiStun = attrs.extraLuk >= 10; // 幸运达标作为防晕
 
      const interval = setInterval(() => {
-        if (turn > 15 || userHp <= 0 || bossHp <= 0) {
+        if (turn > 30 || userHp <= 0 || bossHp <= 0) {
            clearInterval(interval);
            setBattleState('finished');
            // 上传伤害与战斗指标
@@ -433,8 +433,8 @@ export default function WorldBossArena() {
               }, 500);
            }
         }
-        else if (turn === 15) {
-           turnLog += `👹 【诸神寂灭】！！魔罗在第 15 回合爆发灭世神雷，对你造成 99,999 点真实伤害，你瞬间失去知觉！\n`;
+        else if (turn === 30) {
+           turnLog += `👹 【诸神寂灭】！！魔罗在第 30 回合爆发灭世神雷，对你造成 99,999 点真实伤害，你瞬间失去知觉！\n`;
            userHp = 0;
            setActiveVfx('extinction');
            SoundManager.play('sfx_magic', 0.35);
@@ -683,8 +683,8 @@ export default function WorldBossArena() {
             }
          }
 
-         // 3. Boss 普通反击 (非15回合秒杀且未死)
-         if (bossHp > 0 && userHp > 0 && turn < 15) {
+         // 3. Boss 普通反击 (非30回合秒杀且未死)
+         if (bossHp > 0 && userHp > 0 && turn < 30) {
             let bossBaseDmg = 120 + turn * 20 - player.attributes.con * 0.8;
             bossBaseDmg = Math.max(40, Math.floor(bossBaseDmg));
 
