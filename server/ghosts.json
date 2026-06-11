@@ -110,5 +110,56 @@
     "level": 43,
     "message": "看看你后面",
     "createdAt": 1781097415740
+  },
+  {
+    "id": "ghost_1781096839761_35",
+    "creatorName": "猫十一郎",
+    "layerIndex": 12,
+    "attributes": {
+      "con": 10,
+      "str": 7,
+      "int": 4,
+      "agi": 13,
+      "luk": 141
+    },
+    "skills": [
+      "s1",
+      "s3",
+      "s4",
+      "s_xixing",
+      "s_anran",
+      "s_taiji",
+      "s_shihou",
+      "s_dugu",
+      "s_kuangfeng",
+      "s_kuihua",
+      "s_dianxue",
+      "s_xianglong",
+      "s_tiyun",
+      "s5",
+      "s_shenxing",
+      "s_liumai"
+    ],
+    "equippedSkills": {
+      "inner": "s_xixing",
+      "outer": "s_anran",
+      "motion": "s4",
+      "ultimate": "s_liumai"
+    },
+    "equippedTreasure": "t9",
+    "equippedTreasureAttrs": {
+      "extraStr": 0,
+      "extraCon": 0,
+      "extraAgi": 0,
+      "extraInt": 0,
+      "extraLuk": 0,
+      "extraDodge": 0,
+      "extraDef": 0,
+      "stunRate": 0,
+      "poisonRate": 0
+    },
+    "level": 44,
+    "message": "你来了，你没了",
+    "createdAt": 1781096839761
   }
 ]
