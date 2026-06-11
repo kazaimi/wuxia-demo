@@ -192,6 +192,7 @@ export default function WorldBossArena() {
         // 玩家受到的负面影响判定
         let isStunned = false;
         let playerDodgeTurn = false;
+        let bossDmgMultiplier = 1.0;
 
         // 重置瞬时动作状态，但不重置长效全屏特效
         setIsBossHit(false);
@@ -480,7 +481,7 @@ export default function WorldBossArena() {
             const skill = pickSkill();
 
             // 区分技能类型执行不同的效果
-            if (skill.type === 'inner') {
+            if (skill.type === 'inner' && skill.id !== 's_shihou' && skill.id !== 's_xixing') {
                // 内功/防御
                setIsPlayerAttacking(true);
                setTimeout(() => setIsPlayerAttacking(false), 500);
@@ -580,6 +581,33 @@ export default function WorldBossArena() {
                
                setIsPlayerAttacking(true);
                setTimeout(() => setIsPlayerAttacking(false), 500);
+
+               // 击晕抵抗转破招判定
+               const stunProc = Math.random() * 100 <= (attrs.stunRate || 0);
+               const isShihouStun = skill.id === 's_shihou' && Math.random() <= 0.6;
+               if (stunProc || isShihouStun) {
+                  bossDmgMultiplier = 0.5;
+                  if (isShihouStun) {
+                     turnLog += `✦ 运转【狮吼功】狂吼狂鸣！魔罗受音波震荡无法眩晕，但被震慑破招，本回合输出降低 50% ! \n`;
+                  } else {
+                     turnLog += `✦ 你的器灵触发【击晕】威能！魔罗受威压震慑无法眩晕，但进入了“破招威压”状态，本回合输出降低 50% ! \n`;
+                  }
+                  setTimeout(() => {
+                     addEffect('debuff', 'right', 1.0);
+                  }, 200);
+               }
+
+               // 吸星大法吸血判定
+               if (skill.id === 's_xixing') {
+                  const drainAmt = Math.floor(damageToBoss * 0.8);
+                  userHp = Math.min(player.maxHp, userHp + drainAmt);
+                  totalHeal += drainAmt;
+                  turnLog += `✦ 【吸星大法】吸噬元气！你夺取了魔罗 ${drainAmt} 点气血化为己用！\n`;
+                  setTimeout(() => {
+                     addEffect('heal', 'left', 1.0);
+                     addDamageNumber(drainAmt, 'left', true);
+                  }, 300);
+               }
 
                // 判定招式特效类型
                let effectType = 'swordSlash';
@@ -696,6 +724,7 @@ export default function WorldBossArena() {
             } else if (activeStance === 'shielded') {
                bossBaseDmg = Math.floor(bossBaseDmg * 0.85);
             }
+            bossBaseDmg = Math.floor(bossBaseDmg * bossDmgMultiplier);
             bossBaseDmg = Math.max(10, bossBaseDmg);
 
             if (playerDodgeTurn) {
