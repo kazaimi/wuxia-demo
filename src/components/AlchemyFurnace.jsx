@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, TREASURES_DB, getSocket } from '../store/gameState';
 import { Hammer, Sparkles, Flame, RefreshCw, Zap, Shield, HelpCircle, Compass } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
 
 export default function AlchemyFurnace() {
   const player = useGameStore(state => state.player);
+  const cleanHeaderPic = useCleanImage('/alchemy_header.png', 25, 20);
+  const cleanFurnacePic = useCleanImage('/alchemy_furnace_drawn.png', 20, 20);
   
   if (!player) {
     return (
@@ -260,6 +263,14 @@ export default function AlchemyFurnace() {
           0%, 100% { box-shadow: 0 0 15px rgba(212,175,55,0.2); }
           50% { box-shadow: 0 0 35px rgba(212,175,55,0.7); }
         }
+        @keyframes furnaceFloat {
+          0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.3)); }
+          50% { transform: translateY(-6px); filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6)); }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
 
         /* 选中态特效 */
         .treasure-item-select {
@@ -285,12 +296,55 @@ export default function AlchemyFurnace() {
       <div className="corner-decoration bottom-right" />
 
       {/* 标题 */}
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontFamily: '"Ma Shan Zheng", cursive', color: 'var(--gold)', letterSpacing: '4px', fontSize: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', position: 'relative' }}>
+        {/* 背景八卦灵符抠图 */}
+        {cleanHeaderPic && (
+          <img 
+            src={cleanHeaderPic} 
+            alt="八卦太极" 
+            style={{ 
+              width: '120px', 
+              height: '120px', 
+              objectFit: 'contain',
+              position: 'absolute',
+              top: '-35px',
+              opacity: 0.18,
+              filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.4))',
+              animation: 'spin 25s linear infinite',
+              pointerEvents: 'none'
+            }} 
+          />
+        )}
+        <h2 style={{ 
+          fontFamily: '"Ma Shan Zheng", cursive', 
+          color: 'var(--gold)', 
+          letterSpacing: '4px', 
+          fontSize: '2.4rem', 
+          textShadow: '0 0 15px rgba(212,175,55,0.4)',
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          {cleanHeaderPic && (
+            <img 
+              src={cleanHeaderPic} 
+              alt="logo" 
+              style={{ width: '40px', height: '40px', objectFit: 'contain', animation: 'spin 12s linear infinite' }} 
+            />
+          )}
           太上八卦乾坤炉
+          {cleanHeaderPic && (
+            <img 
+              src={cleanHeaderPic} 
+              alt="logo" 
+              style={{ width: '40px', height: '40px', objectFit: 'contain', animation: 'spin 12s linear infinite reverse' }} 
+            />
+          )}
         </h2>
-        <div style={{ width: '80px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0.5rem auto' }} />
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+        <div style={{ width: '120px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0.5rem auto', position: 'relative', zIndex: 1 }} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', position: 'relative', zIndex: 1 }}>
           融三界异宝以补残缺，注五行精气以锻器灵
         </p>
       </div>
@@ -488,10 +542,28 @@ export default function AlchemyFurnace() {
             justifyContent: 'space-between'
           }}>
             <div>
-              <div className={`alchemy-furnace-core ${isSynthesizing ? 'active' : ''}`}>
-                <div style={{ color: 'var(--gold)', textAlign: 'center' }}>
+              <div className="alchemy-furnace-core" style={{ width: '160px', height: '160px', border: 'none', background: 'none' }}>
+                {cleanFurnacePic ? (
+                  <img 
+                    src={cleanFurnacePic} 
+                    alt="太上乾坤炉" 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      filter: isSynthesizing 
+                        ? 'drop-shadow(0 0 25px rgba(249, 115, 22, 0.8)) brightness(1.2)' 
+                        : 'drop-shadow(0 0 15px rgba(16, 185, 129, 0.4))',
+                      animation: isSynthesizing ? 'furnaceShake 0.15s infinite alternate' : 'furnaceFloat 4s ease-in-out infinite',
+                      position: 'absolute',
+                      zIndex: 0
+                    }}
+                  />
+                ) : (
                   <Flame size={48} style={{ color: isSynthesizing ? 'orange' : 'var(--gold)', filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.4))' }} />
-                  <div style={{ fontSize: '0.7rem', marginTop: '0.2rem' }}>
+                )}
+                <div style={{ color: 'var(--gold)', textAlign: 'center', zIndex: 1, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '10px' }}>
                     {selectedSynthIds.length} / 5 放入
                   </div>
                 </div>
@@ -754,10 +826,28 @@ export default function AlchemyFurnace() {
             justifyContent: 'space-between'
           }}>
             <div>
-              <div className={`alchemy-furnace-core ${isRefining ? 'active' : ''}`} style={{ borderColor: 'rgba(59,130,246,0.3)' }}>
-                <div style={{ color: 'var(--gold)', textAlign: 'center' }}>
+              <div className="alchemy-furnace-core" style={{ width: '160px', height: '160px', border: 'none', background: 'none' }}>
+                {cleanFurnacePic ? (
+                  <img 
+                    src={cleanFurnacePic} 
+                    alt="太上乾坤炉" 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      filter: isRefining 
+                        ? 'drop-shadow(0 0 25px rgba(59, 130, 246, 0.8)) brightness(1.2)' 
+                        : 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.4))',
+                      animation: isRefining ? 'furnaceShake 0.15s infinite alternate' : 'furnaceFloat 4s ease-in-out infinite',
+                      position: 'absolute',
+                      zIndex: 0
+                    }}
+                  />
+                ) : (
                   <Sparkles size={48} style={{ color: isRefining ? 'cyan' : 'var(--gold)', filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.4))' }} />
-                  <div style={{ fontSize: '0.7rem', marginTop: '0.2rem' }}>
+                )}
+                <div style={{ color: 'var(--gold)', textAlign: 'center', zIndex: 1, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '10px' }}>
                     器灵熔接阵
                   </div>
                 </div>

@@ -10,6 +10,7 @@ export default function WorldBossArena() {
   const player = useGameStore(state => state.player);
   const worldBossState = useGameStore(state => state.worldBossState);
   const cleanBossPic = useCleanImage('/boss_mola_portrait.png', 20, 20);
+  const cleanBossHeaderPic = useCleanImage('/world_boss_header.png', 25, 20);
   const fetchWorldBossState = useGameStore(state => state.fetchWorldBossState);
   const signupWorldBoss = useGameStore(state => state.signupWorldBoss);
   const challengeWorldBoss = useGameStore(state => state.challengeWorldBoss);
@@ -578,16 +579,55 @@ export default function WorldBossArena() {
       )}
 
       {/* 顶部标题 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', zIndex: 1 }}>
-         <div>
-            <h2 style={{ fontSize: '2.2rem', color: 'var(--crimson)', fontFamily: '"Ma Shan Zheng", cursive', letterSpacing: '4px', textShadow: '0 0 10px rgba(239,68,68,0.3)' }}>
-               魔罗降世大殿
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
-               每周五晚上 19:00 - 24:00 诛杀怨气之源
-            </p>
+      <div style={{ 
+         display: 'flex', 
+         justifyContent: 'space-between', 
+         alignItems: 'center', 
+         borderBottom: '1px solid rgba(255,255,255,0.1)', 
+         paddingBottom: '1rem', 
+         zIndex: 1,
+         position: 'relative'
+      }}>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {cleanBossHeaderPic && (
+               <div style={{ position: 'relative', width: '70px', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {/* 背景邪煞紫气波动效果 */}
+                  <div style={{
+                     position: 'absolute', width: '60px', height: '60px', borderRadius: '50%',
+                     background: 'radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, transparent 70%)',
+                     animation: 'auraPulse 2s ease-in-out infinite'
+                  }} />
+                  <img 
+                     src={cleanBossHeaderPic} 
+                     alt="魔罗特写" 
+                     style={{ 
+                        height: '75px', 
+                        objectFit: 'contain', 
+                        filter: 'drop-shadow(0 0 10px rgba(239, 68, 68, 0.6))',
+                        animation: 'bossFloat 4s ease-in-out infinite'
+                     }} 
+                  />
+               </div>
+            )}
+            <div>
+               <h2 style={{ 
+                  fontSize: '2.4rem', 
+                  color: 'var(--crimson)', 
+                  fontFamily: '"Ma Shan Zheng", cursive', 
+                  letterSpacing: '4px', 
+                  textShadow: '0 0 12px rgba(239,68,68,0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+               }}>
+                  魔罗降世大殿
+               </h2>
+               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
+                  每周五晚上 19:00 - 24:00 诛杀怨气之源
+               </p>
+            </div>
          </div>
-         <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
+         <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', zIndex: 2 }}>
             <span style={{ fontSize: '0.95rem', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.1)', padding: '0.4rem 1rem', borderRadius: '4px', border: '1px solid rgba(251, 191, 36, 0.3)' }}>
                武道精魂: <strong>{player.essence || 0} / 200</strong>
             </span>
