@@ -365,9 +365,15 @@ export default function BattleArena() {
     if (p1.name !== player.name) return;
 
     const timer = setTimeout(() => {
-      const p1Agi = (p1.attributes.agi || 0) + (p1.equippedTreasureAttrs?.extraAgi || 0);
-      const p2Agi = (p2.attributes.agi || 0) + (p2.equippedTreasureAttrs?.extraAgi || 0);
-      const isP1Turn = Math.random() < (p1Agi / (p1Agi + p2Agi + 1));
+      const getTreasure = (id) => typeof TREASURES_DB !== 'undefined' ? TREASURES_DB.find(t=>t.id===id) : null;
+      const p1Treasure = getTreasure(p1.equippedTreasure);
+      const p2Treasure = getTreasure(p2.equippedTreasure);
+      const p1Attrs = p1.equippedTreasureAttrs || {};
+      const p2Attrs = p2.equippedTreasureAttrs || {};
+
+      const p1Speed = (p1.attributes.agi || 0) + (p1Treasure?.attrs?.dodge || 0) * 0.5 + (p1Attrs.extraDodge || 0) * 0.5;
+      const p2Speed = (p2.attributes.agi || 0) + (p2Treasure?.attrs?.dodge || 0) * 0.5 + (p2Attrs.extraDodge || 0) * 0.5;
+      const isP1Turn = Math.random() < (p1Speed / (p1Speed + p2Speed + 1));
       let actionData = {};
 
       let attacker = { ... (isP1Turn ? p1 : p2) };
@@ -375,33 +381,28 @@ export default function BattleArena() {
       const attackerKey = isP1Turn ? 'p1' : 'p2';
       const defenderKey = isP1Turn ? 'p2' : 'p1';
 
-      // 融合洗炼器灵五行基础属性加成
       attacker.attributes = { ...attacker.attributes };
       defender.attributes = { ...defender.attributes };
 
+      const aTreasure = getTreasure(attacker.equippedTreasure);
+      const dTreasure = getTreasure(defender.equippedTreasure);
       const aAttrs = attacker.equippedTreasureAttrs || {};
       const dAttrs = defender.equippedTreasureAttrs || {};
 
-      attacker.attributes.str = (attacker.attributes.str || 0) + (aAttrs.extraStr || 0);
-      attacker.attributes.con = (attacker.attributes.con || 0) + (aAttrs.extraCon || 0);
-      attacker.attributes.agi = (attacker.attributes.agi || 0) + (aAttrs.extraAgi || 0);
-      attacker.attributes.int = (attacker.attributes.int || 0) + (aAttrs.extraInt || 0);
-      attacker.attributes.luk = (attacker.attributes.luk || 0) + (aAttrs.extraLuk || 0);
-
-      defender.attributes.str = (defender.attributes.str || 0) + (dAttrs.extraStr || 0);
-      defender.attributes.con = (defender.attributes.con || 0) + (dAttrs.extraCon || 0);
-      defender.attributes.agi = (defender.attributes.agi || 0) + (dAttrs.extraAgi || 0);
-      defender.attributes.int = (defender.attributes.int || 0) + (dAttrs.extraInt || 0);
-      defender.attributes.luk = (defender.attributes.luk || 0) + (dAttrs.extraLuk || 0);
+      // 首次出手时将生命加上宝具及器灵的血量增幅
+      if (logs.length === 1) {
+         attacker.maxHp += (aTreasure?.attrs?.hp || 0) + (aAttrs.extraHp || 0);
+         attacker.hp = attacker.maxHp;
+         defender.maxHp += (dTreasure?.attrs?.hp || 0) + (dAttrs.extraHp || 0);
+         defender.hp = defender.maxHp;
+      }
 
       if (!attacker.buffs) attacker.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
       if (!defender.buffs) defender.buffs = { dodge: 0, defUp: 0, shield: 0, revive: 0 };
       if (!attacker.debuffs) attacker.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
       if (!defender.debuffs) defender.debuffs = { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 };
 
-      const getTreasure = (id) => typeof TREASURES_DB !== 'undefined' ? TREASURES_DB.find(t=>t.id===id) : null;
-      const aTreasure = getTreasure(attacker.equippedTreasure);
-      const dTreasure = getTreasure(defender.equippedTreasure);
+
 
       const checkImmune = (playerObj, tObj, debuffType) => {
          if (tObj?.effect === 'jiMie') return true;
@@ -482,8 +483,8 @@ export default function BattleArena() {
          const aStr = attacker.dailyDebuffs?.includes('散功劫') ? Math.max(0, attacker.attributes.str - 5) : attacker.attributes.str;
          const dCon = defender.dailyDebuffs?.includes('散功劫') ? Math.max(0, defender.attributes.con - 5) : defender.attributes.con;
 
-         const pAtk = aStr * 2 + attacker.level * 5;
-         const dDefBase = dCon * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
+         const pAtk = aStr * 2 + attacker.level * 5 + (aTreasure?.attrs?.atk || 0) + (aAttrs.extraAtk || 0);
+         const dDefBase = dCon * 2 + defender.level * 2 + (dTreasure?.attrs?.def || 0) + (dAttrs.extraDef || 0);
          const aMod = 1 + attacker.level * 0.05;
          const adjustedSkillPwr = skill.power * aMod;
 
@@ -514,7 +515,8 @@ export default function BattleArena() {
              let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
              let isDodge = false;
              if (canDodge) {
-                const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+                const defenderDodge = (dTreasure?.attrs?.dodge || 0) + (dAttrs.extraDodge || 0);
+                const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + defenderDodge * 0.01;
                 isDodge = Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < 0.45 : false);
              }
 
@@ -525,6 +527,14 @@ export default function BattleArena() {
                if (defender.buffs.defUp > 0) finalDef *= 3;
 
                let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
+
+               // PVP 暴击判定
+               const attackerCrit = (aTreasure?.attrs?.crit || 0) + (aAttrs.extraCrit || 0);
+               const baseCritChance = ((attacker.attributes.luk / (attacker.attributes.luk + 150)) * 0.2) + attackerCrit * 0.01;
+               const isCrit = Math.random() < baseCritChance;
+               if (isCrit) {
+                  dmg = Math.floor(dmg * 1.5);
+               }
 
                if (aTreasure?.effect === 'poShang') dmg += 50;
                if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * 1.2);

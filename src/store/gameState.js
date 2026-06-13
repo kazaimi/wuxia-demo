@@ -28,38 +28,39 @@ export const SKILLS_DB = [
 ];
 
 export const TREASURES_DB = [
-  { id: 't1', name: '木质佛珠', rarity: '普通', attrs: { con: 3, int: 2 }, effect: 'ningShen', desc: '【宁神】开局获最大血量5%护盾' },
-  { id: 't2', name: '粗布披风', rarity: '普通', attrs: { agi: 5 }, effect: 'qingQiao', desc: '【轻巧】受到伤害减少30点' },
-  { id: 't3', name: '生锈铁剑', rarity: '普通', attrs: { str: 5 }, effect: 'poShang', desc: '【破伤】普攻额外50点真伤' },
-  { id: 't4', name: '白玉短笛', rarity: '稀有', attrs: { int: 10, agi: 5 }, effect: 'huiChun', desc: '【回春】造成伤害时恢复自身最大生命2%' },
-  { id: 't5', name: '判官双笔', rarity: '稀有', attrs: { str: 8, agi: 7 }, effect: 'dianXue', desc: '【点穴】攻击10%封穴目标' },
-  { id: 't6', name: '冰魄银针', rarity: '稀有', attrs: { agi: 10, luk: 5 }, effect: 'juDu', desc: '【剧毒】攻击15%使目标中毒(每回合扣3%HP，3回合)' },
-  { id: 't7', name: '打狗棒', rarity: '史诗', attrs: { str: 15, agi: 15 }, effect: 'daGou', desc: '【打狗】攻击15%概率击晕目标' },
-  { id: 't8', name: '金蛇剑', rarity: '史诗', attrs: { str: 15, luk: 15 }, effect: 'jinShe', desc: '【金蛇】20%额外连击，免疫中毒' },
-  { id: 't9', name: '软猬甲', rarity: '史诗', attrs: { con: 25, str: 5 }, effect: 'ruanWei', desc: '【荆棘】反伤15%，免疫击晕与中毒' },
-  { id: 't10', name: '倚天剑', rarity: '传说', attrs: { str: 25, agi: 15 }, effect: 'yiTian', desc: '【倚天】攻击附带15%吸血，伤害提升20%' },
-  { id: 't11', name: '屠龙刀', rarity: '传说', attrs: { str: 30, con: 10 }, effect: 'tuLong', desc: '【破釜沉舟】血量低于40%时提升50%伤害，减免20%受伤' },
-  { id: 't12', name: '玄铁重剑', rarity: '传说', attrs: { str: 40, agi: -10 }, effect: 'xuanTie', desc: '【重剑】攻击必中，20%概率对敌造成内伤' },
-  { id: 't13', name: '圣火令', rarity: '神话', attrs: { int: 30, agi: 30 }, effect: 'shengHuo', desc: '【威压】开局沉默对手2回合，攻击附带5%当前HP伤害' },
-  { id: 't14', name: '绝世好剑', rarity: '神话', attrs: { con: 15, str: 15, int: 15, agi: 15, luk: 15 }, effect: 'jiMie', desc: '【寂灭】5%概率直接削减目标50%HP，免疫所有异常' },
-  { id: 't15', name: '达摩舍利', rarity: '神话', attrs: { con: 30, luk: 30 }, effect: 'niePan', desc: '【涅槃】死亡时保留1血并恢复50%HP(1场1次)' },
+  { id: 't1', name: '木质佛珠', rarity: '普通', attrs: { hp: 30, atk: 4 }, effect: 'ningShen', desc: '【宁神】开局获最大血量5%护盾' },
+  { id: 't2', name: '粗布披风', rarity: '普通', attrs: { dodge: 2, def: 5 }, effect: 'qingQiao', desc: '【轻巧】受到伤害减少30点' },
+  { id: 't3', name: '生锈铁剑', rarity: '普通', attrs: { atk: 10 }, effect: 'poShang', desc: '【破伤】普攻额外50点真伤' },
+  { id: 't4', name: '白玉短笛', rarity: '稀有', attrs: { atk: 15, dodge: 3 }, effect: 'huiChun', desc: '【回春】造成伤害时恢复自身最大生命2%' },
+  { id: 't5', name: '判官双笔', rarity: '稀有', attrs: { atk: 16, dodge: 4 }, effect: 'dianXue', desc: '【点穴】攻击10%封穴目标' },
+  { id: 't6', name: '冰魄银针', rarity: '稀有', attrs: { dodge: 5, crit: 3 }, effect: 'juDu', desc: '【剧毒】攻击15%使目标中毒(每回合扣3%HP，3回合)' },
+  { id: 't7', name: '打狗棒', rarity: '史诗', attrs: { atk: 30, dodge: 8 }, effect: 'daGou', desc: '【打狗】攻击15%概率击晕目标' },
+  { id: 't8', name: '金蛇剑', rarity: '史诗', attrs: { atk: 30, crit: 8 }, effect: 'jinShe', desc: '【金蛇】20%额外连击，免疫中毒' },
+  { id: 't9', name: '软猬甲', rarity: '史诗', attrs: { hp: 250, def: 50, atk: 10 }, effect: 'ruanWei', desc: '【荆棘】反伤15%，免疫击晕与中毒' },
+  { id: 't10', name: '倚天剑', rarity: '传说', attrs: { atk: 50, dodge: 10 }, effect: 'yiTian', desc: '【倚天】攻击附带15%吸血，伤害提升20%' },
+  { id: 't11', name: '屠龙刀', rarity: '传说', attrs: { atk: 60, hp: 100, def: 20 }, effect: 'tuLong', desc: '【破釜沉舟】血量低于40%时提升50%伤害，减免20%受伤' },
+  { id: 't12', name: '玄铁重剑', rarity: '传说', attrs: { atk: 80, dodge: -5 }, effect: 'xuanTie', desc: '【重剑】攻击必中，20%概率对敌造成内伤' },
+  { id: 't13', name: '圣火令', rarity: '神话', attrs: { atk: 60, dodge: 15 }, effect: 'shengHuo', desc: '【威压】开局沉默对手2回合，攻击附带5%当前HP伤害' },
+  { id: 't14', name: '绝世好剑', rarity: '神话', attrs: { hp: 150, atk: 45, def: 30, dodge: 10, crit: 10 }, effect: 'jiMie', desc: '【寂灭】5%概率直接削减目标50%HP，免疫所有异常' },
+  { id: 't15', name: '达摩舍利', rarity: '神话', attrs: { hp: 300, def: 60, crit: 15 }, effect: 'niePan', desc: '【涅槃】死亡时保留1血并恢复50%HP(1场1次)' },
 ];
 
 export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
+export const TREASURE_ATTR_MAP = { hp: '气血', atk: '攻击', def: '防御', dodge: '闪避', crit: '暴击' };
 
 // 功法熟练度段位表
 export const MASTERY_TIERS = [
   { minWins: 0, bonus: 0, label: '初习入门' },
-  { minWins: 10, bonus: 0.20, label: '略有小成' },
-  { minWins: 20, bonus: 0.40, label: '初窥门径' },
-  { minWins: 30, bonus: 0.60, label: '渐入佳境' },
-  { minWins: 40, bonus: 0.80, label: '融会贯通' },
-  { minWins: 50, bonus: 1.00, label: '炉火纯青' },
-  { minWins: 60, bonus: 1.20, label: '登峰造极' },
-  { minWins: 70, bonus: 1.40, label: '出神入化' },
-  { minWins: 80, bonus: 1.60, label: '化境归真' },
-  { minWins: 90, bonus: 1.80, label: '天人合一' },
-  { minWins: 100, bonus: 2.00, label: '无上至境' },
+  { minWins: 100, bonus: 0.20, label: '略有小成' },
+  { minWins: 200, bonus: 0.40, label: '初窥门径' },
+  { minWins: 300, bonus: 0.60, label: '渐入佳境' },
+  { minWins: 400, bonus: 0.80, label: '融会贯通' },
+  { minWins: 500, bonus: 1.00, label: '炉火纯青' },
+  { minWins: 600, bonus: 1.20, label: '登峰造极' },
+  { minWins: 700, bonus: 1.40, label: '出神入化' },
+  { minWins: 800, bonus: 1.60, label: '化境归真' },
+  { minWins: 900, bonus: 1.80, label: '天人合一' },
+  { minWins: 1000, bonus: 2.00, label: '无上至境' },
 ];
 
 // 根据胜场数获取熟练度信息
@@ -153,8 +154,8 @@ export const useGameStore = create((set, get) => ({
       goldSand: 0, woodHerb: 0, waterFluid: 0, fireMarrow: 0, earthEssence: 0
     },
     equippedTreasureAttrs: {
-      extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-      extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+      extraAtk: 0, extraDef: 0, extraHp: 0, extraDodge: 0, extraCrit: 0,
+      stunRate: 0, poisonRate: 0, bossDamageBoost: 0
     }
   },
 
@@ -222,7 +223,7 @@ export const useGameStore = create((set, get) => ({
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
         : 'https://22b22f16.r16.cpolar.top';
-      socket = io(serverUrl, { transports: ['polling'] });
+      socket = io(serverUrl, { transports: ['polling', 'websocket'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
         socket.emit('get_auctions');
@@ -274,8 +275,8 @@ export const useGameStore = create((set, get) => ({
          }
          if (!playerData.equippedTreasureAttrs) {
              playerData.equippedTreasureAttrs = {
-                extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-                extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+                extraAtk: 0, extraDef: 0, extraHp: 0, extraDodge: 0, extraCrit: 0,
+                stunRate: 0, poisonRate: 0, bossDamageBoost: 0
              };
          }
          
@@ -477,10 +478,6 @@ export const useGameStore = create((set, get) => ({
        const p = { ...state.player };
        if (p.equippedTreasure !== tId) {
           p.equippedTreasure = tId;
-          p.equippedTreasureAttrs = {
-             extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-             extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
-          };
        }
        if (socket) socket.emit('update_player', p);
        return { player: p };
@@ -557,7 +554,7 @@ export const useGameStore = create((set, get) => ({
 
   gainEssence: (amount) => set((state) => {
     const curEssence = state.player.essence || 0;
-    const newEssence = Math.min(200, curEssence + amount);
+    const newEssence = Math.min(500, curEssence + amount);
     const p = { ...state.player, essence: newEssence };
     if (socket) socket.emit('update_player', p);
     return { player: p };
@@ -775,6 +772,20 @@ export const useGameStore = create((set, get) => ({
     return state;
   }),
 
+  incrementSkillMastery: (skillIds) => set((state) => {
+    const p = { ...state.player };
+    const newMastery = { ...(p.skillMastery || {}) };
+    skillIds.forEach(sId => {
+       if (sId) {
+          const baseId = sId.includes('_deg') ? sId.split('_deg')[0] : sId;
+          newMastery[baseId] = (newMastery[baseId] || 0) + 1;
+       }
+    });
+    p.skillMastery = newMastery;
+    if (socket) socket.emit('update_player', p);
+    return { player: p };
+  }),
+
   listAuction: (type, itemToTrade, itemName, startPrice) => {
       if (socket) socket.emit('list_auction', { type, itemToTrade, itemName, startPrice, sellerName: get().player.name });
   },
@@ -823,8 +834,14 @@ export const useGameStore = create((set, get) => ({
   signupWorldBoss: () => {
       if (socket) socket.emit('signup_world_boss');
   },
-  challengeWorldBoss: (damage) => {
-      if (socket) socket.emit('challenge_world_boss', { damage });
+  challengeWorldBoss: (payload) => {
+      if (socket) {
+         if (typeof payload === 'object') {
+            socket.emit('challenge_world_boss', payload);
+         } else {
+            socket.emit('challenge_world_boss', { damage: payload });
+         }
+      }
   },
   bidWorldBossAuction: (price) => {
       if (socket) socket.emit('bid_world_boss_auction', { price });
