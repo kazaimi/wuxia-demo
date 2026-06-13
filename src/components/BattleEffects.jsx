@@ -369,11 +369,20 @@ const UltimateBurstEffect = ({ intensity, position, skillName, skillId }) => {
   const hasProjectile = position === 'left' || position === 'right';
   const color = intensity >= 2 ? '#ffd700' : '#ff453a';
 
-  // 解析招式类型：兵刃(sword/blade)、拳脚(fist)、内功玄学(divine)
+  // 识别世界Boss特定神威技能
+  const isBossChaos = useMemo(() => skillId === 'boss_chaos' || (skillName && skillName.includes('乱神')), [skillId, skillName]);
+  const isBossShadow = useMemo(() => skillId === 'boss_shadow' || (skillName && skillName.includes('夺魄')), [skillId, skillName]);
+  const isBossRoar = useMemo(() => skillId === 'boss_roar' || (skillName && skillName.includes('魔啸')), [skillId, skillName]);
+  const isBossExtinction = useMemo(() => skillId === 'boss_extinction' || (skillName && skillName.includes('寂灭')), [skillId, skillName]);
+
+  // 解析招式类型：兵刃(sword/blade)、拳脚(fist)、内功玄学(divine)、BOSS专属(boss)
   const skillType = useMemo(() => {
     const name = skillName || '';
     const id = skillId || '';
     
+    if (isBossChaos || isBossShadow || isBossRoar || isBossExtinction || name.includes('魔罗') || name.includes('邪煞') || name.includes('诸神') || name.includes('魔啸') || id.startsWith('boss_')) {
+      return 'boss';
+    }
     if (/剑|斩|九败|影|刺|刃/.test(name)) {
       return 'sword';
     }
@@ -396,44 +405,101 @@ const UltimateBurstEffect = ({ intensity, position, skillName, skillId }) => {
     }
     
     return 'divine'; // 默认 fallback
-  }, [skillName, skillId]);
+  }, [skillName, skillId, isBossChaos, isBossShadow, isBossRoar, isBossExtinction]);
 
-  // 根据招式类型获取命中单字
-  const hitChar = (skillType === 'sword' || skillType === 'blade') ? '斬' : skillType === 'fist' ? '破' : '絕';
+  // 根据招式类型获取命中单字 (BOSS使用独特的“噬”)
+  const hitChar = skillType === 'boss' ? '噬' : (skillType === 'sword' || skillType === 'blade') ? '斬' : skillType === 'fist' ? '破' : '絕';
 
   return (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', zIndex: 120 }}>
       {/* 1. 飞行的具象化写意弹道 */}
       {hasProjectile && (
-        <svg
-          width="240"
-          height="240"
-          viewBox="0 0 200 200"
-          style={{
-            position: 'absolute',
-            pointerEvents: 'none',
-            overflow: 'visible',
-            animationName: position === 'left' ? 'projectileRightToLeft' : 'projectileLeftToRight',
-            animationDuration: '0.65s',
-            animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
-            animationFillMode: 'forwards',
-            zIndex: 5,
-          }}
-        >
-          {/* 渐变及滤镜定义 */}
-          <defs>
-            <linearGradient id="swordQiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="transparent" />
-              <stop offset="30%" stopColor={color} stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.9" />
-            </linearGradient>
-            <linearGradient id="dragonInkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0d0d1a" />
-              <stop offset="40%" stopColor={color} />
-              <stop offset="80%" stopColor="#ffffff" />
-              <stop offset="100%" stopColor={color} />
-            </linearGradient>
-          </defs>
+        <>
+          {/* 1.1 非Boss大招时使用传统水墨特效 */}
+          {!isBossChaos && !isBossShadow && !isBossRoar && !isBossExtinction && (
+            <svg
+              width="240"
+              height="240"
+              viewBox="0 0 200 200"
+              style={{
+                position: 'absolute',
+                pointerEvents: 'none',
+                overflow: 'visible',
+                animationName: position === 'left' ? 'projectileRightToLeft' : 'projectileLeftToRight',
+                animationDuration: '0.65s',
+                animationTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                animationFillMode: 'forwards',
+                zIndex: 5,
+              }}
+            >
+              {/* 渐变及滤镜定义 */}
+              <defs>
+                <linearGradient id="swordQiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="transparent" />
+                  <stop offset="30%" stopColor={color} stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.9" />
+                </linearGradient>
+                <linearGradient id="dragonInkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#0d0d1a" />
+                  <stop offset="40%" stopColor={color} />
+                  <stop offset="80%" stopColor="#ffffff" />
+                  <stop offset="100%" stopColor={color} />
+                </linearGradient>
+                <linearGradient id="bossCloudGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="transparent" />
+                  <stop offset="40%" stopColor="#8b5cf6" stopOpacity="0.4" />
+                  <stop offset="80%" stopColor="#a21caf" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0.9" />
+                </linearGradient>
+              </defs>
+              
+              {/* Fallback Boss Claw (if custom boss skill in standard battles) */}
+              {skillType === 'boss' && (
+                <g style={{ transformOrigin: '100px 100px', transform: position === 'left' ? 'scaleX(-1)' : 'none' }}>
+                  {/* 魔气拖尾 */}
+                  <path
+                    d="M 10,100 C 40,80 90,120 160,100"
+                    fill="none"
+                    stroke="url(#bossCloudGrad)"
+                    strokeWidth="20"
+                    strokeLinecap="round"
+                    opacity="0.6"
+                  />
+                  {/* 魔爪 */}
+                  <g filter="drop-shadow(0 0 10px rgba(162, 28, 175, 0.8))">
+                    <path
+                      d="M 50,90 Q 60,60 110,75 Q 120,100 110,125 Q 60,140 50,90 Z"
+                      fill="#0d0514"
+                      stroke="#a21caf"
+                      strokeWidth="2.5"
+                    />
+                    <path
+                      d="M 100,75 Q 130,50 170,55 L 180,50 L 175,62 Q 135,62 100,75"
+                      fill="#0d0514"
+                      stroke="#a21caf"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M 110,88 Q 145,80 185,90 L 195,85 L 190,98 Q 148,93 110,88"
+                      fill="#0d0514"
+                      stroke="#a21caf"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M 110,112 Q 145,120 185,110 L 195,115 L 190,102 Q 148,107 110,112"
+                      fill="#0d0514"
+                      stroke="#a21caf"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M 100,125 Q 130,150 170,145 L 180,150 L 175,138 Q 135,138 100,125"
+                      fill="#0d0514"
+                      stroke="#a21caf"
+                      strokeWidth="2"
+                    />
+                  </g>
+                </g>
+              )}
 
           {/* 渲染兵刃：青铜墨剑 */}
           {skillType === 'sword' && (
@@ -691,7 +757,233 @@ const UltimateBurstEffect = ({ intensity, position, skillName, skillId }) => {
               <circle cx="100" cy="100" r="4" fill={color} style={{ animation: 'dustOrbit2 0.65s linear infinite' }} />
             </g>
           )}
-        </svg>
+            </svg>
+          )}
+
+          {/* 渲染 4 个 Boss 大招的 PNG (抠图 + 深度混合发光 + 动态多维动效) */}
+          {isBossChaos && (
+            <div style={{
+              position: 'absolute',
+              width: '240px',
+              height: '240px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}>
+              {/* 旋转阵法背景 */}
+              <svg
+                width="240"
+                height="240"
+                viewBox="0 0 200 200"
+                style={{
+                  position: 'absolute',
+                  pointerEvents: 'none',
+                  animation: 'magicCircleRotate 1.1s cubic-bezier(0.19, 1, 0.22, 1) forwards',
+                }}
+              >
+                <circle cx="100" cy="100" r="72" fill="none" stroke="rgba(162, 28, 175, 0.55)" strokeWidth="1.5" strokeDasharray="4 8" />
+                <circle cx="100" cy="100" r="58" fill="none" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="1.2" strokeDasharray="10 5" />
+                <polygon points="100,32 159,134 41,134" fill="none" stroke="rgba(162, 28, 175, 0.3)" strokeWidth="1" />
+                <polygon points="100,168 159,66 41,66" fill="none" stroke="rgba(162, 28, 175, 0.3)" strokeWidth="1" />
+              </svg>
+              {/* PNG 虚空之眼 */}
+              <img
+                src="/boss_chaos_eye.png"
+                alt="混沌魔眼"
+                style={{
+                  width: '185px',
+                  height: '185px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 20px rgba(162, 28, 175, 0.95))',
+                  animation: 'eyeBlinkOpen 1.1s cubic-bezier(0.19, 1, 0.22, 1) forwards',
+                  zIndex: 2,
+                }}
+              />
+              {/* concentric shockwaves */}
+              <svg
+                width="240"
+                height="240"
+                viewBox="0 0 200 200"
+                style={{ position: 'absolute', pointerEvents: 'none', overflow: 'visible', zIndex: 3 }}
+              >
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#ef4444" strokeWidth="2.5" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 1.1s ease-out infinite 0.1s' }} />
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#c084fc" strokeWidth="1.5" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 1.1s ease-out infinite 0.4s' }} />
+              </svg>
+            </div>
+          )}
+
+          {isBossShadow && (
+            <div style={{
+              position: 'absolute',
+              width: '240px',
+              height: '240px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}>
+              {/* 锁链 1 (右上方射向左下方，较粗，主攻) */}
+              <img
+                src="/boss_shadow_chain.png"
+                alt="夺魄锁链 1"
+                style={{
+                  position: 'absolute',
+                  width: '250px',
+                  height: '250px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 15px rgba(162, 28, 175, 0.95))',
+                  animation: 'chainShootImg1 1.1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards',
+                  zIndex: 3,
+                }}
+              />
+              {/* 锁链 2 (右侧平射且略微延迟，较小) */}
+              <img
+                src="/boss_shadow_chain.png"
+                alt="夺魄锁链 2"
+                style={{
+                  position: 'absolute',
+                  width: '180px',
+                  height: '180px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 10px rgba(162, 28, 175, 0.85))',
+                  animation: 'chainShootImg2 1.1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards 0.1s',
+                  zIndex: 2,
+                }}
+              />
+              {/* 锁链 3 (右下方射向左上方且延迟较长) */}
+              <img
+                src="/boss_shadow_chain.png"
+                alt="夺魄锁链 3"
+                style={{
+                  position: 'absolute',
+                  width: '210px',
+                  height: '210px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 10px rgba(162, 28, 175, 0.85))',
+                  animation: 'chainShootImg3 1.1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards 0.2s',
+                  zIndex: 1,
+                }}
+              />
+              {/* 夺魄吸收粒子回流 (SVG 辅助叠加) */}
+              <svg
+                width="240"
+                height="240"
+                viewBox="0 0 200 200"
+                style={{ position: 'absolute', pointerEvents: 'none', overflow: 'visible', zIndex: 4 }}
+              >
+                <circle cx="100" cy="80" r="5" fill="#ff2d55" filter="drop-shadow(0 0 8px #ff2d55)" style={{ animation: 'soulDrainBack 0.8s ease-in-out infinite 0.3s' }} />
+                <circle cx="110" cy="120" r="4" fill="#ef4444" filter="drop-shadow(0 0 6px #ef4444)" style={{ animation: 'soulDrainBack 0.8s ease-in-out infinite 0.45s' }} />
+                <circle cx="90" cy="60" r="4.5" fill="#ffffff" filter="drop-shadow(0 0 5px #ff453a)" style={{ animation: 'soulDrainBack 0.8s ease-in-out infinite 0.6s' }} />
+              </svg>
+            </div>
+          )}
+
+          {isBossRoar && (
+            <div style={{
+              position: 'absolute',
+              width: '240px',
+              height: '240px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}>
+              {/* PNG 魔啸骷髅 */}
+              <img
+                src="/boss_roar_skull.png"
+                alt="魔灵啸吼"
+                style={{
+                  width: '220px',
+                  height: '220px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 18px rgba(192, 132, 252, 0.95))',
+                  animation: 'skullScream 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                  zIndex: 2,
+                }}
+              />
+              {/* 震波扩散圈圈 (多层复合颜色，更有力量感) */}
+              <svg
+                width="240"
+                height="240"
+                viewBox="0 0 200 200"
+                style={{ position: 'absolute', pointerEvents: 'none', overflow: 'visible', zIndex: 1 }}
+              >
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#ef4444" strokeWidth="4" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 0.85s ease-out infinite 0.05s' }} />
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#ffd700" strokeWidth="2" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 0.85s ease-out infinite 0.2s' }} />
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#c084fc" strokeWidth="3" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 0.85s ease-out infinite 0.35s' }} />
+                <circle cx="100" cy="100" r="20" fill="none" stroke="#ffffff" strokeWidth="1.2" style={{ transformOrigin: '100px 100px', animation: 'roarWaveExpand 0.85s ease-out infinite 0.55s' }} />
+              </svg>
+            </div>
+          )}
+
+          {isBossExtinction && (
+            <div style={{
+              position: 'absolute',
+              width: '240px',
+              height: '240px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}>
+              {/* PNG 寂灭神枪 */}
+              <img
+                src="/boss_extinction_spear.png"
+                alt="寂灭古枪"
+                style={{
+                  width: '280px',
+                  height: '280px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 25px #ff2d55)',
+                  animation: 'spearFall 1.2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards',
+                  zIndex: 2,
+                }}
+              />
+              {/* 落地大范围爆炸闪光 */}
+              <div style={{
+                position: 'absolute',
+                width: '160px',
+                height: '160px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, #ffffff 0%, rgba(239, 68, 68, 0.85) 45%, rgba(162, 28, 175, 0.5) 70%, transparent 90%)',
+                pointerEvents: 'none',
+                zIndex: 3,
+                animation: 'hitFlash 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards',
+              }} />
+              {/* 雷霆电光爆裂闪烁 (SVG 辅助叠加) */}
+              <svg
+                width="240"
+                height="240"
+                viewBox="0 0 200 200"
+                style={{ position: 'absolute', pointerEvents: 'none', overflow: 'visible', zIndex: 1 }}
+              >
+                <polyline
+                  points="80,-50 60,-10 90,30 70,80 110,130 90,190"
+                  fill="none"
+                  stroke="#c084fc"
+                  strokeWidth="2.5"
+                  opacity="0.85"
+                  style={{ animation: 'thunderBoltFlash 0.3s steps(2) infinite' }}
+                />
+                <polyline
+                  points="120,-30 140,20 110,70 130,120 95,170 115,220"
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                  opacity="0.85"
+                  style={{ animation: 'thunderBoltFlash 0.3s steps(2) infinite 0.08s' }}
+                />
+                <circle cx="100" cy="220" r="10" fill="none" stroke="#ffffff" strokeWidth="4" style={{ transformOrigin: '100px 220px', animation: 'roarWaveExpand 0.75s ease-out infinite 0.2s' }} />
+                <circle cx="100" cy="220" r="15" fill="none" stroke="#ff2d55" strokeWidth="2.5" style={{ transformOrigin: '100px 220px', animation: 'roarWaveExpand 0.75s ease-out infinite 0.35s' }} />
+              </svg>
+            </div>
+          )}
+        </>
       )}
 
       {/* 2. 命中时的狂暴内力撕裂与穿透流光 (无阵法) */}
@@ -1507,6 +1799,295 @@ export const battleEffectStyles = `
   0% { transform: scale(0); opacity: 0; }
   50% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1) translateY(-15px); opacity: 0; }
+}
+
+/* ==================== BOSS 大招专属动效 keyframes ==================== */
+
+/* 1. 混沌魔眼 (Chaos Eye) 动效 */
+@keyframes eyeBlinkOpen {
+  0% {
+    transform: scale(0.1) rotate(-45deg);
+    opacity: 0;
+    filter: blur(10px) drop-shadow(0 0 5px rgba(162, 28, 175, 0.3));
+  }
+  15% {
+    transform: scale(1.2) rotate(15deg);
+    opacity: 1;
+    filter: blur(0px) drop-shadow(0 0 25px rgba(162, 28, 175, 0.95));
+  }
+  25% {
+    transform: scale(0.95) rotate(-5deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.85));
+  }
+  35% {
+    transform: scale(1.1) rotate(5deg) translateY(-8px);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1) rotate(0deg) translateY(0px);
+    opacity: 1;
+    filter: drop-shadow(0 0 35px rgba(162, 28, 175, 0.95));
+  }
+  80% {
+    transform: scale(1.05) rotate(5deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(0.1) rotate(-90deg);
+    opacity: 0;
+    filter: blur(8px) drop-shadow(0 0 5px rgba(162, 28, 175, 0.3));
+  }
+}
+
+@keyframes magicCircleRotate {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1) rotate(270deg);
+    opacity: 0.95;
+  }
+  80% {
+    transform: scale(1.1) rotate(450deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(0) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* 2. 邪煞夺魄 (Shadow Chain) 锁链从右上/右侧飞入缠绕 */
+@keyframes chainShootImg1 {
+  0% {
+    transform: translate(320px, -240px) rotate(60deg) scale(0.2);
+    opacity: 0;
+  }
+  18% {
+    transform: translate(-10px, 15px) rotate(-15deg) scale(1.1);
+    opacity: 1;
+  }
+  28% {
+    transform: translate(0, 0) rotate(-10deg) scale(1);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(-5px, 5px) rotate(-8deg) scale(1.02);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(0, 0) rotate(-12deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-250px, 180px) rotate(-30deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes chainShootImg2 {
+  0% {
+    transform: translate(320px, 0px) rotate(0deg) scale(0.2);
+    opacity: 0;
+  }
+  18% {
+    transform: translate(-20px, 0px) rotate(8deg) scale(1.1);
+    opacity: 1;
+  }
+  28% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(-8px, 0px) rotate(4deg) scale(1.02);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(0, 0) rotate(2deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-300px, 0px) rotate(-10deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes chainShootImg3 {
+  0% {
+    transform: translate(320px, 240px) rotate(-60deg) scale(0.2);
+    opacity: 0;
+  }
+  18% {
+    transform: translate(-10px, -15px) rotate(15deg) scale(1.1);
+    opacity: 1;
+  }
+  28% {
+    transform: translate(0, 0) rotate(10deg) scale(1);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(-5px, -5px) rotate(8deg) scale(1.02);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(0, 0) rotate(12deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-250px, -180px) rotate(30deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes soulDrainBack {
+  0% {
+    transform: translate(0, 0) scale(1.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  80% {
+    transform: translate(160px, -40px) scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(260px, -80px) scale(0.1);
+    opacity: 0;
+  }
+}
+
+/* 3. 太古魔啸 (Roar Skull) 动效 */
+@keyframes skullScream {
+  0% {
+    transform: scale(0.1) rotate(0deg);
+    opacity: 0;
+    filter: blur(8px) brightness(0.5) drop-shadow(0 0 5px #c084fc);
+  }
+  18% {
+    transform: scale(1.3) rotate(-12deg);
+    opacity: 1;
+    filter: blur(0px) brightness(1.5) drop-shadow(0 0 25px #c084fc);
+  }
+  30% {
+    transform: scale(1.1) rotate(8deg) translateY(-8px);
+    opacity: 1;
+  }
+  42% {
+    transform: scale(1.25) rotate(-6deg) translateY(4px);
+    opacity: 1;
+  }
+  55% {
+    transform: scale(1.15) rotate(4deg) translateY(-4px);
+    opacity: 1;
+    filter: brightness(1.3) drop-shadow(0 0 30px #ef4444);
+  }
+  80% {
+    transform: scale(1.1) rotate(0deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(0.2) translateY(-80px);
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+
+@keyframes roarWaveExpand {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.95;
+    stroke-width: 4;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+    stroke-width: 0.8;
+  }
+}
+
+/* 4. 诸神寂灭 (Extinction Spear) 灭世神枪动效 */
+@keyframes spearFall {
+  0% {
+    transform: translate(280px, -380px) rotate(-60deg) scale(0.3);
+    opacity: 0;
+    filter: brightness(2) drop-shadow(0 0 10px #ff2d55);
+  }
+  14% {
+    transform: translate(0px, 0px) rotate(-45deg) scale(1.12);
+    opacity: 1;
+    filter: brightness(1.8) drop-shadow(0 0 35px #ffff00);
+  }
+  18% {
+    transform: translate(-6px, 6px) rotate(-47deg) scale(1.05);
+    opacity: 1;
+  }
+  24% {
+    transform: translate(4px, -4px) rotate(-43deg) scale(1.02);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(0, 0) rotate(-45deg) scale(1);
+    opacity: 1;
+    filter: brightness(1.2) drop-shadow(0 0 20px #ff2d55);
+  }
+  80% {
+    transform: translate(0, 0) rotate(-45deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100px, 100px) rotate(-45deg) scale(0.2);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+@keyframes hitFlash {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  13% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(0.1);
+    opacity: 1;
+    filter: brightness(2.5);
+  }
+  35% {
+    transform: scale(1.9);
+    opacity: 0.95;
+  }
+  75% {
+    transform: scale(2.4);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes thunderBoltFlash {
+  0%, 100% {
+    opacity: 0.15;
+    filter: brightness(0.8);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.6) drop-shadow(0 0 12px #c084fc);
+  }
 }
 `;
 

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore, TREASURES_DB, getSocket } from '../store/gameState';
 import { Hammer, Sparkles, Flame, RefreshCw, Zap, Shield, HelpCircle, Compass } from 'lucide-react';
+import { useCleanImage } from '../utils/imageProcess';
+import { SoundManager } from '../utils/SoundManager';
 
 export default function AlchemyFurnace() {
   const player = useGameStore(state => state.player);
+  const cleanHeaderPic = useCleanImage('/alchemy_header.png', 25, 20);
+  const cleanFurnacePic = useCleanImage('/alchemy_furnace_drawn.png', 20, 20);
   
   if (!player) {
     return (
@@ -39,8 +43,10 @@ export default function AlchemyFurnace() {
       if (res.success) {
         setSynthResult(res);
         setSelectedSynthIds([]);
+        SoundManager.play('sfx_success');
       } else {
         alert(`【重铸失败】${res.reason}`);
+        SoundManager.play('sfx_fail');
       }
     };
 
@@ -49,8 +55,10 @@ export default function AlchemyFurnace() {
       if (res.success) {
         setRefineResult(res);
         setRefineSubId(null);
+        SoundManager.play('sfx_success');
       } else {
         alert(`【洗炼失败】${res.reason}`);
+        SoundManager.play('sfx_fail');
       }
     };
 
@@ -107,11 +115,32 @@ export default function AlchemyFurnace() {
   // 过滤出储物袋中的有效宝物
   const validTreasures = (player.treasures || []).filter(tId => getTreasureData(tId) !== null);
 
-  // 过滤出适合作为副胚的高阶宝物（史诗及以上）
-  const validSubTreasures = validTreasures.filter(tId => {
-    const data = getTreasureData(tId);
-    return data && ['史诗', '传说', '神话'].includes(data.rarity);
-  });
+  // 统计每种有效宝物的持有数量 (堆叠逻辑)
+  const treasuresInventory = validTreasures.reduce((acc, tId) => {
+    acc[tId] = (acc[tId] || 0) + 1;
+    return acc;
+  }, {});
+
+  // 过滤出副胚品质（史诗及以上）的独特宝物及持有数量
+  const subTreasuresInventory = Object.entries(treasuresInventory)
+    .filter(([tId]) => {
+      const data = getTreasureData(tId);
+      return data && ['史诗', '传说', '神话'].includes(data.rarity);
+    })
+    .reduce((acc, [tId, count]) => {
+      acc[tId] = count;
+      return acc;
+    }, {});
+
+  // 确保选择状态的有效性
+  useEffect(() => {
+    if (refineMainId && !treasuresInventory[refineMainId]) {
+      setRefineMainId(null);
+    }
+    if (refineSubId && !subTreasuresInventory[refineSubId]) {
+      setRefineSubId(null);
+    }
+  }, [player.treasures, refineMainId, refineSubId]);
 
   // ==================== 重铸判定 ====================
   // 根据选中的宝物列表判断是否符合重铸规则（同品质且3~5件）
@@ -119,11 +148,13 @@ export default function AlchemyFurnace() {
     if (selectedSynthIds.length < 3 || selectedSynthIds.length > 5) {
       return { valid: false, reason: '需放入 3 ~ 5 件宝具' };
     }
-    const firstData = getTreasureData(selectedSynthIds[0]);
+    const firstId = validTreasures[selectedSynthIds[0]];
+    const firstData = getTreasureData(firstId);
     if (!firstData) return { valid: false, reason: '宝具未知' };
     
     const targetRarity = firstData.rarity;
-    for (const id of selectedSynthIds) {
+    for (const idx of selectedSynthIds) {
+      const id = validTreasures[idx];
       const data = getTreasureData(id);
       if (!data || data.rarity !== targetRarity) {
         return { valid: false, reason: '放入的宝物品质不相同' };
@@ -143,12 +174,14 @@ export default function AlchemyFurnace() {
   const handleSynthesize = () => {
     if (!synthValidity.valid) return;
     setIsSynthesizing(true);
-    socket.emit('synthesize_treasure', { treasureIds: selectedSynthIds });
+    // 将选中的背包索引映射为对应的宝物ID发送给服务器
+    const treasureIds = selectedSynthIds.map(idx => validTreasures[idx]);
+    socket.emit('synthesize_treasure', { treasureIds });
   };
 
-  // 点击选择重铸宝物（不能超过5个，且需要校验数量）
-  const handleToggleSelectSynth = (id) => {
-    const idx = selectedSynthIds.indexOf(id);
+  // 点击选择重铸宝物（按实体索引处理，完美避开同名一并选中问题）
+  const handleToggleSelectSynth = (targetIdx) => {
+    const idx = selectedSynthIds.indexOf(targetIdx);
     if (idx >= 0) {
       const newIds = [...selectedSynthIds];
       newIds.splice(idx, 1);
@@ -158,17 +191,20 @@ export default function AlchemyFurnace() {
         alert('乾坤八卦神炉最多容纳 5 件宝具！');
         return;
       }
-      // 检查已选中的宝物在背包中的数量是否超出
-      const neededCounts = {};
-      [...selectedSynthIds, id].forEach(tId => {
-        neededCounts[tId] = (neededCounts[tId] || 0) + 1;
-      });
-      const hasCount = validTreasures.filter(tId => tId === id).length;
-      if (neededCounts[id] > hasCount) {
-         alert('储物袋中没有更多相同的这件宝物了！');
-         return;
+      
+      // 检查品质一致性：如果已经选了其他物品，新选择的物品品质必须与之相同
+      if (selectedSynthIds.length > 0) {
+        const firstId = validTreasures[selectedSynthIds[0]];
+        const firstData = getTreasureData(firstId);
+        const nextId = validTreasures[targetIdx];
+        const nextData = getTreasureData(nextId);
+        if (firstData && nextData && firstData.rarity !== nextData.rarity) {
+          alert('放入的宝物品质必须相同！');
+          return;
+        }
       }
-      setSelectedSynthIds([...selectedSynthIds, id]);
+
+      setSelectedSynthIds([...selectedSynthIds, targetIdx]);
     }
   };
 
@@ -204,6 +240,20 @@ export default function AlchemyFurnace() {
 
   const handleRefine = () => {
     if (!refineValidity.valid) return;
+
+    if (refineSubId === player.equippedTreasure) {
+      if (!window.confirm("🔥 警告 🔥\n\n阁下选择将当前装备的【本命宝具】作为副胚进行消耗！此操作将永久销毁它及其全部注灵属性！\n确认要继续注入器灵吗？")) {
+        return;
+      }
+    }
+
+    if (refineMainId && refineMainId !== player.equippedTreasure && player.equippedTreasure) {
+      const currentEquippedName = getTreasureData(player.equippedTreasure)?.name || player.equippedTreasure;
+      if (!window.confirm(`提示：该宝具尚未装备。\n洗炼后将自动装备该宝具，当前装备的本命宝具【${currentEquippedName}】将被替换，其原有的器灵词条会被覆盖。\n确认要继续注入器灵吗？`)) {
+        return;
+      }
+    }
+
     setIsRefining(true);
     socket.emit('refine_treasure', {
       mainTreasureId: refineMainId,
@@ -260,6 +310,14 @@ export default function AlchemyFurnace() {
           0%, 100% { box-shadow: 0 0 15px rgba(212,175,55,0.2); }
           50% { box-shadow: 0 0 35px rgba(212,175,55,0.7); }
         }
+        @keyframes furnaceFloat {
+          0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.3)); }
+          50% { transform: translateY(-6px); filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6)); }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
 
         /* 选中态特效 */
         .treasure-item-select {
@@ -276,6 +334,19 @@ export default function AlchemyFurnace() {
           background: rgba(212,175,55,0.08) !important;
           box-shadow: 0 0 10px rgba(212,175,55,0.3);
         }
+
+        @keyframes furnaceScaleUp {
+          from { transform: scale(0.85); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-up {
+          animation: furnaceScaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes tokenAlienFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
       `}</style>
 
       {/* 角落装饰 */}
@@ -285,12 +356,55 @@ export default function AlchemyFurnace() {
       <div className="corner-decoration bottom-right" />
 
       {/* 标题 */}
-      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontFamily: '"Ma Shan Zheng", cursive', color: 'var(--gold)', letterSpacing: '4px', fontSize: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', position: 'relative' }}>
+        {/* 背景八卦灵符抠图 */}
+        {cleanHeaderPic && (
+          <img 
+            src={cleanHeaderPic} 
+            alt="八卦太极" 
+            style={{ 
+              width: '120px', 
+              height: '120px', 
+              objectFit: 'contain',
+              position: 'absolute',
+              top: '-35px',
+              opacity: 0.18,
+              filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.4))',
+              animation: 'spin 25s linear infinite',
+              pointerEvents: 'none'
+            }} 
+          />
+        )}
+        <h2 style={{ 
+          fontFamily: '"Ma Shan Zheng", cursive', 
+          color: 'var(--gold)', 
+          letterSpacing: '4px', 
+          fontSize: '2.4rem', 
+          textShadow: '0 0 15px rgba(212,175,55,0.4)',
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          {cleanHeaderPic && (
+            <img 
+              src={cleanHeaderPic} 
+              alt="logo" 
+              style={{ width: '40px', height: '40px', objectFit: 'contain', animation: 'spin 12s linear infinite' }} 
+            />
+          )}
           太上八卦乾坤炉
+          {cleanHeaderPic && (
+            <img 
+              src={cleanHeaderPic} 
+              alt="logo" 
+              style={{ width: '40px', height: '40px', objectFit: 'contain', animation: 'spin 12s linear infinite reverse' }} 
+            />
+          )}
         </h2>
-        <div style={{ width: '80px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0.5rem auto' }} />
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+        <div style={{ width: '120px', height: '2px', background: 'linear-gradient(90deg, transparent, var(--gold), transparent)', margin: '0.5rem auto', position: 'relative', zIndex: 1 }} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', position: 'relative', zIndex: 1 }}>
           融三界异宝以补残缺，注五行精气以锻器灵
         </p>
       </div>
@@ -414,23 +528,15 @@ export default function AlchemyFurnace() {
                 {validTreasures.map((tId, idx) => {
                   const data = getTreasureData(tId);
                   if (!data) return null;
-                  const countSelected = selectedSynthIds.filter(id => id === tId).length;
-                  const totalCountInInv = validTreasures.filter(id => id === tId).length;
-                  const isAlreadyFullSelected = countSelected >= totalCountInInv;
  
-                  // 检查是否是被选中的那个特定位置索引（我们这里通过已选数量过滤）
-                  const currentSelectedCount = selectedSynthIds.filter(id => id === tId).length;
-                  
-                  // 为同一种宝物做多件选择支持
-                  const isSelected = selectedSynthIds.includes(tId);
- 
+                  const isSelected = selectedSynthIds.includes(idx);
                   const rColor = rarityColors[data.rarity] || { color: '#fff', border: 'transparent' };
  
                   return (
                     <div
                       key={`${tId}_${idx}`}
-                      onClick={() => handleToggleSelectSynth(tId)}
-                      className={`glass-panel treasure-item-select ${selectedSynthIds.includes(tId) ? 'selected' : ''}`}
+                      onClick={() => handleToggleSelectSynth(idx)}
+                      className={`glass-panel treasure-item-select ${isSelected ? 'selected' : ''}`}
                       style={{
                         padding: '0.6rem',
                         textAlign: 'center',
@@ -441,7 +547,7 @@ export default function AlchemyFurnace() {
                       }}
                     >
                       {/* 选择指示角标 */}
-                      {selectedSynthIds.includes(tId) && (
+                      {isSelected && (
                         <div style={{
                           position: 'absolute',
                           top: '2px', right: '4px',
@@ -488,10 +594,28 @@ export default function AlchemyFurnace() {
             justifyContent: 'space-between'
           }}>
             <div>
-              <div className={`alchemy-furnace-core ${isSynthesizing ? 'active' : ''}`}>
-                <div style={{ color: 'var(--gold)', textAlign: 'center' }}>
+              <div className="alchemy-furnace-core" style={{ width: '160px', height: '160px', border: 'none', background: 'none' }}>
+                {cleanFurnacePic ? (
+                  <img 
+                    src={cleanFurnacePic} 
+                    alt="太上乾坤炉" 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      filter: isSynthesizing 
+                        ? 'drop-shadow(0 0 25px rgba(249, 115, 22, 0.8)) brightness(1.2)' 
+                        : 'drop-shadow(0 0 15px rgba(16, 185, 129, 0.4))',
+                      animation: isSynthesizing ? 'furnaceShake 0.15s infinite alternate' : 'furnaceFloat 4s ease-in-out infinite',
+                      position: 'absolute',
+                      zIndex: 0
+                    }}
+                  />
+                ) : (
                   <Flame size={48} style={{ color: isSynthesizing ? 'orange' : 'var(--gold)', filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.4))' }} />
-                  <div style={{ fontSize: '0.7rem', marginTop: '0.2rem' }}>
+                )}
+                <div style={{ color: 'var(--gold)', textAlign: 'center', zIndex: 1, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '10px' }}>
                     {selectedSynthIds.length} / 5 放入
                   </div>
                 </div>
@@ -500,8 +624,8 @@ export default function AlchemyFurnace() {
               {/* 重铸信息 */}
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: '1.5' }}>
                 <div style={{ color: '#fff', fontWeight: 'bold', marginBottom: '0.4rem' }}>熔炼阵眼状态</div>
-                <div>当前选中品质: <span style={{ color: selectedSynthIds.length > 0 ? (rarityColors[getTreasureData(selectedSynthIds[0])?.rarity]?.color || '#fff') : 'var(--text-muted)' }}>
-                  {selectedSynthIds.length > 0 ? getTreasureData(selectedSynthIds[0])?.rarity : '无'}
+                <div>当前选中品质: <span style={{ color: selectedSynthIds.length > 0 ? (rarityColors[getTreasureData(validTreasures[selectedSynthIds[0]])?.rarity]?.color || '#fff') : 'var(--text-muted)' }}>
+                  {selectedSynthIds.length > 0 ? getTreasureData(validTreasures[selectedSynthIds[0]])?.rarity : '无'}
                 </span></div>
                 <div>熔炼契合概率: <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>{getSynthRateDesc()}</span></div>
               </div>
@@ -554,14 +678,14 @@ export default function AlchemyFurnace() {
 
       {/* ==================================== 模式二：器灵洗炼 ==================================== */}
       {activeMode === 'refine' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr minmax(280px, 320px)', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 320px)', gap: '2rem' }}>
           {/* 左侧：选择主宝物、副胚、属性材料 */}
           <div>
             {/* 步骤 1：放入主宝物 */}
             <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--gold)' }}>
               1. 放入待洗炼主宝物 (决定词条的载体)
             </div>
-            {validTreasures.length === 0 ? (
+            {Object.keys(treasuresInventory).length === 0 ? (
               <div style={{
                 textAlign: 'center',
                 padding: '1.5rem 1rem',
@@ -577,21 +701,29 @@ export default function AlchemyFurnace() {
               </div>
             ) : (
               <div style={{
-                display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem',
-                borderBottom: '1px dashed rgba(255,255,255,0.05)'
+                display: 'flex', gap: '0.8rem', overflowX: 'auto', width: '100%', maxWidth: '100%', paddingBottom: '0.5rem', marginBottom: '1.5rem',
+                borderBottom: '1px dashed rgba(255,255,255,0.05)',
+                boxSizing: 'border-box'
               }}>
-                {validTreasures.map((tId, idx) => {
+                {Object.entries(treasuresInventory).map(([tId, count]) => {
                   const data = getTreasureData(tId);
                   if (!data) return null;
+                  const isEquipped = player.equippedTreasure === tId;
+                  const hasWashedAttrs = isEquipped && Object.values(player.equippedTreasureAttrs || {}).some(v => v > 0);
                   const isSelected = refineMainId === tId;
-                  const rColor = rarityColors[data.rarity] || { color: '#fff' };
+                  const rColor = rarityColors[data.rarity] || { color: '#fff', border: 'transparent' };
+
+                  const isUsedInSub = refineSubId === tId;
+                  const remainingCount = count - (isUsedInSub ? 1 : 0);
 
                   return (
                     <div
-                      key={`main_${tId}_${idx}`}
+                      key={`main_${tId}`}
                       onClick={() => {
+                        if (refineSubId === tId && count < 2) {
+                          setRefineSubId(null); // 互斥
+                        }
                         setRefineMainId(tId);
-                        if (refineSubId === tId) setRefineSubId(null); // 互斥
                       }}
                       className={`glass-panel treasure-item-select ${isSelected ? 'selected' : ''}`}
                       style={{
@@ -599,22 +731,156 @@ export default function AlchemyFurnace() {
                         fontSize: '0.8rem',
                         whiteSpace: 'nowrap',
                         textAlign: 'center',
-                        background: 'rgba(255,255,255,0.01)',
+                        background: isSelected 
+                          ? 'rgba(212,175,55,0.08)' 
+                          : isEquipped 
+                            ? 'rgba(212,175,55,0.02)' 
+                            : 'rgba(255,255,255,0.01)',
+                        border: isSelected 
+                          ? '1px solid var(--gold)' 
+                          : isEquipped 
+                            ? '1px dashed rgba(212, 175, 55, 0.6)' 
+                            : '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: isSelected 
+                          ? '0 0 10px rgba(212,175,55,0.3)' 
+                          : isEquipped 
+                            ? '0 0 8px rgba(212,175,55,0.15)' 
+                            : 'none',
+                        cursor: 'pointer'
                       }}
                     >
-                      <div style={{ color: rColor.color, fontWeight: 'bold' }}>{data.name}</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{data.rarity}</div>
+                      <div style={{ 
+                        color: rColor.color, 
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px'
+                      }}>
+                        {isEquipped && <span style={{ color: 'var(--gold)' }}>⭐</span>}
+                        {data.name}
+                        <span style={{ fontSize: '0.75rem', opacity: 0.8, marginLeft: '4px' }}>x{remainingCount}</span>
+                      </div>
+                      <div style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text-muted)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}>
+                        <span>{data.rarity}</span>
+                        {isEquipped && (
+                          <span style={{ 
+                            fontSize: '0.6rem', 
+                            background: 'rgba(212, 175, 55, 0.2)', 
+                            color: 'var(--gold)', 
+                            padding: '0 2px', 
+                            borderRadius: '2px',
+                            border: '1px solid rgba(212, 175, 55, 0.4)'
+                          }}>
+                            本命{hasWashedAttrs ? '·注' : ''}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             )}
 
-            {/* 步骤 2：选择副宝胚 */}
-            <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--gold)' }}>
-              2. 放入副宝胚子 (洗炼将被消耗，仅限【史诗】及以上)
-            </div>
-            {validSubTreasures.length === 0 ? (
+            {refineMainId && (() => {
+              const isEquipped = refineMainId === player.equippedTreasure;
+              const hasWashed = player.equippedTreasure && player.equippedTreasureAttrs && Object.values(player.equippedTreasureAttrs).some(v => v > 0);
+              
+              if (isEquipped) {
+                if (!hasWashed) return null;
+                return (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    marginBottom: '1.5rem',
+                    background: 'rgba(59, 130, 246, 0.05)',
+                    border: '1px solid rgba(59, 130, 246, 0.25)',
+                    borderRadius: '6px',
+                    padding: '0.6rem 1rem',
+                    textAlign: 'left'
+                  }}>
+                    <div style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>❖ 当前本命器灵注灵属性 (洗炼后将被覆盖！)</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.3rem 0.6rem' }}>
+                      {Object.entries(player.equippedTreasureAttrs).map(([k, v]) => {
+                        if (!v || v <= 0) return null;
+                        const attrNames = {
+                          extraAtk: '额外攻击',
+                          extraDef: '额外防御',
+                          extraHp: '额外气血',
+                          extraDodge: '额外闪避',
+                          extraCrit: '额外暴击',
+                          stunRate: '击晕概率',
+                          poisonRate: '中毒概率',
+                          bossDamageBoost: '破魔加成'
+                        };
+                        const isPercent = ['extraDodge', 'extraCrit', 'stunRate', 'poisonRate', 'bossDamageBoost'].includes(k);
+                        return (
+                          <div key={k} style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                            {attrNames[k] || k}: <span style={{ color: '#60a5fa', fontWeight: 'bold' }}>+{v}{isPercent ? '%' : ''}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              } else {
+                const currentEquippedName = getTreasureData(player.equippedTreasure)?.name || player.equippedTreasure;
+                return (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    marginBottom: '1.5rem',
+                    background: 'rgba(245, 158, 11, 0.05)',
+                    border: '1px solid rgba(245, 158, 11, 0.25)',
+                    borderRadius: '6px',
+                    padding: '0.6rem 1rem',
+                    textAlign: 'left'
+                  }}>
+                    <div style={{ color: '#f59e0b', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>⚠️ 装备切换提醒</span>
+                    </div>
+                    <p style={{ color: '#fde68a', fontSize: '0.75rem', margin: '0 0 0.4rem 0', lineHeight: '1.4' }}>
+                      该宝具目前【并非】你的本命宝具。洗炼它将自动装备它作为本命宝具，并覆盖当前本命【{currentEquippedName}】的器灵注灵属性！
+                    </p>
+                    {hasWashed && (
+                      <div style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '0.4rem 0.6rem', borderRadius: '4px', marginTop: '0.4rem' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginBottom: '0.2rem' }}>当前【{currentEquippedName}】生效的器灵属性：</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 10px' }}>
+                          {Object.entries(player.equippedTreasureAttrs).map(([k, v]) => {
+                            if (!v || v <= 0) return null;
+                            const attrNames = {
+                              extraAtk: '额外攻击',
+                              extraDef: '额外防御',
+                              extraHp: '额外气血',
+                              extraDodge: '额外闪避',
+                              extraCrit: '额外暴击',
+                              stunRate: '击晕概率',
+                              poisonRate: '中毒概率',
+                              bossDamageBoost: '破魔加成'
+                            };
+                            const isPercent = ['extraDodge', 'extraCrit', 'stunRate', 'poisonRate', 'bossDamageBoost'].includes(k);
+                            return (
+                              <span key={k} style={{ fontSize: '0.7rem', color: '#fcd34d' }}>
+                                {attrNames[k] || k}: <strong>+{v}{isPercent ? '%' : ''}</strong>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+            })()}
+
+            {Object.keys(subTreasuresInventory).length === 0 ? (
               <div className="glass-panel animate-scale-up" style={{
                 textAlign: 'center',
                 padding: '1.8rem 1rem',
@@ -629,35 +895,40 @@ export default function AlchemyFurnace() {
                 </div>
                 <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center' }}>
                   <button onClick={() => navigateToTab('秘境寻宝')} className="btn-primary" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderColor: '#f97316', color: '#f97316' }}>
-                    前往秘境寻宝 (探秘夺宝)
+                     前往秘境寻宝 (探秘夺宝)
                   </button>
                   <button onClick={() => navigateToTab('拍卖风云')} className="btn-primary" style={{ padding: '0.3rem 0.8rem', fontSize: '0.75rem', borderColor: '#c29d38', color: '#c29d38' }}>
-                    前往拍卖风云 (淘换宝物)
+                     前往拍卖风云 (淘换宝物)
                   </button>
                 </div>
               </div>
             ) : (
               <div style={{
-                display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.5rem',
-                borderBottom: '1px dashed rgba(255,255,255,0.05)'
+                display: 'flex', gap: '0.8rem', overflowX: 'auto', width: '100%', maxWidth: '100%', paddingBottom: '0.5rem', marginBottom: '1.5rem',
+                borderBottom: '1px dashed rgba(255,255,255,0.05)',
+                boxSizing: 'border-box'
               }}>
-                {validSubTreasures.map((tId, idx) => {
+                {Object.entries(subTreasuresInventory).map(([tId, count]) => {
                   const data = getTreasureData(tId);
+                  if (!data) return null;
                   const isSelected = refineSubId === tId;
-                  const rColor = rarityColors[data.rarity] || { color: '#fff' };
+                  const isEquipped = player.equippedTreasure === tId;
+                  const hasWashedAttrs = isEquipped && Object.values(player.equippedTreasureAttrs || {}).some(v => v > 0);
+                  
+                  const isUsedInMain = refineMainId === tId;
+                  const remainingCount = count - (isUsedInMain ? 1 : 0);
+                  const rColor = rarityColors[data.rarity] || { color: '#fff', border: 'transparent' };
+
+                  const isMainSelectedEmpty = isUsedInMain && count < 2;
 
                   return (
                     <div
-                      key={`sub_${tId}_${idx}`}
+                      key={`sub_${tId}`}
                       onClick={() => {
-                        setRefineSubId(tId);
-                        if (refineMainId === tId) {
-                           // 只有当背包里有两件以上时才允许主副同ID
-                           const count = validTreasures.filter(id => id === tId).length;
-                           if (count < 2) {
-                              setRefineMainId(null);
-                           }
+                        if (isMainSelectedEmpty) {
+                          setRefineMainId(null); // 互斥
                         }
+                        setRefineSubId(tId);
                       }}
                       className={`glass-panel treasure-item-select ${isSelected ? 'selected' : ''}`}
                       style={{
@@ -665,14 +936,81 @@ export default function AlchemyFurnace() {
                         fontSize: '0.8rem',
                         whiteSpace: 'nowrap',
                         textAlign: 'center',
-                        background: 'rgba(255,255,255,0.01)',
+                        background: isSelected 
+                          ? 'rgba(212,175,55,0.08)' 
+                          : isEquipped 
+                            ? 'rgba(212,175,55,0.02)' 
+                            : 'rgba(255,255,255,0.01)',
+                        border: isSelected 
+                          ? '1px solid var(--gold)' 
+                          : isEquipped 
+                            ? '1px dashed rgba(212, 175, 55, 0.6)' 
+                            : '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: isSelected 
+                          ? '0 0 10px rgba(212,175,55,0.3)' 
+                          : isEquipped 
+                            ? '0 0 8px rgba(212,175,55,0.15)' 
+                            : 'none',
+                        opacity: remainingCount <= 0 ? 0.4 : 1,
+                        cursor: remainingCount <= 0 ? 'not-allowed' : 'pointer'
                       }}
                     >
-                      <div style={{ color: rColor.color, fontWeight: 'bold' }}>{data.name}</div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{data.rarity}</div>
+                      <div style={{ 
+                        color: rColor.color, 
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px'
+                      }}>
+                        {isEquipped && <span style={{ color: 'var(--gold)' }}>⭐</span>}
+                        {data.name}
+                        <span style={{ fontSize: '0.75rem', opacity: 0.8, marginLeft: '4px' }}>x{remainingCount}</span>
+                      </div>
+                      <div style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text-muted)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}>
+                        <span>{data.rarity}</span>
+                        {isEquipped && (
+                          <span style={{ 
+                            fontSize: '0.6rem', 
+                            background: 'rgba(212, 175, 55, 0.2)', 
+                            color: 'var(--gold)', 
+                            padding: '0 2px', 
+                            borderRadius: '2px',
+                            border: '1px solid rgba(212, 175, 55, 0.4)'
+                          }}>
+                            本命{hasWashedAttrs ? '·注' : ''}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {refineSubId && refineSubId === player.equippedTreasure && (
+              <div style={{
+                marginTop: '0.5rem',
+                marginBottom: '1.5rem',
+                background: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                padding: '0.6rem 1rem',
+                textAlign: 'left'
+              }}>
+                <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  ⚠️ 警告：熔毁本命宝具风险
+                </div>
+                <p style={{ color: '#fca5a5', fontSize: '0.75rem', margin: '0', lineHeight: '1.4' }}>
+                  阁下选择将当前装备的【本命宝具】作为副胚进行消耗！此操作将永久熔毁该宝具，请务必确认是否要将其作为材料消耗！
+                </p>
               </div>
             )}
 
@@ -754,10 +1092,28 @@ export default function AlchemyFurnace() {
             justifyContent: 'space-between'
           }}>
             <div>
-              <div className={`alchemy-furnace-core ${isRefining ? 'active' : ''}`} style={{ borderColor: 'rgba(59,130,246,0.3)' }}>
-                <div style={{ color: 'var(--gold)', textAlign: 'center' }}>
+              <div className="alchemy-furnace-core" style={{ width: '160px', height: '160px', border: 'none', background: 'none' }}>
+                {cleanFurnacePic ? (
+                  <img 
+                    src={cleanFurnacePic} 
+                    alt="太上乾坤炉" 
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      filter: isRefining 
+                        ? 'drop-shadow(0 0 25px rgba(59, 130, 246, 0.8)) brightness(1.2)' 
+                        : 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.4))',
+                      animation: isRefining ? 'furnaceShake 0.15s infinite alternate' : 'furnaceFloat 4s ease-in-out infinite',
+                      position: 'absolute',
+                      zIndex: 0
+                    }}
+                  />
+                ) : (
                   <Sparkles size={48} style={{ color: isRefining ? 'cyan' : 'var(--gold)', filter: 'drop-shadow(0 0 8px rgba(212,175,55,0.4))' }} />
-                  <div style={{ fontSize: '0.7rem', marginTop: '0.2rem' }}>
+                )}
+                <div style={{ color: 'var(--gold)', textAlign: 'center', zIndex: 1, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '10px' }}>
                     器灵熔接阵
                   </div>
                 </div>
@@ -849,10 +1205,44 @@ export default function AlchemyFurnace() {
             <div className="corner-decoration bottom-left" />
             <div className="corner-decoration bottom-right" />
 
-            <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
-              <Flame size={72} color="var(--gold)" style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.8))', animation: 'tokenAlienFloat 3s infinite ease-in-out' }} />
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: '#110505', fontWeight: 'bold' }}>
-                <Zap size={28} style={{ color: '#fff', filter: 'drop-shadow(0 0 5px orange)' }} />
+            <div style={{ marginBottom: '1.5rem', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '110px' }}>
+              {/* 酷炫金色魔法阵 */}
+              <div style={{
+                position: 'absolute',
+                width: '150px',
+                height: '150px',
+                background: 'radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, transparent 70%)',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                width: '120px',
+                height: '120px',
+                border: '2px dashed var(--gold)',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                animation: 'spin 15s linear infinite',
+                opacity: 0.4
+              }} />
+              <div style={{
+                position: 'absolute',
+                width: '90px',
+                height: '90px',
+                border: '1px dashed rgba(212, 175, 55, 0.6)',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                animation: 'spin 8s linear infinite reverse',
+                opacity: 0.5
+              }} />
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Flame size={72} color="var(--gold)" style={{ filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.8))', animation: 'tokenAlienFloat 3s infinite ease-in-out' }} />
+                <div style={{ position: 'absolute', color: '#110505', fontWeight: 'bold' }}>
+                  <Zap size={28} style={{ color: '#fff', filter: 'drop-shadow(0 0 5px orange)' }} />
+                </div>
               </div>
             </div>
 
@@ -930,8 +1320,42 @@ export default function AlchemyFurnace() {
             <div className="corner-decoration bottom-left" />
             <div className="corner-decoration bottom-right" />
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <Sparkles size={72} color="#3b82f6" style={{ filter: 'drop-shadow(0 0 12px rgba(59,130,246,0.8))', animation: 'tokenAlienFloat 3.5s infinite ease-in-out' }} />
+            <div style={{ marginBottom: '1.5rem', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '110px' }}>
+              {/* 酷炫蓝色五行元气法阵 */}
+              <div style={{
+                position: 'absolute',
+                width: '150px',
+                height: '150px',
+                background: 'radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%)',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                position: 'absolute',
+                width: '120px',
+                height: '120px',
+                border: '2px dashed #3b82f6',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                animation: 'spin 15s linear infinite',
+                opacity: 0.4
+              }} />
+              <div style={{
+                position: 'absolute',
+                width: '90px',
+                height: '90px',
+                border: '1px dashed rgba(59, 130, 246, 0.6)',
+                borderRadius: '50%',
+                zIndex: 0,
+                pointerEvents: 'none',
+                animation: 'spin 8s linear infinite reverse',
+                opacity: 0.5
+              }} />
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Sparkles size={72} color="#3b82f6" style={{ filter: 'drop-shadow(0 0 12px rgba(59,130,246,0.8))', animation: 'tokenAlienFloat 3.5s infinite ease-in-out' }} />
+              </div>
             </div>
 
             <h3 style={{ fontFamily: '"Ma Shan Zheng", cursive', fontSize: '1.8rem', color: '#3b82f6', marginBottom: '0.5rem' }}>
