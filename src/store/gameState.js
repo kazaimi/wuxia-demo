@@ -222,7 +222,7 @@ export const useGameStore = create((set, get) => ({
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
         : 'https://22b22f16.r16.cpolar.top.cn';
-      socket = io(serverUrl, { transports: ['polling', 'websocket'] });
+      socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
         socket.emit('get_auctions');
