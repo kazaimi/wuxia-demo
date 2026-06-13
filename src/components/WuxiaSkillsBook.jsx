@@ -8,15 +8,14 @@ export default function WuxiaSkillsBook({ onClose, initialFilter = 'all' }) {
   const equipSkill = useGameStore(state => state.equipSkill);
   const [activeFilter, setActiveFilter] = useState(initialFilter); // all, inner, outer, motion, ultimate
 
-  // 获取玩家属性（包含洗炼词条）以检测功法条件是否达标
-  const attrs = player?.equippedTreasureAttrs || {};
+  // 功法学习的前置基础属性（力量、体质等）仅由玩家本身的基础属性决定，不受宝具影响
   const playerStats = {
     level: player?.level || 1,
-    str: (player?.attributes?.str || 0) + (attrs.extraStr || 0),
-    con: (player?.attributes?.con || 0) + (attrs.extraCon || 0),
-    agi: (player?.attributes?.agi || 0) + (attrs.extraAgi || 0),
-    int: (player?.attributes?.int || 0) + (attrs.extraInt || 0),
-    luk: (player?.attributes?.luk || 0) + (attrs.extraLuk || 0),
+    str: player?.attributes?.str || 0,
+    con: player?.attributes?.con || 0,
+    agi: player?.attributes?.agi || 0,
+    int: player?.attributes?.int || 0,
+    luk: player?.attributes?.luk || 0,
   };
 
   const filters = [

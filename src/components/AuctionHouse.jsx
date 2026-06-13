@@ -92,7 +92,18 @@ export default function AuctionHouse() {
          const t = TREASURES_DB.find(t=>t.id===selectedItem);
          if(!t) return;
          itemName = t.name;
-         if(!window.confirm(`警告：上架宝具会立刻【扣除】你当前拥有的该宝具！\n起拍价：${startPrice} 银两\n确认上架？`)) return;
+         
+         const isEquipped = player.equippedTreasure === selectedItem;
+         const hasWashed = isEquipped && player.equippedTreasureAttrs && Object.values(player.equippedTreasureAttrs).some(v => v > 0);
+         
+         let confirmMsg = `警告：上架宝具会立刻【扣除】你当前拥有的该宝具！\n起拍价：${startPrice} 银两\n确认上架？`;
+         if (hasWashed) {
+             confirmMsg = `🔥 极度警告 🔥\n\n该宝具为当前装备的【本命宝具】！\n一旦上架，宝具将脱下，且其上已洗炼的【器灵注灵属性】将永久清除，不可恢复！\n\n起拍价：${startPrice} 银两\n确认继续上架吗？`;
+         } else if (isEquipped) {
+             confirmMsg = `警告：该宝具为当前装备的【本命宝具】！上架后将自动脱下！\n起拍价：${startPrice} 银两\n确认上架？`;
+         }
+         
+         if(!window.confirm(confirmMsg)) return;
          
      } else if (sellType === 'points') {
          const typeMap = { 'task': '悬赏揭榜点数', 'encounter': '奇遇战点数', 'realm': '秘境下潜点数' };
@@ -210,9 +221,10 @@ export default function AuctionHouse() {
                        const sk = getSkillInfo(s);
                        return <option key={s} value={s}>{sk?.name}</option>;
                    })}
-                   {sellType === 'treasure' && player.treasures.map(tId => {
+                   {sellType === 'treasure' && player.treasures.map((tId, idx) => {
                        const t = TREASURES_DB.find(x=>x.id===tId);
-                       return <option key={tId} value={tId}>{t?.name}</option>;
+                       const isEquipped = player.equippedTreasure === tId;
+                       return <option key={`${tId}_${idx}`} value={tId}>{t?.name}{isEquipped ? ' (本命 · 装备中)' : ''}</option>;
                    })}
                    {sellType === 'points' && (
                        <>
@@ -222,6 +234,54 @@ export default function AuctionHouse() {
                        </>
                    )}
                 </select>
+                {sellType === 'treasure' && selectedItem && (() => {
+                    const isEquipped = selectedItem === player.equippedTreasure;
+                    const hasWashed = isEquipped && player.equippedTreasureAttrs && Object.values(player.equippedTreasureAttrs).some(v => v > 0);
+                    if (!isEquipped) return null;
+                    
+                    return (
+                       <div style={{
+                         marginTop: '0.8rem',
+                         padding: '0.8rem 1rem',
+                         background: 'rgba(239, 68, 68, 0.08)',
+                         border: '1px solid rgba(239, 68, 68, 0.3)',
+                         borderRadius: '6px'
+                       }}>
+                         <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.85rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                           ⚠️ 本命宝具上架警告
+                         </div>
+                         <p style={{ color: '#fca5a5', fontSize: '0.75rem', margin: '0 0 0.6rem 0', lineHeight: '1.4' }}>
+                           阁下选择的是当前装备的【本命宝具】！上架后宝具将自动脱下。若已有洗炼词条，上架将永久清除其注灵属性！
+                         </p>
+                         {hasWashed && (
+                           <div style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '0.5rem 0.7rem', borderRadius: '4px' }}>
+                             <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginBottom: '0.3rem', fontWeight: 'bold' }}>即将失效的器灵注灵属性：</div>
+                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px' }}>
+                               {Object.entries(player.equippedTreasureAttrs).map(([k, v]) => {
+                                 if (!v || v <= 0) return null;
+                                 const attrNames = {
+                                   extraAtk: '额外攻击',
+                                   extraDef: '额外防御',
+                                   extraHp: '额外气血',
+                                   extraDodge: '额外闪避',
+                                   extraCrit: '额外暴击',
+                                   stunRate: '击晕概率',
+                                   poisonRate: '中毒概率',
+                                   bossDamageBoost: '破魔加成'
+                                 };
+                                 const isPercent = ['extraDodge', 'extraCrit', 'stunRate', 'poisonRate', 'bossDamageBoost'].includes(k);
+                                 return (
+                                   <span key={k} style={{ fontSize: '0.75rem', color: '#fca5a5' }}>
+                                     {attrNames[k] || k}: <strong style={{ color: '#f87171' }}>+{v}{isPercent ? '%' : ''}</strong>
+                                   </span>
+                                 );
+                               })}
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                    );
+                })()}
              </div>
              
              <div>

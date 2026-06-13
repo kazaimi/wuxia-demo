@@ -50,15 +50,14 @@ if (fs.existsSync(DB_FILE)) {
          }
          if (!p.equippedTreasureAttrs) {
             p.equippedTreasureAttrs = {
-               extraStr: 0,
-               extraCon: 0,
-               extraAgi: 0,
-               extraInt: 0,
-               extraLuk: 0,
-               extraDodge: 0,
+               extraAtk: 0,
                extraDef: 0,
+               extraHp: 0,
+               extraDodge: 0,
+               extraCrit: 0,
                stunRate: 0,
-               poisonRate: 0
+               poisonRate: 0,
+               bossDamageBoost: 0
             };
          }
          if (typeof p.lastLoginTime === 'undefined') {
@@ -767,15 +766,14 @@ io.on('connection', (socket) => {
              earthEssence: 0
           };
           data.equippedTreasureAttrs = {
-             extraStr: 0,
-             extraCon: 0,
-             extraAgi: 0,
-             extraInt: 0,
-             extraLuk: 0,
-             extraDodge: 0,
+             extraAtk: 0,
              extraDef: 0,
+             extraHp: 0,
+             extraDodge: 0,
+             extraCrit: 0,
              stunRate: 0,
-             poisonRate: 0
+             poisonRate: 0,
+             bossDamageBoost: 0
           };
           data.lastLoginTime = Date.now();
           realPlayersDB.push(data);
@@ -904,8 +902,8 @@ io.on('connection', (socket) => {
                 if (!dbPlayer.treasures || !dbPlayer.treasures.includes(data.equippedTreasure)) {
                    data.equippedTreasure = dbPlayer.equippedTreasure || null;
                    data.equippedTreasureAttrs = dbPlayer.equippedTreasureAttrs || {
-                      extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-                      extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+                      extraAtk: 0, extraDef: 0, extraHp: 0, extraDodge: 0, extraCrit: 0,
+                      stunRate: 0, poisonRate: 0, bossDamageBoost: 0
                    };
                 }
              }
@@ -990,6 +988,7 @@ io.on('connection', (socket) => {
 
       socket.emit('update_player_success', p);
       socket.emit('deploy_ghost_result', { success: true });
+      io.emit('realm_ghosts_list', secretRealmGhosts);
       io.emit('online_players', getLeaderboardData());
   });
 
@@ -1026,11 +1025,13 @@ io.on('connection', (socket) => {
          secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
       }
       saveGhosts();
+      io.emit('realm_ghosts_list', secretRealmGhosts);
   });
 
   socket.on('defeat_realm_ghost', ({ ghostId }) => {
       secretRealmGhosts = secretRealmGhosts.filter(g => g.id !== ghostId);
       saveGhosts();
+      io.emit('realm_ghosts_list', secretRealmGhosts);
   });
 
   socket.on('get_world_boss_state', () => {
@@ -1265,8 +1266,8 @@ io.on('connection', (socket) => {
           if (dbPlayer.equippedTreasure === itemData.itemToTrade) {
              dbPlayer.equippedTreasure = null;
              dbPlayer.equippedTreasureAttrs = {
-                extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-                extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
+                extraAtk: 0, extraDef: 0, extraHp: 0, extraDodge: 0, extraCrit: 0,
+                stunRate: 0, poisonRate: 0, bossDamageBoost: 0
              };
           }
           saveDB();
@@ -1619,8 +1620,8 @@ io.on('connection', (socket) => {
             if (!p.treasures.includes(tId)) {
                p.equippedTreasure = null;
                p.equippedTreasureAttrs = {
-                  extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-                  extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0
+                  extraAtk: 0, extraDef: 0, extraHp: 0, extraDodge: 0, extraCrit: 0,
+                  stunRate: 0, poisonRate: 0, bossDamageBoost: 0
                };
             }
          }
@@ -1762,28 +1763,46 @@ io.on('connection', (socket) => {
       
       // 5. 生成并覆盖全新器灵洗炼词条属性
       const attrMapping = {
-         goldSand: 'extraStr',
-         woodHerb: 'extraCon',
-         waterFluid: 'extraAgi',
-         fireMarrow: 'extraInt',
-         earthEssence: 'extraLuk'
+         goldSand: 'extraAtk',
+         woodHerb: 'extraDef',
+         waterFluid: 'extraDodge',
+         fireMarrow: 'extraHp',
+         earthEssence: 'extraCrit'
       };
       
       const targetAttr = attrMapping[materialType];
       const newAttrs = {
-         extraStr: 0, extraCon: 0, extraAgi: 0, extraInt: 0, extraLuk: 0,
-         extraDodge: 0, extraDef: 0, stunRate: 0, poisonRate: 0, bossDamageBoost: 0
+         extraAtk: p.equippedTreasureAttrs?.extraAtk || 0,
+         extraDef: p.equippedTreasureAttrs?.extraDef || 0,
+         extraHp: p.equippedTreasureAttrs?.extraHp || 0,
+         extraDodge: p.equippedTreasureAttrs?.extraDodge || 0,
+         extraCrit: p.equippedTreasureAttrs?.extraCrit || 0,
+         stunRate: p.equippedTreasureAttrs?.stunRate || 0,
+         poisonRate: p.equippedTreasureAttrs?.poisonRate || 0,
+         bossDamageBoost: p.equippedTreasureAttrs?.bossDamageBoost || 0
       };
       
       if (materialCount === 5) {
          // I阶词条
-         newAttrs[targetAttr] = Math.floor(5 + Math.random() * 6); // 5~10
+         if (targetAttr === 'extraHp') {
+            newAttrs[targetAttr] = Math.floor(50 + Math.random() * 51); // 50~100
+         } else if (targetAttr === 'extraAtk' || targetAttr === 'extraDef') {
+            newAttrs[targetAttr] = Math.floor(10 + Math.random() * 11); // 10~20
+         } else {
+            newAttrs[targetAttr] = Math.floor(2 + Math.random() * 3); // 2~4%
+         }
          if (Math.random() < 0.15) {
             if (Math.random() < 0.5) newAttrs.extraDef = 10; else newAttrs.extraDodge = 2;
          }
       } else if (materialCount === 10) {
          // II阶词条
-         newAttrs[targetAttr] = Math.floor(12 + Math.random() * 9); // 12~20
+         if (targetAttr === 'extraHp') {
+            newAttrs[targetAttr] = Math.floor(120 + Math.random() * 81); // 120~200
+         } else if (targetAttr === 'extraAtk' || targetAttr === 'extraDef') {
+            newAttrs[targetAttr] = Math.floor(24 + Math.random() * 17); // 24~40
+         } else {
+            newAttrs[targetAttr] = Math.floor(5 + Math.random() * 4); // 5~8%
+         }
          if (Math.random() < 0.3) {
             const rand = Math.random();
             if (rand < 0.25) newAttrs.extraDef = 25;
@@ -1793,7 +1812,13 @@ io.on('connection', (socket) => {
          }
       } else if (materialCount === 20) {
          // III阶词条
-         newAttrs[targetAttr] = Math.floor(25 + Math.random() * 16); // 25~40
+         if (targetAttr === 'extraHp') {
+            newAttrs[targetAttr] = Math.floor(250 + Math.random() * 151); // 250~400
+         } else if (targetAttr === 'extraAtk' || targetAttr === 'extraDef') {
+            newAttrs[targetAttr] = Math.floor(50 + Math.random() * 31); // 50~80
+         } else {
+            newAttrs[targetAttr] = Math.floor(10 + Math.random() * 7); // 10~16%
+         }
          const rand = Math.random();
          if (rand < 0.2) newAttrs.extraDef = 50;
          else if (rand < 0.4) newAttrs.extraDodge = 10;
@@ -1802,6 +1827,7 @@ io.on('connection', (socket) => {
          else newAttrs.bossDamageBoost = 20; // 破魔：无视Boss免伤
       }
       
+      p.equippedTreasure = mainTreasureId;
       p.equippedTreasureAttrs = newAttrs;
       saveDB();
       

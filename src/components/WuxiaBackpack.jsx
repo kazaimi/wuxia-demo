@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGameStore, TREASURES_DB, ATTR_MAP } from '../store/gameState';
+import { useGameStore, TREASURES_DB, ATTR_MAP, TREASURE_ATTR_MAP } from '../store/gameState';
 import { X, Briefcase, Star, AlertCircle, ShoppingBag } from 'lucide-react';
 import { TreasureIcon } from './WuxiaIcon';
 import { SoundManager } from '../utils/SoundManager';
@@ -13,35 +13,35 @@ const MATERIALS_INFO = {
   goldSand: {
     name: '炽阳金沙',
     element: '金元素',
-    desc: '至阳至刚的五行金元素结晶。产自协助铁匠铺锤炼的体质与力量悬赏任务，或在世界大厅讨伐魔罗时偶得。是太上神炉洗炼五行属性【力量】的核心消耗材料。',
+    desc: '至阳至刚的五行金元素结晶。产自协助铁匠铺锤炼的体质与力量悬赏任务，或在世界大厅讨伐魔罗时偶得。是太上神炉洗炼器灵属性【额外攻击】的核心消耗材料。',
     icon: '/elem_gold.png',
     rarity: '稀有'
   },
   woodHerb: {
     name: '枯木灵芝',
     element: '木元素',
-    desc: '充满勃勃生机的五行木元素仙草。产自险峰采集野生灵芝的体质悬赏任务。是太上神炉洗炼五行属性【体质】的核心消耗材料。',
+    desc: '充满勃勃生机的五行木元素仙草。产自险峰采集野生灵芝的体质悬赏任务。是太上神炉洗炼器灵属性【额外防御】的核心消耗材料。',
     icon: '/elem_wood.png',
     rarity: '稀有'
   },
   waterFluid: {
     name: '无根净水',
     element: '水元素',
-    desc: '极阴极寒的五行水元素之液。产自踏雪无痕凌空送信的轻功悬赏任务。是太上神炉洗炼五行属性【敏捷】的核心消耗材料。',
+    desc: '极阴极寒的五行水元素之液。产自踏雪无痕凌空送信的轻功悬赏任务。是太上神炉洗炼器灵属性【额外闪避】的核心消耗材料。',
     icon: '/elem_water.png',
     rarity: '稀有'
   },
   fireMarrow: {
     name: '赤炎地髓',
     element: '火元素',
-    desc: '炽热狂暴的五行火元素地髓。产自烈火静室参禅参悟的智慧悬赏任务。是太上神炉洗炼五行属性【智慧】的核心消耗材料。',
+    desc: '炽热狂暴的五行火元素地髓。产自烈火静室参禅参悟的智慧悬赏任务。是太上神炉洗炼器灵属性【额外气血】的核心消耗材料。',
     icon: '/elem_fire.png',
     rarity: '稀有'
   },
   earthEssence: {
     name: '玄黄土精',
     element: '土元素',
-    desc: '厚重稳固的五行土元素精华。产自解签布施积德行善的幸运悬赏任务。是太上神炉洗炼五行属性【幸运】的核心消耗材料。',
+    desc: '厚重稳固的五行土元素精华。产自解签布施积德行善的幸运悬赏任务。是太上神炉洗炼器灵属性【额外暴击】的核心消耗材料。',
     icon: '/elem_earth.png',
     rarity: '稀有'
   },
@@ -66,6 +66,28 @@ const MATERIALS_INFO = {
     emoji: '💎',
     rarity: '史诗'
   }
+};
+
+const MATERIAL_COLORS = {
+  goldSand: '#fbbf24',       // 金
+  woodHerb: '#10b981',       // 木
+  waterFluid: '#3b82f6',      // 水
+  fireMarrow: '#ef4444',      // 火
+  earthEssence: '#f97316',    // 土
+  anomalyDust: '#9ca3af',     // 熔炼 - 灰
+  soulAshes: '#06b6d4',       // 洗炼 - 青/靛青
+  anomalyCrystal: '#a855f7'   // 至宝 - 史诗紫
+};
+
+const MATERIAL_BGS = {
+  goldSand: 'rgba(251, 191, 36, 0.12)',
+  woodHerb: 'rgba(16, 185, 129, 0.12)',
+  waterFluid: 'rgba(59, 130, 246, 0.12)',
+  fireMarrow: 'rgba(239, 68, 68, 0.12)',
+  earthEssence: 'rgba(249, 115, 22, 0.12)',
+  anomalyDust: 'rgba(156, 163, 175, 0.12)',
+  soulAshes: 'rgba(6, 182, 212, 0.12)',
+  anomalyCrystal: 'rgba(168, 85, 247, 0.12)'
 };
 
 export default function WuxiaBackpack({ onClose }) {
@@ -391,14 +413,8 @@ export default function WuxiaBackpack({ onClose }) {
                     const count = player.inventoryMaterials?.[mKey] || 0;
                     const isSelected = selectedMaterialKey === mKey;
                     
-                    const mRarityColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#ec4899', '稀有': '#3b82f6', '普通': '#9ca3af' };
-                    const mRarityBgs = {
-                      '神话': 'rgba(251, 191, 36, 0.12)',
-                      '传说': 'rgba(168, 85, 247, 0.12)',
-                      '史诗': 'rgba(236, 72, 153, 0.12)',
-                      '稀有': 'rgba(59, 130, 246, 0.12)',
-                      '普通': 'rgba(156, 163, 175, 0.12)'
-                    };
+                    const mColor = MATERIAL_COLORS[mKey] || '#9ca3af';
+                    const mBg = MATERIAL_BGS[mKey] || 'rgba(255, 255, 255, 0.05)';
 
                     return (
                       <div
@@ -406,11 +422,11 @@ export default function WuxiaBackpack({ onClose }) {
                         onClick={() => { SoundManager.play('sfx_click'); setSelectedMaterialKey(mKey); }}
                         style={{
                           position: 'relative',
-                          background: mRarityBgs[info.rarity] || 'rgba(255, 255, 255, 0.05)',
+                          background: mBg,
                           border: isSelected 
-                            ? '2px solid var(--gold)' 
-                            : `1px solid ${mRarityColors[info.rarity]}30`,
-                          boxShadow: isSelected ? '0 0 12px rgba(212, 175, 55, 0.35)' : 'none',
+                            ? `2px solid ${mColor}` 
+                            : `1px solid ${mColor}30`,
+                          boxShadow: isSelected ? `0 0 12px ${mColor}55` : 'none',
                           borderRadius: '8px',
                           cursor: 'pointer',
                           display: 'flex',
@@ -421,10 +437,10 @@ export default function WuxiaBackpack({ onClose }) {
                           overflow: 'hidden'
                         }}
                         onMouseEnter={e => {
-                          if (!isSelected) e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+                          if (!isSelected) e.currentTarget.style.borderColor = `${mColor}88`;
                         }}
                         onMouseLeave={e => {
-                          if (!isSelected) e.currentTarget.style.borderColor = `${mRarityColors[info.rarity]}30`;
+                          if (!isSelected) e.currentTarget.style.borderColor = `${mColor}30`;
                         }}
                       >
                         {info.icon ? (
@@ -551,13 +567,68 @@ export default function WuxiaBackpack({ onClose }) {
                             alignItems: 'center',
                             gap: '4px'
                           }}>
-                            <span>{ATTR_MAP[k] || k}</span>
-                            <span style={{ fontWeight: 'bold' }}>+{v}</span>
+                            <span>{TREASURE_ATTR_MAP[k] || k}</span>
+                            <span style={{ fontWeight: 'bold' }}>+{v}{['dodge', 'crit'].includes(k) ? '%' : ''}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
+
+                  {/* 器灵洗炼附加词条 */}
+                  {player.equippedTreasureAttrs && 
+                    Object.values(player.equippedTreasureAttrs).some(v => v > 0) && (
+                      <div style={{
+                        background: selectedId === equippedTreasure ? 'rgba(6, 182, 212, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+                        padding: '12px 14px',
+                        borderRadius: '6px',
+                        border: selectedId === equippedTreasure ? '1px solid rgba(6, 182, 212, 0.2)' : '1px solid rgba(255, 255, 255, 0.08)',
+                        opacity: selectedId === equippedTreasure ? 1 : 0.7
+                      }}>
+                        <div style={{ 
+                          fontSize: '0.8rem', 
+                          color: selectedId === equippedTreasure ? '#06b6d4' : 'var(--text-muted)', 
+                          marginBottom: '8px', 
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          justifyContent: 'space-between'
+                        }}>
+                          <span>❖ 器灵注灵属性 (已洗词条)</span>
+                          <span style={{ fontSize: '0.7rem', color: selectedId === equippedTreasure ? '#10b981' : '#f59e0b' }}>
+                            {selectedId === equippedTreasure ? '● 已生效' : '○ 装备后生效'}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                          {Object.entries(player.equippedTreasureAttrs).map(([k, v]) => {
+                            if (!v || v <= 0) return null;
+                            const attrNames = {
+                              extraAtk: '额外攻击',
+                              extraDef: '额外防御',
+                              extraHp: '额外气血',
+                              extraDodge: '额外闪避',
+                              extraCrit: '额外暴击',
+                              stunRate: '击晕概率',
+                              poisonRate: '中毒概率',
+                              bossDamageBoost: '破魔加成'
+                            };
+                            const isPercent = ['extraDodge', 'extraCrit', 'stunRate', 'poisonRate', 'bossDamageBoost'].includes(k);
+                            return (
+                              <div key={k} style={{
+                                fontSize: '0.85rem',
+                                color: selectedId === equippedTreasure ? '#06b6d4' : 'var(--text-muted)',
+                                fontFamily: 'Outfit',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}>
+                                <span>{attrNames[k] || k}</span>
+                                <span style={{ fontWeight: 'bold' }}>+{v}{isPercent ? '%' : ''}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                   {/* 宝物特效描述 */}
                   <div style={{
@@ -648,7 +719,7 @@ export default function WuxiaBackpack({ onClose }) {
             selectedMaterialKey && (() => {
               const info = MATERIALS_INFO[selectedMaterialKey];
               const count = player.inventoryMaterials?.[selectedMaterialKey] || 0;
-              const mColors = { '神话': '#fbbf24', '传说': '#a855f7', '史诗': '#ec4899', '稀有': '#3b82f6', '普通': '#9ca3af' };
+              const mColor = MATERIAL_COLORS[selectedMaterialKey] || '#9ca3af';
 
               return (
                 <div style={{
@@ -667,8 +738,8 @@ export default function WuxiaBackpack({ onClose }) {
                     padding: '1.5rem',
                     borderRadius: '8px',
                     background: 'linear-gradient(180deg, rgba(22, 22, 33, 0.85), rgba(12, 12, 18, 0.96))',
-                    border: '1px solid rgba(212, 175, 55, 0.25)',
-                    boxShadow: 'inset 0 0 15px rgba(212, 175, 55, 0.05), 0 4px 20px rgba(0,0,0,0.6)',
+                    border: `1px solid ${mColor}55`,
+                    boxShadow: `inset 0 0 15px ${mColor}11, 0 4px 20px rgba(0,0,0,0.6)`,
                     overflowY: 'auto'
                   }}>
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
@@ -677,8 +748,8 @@ export default function WuxiaBackpack({ onClose }) {
                         height: '64px',
                         borderRadius: '8px',
                         background: 'rgba(0,0,0,0.3)',
-                        border: `1px solid ${mColors[info.rarity]}33`,
-                        boxShadow: `0 0 10px ${mColors[info.rarity]}11`,
+                        border: `1px solid ${mColor}33`,
+                        boxShadow: `0 0 10px ${mColor}11`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -694,7 +765,7 @@ export default function WuxiaBackpack({ onClose }) {
                         <h4 style={{
                           fontSize: '1.2rem',
                           fontWeight: 'bold',
-                          color: mColors[info.rarity] || '#fff',
+                          color: mColor,
                           fontFamily: '"Ma Shan Zheng", cursive',
                           letterSpacing: '1.5px',
                           margin: 0
@@ -705,9 +776,9 @@ export default function WuxiaBackpack({ onClose }) {
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <span style={{
                             fontSize: '0.75rem',
-                            color: mColors[info.rarity],
-                            background: `${mColors[info.rarity]}15`,
-                            border: `1px solid ${mColors[info.rarity]}33`,
+                            color: mColor,
+                            background: `${mColor}15`,
+                            border: `1px solid ${mColor}33`,
                             padding: '2px 8px',
                             borderRadius: '4px',
                             fontWeight: '500'

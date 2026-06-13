@@ -427,7 +427,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
               <path d="M 52,74 L 62,64 L 72,70 Z" fill="#0f172a" opacity="0.6" />
               <path d="M 28,78 Q 38,72 45,77 M 55,73 Q 65,70 72,75" fill="none" stroke="#ef4444" strokeWidth="0.8" opacity="0.7" />
             </g>
-            <g style={{ transform: 'rotate(-28deg) translate(-14px, 12px)', transformOrigin: '40% 70%' }} filter="url(#wuxia-emboss-shadow)">
+            <g style={{ transform: 'rotate(-28deg) translate(0px, -5px)', transformOrigin: 'center' }} filter="url(#wuxia-emboss-shadow)">
               <path d="M 46,18 L 54,18 L 56,65 L 44,65 Z" fill="url(#iron-black-grad)" stroke="#334155" strokeWidth="1.2" />
               <path d="M 46,30 L 49,32 L 46,34 M 54,42 L 51,45 L 54,48 M 46,54 L 49,56 L 46,58" fill="none" stroke="#78350f" strokeWidth="1.2" />
               <path d="M 47,20 L 53,20 L 50,65" fill="none" stroke="#b45309" strokeWidth="1" opacity="0.7" />
@@ -545,7 +545,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
           <svg width={size} height={size} viewBox="0 0 100 100">
             <CardBase rarity={rarity} />
             <path d="M 28,78 Q 20,40 50,34 T 78,22" fill="none" stroke="#b91c1c" strokeWidth="1.2" strokeDasharray="3 9" opacity="0.3" />
-            <g style={{ transform: 'rotate(-40deg) translate(-26px, 18px)', transformOrigin: 'center' }} filter="url(#wuxia-gold-glow)">
+            <g style={{ transform: 'rotate(-40deg) translate(0px, 2px)', transformOrigin: 'center' }} filter="url(#wuxia-gold-glow)">
               <path d="M50 8 L54 13 Q47 22 54 30 Q46 38 54 46 Q46 54 54 62 L50 68 L46 62 Q54 54 46 46 Q54 38 46 30 Q54 22 46 13 Z" 
                     fill="url(#gold-metal-grad)" stroke="#78350f" strokeWidth="1.2" />
               <path d="M 50,8 Q 50,15 48,22 T 52,38 T 48,54 T 50,68" fill="none" stroke="#fef08a" strokeWidth="0.8" opacity="0.8" />
@@ -595,7 +595,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
               <circle cx="50" cy="50" r="34" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="1" strokeDasharray="12 6 4 6" />
               <polygon points="50,14 86,50 50,86 14,50" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="0.6" />
             </g>
-            <g style={{ transform: 'rotate(-45deg) translate(-26px, 18px)', transformOrigin: 'center' }} filter="url(#wuxia-gold-glow)">
+            <g style={{ transform: 'rotate(-45deg) translate(0px, -1px)', transformOrigin: 'center' }} filter="url(#wuxia-gold-glow)">
               <path d="M 47,4 L 53,4 L 55,62 L 45,62 Z" fill="url(#jade-white-grad)" stroke="#b45309" strokeWidth="1.2" />
               <line x1="50" y1="4" x2="50" y2="62" stroke="url(#gold-metal-grad)" strokeWidth="1.8" />
               <path d="M 47,30 Q 50,33 53,30 M 47,42 Q 50,45 53,42 M 47,54 Q 50,57 53,54" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="0.8" opacity="0.8" />
@@ -618,7 +618,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
               <path d="M 28,30 Q 72,12 80,48" fill="none" stroke="#dc2626" strokeWidth="3.5" strokeLinecap="round" />
               <path d="M 32,25 Q 70,8 82,40" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="1" />
             </g>
-            <g style={{ transform: 'rotate(-30deg) translate(-10px, 12px)', transformOrigin: 'center' }} filter="url(#wuxia-lava-glow)">
+            <g style={{ transform: 'rotate(-30deg) translate(0px, -3px)', transformOrigin: 'center' }} filter="url(#wuxia-lava-glow)">
               <path d="M 40,12 C 48,8 60,18 60,65 L 43,65 Z" fill="url(#iron-black-grad)" stroke="#0f172a" strokeWidth="2.2" />
               <path d="M 40,12 L 44,25 Q 52,18 60,32 L 60,65" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="1" opacity="0.75" />
               <path d="M 46,24 Q 52,38 46,52 T 48,63" fill="none" stroke="url(#gold-metal-grad)" strokeWidth="1.8" strokeLinecap="round" />
@@ -640,7 +640,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
               <circle cx="50" cy="50" r="33" fill="none" stroke="#475569" strokeWidth="3" strokeDasharray="18 18" />
               <circle cx="50" cy="50" r="38" fill="none" stroke="#1e293b" strokeWidth="1.5" />
             </g>
-            <g style={{ transform: 'rotate(-45deg) translate(-26px, 18px)', transformOrigin: 'center' }} filter="url(#wuxia-emboss-shadow)">
+            <g style={{ transform: 'rotate(-45deg) translate(0px, -5px)', transformOrigin: 'center' }} filter="url(#wuxia-emboss-shadow)">
               <path d="M 44,14 L 56,14 L 58,64 L 42,64 Z" fill="url(#iron-black-grad)" stroke="#475569" strokeWidth="2.8" strokeLinejoin="round" />
               <path d="M 44,14 L 56,14 L 58,64 L 42,64 Z" fill="url(#iron-pores)" opacity="0.8" />
               <line x1="50" y1="14" x2="50" y2="64" stroke="#475569" strokeWidth="3" />
@@ -679,7 +679,7 @@ export const TreasureIcon = ({ id, size = 64 }) => {
               <path d="M 25,25 Q 40,15 50,30 T 75,25" fill="none" stroke="#c084fc" strokeWidth="1" opacity="0.5" style={{ animation: 'mistDrift 2.5s infinite ease-in-out' }} />
               <path d="M 25,75 Q 40,65 50,80 T 75,75" fill="none" stroke="#c084fc" strokeWidth="1" opacity="0.5" style={{ animation: 'mistDrift 3s infinite ease-in-out' }} />
             </g>
-            <g style={{ transform: 'rotate(-45deg) translate(-26px, 18px)', transformOrigin: 'center' }} filter="url(#wuxia-purple-glow)">
+            <g style={{ transform: 'rotate(-45deg) translate(0px, -1px)', transformOrigin: 'center' }} filter="url(#wuxia-purple-glow)">
               <path d="M 47,8 L 53,8 L 55,62 L 45,62 Z" fill="#090514" stroke="url(#purple-magic-grad)" strokeWidth="1.5" />
               <path d="M 45,16 L 43,19 L 45,22 M 45,28 L 43,31 L 45,34 M 45,40 L 43,43 L 45,46 M 45,52 L 43,55 L 45,58" 
                     fill="none" stroke="url(#purple-magic-grad)" strokeWidth="1.2" />

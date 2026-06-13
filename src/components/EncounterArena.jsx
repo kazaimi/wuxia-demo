@@ -247,6 +247,7 @@ export default function EncounterArena() {
   const addActivity = useGameStore(state => state.addActivity);
   const addSilver = useGameStore(state => state.addSilver);
   const gainEncounterRewards = useGameStore(state => state.gainEncounterRewards);
+  const incrementSkillMastery = useGameStore(state => state.incrementSkillMastery);
 
   const cleanIcon = useCleanImage('/wuxia_encounter_icon.webp');
 
@@ -604,7 +605,8 @@ export default function EncounterArena() {
             const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
             const dDefBase = defender.attributes.con * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
             const aMod = 1 + attacker.level * 0.05;
-            const adjustedSkillPwr = skill.power * aMod;
+            const mastery = getSkillMastery(skill.id, attacker.skillMastery || {});
+            const adjustedSkillPwr = skill.power * aMod * (1 + mastery.bonus);
 
             if (skill.id === 's5' || skill.id === 's_yijin') {
                attacker.buffs.defUp = 3 + (isP1Turn ? rogueBuffs.defUpDuration : 0);
@@ -811,6 +813,10 @@ export default function EncounterArena() {
             if (p1Won) {
                const nextDefeatedCount = defeatedCount + 1;
                setDefeatedCount(nextDefeatedCount);
+               const equippedSkillIds = Object.values(player.equippedSkills || {}).filter(Boolean);
+               if (equippedSkillIds.length > 0) {
+                  incrementSkillMastery(equippedSkillIds);
+               }
 
                // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线）
                const newLevel = 10 + nextDefeatedCount * 0.9;
@@ -1206,7 +1212,7 @@ export default function EncounterArena() {
               const pAtk = attacker.attributes.str * 2 + attacker.level * 5;
               const dDefBase = defender.attributes.con * 2 + defender.level * 2 + (dAttrs.extraDef || 0);
               const aMod = 1 + attacker.level * 0.05;
-              const mastery = getSkillMastery(skill.id, isP1Turn ? (player.masteryMap || {}) : (attacker.masteryMap || {}));
+              const mastery = getSkillMastery(skill.id, attacker.skillMastery || {});
               const adjustedSkillPwr = skill.power * aMod * (1 + mastery.bonus);
 
               if (skill.id === 's5' || skill.id === 's_yijin') {
@@ -1440,7 +1446,11 @@ export default function EncounterArena() {
      setLogs(finalLogs);
      
      if (p1Won) {
-        setDefeatedCount(nextDefeatedCount);
+         setDefeatedCount(nextDefeatedCount);
+         const equippedSkillIds = Object.values(player.equippedSkills || {}).filter(Boolean);
+         if (equippedSkillIds.length > 0) {
+            incrementSkillMastery(equippedSkillIds);
+         }
          
          // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线，与正常战斗一致）
          const newLevel = 10 + nextDefeatedCount * 0.9;

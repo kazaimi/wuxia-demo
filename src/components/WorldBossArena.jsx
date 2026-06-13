@@ -16,6 +16,7 @@ export default function WorldBossArena() {
     '/boss_mola_portrait.png';
   const cleanBossPic = useCleanImage(bossPicSrc, 20, 20);
   const cleanBossHeaderPic = useCleanImage('/world_boss_header.png', 25, 20);
+  const cleanDemonSword = useCleanImage('/demon_sword.png', 20, 20);
   const fetchWorldBossState = useGameStore(state => state.fetchWorldBossState);
   const signupWorldBoss = useGameStore(state => state.signupWorldBoss);
   const challengeWorldBoss = useGameStore(state => state.challengeWorldBoss);
@@ -134,6 +135,14 @@ export default function WorldBossArena() {
      let isCritOccurred = false;
      const castSkillsList = [];
 
+     // 检测玩家是否洗练出词条
+     const attrs = player.equippedTreasureAttrs || {};
+     const playerTreasure = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
+     const hasPo破魔 = (attrs.bossDamageBoost > 0) || (attrs.extraHp >= 120) || (player.treasures.some(t => ['t13', 't14'].includes(t))); // 包含破魔词条或特定神兵
+     const hasPoison = attrs.poisonRate > 0;
+     const hasStun = attrs.stunRate > 0;
+     const hasAntiStun = attrs.extraCrit >= 5; // 暴击率达标作为防晕 (对应旧幸运词条)
+
      const stanceIntro = 
        activeStance === 'weakened' ? '👹 大魔罗当前正处于【虚弱状态】（封印溃散），承受伤害加倍，输出减半！' :
        activeStance === 'frenzied' ? '👹 大魔罗当前正处于【混沌狂魔】（怒火中烧），输出提升50%，承伤增加30%！' :
@@ -147,13 +156,6 @@ export default function WorldBossArena() {
      let userHp = player.maxHp;
      let bossHp = worldBossState.hp;
      let accumulatedDmg = 0;
-
-     // 检测玩家是否洗练出词条
-     const attrs = player.equippedTreasureAttrs || {};
-     const hasPo破魔 = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || (player.treasures.some(t => ['t13', 't14'].includes(t))); // 包含破魔词条或特定神兵
-     const hasPoison = attrs.poisonRate > 0;
-     const hasStun = attrs.stunRate > 0;
-     const hasAntiStun = attrs.extraLuk >= 10; // 幸运达标作为防晕
 
      const interval = setInterval(() => {
         if (turn > 30 || userHp <= 0 || bossHp <= 0) {
@@ -458,7 +460,7 @@ export default function WorldBossArena() {
             // 过滤空值，若为空默认为普通攻击
             let skillIds = [eq.inner, eq.outer, eq.motion, eq.ultimate].filter(Boolean);
             
-            const playerInt = (player.attributes.int || 0) + (attrs.extraInt || 0);
+            const playerInt = player.attributes.int || 0;
             
             const pickSkill = () => {
                if (skillIds.length === 0) return { id: 's1', name: '基本拳脚', type: 'outer', power: 10, desc: '入门招式。外功。' };
@@ -536,12 +538,14 @@ export default function WorldBossArena() {
 
             } else {
                // 伤害性技能 (外功 & 绝招)
-               const playerStr = (player.attributes.str || 0) + (attrs.extraStr || 0);
+               const playerAtk = (player.attributes.str || 0) * 2 + player.level * 5 + (playerTreasure?.attrs?.atk || 0) + (attrs.extraAtk || 0);
                const aMod = 1 + player.level * 0.05;
                const adjustedSkillPwr = skill.power * aMod;
-               let baseDmg = playerStr * 4 + adjustedSkillPwr + Math.random() * 100;
+               let baseDmg = playerAtk * 2 + adjustedSkillPwr + Math.random() * 100;
                
-               let isCrit = Math.random() < 0.25;
+               const playerCrit = (playerTreasure?.attrs?.crit || 0) + (attrs.extraCrit || 0);
+               const baseCritChance = ((player.attributes.luk / (player.attributes.luk + 150)) * 0.2) + playerCrit * 0.01;
+               let isCrit = Math.random() < Math.max(0.05, baseCritChance);
                if (isCrit) baseDmg *= 1.8;
                let damageToBoss = Math.floor(baseDmg);
                
@@ -563,7 +567,7 @@ export default function WorldBossArena() {
                }
 
                // 破魔判定与相态文案
-               const isPoMa = (attrs.bossDamageBoost > 0) || (attrs.extraInt >= 10) || ['t13', 't14'].includes(player.equippedTreasure);
+               const isPoMa = hasPo破魔;
                let stanceLabel = '';
                if (activeStance === 'weakened') stanceLabel = '(虚弱重创 x2.0)';
                else if (activeStance === 'frenzied') stanceLabel = '(狂暴加成 x1.3)';
@@ -706,7 +710,8 @@ export default function WorldBossArena() {
 
          // 3. Boss 普通反击 (非30回合秒杀且未死)
          if (bossHp > 0 && userHp > 0 && turn < 30) {
-            let bossBaseDmg = 120 + turn * 20 - player.attributes.con * 0.8;
+            const playerDef = (player.attributes.con || 0) * 2 + player.level * 2 + (playerTreasure?.attrs?.def || 0) + (attrs.extraDef || 0);
+            let bossBaseDmg = 120 + turn * 20 - playerDef * 0.8;
             bossBaseDmg = Math.max(40, Math.floor(bossBaseDmg));
 
             // 相态修正 Boss 输出伤害
@@ -1153,8 +1158,30 @@ export default function WorldBossArena() {
                <div className="wuxia-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', position: 'relative' }}>
                   
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                     <div style={{ padding: '20px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.05)', border: '2px solid rgba(239, 68, 68, 0.2)', boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)' }}>
-                        <Sword size={60} style={{ color: 'var(--crimson)' }} />
+                     <div style={{ 
+                        position: 'relative', 
+                        width: '160px', 
+                        height: '160px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        background: 'radial-gradient(circle, rgba(220, 20, 60, 0.18) 0%, transparent 75%)',
+                        borderRadius: '50%',
+                        border: '1px dashed rgba(220, 20, 60, 0.35)',
+                        boxShadow: '0 0 30px rgba(220, 20, 60, 0.1)'
+                     }}>
+                        <img 
+                           src={cleanDemonSword} 
+                           alt="魔罗宝剑" 
+                           style={{ 
+                              width: '110px', 
+                              height: '110px', 
+                              objectFit: 'contain', 
+                              display: 'block', 
+                              filter: 'drop-shadow(0 0 10px rgba(220, 20, 60, 0.8))',
+                              animation: 'wuxia-float 4s ease-in-out infinite'
+                           }} 
+                        />
                      </div>
                   </div>
                   
@@ -1300,7 +1327,7 @@ export default function WorldBossArena() {
       )}
 
       {/* 底部开发者调试控制面板 */}
-      {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+      {false && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 1, background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '6px' }}>
             <h5 style={{ color: 'var(--gold)', fontSize: '0.8rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                <ShieldAlert size={12} /> 【开发调试控制台】（仅用于本功能联调测试）：

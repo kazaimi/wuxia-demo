@@ -188,6 +188,13 @@ export default function TaskHall() {
           const MATERIAL_MAP = {
             str: '金精砂', con: '乙木芝', agi: '玄水液', int: '地火髓', luk: '厚土精'
           };
+          const MATERIAL_COLORS = {
+            str: '#fbbf24', // 金
+            con: '#10b981', // 木
+            agi: '#3b82f6', // 水
+            int: '#ef4444', // 火
+            luk: '#f97316'  // 土
+          };
           const matName = MATERIAL_MAP[task.reqAttr];
           const estEssence = task.stars * 10;
 
@@ -218,7 +225,7 @@ export default function TaskHall() {
 
               <div style={{ fontSize: '0.8rem', marginTop: '0.6rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <span style={{ color: 'var(--gold)' }}><Gift size={14} style={{ verticalAlign: 'sub' }}/> +{task.expReward} 修为</span>
-                {!task.completed && <span style={{ color: '#c084fc' }}>掉落: 1x {matName}</span>}
+                {!task.completed && <span style={{ color: MATERIAL_COLORS[task.reqAttr] || '#c084fc', fontWeight: 'bold' }}>掉落: 1x {matName}</span>}
                 {!task.completed && <span style={{ color: '#fbbf24' }}>精魂: +{estEssence}</span>}
                 <span title="预估成功率" style={{ color: showRate > 60 ? 'var(--jade)' : 'var(--crimson)' }}>
                   成功率: {showRate}%

@@ -38,6 +38,14 @@ const getIllustrationSrc = (type, event) => {
     if (event?.desc?.includes('独木桥') || event?.desc?.includes('断崖')) return '/scenes/trap_02.webp';
     return '/scenes/trap_03.webp';
   }
+  // 7. 怨灵残影
+  if (type === 'ghost') {
+    return '/scenes/ghost_encounter.png';
+  }
+  // 8. 福地灵泉精魂飞瀑
+  if (type === 'spirit_well') {
+    return '/scenes/spirit_well.png';
+  }
   return '';
 };
 
@@ -120,6 +128,16 @@ const EventIllustration = ({ type, event }) => {
       } else {
         return <QuicksandRoomIllustration />;
       }
+    }
+
+    // 怨灵残影
+    if (type === 'ghost') {
+      return <GhostIllustration />;
+    }
+
+    // 福地灵泉精魂飞瀑
+    if (type === 'spirit_well') {
+      return <SpiritWellIllustration />;
     }
 
     return <DefaultIllustration />;
@@ -1226,6 +1244,92 @@ const DefaultIllustration = () => (
         <animate attributeName="opacity" values="0.1;0.5;0.1" dur={`${2 + Math.random()*2}s`} repeatCount="indefinite" />
       </circle>
     ))}
+  </svg>
+);
+
+// 怨灵残影插画
+const GhostIllustration = () => (
+  <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ghostGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#0a0515" />
+        <stop offset="100%" stopColor="#020005" />
+      </linearGradient>
+      <radialGradient id="ghostGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
+        <stop offset="60%" stopColor="#06b6d4" stopOpacity="0.1" />
+        <stop offset="100%" stopColor="#000" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <rect width="400" height="200" fill="url(#ghostGrad)" />
+    {/* 幽能气场 */}
+    <circle cx="200" cy="100" r="90" fill="url(#ghostGlow)" />
+    {/* 鬼魂虚影 */}
+    <path d="M 200,60 C 180,60 170,80 170,100 C 170,130 180,150 170,170 C 175,170 180,165 185,170 C 190,165 195,170 200,165 C 205,170 210,165 215,170 C 220,165 225,170 230,170 C 220,150 230,130 230,100 C 230,80 220,60 200,60 Z" fill="#2e1065" opacity="0.65" stroke="#a855f7" strokeWidth="1">
+      <animate attributeName="d" values="
+        M 200,60 C 180,60 170,80 170,100 C 170,130 180,150 170,170 C 175,170 180,165 185,170 C 190,165 195,170 200,165 C 205,170 210,165 215,170 C 220,165 225,170 230,170 C 220,150 230,130 230,100 C 230,80 220,60 200,60 Z;
+        M 200,58 C 182,58 172,78 172,98 C 172,132 178,148 168,172 C 174,171 178,167 184,171 C 189,166 194,171 199,166 C 204,171 209,166 214,171 C 219,166 224,171 229,172 C 222,148 228,132 228,98 C 228,78 218,58 200,58 Z;
+        M 200,60 C 180,60 170,80 170,100 C 170,130 180,150 170,170 C 175,170 180,165 185,170 C 190,165 195,170 200,165 C 205,170 210,165 215,170 C 220,165 225,170 230,170 C 220,150 230,130 230,100 C 230,80 220,60 200,60 Z
+      " dur="4s" repeatCount="indefinite" />
+    </path>
+    {/* 怨念之火 */}
+    <circle cx="190" cy="95" r="3" fill="#06b6d4" opacity="0.8">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="210" cy="95" r="3" fill="#06b6d4" opacity="0.8">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite" />
+    </circle>
+    <text x="200" y="135" textAnchor="middle" fontSize="16" fill="#a855f7" opacity="0.5" fontFamily="serif">怨</text>
+  </svg>
+);
+
+// 福地灵泉精魂飞瀑插画
+const SpiritWellIllustration = () => (
+  <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="wellGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#0a0a20" />
+        <stop offset="100%" stopColor="#020208" />
+      </linearGradient>
+      <radialGradient id="wellGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#c084fc" stopOpacity="0.4" />
+        <stop offset="60%" stopColor="#e9d5ff" stopOpacity="0.1" />
+        <stop offset="100%" stopColor="#000" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <rect width="400" height="200" fill="url(#wellGrad)" />
+    
+    {/* 灵光泉水渲染 */}
+    <circle cx="200" cy="120" r="60" fill="url(#wellGlow)" />
+    
+    {/* 泉眼轮廓 */}
+    <ellipse cx="200" cy="130" rx="40" ry="12" fill="#1e1b4b" stroke="#c084fc" strokeWidth="2" opacity="0.8">
+      <animate attributeName="stroke-opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite" />
+    </ellipse>
+    
+    {/* 灵气上涌动画 */}
+    <path d="M 190,130 Q 185,90 200,60" fill="none" stroke="#e9d5ff" strokeWidth="1.5" opacity="0.6">
+      <animate attributeName="stroke-dasharray" values="100;10;100" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite" />
+    </path>
+    <path d="M 210,130 Q 215,90 200,60" fill="none" stroke="#e9d5ff" strokeWidth="1.5" opacity="0.6">
+      <animate attributeName="stroke-dasharray" values="100;10;100" dur="3s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3s" repeatCount="indefinite" />
+    </path>
+    <path d="M 200,130 Q 200,80 200,50" fill="none" stroke="#c084fc" strokeWidth="2.5" opacity="0.7">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.5s" repeatCount="indefinite" />
+    </path>
+
+    {/* 上涌的小粒子/精魂 */}
+    {[...Array(12)].map((_, i) => (
+      <circle key={`essence${i}`} cx={180 + Math.random()*40} cy={130} r={1.5 + Math.random()*2} fill="#ffd700" opacity="0.8">
+        <animate attributeName="cy" values="130;40" dur={`${1.5 + Math.random()*2}s`} repeatCount="indefinite" />
+        <animate attributeName="cx" values={`${180 + Math.random()*40};${190 + Math.random()*20}`} dur={`${1.5 + Math.random()*2}s`} repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8;0" dur={`${1.5 + Math.random()*2}s`} repeatCount="indefinite" />
+      </circle>
+    ))}
+    
+    <text x="200" y="90" textAnchor="middle" fontSize="16" fill="#ffd700" opacity="0.6" fontFamily="serif">泉</text>
   </svg>
 );
 

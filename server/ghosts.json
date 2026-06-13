@@ -1,14 +1,14 @@
 [
   {
-    "id": "ghost_1781019096607_560",
+    "id": "ghost_1781352486574_296",
     "creatorName": "ALEX",
-    "layerIndex": 3,
+    "layerIndex": 14,
     "attributes": {
       "con": 3,
       "str": 1,
-      "int": 4,
-      "agi": 66,
-      "luk": 73
+      "int": 76,
+      "agi": 1,
+      "luk": 66
     },
     "skills": [
       "s1",
@@ -38,128 +38,19 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "equippedTreasure": "t11",
+    "equippedTreasure": "t14",
     "equippedTreasureAttrs": {
-      "extraStr": 0,
-      "extraCon": 0,
-      "extraAgi": 0,
-      "extraInt": 0,
-      "extraLuk": 0,
-      "extraDodge": 0,
-      "extraDef": 0,
-      "stunRate": 0,
-      "poisonRate": 0,
+      "extraAtk": 19,
+      "extraDef": 50,
+      "extraHp": 0,
+      "extraDodge": 15,
+      "extraCrit": 16,
+      "stunRate": 5,
+      "poisonRate": 5,
       "bossDamageBoost": 0
     },
     "level": 43,
-    "message": "感受痛苦吧",
-    "createdAt": 1781019096607
-  },
-  {
-    "id": "ghost_1781097415740_470",
-    "creatorName": "ALEX",
-    "layerIndex": 12,
-    "attributes": {
-      "con": 78,
-      "str": 1,
-      "int": 4,
-      "agi": 62,
-      "luk": 2
-    },
-    "skills": [
-      "s1",
-      "s_taiji",
-      "s_kuihua",
-      "s_xianglong",
-      "s3",
-      "s4",
-      "s_kuangfeng",
-      "s_shihou",
-      "s_xixing",
-      "s_anran",
-      "s_liumai",
-      "s5",
-      "s_dianxue",
-      "s_shenxing",
-      "s_tiyun",
-      "s_du",
-      "s_dugu"
-    ],
-    "equippedSkills": {
-      "0": "s1",
-      "1": "s_taiji",
-      "2": "s_kuihua",
-      "motion": "s_shenxing",
-      "outer": "s_du",
-      "ultimate": "s_dianxue",
-      "inner": "s_shihou"
-    },
-    "equippedTreasure": "t11",
-    "equippedTreasureAttrs": {
-      "extraStr": 0,
-      "extraCon": 0,
-      "extraAgi": 0,
-      "extraInt": 0,
-      "extraLuk": 0,
-      "extraDodge": 0,
-      "extraDef": 0,
-      "stunRate": 0,
-      "poisonRate": 0,
-      "bossDamageBoost": 0
-    },
-    "level": 43,
-    "message": "看看你后面",
-    "createdAt": 1781097415740
-  },
-  {
-    "id": "ghost_1781096839761_35",
-    "creatorName": "猫十一郎",
-    "layerIndex": 12,
-    "attributes": {
-      "con": 10,
-      "str": 7,
-      "int": 4,
-      "agi": 13,
-      "luk": 141
-    },
-    "skills": [
-      "s1",
-      "s3",
-      "s4",
-      "s_xixing",
-      "s_anran",
-      "s_taiji",
-      "s_shihou",
-      "s_dugu",
-      "s_kuangfeng",
-      "s_kuihua",
-      "s_dianxue",
-      "s_xianglong",
-      "s_tiyun",
-      "s5",
-      "s_shenxing",
-      "s_liumai"
-    ],
-    "equippedSkills": {
-      "inner": "s_xixing",
-      "outer": "s_anran",
-      "motion": "s4",
-      "ultimate": "s_liumai"
-    },
-    "equippedTreasure": "t9",
-    "equippedTreasureAttrs": {
-      "extraStr": 0,
-      "extraCon": 0,
-      "extraAgi": 0,
-      "extraInt": 0,
-      "extraLuk": 0,
-      "extraDodge": 0,
-      "extraDef": 0,
-      "stunRate": 0,
-      "poisonRate": 0
-    },
-    "level": 44,
-    "message": "你来了，你没了",
-    "createdAt": 1781096839761
+    "message": "000",
+    "createdAt": 1781352486574
   }
 ]
