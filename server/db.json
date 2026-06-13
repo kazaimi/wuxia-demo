@@ -570,22 +570,22 @@
   },
   {
     "name": "猫十一郎",
-    "title": "武林卷王",
+    "title": "初出茅庐",
     "level": 44,
-    "exp": 12696,
+    "exp": 15209,
     "maxExp": 15924,
     "freePoints": 0,
-    "taskCount": 35,
-    "encountersToday": 1,
-    "lastTaskDate": "Wed Jun 10 2026",
+    "taskCount": 10,
+    "encountersToday": 0,
+    "lastTaskDate": "Thu Jun 11 2026",
     "hp": 860,
     "maxHp": 860,
     "attributes": {
       "con": 10,
-      "str": 7,
+      "str": 145,
       "int": 4,
-      "agi": 13,
-      "luk": 141
+      "agi": 10,
+      "luk": 6
     },
     "skills": [
       "s1",
@@ -623,11 +623,11 @@
       "ultimate": "s_liumai"
     },
     "equippedTreasure": "t9",
-    "id": "Wc-uWaSxDcFbydkMAAAn",
+    "id": "QryE81cvJbDH9OVrAAAW",
     "isBattling": false,
     "rankIndex": 19,
-    "dailyActivity": 230,
-    "secretRealmAttempts": 3,
+    "dailyActivity": 45,
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "silver": 73,
     "permanentAttributes": {
@@ -637,16 +637,16 @@
       "agi": 10,
       "luk": 6
     },
-    "essence": 194,
+    "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 9,
+      "goldSand": 10,
       "woodHerb": 0,
-      "waterFluid": 7,
-      "fireMarrow": 9,
-      "earthEssence": 6
+      "waterFluid": 8,
+      "fireMarrow": 10,
+      "earthEssence": 7
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -659,9 +659,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781096224334,
+    "lastLoginTime": 1781136082117,
     "dailySilverAdd": 0,
-    "lastResetDate": "Wed Jun 10 2026"
+    "lastResetDate": "Thu Jun 11 2026"
   },
   {
     "name": "喵",
@@ -1541,21 +1541,21 @@
   },
   {
     "name": "田啵光",
-    "title": "初出茅庐",
-    "level": 5,
-    "exp": 537,
-    "maxExp": 621,
+    "title": "摸鱼小虾",
+    "level": 6,
+    "exp": 416,
+    "maxExp": 777,
     "freePoints": 0,
-    "taskCount": 2,
-    "encountersToday": 2,
-    "lastTaskDate": "Fri Jun 05 2026",
+    "taskCount": 0,
+    "encountersToday": 1,
+    "lastTaskDate": "Thu Jun 11 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "silver": 7,
-    "hp": 295,
-    "maxHp": 295,
+    "hp": 340,
+    "maxHp": 340,
     "attributes": {
-      "con": 12,
+      "con": 15,
       "str": 0,
       "int": 0,
       "agi": 10,
@@ -1581,10 +1581,10 @@
       "ultimate": null
     },
     "equippedTreasure": "t1",
-    "id": "D5vMJyq9x7uyStuOAAK1",
+    "id": "6DEVTs57ql6JbM2rAAAC",
     "isBattling": false,
     "rankIndex": 10063,
-    "dailyActivity": 30,
+    "dailyActivity": 10,
     "skillMastery": {},
     "password": "636793",
     "essence": 100,
@@ -1609,7 +1609,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781134518375,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Thu Jun 11 2026"
   },
   {
     "name": "花花",
@@ -3729,14 +3731,14 @@
   },
   {
     "name": "天机子",
-    "title": "江湖劳模",
+    "title": "勤勉游侠",
     "level": 27,
-    "exp": 4245,
+    "exp": 6432,
     "maxExp": 7106,
     "freePoints": 0,
-    "taskCount": 4,
+    "taskCount": 6,
     "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 10 2026",
+    "lastTaskDate": "Thu Jun 11 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
     "silver": 175,
@@ -3745,8 +3747,8 @@
     "attributes": {
       "con": 0,
       "str": 0,
-      "int": 0,
-      "agi": 88,
+      "int": 88,
+      "agi": 0,
       "luk": 0
     },
     "permanentAttributes": {
@@ -3792,20 +3794,20 @@
       "ultimate": "s_shengxin"
     },
     "equippedTreasure": "t7",
-    "id": "uxj9FMomDmpsJVj6AAAC",
+    "id": "pZGtp8SI4cq_gGMfAAAI",
     "isBattling": false,
     "rankIndex": 56,
-    "dailyActivity": 145,
+    "dailyActivity": 75,
     "password": "123456",
     "essence": 200,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
-      "woodHerb": 1,
-      "waterFluid": 2,
-      "fireMarrow": 1,
+      "goldSand": 2,
+      "woodHerb": 3,
+      "waterFluid": 3,
+      "fireMarrow": 2,
       "earthEssence": 4
     },
     "equippedTreasureAttrs": {
@@ -3819,9 +3821,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781078622766,
+    "lastLoginTime": 1781135765342,
     "dailySilverAdd": 0,
-    "lastResetDate": "Wed Jun 10 2026"
+    "lastResetDate": "Thu Jun 11 2026"
   },
   {
     "name": "枫桥泊石",
@@ -12087,18 +12089,16 @@
   },
   {
     "name": "q1262190221",
-    "title": "武林卷王",
+    "title": "摸鱼小虾",
     "level": 7,
     "exp": 838,
     "maxExp": 948,
     "freePoints": 0,
-    "taskCount": 35,
+    "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Fri Jun 05 2026",
-    "secretRealmAttempts": 1,
-    "dailyDebuffs": [
-      "血枯劫"
-    ],
+    "lastTaskDate": "Thu Jun 11 2026",
+    "secretRealmAttempts": 0,
+    "dailyDebuffs": [],
     "silver": 51,
     "hp": 205,
     "maxHp": 205,
@@ -12131,10 +12131,10 @@
     },
     "equippedTreasure": null,
     "password": "a123456",
-    "id": "RKqHg1mfxTTI4QzZAAVs",
+    "id": "hROO7JHtcz6QeenxAAAa",
     "isBattling": false,
     "rankIndex": 10062,
-    "dailyActivity": 230,
+    "dailyActivity": 0,
     "essence": 100,
     "inventoryMaterials": {
       "anomalyDust": 0,
@@ -12157,7 +12157,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1780926003748
+    "lastLoginTime": 1781136174999,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Thu Jun 11 2026"
   },
   {
     "name": "清风",
