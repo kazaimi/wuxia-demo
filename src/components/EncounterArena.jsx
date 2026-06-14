@@ -230,9 +230,9 @@ const generateBuffChoices = (treasureId, isEarly) => {
       qLabel: '【济世】',
       qColor: 'var(--warn)',
       name: '【济世】气血大还丹',
-      desc: '立即恢复当前气血 35% 最大生命值',
+      desc: '立即恢复当前气血 60% 最大生命值',
       type: 'heal',
-      val: 0.35
+      val: 0.60
    });
 
    return list;
@@ -378,12 +378,13 @@ export default function EncounterArena() {
        heal60Count: 0,
      });
 
-     // 初始化强制统一的 P1 属性 (10级起步)
+     // 初始化强制统一的 P1 属性 (5级起步)
      const myPlayer = { 
          ...player, 
-         level: 10,
-         attributes: { con: 20, str: 12, int: 6, agi: 18, luk: 6 },
-         hp: 700, maxHp: 700,
+          level: 5,
+          attributes: { con: 20, str: 12, int: 6, agi: 18, luk: 6 },
+          hp: 500 + (TREASURES_DB?.find(t => t.id === player.equippedTreasure)?.attrs?.hp || 0) + (player.equippedTreasureAttrs?.extraHp || 0),
+          maxHp: 500 + (TREASURES_DB?.find(t => t.id === player.equippedTreasure)?.attrs?.hp || 0) + (player.equippedTreasureAttrs?.extraHp || 0),
          buffs: { dodge: 0, defUp: 0, shield: 0, revive: 0 },
          debuffs: { stun: 0, poison: 0, silence: 0, internalWound: 0, poisonPercent: 0.03 }
      };
@@ -631,7 +632,8 @@ export default function EncounterArena() {
                attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
             } else {
                const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-               const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+               const defenderDodge = (dTreasure?.attrs?.dodge || 0) + (dAttrs.extraDodge || 0);
+                const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + defenderDodge * 0.01;
             let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                
                if (isDodge) {
@@ -819,13 +821,15 @@ export default function EncounterArena() {
                }
 
                // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线）
-               const newLevel = 10 + nextDefeatedCount * 0.9;
+               const newLevel = 5 + nextDefeatedCount * 0.9;
                const oldMaxHp = finalP1.maxHp;
                const progress = Math.min(nextDefeatedCount / 60, 1);
-               const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (finalP1.attributes.con - 20) * 5);
+               const tObj = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
+               const extraHpFromTreasure = (tObj?.attrs?.hp || 0) + (player.equippedTreasureAttrs?.extraHp || 0);
+               const newMaxHp = Math.floor(500 + 1500 * Math.sqrt(progress) + (finalP1.attributes.con - 20) * 5 + extraHpFromTreasure);
                finalP1.level = newLevel;
                finalP1.maxHp = newMaxHp;
-               finalP1.hp = Math.min(newMaxHp, finalP1.hp + (newMaxHp - oldMaxHp));
+               finalP1.hp = Math.min(newMaxHp, finalP1.hp);
                setP1(finalP1);
 
                if ([6, 12, 30, 42, 48, 51, 54, 57, 60].includes(nextDefeatedCount)) {
@@ -837,7 +841,7 @@ export default function EncounterArena() {
                   handleRogueSettlement(nextDefeatedCount);
                } else if (nextDefeatedCount % 3 === 0) {
                   setEncounterState('buffSelection');
-                  const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount <= 21);
+                  const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount <= 9);
                   setSelectedIndices([]);
                   setBuffChoices(choices);
                   setLogs(prev => [...prev, `\n战胜了 ${defender.name}！通关本波次挑战！`]);
@@ -1238,7 +1242,8 @@ export default function EncounterArena() {
                  attacker.buffs.dodge = 2; actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
               } else {
                  const defDodgeBoost = (!isP1Turn) ? rogueBuffs.dodgeEffect : 0;
-                 const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + (dAttrs.extraDodge || 0) * 0.01;
+                 const defenderDodge = (dTreasure?.attrs?.dodge || 0) + (dAttrs.extraDodge || 0);
+                  const baseDodgeChance = ((defender.attributes.agi / (defender.attributes.agi + 120)) * 0.75) + defenderDodge * 0.01;
                  let isDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0 && (Math.random() < baseDodgeChance || (defender.buffs.dodge > 0 ? Math.random() < (defender.buffs.dodge === 99 ? 0.90 : 0.45 + defDodgeBoost) : false));
                  
                  if (isDodge) {
@@ -1453,20 +1458,22 @@ export default function EncounterArena() {
          }
          
          // 升级玩家等级 (+0.9 级/关) 并等额提升生命上限及当前气血（递减增长曲线，与正常战斗一致）
-         const newLevel = 10 + nextDefeatedCount * 0.9;
+         const newLevel = 5 + nextDefeatedCount * 0.9;
          const oldMaxHp = result.p1.maxHp;
          const progress = Math.min(nextDefeatedCount / 60, 1);
-         const newMaxHp = Math.floor(700 + 1300 * Math.sqrt(progress) + (result.p1.attributes.con - 20) * 5);
+          const tObj = TREASURES_DB?.find(t => t.id === player.equippedTreasure);
+          const extraHpFromTreasure = (tObj?.attrs?.hp || 0) + (player.equippedTreasureAttrs?.extraHp || 0);
+          const newMaxHp = Math.floor(500 + 1500 * Math.sqrt(progress) + (result.p1.attributes.con - 20) * 5 + extraHpFromTreasure);
          result.p1.level = newLevel;
          result.p1.maxHp = newMaxHp;
-         result.p1.hp = Math.min(newMaxHp, result.p1.hp + (newMaxHp - oldMaxHp));
+         result.p1.hp = Math.min(newMaxHp, result.p1.hp);
          setP1(result.p1);
          
         if (nextDefeatedCount >= 60) {
            handleRogueSettlement(nextDefeatedCount);
         } else if (nextDefeatedCount % 3 === 0) {
            setEncounterState('buffSelection');
-           const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount <= 21);
+           const choices = generateBuffChoices(player.equippedTreasure, nextDefeatedCount <= 9);
            setSelectedIndices([]);
            setBuffChoices(choices);
            SoundManager.play('sfx_success');
@@ -1654,6 +1661,9 @@ export default function EncounterArena() {
          else if (choice.id === 'treasureBoost') {
             next.treasureBoostLevel += choice.val;
          }
+         else if (choice.id === 'heal60') {
+            next.heal60Count += 1;
+         }
          return next;
       });
 
@@ -1667,11 +1677,14 @@ export default function EncounterArena() {
       else if (choice.id === 'int') updatedP1.attributes.int += choice.val;
       else if (choice.id === 'agi') updatedP1.attributes.agi += choice.val;
       else if (choice.id === 'luk') updatedP1.attributes.luk += choice.val;
+      else if (choice.id === 'heal60') {
+         updatedP1.hp = Math.min(updatedP1.maxHp, updatedP1.hp + Math.floor(updatedP1.maxHp * choice.val));
+      }
   };
 
   // 确认并批量注入所有已选中的奇遇加持，并恢复生命值与流转状态
   const confirmRogueBuffs = () => {
-      const maxChoices = defeatedCount <= 21 ? 2 : 1;
+      const maxChoices = defeatedCount <= 9 ? 3 : 1;
       if (selectedIndices.length !== maxChoices) {
          alert(`请选满 ${maxChoices} 个奇遇增益后再确认注入！`);
          return;
@@ -1848,7 +1861,7 @@ export default function EncounterArena() {
              【鸣剑破劫】Roguelike 闯关模式说明
            </h3>
            <ul style={{ color: 'var(--text-main)', textAlign: 'left', fontSize: '0.9rem', lineHeight: '1.8', listStyleType: 'none', paddingLeft: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-             <li>⚔️ <b>初始统一</b>：等级强制重置为 <b>10 级</b>，初始气血 <b>2000 HP</b>，属性重置为 <b>体质:20, 力量:12, 智慧:6, 敏捷:18, 幸运:6</b>。保留装备的功法与秘宝。</li>
+             <li>⚔️ <b>初始统一</b>：等级强制重置为 <b>5 级</b>，初始气血 <b>500 HP (加成装备与器灵属性后生效)</b>，属性重置为 <b>体质:20, 力量:12, 智慧:6, 敏捷:18, 幸运:6</b>。保留装备的功法与秘宝。</li>
              <li>🏆 <b>逆袭风云榜</b>：从风云榜的最底端席位依次向上挑战，单场战斗结束后的剩余气血<b>不会自动恢复</b>。</li>
              <li>✨ <b>奇遇加持</b>：每击败 3 名对手通关一个波次，气血恢复 <b>20%</b> 并获得自选奇遇增益与大还丹（大还丹可恢复 60% 最大生命值），增益可叠加！</li>
              <li>🎁 <b>里程碑大奖</b>：击败人数达 <b>6、12、30、42、48、51、54、57、60</b> 时派发大奖，中央弹窗提示。通关 60 关将晋升限定名望【<b>鸣剑宗主</b>】！</li>
@@ -1863,13 +1876,13 @@ export default function EncounterArena() {
               奇遇抉择
             </h2>
             <p style={{ color: 'var(--text-main)', fontSize: '0.95rem', marginBottom: '2rem', maxWidth: '700px', lineHeight: '1.6' }}>
-              战绩斐然！大侠请注意：当前处于{defeatedCount < 21 ? <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【前期发育阶段，可任意挑选 2 项】</span> : <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>【中后期突围阶段，仅能精选 1 项】</span>}奇遇加持注入（增益可叠加，注入后获得 20% 气血恢复）：
+              战绩斐然！大侠请注意：当前处于{defeatedCount <= 9 ? <span style={{ color: 'var(--warn)', fontWeight: 'bold' }}>【前期发育阶段，可自选 3 项】</span> : <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>【中后期突围阶段，仅能精选 1 项】</span>}奇遇加持注入（增益可叠加，注入后获得 20% 气血恢复）：
             </p>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', width: '100%', maxWidth: '1000px', marginBottom: '2rem' }}>
               {buffChoices.map((choice, idx) => {
                 const isSelected = selectedIndices.includes(idx);
-                const maxChoices = defeatedCount <= 21 ? 2 : 1;
+                const maxChoices = defeatedCount <= 9 ? 3 : 1;
                 return (
                   <div 
                     key={idx}
@@ -1986,7 +1999,7 @@ export default function EncounterArena() {
                    if (rerollsLeft <= 0) return;
                    SoundManager.play('sfx_click');
                    setRerollsLeft(prev => prev - 1);
-                   const choices = generateBuffChoices(player.equippedTreasure, defeatedCount <= 21);
+                   const choices = generateBuffChoices(player.equippedTreasure, defeatedCount <= 9);
                    setSelectedIndices([]);
                    setBuffChoices(choices);
                 }}
@@ -2007,22 +2020,22 @@ export default function EncounterArena() {
               <button
                 className="btn-primary glow-effect"
                 onClick={confirmRogueBuffs}
-                disabled={selectedIndices.length !== (defeatedCount <= 21 ? 2 : 1)}
+                disabled={selectedIndices.length !== (defeatedCount <= 9 ? 3 : 1)}
                 style={{
                   padding: '0.8rem 3.5rem',
                   fontSize: '1.1rem',
-                  background: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
-                  color: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
+                  background: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? 'var(--gold)' : 'rgba(255,255,255,0.08)',
+                  color: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? '#000' : 'rgba(255,255,255,0.3)',
                   fontWeight: 'bold',
-                  cursor: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? 'pointer' : 'not-allowed',
-                  border: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                  filter: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? 'none' : 'grayscale(100%)',
-                  boxShadow: selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
+                  cursor: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? 'pointer' : 'not-allowed',
+                  border: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  filter: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? 'none' : 'grayscale(100%)',
+                  boxShadow: selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
                 }}
               >
-                {selectedIndices.length === (defeatedCount <= 21 ? 2 : 1) 
+                {selectedIndices.length === (defeatedCount <= 9 ? 3 : 1) 
                   ? '确立根基，注入奇遇加持' 
-                  : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount <= 21 ? 2 : 1}）`}
+                  : `请选择增益（已选 ${selectedIndices.length} / ${defeatedCount <= 9 ? 3 : 1}）`}
               </button>
             </div>
           </div>
