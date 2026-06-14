@@ -1,20 +1,20 @@
 [
   {
     "name": "ALEX",
-    "title": "摸鱼小虾",
+    "title": "初出茅庐",
     "level": 43,
-    "exp": 2504,
+    "exp": 5019,
     "maxExp": 15321,
     "freePoints": 0,
-    "taskCount": 0,
-    "hp": 1165,
-    "maxHp": 1165,
+    "taskCount": 6,
+    "hp": 825,
+    "maxHp": 825,
     "attributes": {
-      "con": 42,
-      "str": 14,
-      "int": 16,
-      "agi": 69,
-      "luk": 6
+      "con": 8,
+      "str": 1,
+      "int": 4,
+      "agi": 132,
+      "luk": 2
     },
     "skills": [
       "s1",
@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "Lki2aCwHGnbFk8dlAAAi",
+    "id": "HAQ1lvfTxEdKLvh0AAAG",
     "isBattling": false,
     "rankIndex": 22,
-    "lastTaskDate": "Sat Jun 13 2026",
+    "lastTaskDate": "Sun Jun 14 2026",
     "treasures": [
       "t3",
       "t5",
@@ -57,20 +57,22 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 0,
-    "secretRealmAttempts": 0,
+    "encountersToday": 1,
+    "secretRealmAttempts": 1,
     "dailyDebuffs": [],
-    "equippedTreasure": "t11",
-    "dailyActivity": 0,
-    "silver": 109,
+    "equippedTreasure": "t13",
+    "dailyActivity": 55,
+    "silver": 124,
     "skillMastery": {
-      "s1": 5,
-      "s_taiji": 5,
-      "s_kuihua": 5,
-      "s_shenxing": 5,
-      "s_du": 5,
+      "s1": 6,
+      "s_taiji": 6,
+      "s_kuihua": 6,
+      "s_shenxing": 6,
+      "s_du": 6,
       "s_liumai": 5,
-      "s5": 5
+      "s5": 5,
+      "s_dianxue": 1,
+      "s_shihou": 1
     },
     "permanentAttributes": {
       "con": 3,
@@ -80,16 +82,16 @@
       "luk": 2
     },
     "password": "636793",
-    "essence": 70,
+    "essence": 320,
     "inventoryMaterials": {
       "anomalyDust": 7,
       "soulAshes": 0,
       "anomalyCrystal": 0,
       "goldSand": 0,
       "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "waterFluid": 2,
+      "fireMarrow": 1,
+      "earthEssence": 3
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -103,9 +105,9 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781360846808,
+    "lastLoginTime": 1781399641048,
     "dailySilverAdd": 0,
-    "lastResetDate": "Sat Jun 13 2026"
+    "lastResetDate": "Sun Jun 14 2026"
   },
   {
     "name": "芙蓉女侠",
@@ -5174,25 +5176,25 @@
   },
   {
     "name": "乱星海韩立",
-    "title": "摸鱼小虾",
-    "level": 47,
-    "exp": 9571,
-    "maxExp": 17791,
-    "freePoints": 10,
-    "taskCount": 1,
+    "title": "江湖劳模",
+    "level": 48,
+    "exp": 6211,
+    "maxExp": 18434,
+    "freePoints": 0,
+    "taskCount": 35,
     "encountersToday": 0,
-    "lastTaskDate": "Wed Jun 10 2026",
+    "lastTaskDate": "Sun Jun 14 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
-    "silver": 93,
-    "hp": 805,
-    "maxHp": 805,
+    "silver": 169,
+    "hp": 820,
+    "maxHp": 820,
     "attributes": {
       "con": 0,
-      "str": 118,
-      "int": 0,
-      "agi": 1,
-      "luk": 19
+      "str": 0,
+      "int": 127,
+      "agi": 0,
+      "luk": 24
     },
     "permanentAttributes": {
       "con": 0,
@@ -5235,21 +5237,21 @@
       "ultimate": "s_kuihua"
     },
     "equippedTreasure": "t9",
-    "id": "U4UOSF9gBo56e0EqAAAw",
+    "id": "5Ci5Z94AxJ-Tb2LDAAAI",
     "isBattling": false,
     "rankIndex": 21,
-    "dailyActivity": 0,
+    "dailyActivity": 175,
     "password": "l4l699o665",
-    "essence": 100,
+    "essence": 500,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 0,
-      "woodHerb": 0,
-      "waterFluid": 0,
-      "fireMarrow": 0,
-      "earthEssence": 0
+      "goldSand": 5,
+      "woodHerb": 7,
+      "waterFluid": 11,
+      "fireMarrow": 5,
+      "earthEssence": 6
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -5262,9 +5264,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781102262730,
+    "lastLoginTime": 1781401566488,
     "dailySilverAdd": 0,
-    "lastResetDate": "Wed Jun 10 2026"
+    "lastResetDate": "Sun Jun 14 2026"
   },
   {
     "name": "无敌的我",
