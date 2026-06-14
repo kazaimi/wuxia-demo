@@ -1,19 +1,19 @@
 [
   {
     "name": "ALEX",
-    "title": "初出茅庐",
+    "title": "江湖劳模",
     "level": 43,
-    "exp": 5019,
+    "exp": 9950,
     "maxExp": 15321,
     "freePoints": 0,
-    "taskCount": 6,
+    "taskCount": 19,
     "hp": 825,
     "maxHp": 825,
     "attributes": {
       "con": 8,
       "str": 1,
-      "int": 4,
-      "agi": 132,
+      "int": 6,
+      "agi": 130,
       "luk": 2
     },
     "skills": [
@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "HAQ1lvfTxEdKLvh0AAAG",
+    "id": "r9UCn7gubYYtod0lAAAB",
     "isBattling": false,
     "rankIndex": 22,
     "lastTaskDate": "Sun Jun 14 2026",
@@ -57,22 +57,22 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 1,
+    "encountersToday": 2,
     "secretRealmAttempts": 1,
     "dailyDebuffs": [],
     "equippedTreasure": "t13",
-    "dailyActivity": 55,
-    "silver": 124,
+    "dailyActivity": 125,
+    "silver": 154,
     "skillMastery": {
-      "s1": 6,
-      "s_taiji": 6,
-      "s_kuihua": 6,
-      "s_shenxing": 6,
-      "s_du": 6,
+      "s1": 32,
+      "s_taiji": 32,
+      "s_kuihua": 32,
+      "s_shenxing": 32,
+      "s_du": 32,
       "s_liumai": 5,
       "s5": 5,
-      "s_dianxue": 1,
-      "s_shihou": 1
+      "s_dianxue": 27,
+      "s_shihou": 27
     },
     "permanentAttributes": {
       "con": 3,
@@ -82,16 +82,16 @@
       "luk": 2
     },
     "password": "636793",
-    "essence": 320,
+    "essence": 500,
     "inventoryMaterials": {
       "anomalyDust": 7,
       "soulAshes": 0,
       "anomalyCrystal": 0,
       "goldSand": 0,
       "woodHerb": 0,
-      "waterFluid": 2,
-      "fireMarrow": 1,
-      "earthEssence": 3
+      "waterFluid": 3,
+      "fireMarrow": 7,
+      "earthEssence": 6
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -105,7 +105,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781399641048,
+    "lastLoginTime": 1781418727905,
     "dailySilverAdd": 0,
     "lastResetDate": "Sun Jun 14 2026"
   },
@@ -3733,25 +3733,25 @@
   },
   {
     "name": "天机子",
-    "title": "初出茅庐",
-    "level": 27,
-    "exp": 6432,
-    "maxExp": 7106,
-    "freePoints": 0,
-    "taskCount": 0,
-    "encountersToday": 0,
-    "lastTaskDate": "Sat Jun 13 2026",
+    "title": "武林卷王",
+    "level": 30,
+    "exp": 7528,
+    "maxExp": 8437,
+    "freePoints": 3,
+    "taskCount": 35,
+    "encountersToday": 2,
+    "lastTaskDate": "Sun Jun 14 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 175,
-    "hp": 1385,
-    "maxHp": 1385,
+    "silver": 332,
+    "hp": 550,
+    "maxHp": 550,
     "attributes": {
-      "con": 88,
+      "con": 0,
       "str": 0,
       "int": 0,
       "agi": 0,
-      "luk": 0
+      "luk": 94
     },
     "permanentAttributes": {
       "con": 0,
@@ -3787,7 +3787,12 @@
       "t7",
       "t9",
       "t9",
-      "t4"
+      "t4",
+      "t12",
+      "t7",
+      "t10",
+      "t9",
+      "t9"
     ],
     "equippedSkills": {
       "inner": "s_xixing",
@@ -3796,21 +3801,21 @@
       "ultimate": "s_shengxin"
     },
     "equippedTreasure": "t7",
-    "id": "JP8FcYaTemlu_-pPAAAk",
+    "id": "lYVvy1NY1lKAfxRiAAAE",
     "isBattling": false,
     "rankIndex": 56,
-    "dailyActivity": 45,
+    "dailyActivity": 230,
     "password": "123456",
-    "essence": 221,
+    "essence": 500,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 2,
-      "woodHerb": 3,
-      "waterFluid": 3,
-      "fireMarrow": 2,
-      "earthEssence": 4
+      "goldSand": 10,
+      "woodHerb": 8,
+      "waterFluid": 10,
+      "fireMarrow": 11,
+      "earthEssence": 6
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -3823,9 +3828,15 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781360999357,
+    "lastLoginTime": 1781419088832,
     "dailySilverAdd": 0,
-    "lastResetDate": "Sat Jun 13 2026"
+    "lastResetDate": "Sun Jun 14 2026",
+    "skillMastery": {
+      "s_xixing": 86,
+      "s_kuangfeng": 86,
+      "s_shenxing": 86,
+      "s_shengxin": 86
+    }
   },
   {
     "name": "枫桥泊石",
