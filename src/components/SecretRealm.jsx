@@ -1468,7 +1468,7 @@ export default function SecretRealm() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: 'rgba(20,20,30,0.8)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(192, 132, 252, 0.2)' }}>
             <div>深径残尺：<span style={{color: 'var(--gold)', fontWeight: 'bold', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif'}}>{depth}</span> 层</div>
-            {false && player.name === 'ALEX' && (
+            {player.name === 'ALEX' && (
               <button 
                 onClick={() => {
                   SoundManager.play('sfx_click');

@@ -1327,7 +1327,7 @@ export default function WorldBossArena() {
       )}
 
       {/* 底部开发者调试控制面板 */}
-      {false && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+      {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
          <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', zIndex: 1, background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '6px' }}>
             <h5 style={{ color: 'var(--gold)', fontSize: '0.8rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                <ShieldAlert size={12} /> 【开发调试控制台】（仅用于本功能联调测试）：

@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "z3Izf9sp-2kBRXtJAAAW",
+    "id": "Lki2aCwHGnbFk8dlAAAi",
     "isBattling": false,
     "rankIndex": 22,
     "lastTaskDate": "Sat Jun 13 2026",
@@ -103,7 +103,7 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781360418388,
+    "lastLoginTime": 1781360846808,
     "dailySilverAdd": 0,
     "lastResetDate": "Sat Jun 13 2026"
   },
@@ -3731,23 +3731,23 @@
   },
   {
     "name": "天机子",
-    "title": "勤勉游侠",
+    "title": "初出茅庐",
     "level": 27,
     "exp": 6432,
     "maxExp": 7106,
     "freePoints": 0,
-    "taskCount": 6,
+    "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Thu Jun 11 2026",
+    "lastTaskDate": "Sat Jun 13 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
     "silver": 175,
-    "hp": 505,
-    "maxHp": 505,
+    "hp": 1385,
+    "maxHp": 1385,
     "attributes": {
-      "con": 0,
+      "con": 88,
       "str": 0,
-      "int": 88,
+      "int": 0,
       "agi": 0,
       "luk": 0
     },
@@ -3794,12 +3794,12 @@
       "ultimate": "s_shengxin"
     },
     "equippedTreasure": "t7",
-    "id": "pZGtp8SI4cq_gGMfAAAI",
+    "id": "JP8FcYaTemlu_-pPAAAk",
     "isBattling": false,
     "rankIndex": 56,
-    "dailyActivity": 75,
+    "dailyActivity": 45,
     "password": "123456",
-    "essence": 200,
+    "essence": 221,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
@@ -3821,9 +3821,9 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781135765342,
+    "lastLoginTime": 1781360999357,
     "dailySilverAdd": 0,
-    "lastResetDate": "Thu Jun 11 2026"
+    "lastResetDate": "Sat Jun 13 2026"
   },
   {
     "name": "枫桥泊石",
