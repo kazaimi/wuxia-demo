@@ -220,12 +220,19 @@ export const useGameStore = create((set, get) => ({
     if (isMockMode) return;
     if (!socket) {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      // 如果是服务器部署环境，动态连接到当前主机的 3000 端口（支持 http / https）
-      // 如果没有 hostname（特殊环境），或者需要使用之前的穿透域名，可以作为备选
-      const serverUrl = isLocal
-        ? `http://${window.location.hostname}:3000`
-        : (window.location.hostname 
-            ? `${window.location.protocol}//${window.location.hostname}:3000` 
+      const isIP = (host) => /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(host);
+      const isLocalIP = (host) => {
+        if (!isIP(host)) return false;
+        const parts = host.split('.').map(Number);
+        return parts[0] === 10 || 
+               (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || 
+               (parts[0] === 192 && parts[1] === 168);
+      };
+      
+      const serverUrl = (isLocal || isLocalIP(window.location.hostname))
+        ? `${window.location.protocol}//${window.location.hostname}:3000`
+        : (window.location.hostname && (window.location.hostname.endsWith('vercel.app') || window.location.hostname.includes('vercel'))
+            ? window.location.origin
             : 'https://api.rhdm69ccb.nyat.app:18655');
       socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
