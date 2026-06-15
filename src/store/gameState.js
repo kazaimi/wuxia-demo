@@ -222,7 +222,7 @@ export const useGameStore = create((set, get) => ({
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
-        : 'https://cb3ac1f.r6.cpolar.cn';
+        : 'https://4e17f601.r16.vip.cpolar.cn';
       socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
