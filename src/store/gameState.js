@@ -226,7 +226,7 @@ export const useGameStore = create((set, get) => ({
         ? `http://${window.location.hostname}:3000`
         : (window.location.hostname 
             ? `${window.location.protocol}//${window.location.hostname}:3000` 
-            : 'https://api.rhdm69ccb.nyat.app:28074');
+            : 'https://api.rhdm69ccb.nyat.app:18655');
       socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
