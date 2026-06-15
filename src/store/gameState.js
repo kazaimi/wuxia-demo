@@ -291,7 +291,9 @@ export const useGameStore = create((set, get) => ({
             playerData.secretRealmAttempts = 0;
             playerData.dailyDebuffs = [];
             playerData.dailyActivity = 0;
-            playerData.title = '摸鱼小虾';
+            if (playerData.title !== '鸣剑宗主') {
+               playerData.title = '摸鱼小虾';
+            }
             playerData.lastTaskDate = today;
             socket.emit('update_player', playerData);
          }
@@ -443,7 +445,9 @@ export const useGameStore = create((set, get) => ({
      if (!state.player.name) return state;
      const today = new Date().toDateString();
      if (state.player.lastTaskDate !== today) {
-        const p = { ...state.player, taskCount: 0, encountersToday: 0, secretRealmAttempts: 0, dailyDebuffs: [], dailyActivity: 0, title: '摸鱼小虾', lastTaskDate: today };
+        let title = '摸鱼小虾';
+        if (state.player.title === '鸣剑宗主') title = '鸣剑宗主';
+        const p = { ...state.player, taskCount: 0, encountersToday: 0, secretRealmAttempts: 0, dailyDebuffs: [], dailyActivity: 0, title, lastTaskDate: today };
         if (socket) socket.emit('update_player', p);
         return { player: p, dailyTasks: [] };
      }
@@ -744,6 +748,9 @@ export const useGameStore = create((set, get) => ({
           '摸鱼小虾': 1, '初出茅庐': 2, '勤勉游侠': 3, 
           '江湖劳模': 4, '武林卷王': 5, '肝帝真仙': 6
        };
+       if (oldTitle === '鸣剑宗主') {
+          nTitle = '鸣剑宗主';
+       }
        const oldRank = titleRanks[oldTitle];
        const newRank = titleRanks[nTitle] || 1;
        

@@ -1614,19 +1614,34 @@ export default function EncounterArena() {
      // 银两与秘宝已合并发放
 
 
-     // 若战胜 60 位通关，授予特别名望
-     if (finalDefeatedCount >= 60) {
-        useGameStore.getState().setTitle("鸣剑宗主");
-     }
+     // 若战胜 60 位通关，授予特别名望并获得绝世功法
+      let rewardedSkill = null;
+      if (finalDefeatedCount >= 60) {
+         useGameStore.getState().setTitle("鸣剑宗主");
+         
+         const allRewardSkills = ['s_kuihua', 's_xianglong', 's_dugu', 's_liumai', 's_shengxin', 's_yijin', 's_xixing', 's_taiji', 's_anran'];
+         const playerSkills = useGameStore.getState().player.skills || [];
+         const unlearned = allRewardSkills.filter(sk => !playerSkills.includes(sk));
+         
+         const skillId = unlearned.length > 0
+            ? unlearned[Math.floor(Math.random() * unlearned.length)]
+            : allRewardSkills[Math.floor(Math.random() * allRewardSkills.length)];
+            
+         if (skillId) {
+            useGameStore.getState().learnSkill(skillId);
+            rewardedSkill = SKILLS_DB.find(s => s.id === skillId);
+         }
+      }
 
-     setSettlementInfo({
-        defeatedCount: finalDefeatedCount,
-        exp: totalExp,
-        silver: totalSilver,
-        treasures: droppedTreasures,
-        milestones: rewardsList,
-        titleUnlocked: finalDefeatedCount >= 60 ? "鸣剑宗主" : null
-     });
+      setSettlementInfo({
+         defeatedCount: finalDefeatedCount,
+         exp: totalExp,
+         silver: totalSilver,
+         treasures: droppedTreasures,
+         milestones: rewardsList,
+         titleUnlocked: finalDefeatedCount >= 60 ? "鸣剑宗主" : null,
+         skillUnlocked: rewardedSkill
+      });
 
      setEncounterState('settlement');
      SoundManager.play('sfx_success');
@@ -2078,13 +2093,22 @@ export default function EncounterArena() {
              )}
 
              {settlementInfo?.titleUnlocked && (
-               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '8px 12px', borderRadius: '6px', marginTop: '8px' }}>
-                 <span style={{ color: 'var(--danger)', fontWeight: 'bold', fontSize: '0.9rem' }}>🎉 荣升专属称号：</span>
-                 <span className="wuxia-tag" style={{ background: 'var(--warn)', color: '#000', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                   {settlementInfo.titleUnlocked}
-                 </span>
-               </div>
-             )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '8px 12px', borderRadius: '6px', marginTop: '8px' }}>
+                  <span style={{ color: 'var(--danger)', fontWeight: 'bold', fontSize: '0.9rem' }}>🎉 荣升专属称号：</span>
+                  <span className="wuxia-tag" style={{ background: 'var(--warn)', color: '#000', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                    {settlementInfo.titleUnlocked}
+                  </span>
+                </div>
+              )}
+
+              {settlementInfo?.skillUnlocked && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '8px 12px', borderRadius: '6px', marginTop: '8px' }}>
+                  <span style={{ color: '#60a5fa', fontWeight: 'bold', fontSize: '0.9rem' }}>📖 领悟绝世功法：</span>
+                  <span className="wuxia-tag" style={{ background: '#3b82f6', color: '#fff', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                    {settlementInfo.skillUnlocked.name}
+                  </span>
+                </div>
+              )}
 
              {settlementInfo?.milestones && settlementInfo.milestones.length > 0 && (
                <div style={{ marginTop: '10px' }}>
