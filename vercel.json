@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/socket.io/:match*",
-      "destination": "http://frp-can.com:28074/socket.io/:match*"
+      "destination": "https://api.rhdm69ccb.nyat.app:18655/socket.io/:match*"
     }
   ]
 }
