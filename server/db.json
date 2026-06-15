@@ -1,19 +1,19 @@
 [
   {
     "name": "ALEX",
-    "title": "江湖劳模",
+    "title": "摸鱼小虾",
     "level": 43,
     "exp": 9950,
     "maxExp": 15321,
     "freePoints": 0,
-    "taskCount": 19,
-    "hp": 825,
-    "maxHp": 825,
+    "taskCount": 0,
+    "hp": 1155,
+    "maxHp": 1155,
     "attributes": {
-      "con": 8,
-      "str": 1,
-      "int": 6,
-      "agi": 130,
+      "con": 41,
+      "str": 20,
+      "int": 14,
+      "agi": 70,
       "luk": 2
     },
     "skills": [
@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "mAG_Fli1wkFC1UtBAAAJ",
+    "id": "3ac1Xd0hzCuFOwfqAAAB",
     "isBattling": false,
-    "rankIndex": 23,
-    "lastTaskDate": "Sun Jun 14 2026",
+    "rankIndex": 20,
+    "lastTaskDate": "Mon Jun 15 2026",
     "treasures": [
       "t3",
       "t5",
@@ -57,11 +57,11 @@
       "t9",
       "t13"
     ],
-    "encountersToday": 2,
-    "secretRealmAttempts": 1,
+    "encountersToday": 0,
+    "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "equippedTreasure": "t13",
-    "dailyActivity": 125,
+    "dailyActivity": 0,
     "silver": 154,
     "skillMastery": {
       "s1": 32,
@@ -105,9 +105,9 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781444091853,
+    "lastLoginTime": 1781528057967,
     "dailySilverAdd": 0,
-    "lastResetDate": "Sun Jun 14 2026"
+    "lastResetDate": "Mon Jun 15 2026"
   },
   {
     "name": "芙蓉女侠",
@@ -3868,7 +3868,7 @@
     "equippedTreasure": "t7",
     "id": "kESwCf2vKGNqGe2vAAJW",
     "isBattling": false,
-    "rankIndex": 21,
+    "rankIndex": 22,
     "dailyActivity": 1255,
     "password": "123456",
     "essence": 500,
@@ -5328,7 +5328,7 @@
     "equippedTreasure": "t14",
     "id": "HpI4jKN6SgkgBDW1AAIf",
     "isBattling": false,
-    "rankIndex": 22,
+    "rankIndex": 23,
     "dailyActivity": 270,
     "password": "l4l699o665",
     "essence": 500,

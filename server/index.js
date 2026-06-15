@@ -26,12 +26,22 @@ const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (co
 
 if (fs.existsSync(DB_FILE)) {
    try {
-      realPlayersDB = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
-      const originalCount = realPlayersDB.length;
+      const rawPlayers = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      // 数据去重：确保 realPlayersDB 中没有同名的玩家账号，保留等级高的那个
+      const uniqueMap = new Map();
+      rawPlayers.forEach(p => {
+         if (!p || !p.name) return;
+         const existing = uniqueMap.get(p.name);
+         if (!existing || (p.level || 1) > (existing.level || 1)) {
+            uniqueMap.set(p.name, p);
+         }
+      });
+      realPlayersDB = Array.from(uniqueMap.values());
+      const originalCount = rawPlayers.length;
       realPlayersDB = realPlayersDB.filter(p => !['西门吹雪', '令狐冲', '独孤求败', '扫地僧'].includes(p.name));
       if (realPlayersDB.length !== originalCount) {
          saveDB();
-         console.log(`[数据库初始化] 已清理重名的玩家账号。`);
+         console.log(`[数据库初始化] 已清理重复和预留的玩家账号。`);
       }
       realPlayersDB.forEach(p => {
          if (typeof p.silver === 'undefined') p.silver = 0;
@@ -553,11 +563,18 @@ realPlayersDB.forEach(p => { if (p.rankIndex) usedRanks.add(p.rankIndex); });
 
 let availableRank = 1;
 
+const realPlayerNames = new Set(realPlayersDB.map(p => p.name));
+
 for (let i = 0; i < 60; i++) {
    const progression = i / 59; 
    const level = 100 - Math.floor(Math.pow(progression, 1.2) * 95); 
    
    const name = MOCK_NAMES[i % MOCK_NAMES.length];
+   
+   // 如果这个名字已经被真实玩家占用了，跳过该 NPC 的生成，避免同名/重复 NPC 出现
+   if (realPlayerNames.has(name)) {
+      continue;
+   }
    
    while(usedRanks.has(availableRank)) {
        availableRank++;
@@ -630,7 +647,7 @@ const getLeaderboardData = () => {
         if (onlineP) {
             return { ...onlineP, isOnline: true, isMock: false };
         } else {
-            return { ...dbP, isOnline: false, isMock: false, id: null, isBattling: false };
+            return { ...dbP, isOnline: false, isMock: false, id: `offline_${dbP.name}`, isBattling: false };
         }
     });
 

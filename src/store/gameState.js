@@ -220,9 +220,13 @@ export const useGameStore = create((set, get) => ({
     if (isMockMode) return;
     if (!socket) {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // 如果是服务器部署环境，动态连接到当前主机的 3000 端口（支持 http / https）
+      // 如果没有 hostname（特殊环境），或者需要使用之前的穿透域名，可以作为备选
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
-        : 'https://api.rhdm69ccb.nyat.app:28074';
+        : (window.location.hostname 
+            ? `${window.location.protocol}//${window.location.hostname}:3000` 
+            : 'https://api.rhdm69ccb.nyat.app:28074');
       socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
