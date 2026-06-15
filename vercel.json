@@ -1,5 +1,11 @@
 {
   "buildCommand": "npx vite build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/socket.io/:path*",
+      "destination": "http://frp-can.com:61124/socket.io/:path*"
+    }
+  ]
 }

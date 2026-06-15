@@ -222,7 +222,7 @@ export const useGameStore = create((set, get) => ({
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const serverUrl = isLocal
         ? `http://${window.location.hostname}:3000`
-        : 'http://frp-can.com:61124';
+        : window.location.origin;
       socket = io(serverUrl, { transports: ['polling'] });
       socket.on('connect', () => {
         set({ socketConnected: true });
