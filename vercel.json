@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/socket.io/:path*",
-      "destination": "http://frp-can.com:61124/socket.io/:path*"
+      "destination": "http://frp-can.com:28074/socket.io/:path*"
     }
   ]
 }
