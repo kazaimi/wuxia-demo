@@ -122,7 +122,7 @@ function LeaderboardRowBackground({ name, npcConfig, isOnline }) {
   };
 
   return (
-    <div style={{
+    <div className="leaderboard-bg-standee" style={{
       position: 'absolute',
       // 将图片稍微向右偏，定位在离右侧 185px 处，平衡“避开按钮”与“不偏左居中”的视觉感
       right: '185px',
@@ -137,7 +137,7 @@ function LeaderboardRowBackground({ name, npcConfig, isOnline }) {
       background: npcConfig ? `${npcConfig.color}15` : 'rgba(212, 175, 55, 0.03)',
       borderLeft: `1.5px solid ${npcConfig ? npcConfig.color : 'var(--gold)'}20`,
       borderRight: `1.5px solid ${npcConfig ? npcConfig.color : 'var(--gold)'}20`,
-      // 容器级双向渐变遮罩：使平行四边形的左右斜边、背景和边框整体自然羽化，无缝融入格子的深色背景
+      // 容器级双向渐变遮罩：使平行四边形的左右斜边、背景 and 边框整体自然羽化，无缝融入格子的深色背景
       WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%)',
       maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%)',
     }}>
@@ -224,7 +224,7 @@ export default function Leaderboard() {
           const quote = getPlayerQuote(u, npcConfig);
 
           return (
-          <div key={u.id} className="wuxia-card" style={{
+          <div key={u.id} className="wuxia-card leaderboard-stack-mobile" style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             padding: '0.8rem 1.2rem',
             minHeight: '95px',
@@ -245,7 +245,7 @@ export default function Leaderboard() {
             )}
 
             {/* 左侧内容区：名次 + 个人姓名/称号标签 + 台词 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative', maxWidth: '72%' }}>
+            <div className="leaderboard-card-left" style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 2, position: 'relative', maxWidth: '72%' }}>
               <strong style={{ minWidth: '32px', color: i < 3 ? rankColors[i] : 'var(--text-muted)', fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif', fontSize: '1.3rem' }}>#{i + 1}</strong>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -286,7 +286,7 @@ export default function Leaderboard() {
             </div>
 
             {/* 右侧数据与交互区：置于立绘右侧区域 */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', zIndex: 2, position: 'relative', minWidth: '150px' }}>
+            <div className="leaderboard-card-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', zIndex: 2, position: 'relative', minWidth: '150px' }}>
               <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
                 {tName && (
                   <span style={{

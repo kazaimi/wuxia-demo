@@ -192,7 +192,7 @@ function App() {
         showCreate ? (
            <CreateRole initialName={inputName.trim()} initialPassword={inputPassword.trim()} />
         ) : (
-           <div className="glass-panel animate-slide-up" style={{ maxWidth: '420px', margin: '4rem auto', padding: '2.5rem', textAlign: 'center', position: 'relative' }}>
+           <div className="glass-panel login-panel animate-slide-up" style={{ maxWidth: '420px', margin: '4rem auto', padding: '2.5rem', textAlign: 'center', position: 'relative' }}>
               {/* 角落装饰 */}
               <div className="corner-decoration top-left" />
               <div className="corner-decoration top-right" />

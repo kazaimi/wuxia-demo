@@ -667,7 +667,7 @@ const EnhancedWarriorAvatar = ({
 
       {/* 气泡对话框 */}
       {showBubble && (
-        <div style={{
+        <div className="wuxia-speech-bubble-wrapper" style={{
           position: 'absolute',
           bottom: '215px',
           left: '50%',

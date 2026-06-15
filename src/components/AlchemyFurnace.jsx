@@ -478,7 +478,7 @@ export default function AlchemyFurnace() {
 
       {/* ==================================== 模式一：炼火重铸 ==================================== */}
       {activeMode === 'synthesize' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr minmax(280px, 320px)', gap: '2rem' }}>
+        <div className="alchemy-grid" style={{ display: 'grid', gridTemplateColumns: '1fr minmax(280px, 320px)', gap: '2rem' }}>
           {/* 左侧：选择面板 */}
           <div>
             <div style={{ fontWeight: 'bold', marginBottom: '1rem', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -678,7 +678,7 @@ export default function AlchemyFurnace() {
 
       {/* ==================================== 模式二：器灵洗炼 ==================================== */}
       {activeMode === 'refine' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 320px)', gap: '2rem' }}>
+        <div className="alchemy-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 320px)', gap: '2rem' }}>
           {/* 左侧：选择主宝物、副胚、属性材料 */}
           <div>
             {/* 步骤 1：放入主宝物 */}

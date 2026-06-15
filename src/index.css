@@ -1530,6 +1530,155 @@ input[type="range"]:disabled::-webkit-slider-thumb {
   }
 }
 
+/* ========== 移动端响应式显示优化 (max-width: 768px) ========== */
+@media (max-width: 768px) {
+  /* 全局容器间距微调 */
+  .app-container {
+    padding: 0.5rem !important;
+  }
+  
+  /* 风云榜优化 */
+  .leaderboard-bg-standee {
+    display: none !important;
+  }
+  .wuxia-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.6rem !important;
+    padding: 0.6rem 0.8rem !important;
+    min-height: auto !important;
+  }
+  .wuxia-card > div {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .wuxia-card > div:last-child {
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    flex-direction: row !important;
+    min-width: 0 !important;
+    border-top: 1px dashed rgba(212, 175, 55, 0.1);
+    padding-top: 0.5rem;
+  }
+
+  /* 芥子储物袋弹窗优化 */
+  .backpack-modal {
+    width: 95% !important;
+    height: 90vh !important;
+    max-height: 90vh !important;
+  }
+  .wuxia-backpack-grid {
+    grid-template-columns: 1fr !important;
+    overflow-y: auto !important;
+    height: 100% !important;
+  }
+  .wuxia-backpack-grid > div {
+    overflow-y: visible !important;
+    flex: none !important;
+  }
+  
+  /* 炼丹神炉优化 */
+  .alchemy-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .alchemy-grid > div {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+  }
+  .alchemy-grid > div:first-child {
+    border-top: none !important;
+    padding-top: 0 !important;
+  }
+
+  /* 江湖奇遇优化 */
+  .wuxia-hero-card {
+    width: 100px !important;
+    height: 138px !important;
+  }
+  .wuxia-speech-bubble-wrapper {
+    bottom: 165px !important;
+  }
+  .wuxia-speech-bubble {
+    width: 110px !important;
+    padding: 6px 8px !important;
+  }
+  .wuxia-speech-bubble-content {
+    font-size: 0.75rem !important;
+  }
+  .wuxia-hero-portrait {
+    object-position: center 5% !important;
+  }
+  /* 减小奇遇战斗卡片对决的间隙 */
+  .encounter-vs-container {
+    gap: 12px !important;
+    padding: 0.5rem 0.2rem !important;
+  }
+  .encounter-vs-text {
+    font-size: 1.5rem !important;
+  }
+
+  /* 世界Boss大殿优化 */
+  .boss-arena-main-panel {
+    padding: 1rem !important;
+    height: auto !important;
+    min-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  .boss-arena-title-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.8rem !important;
+  }
+  .boss-arena-title-indicators {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .boss-battle-health-row {
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .boss-battle-vs-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    height: auto !important;
+    padding: 1rem !important;
+    gap: 1.5rem !important;
+  }
+  .boss-battle-vs-row .duel-card {
+    transform: none !important;
+  }
+  .boss-battle-vs-row .duel-card:last-child {
+    width: 180px !important;
+    height: 170px !important;
+  }
+  .boss-battle-vs-row .duel-card:last-child img {
+    height: 170px !important;
+  }
+  .boss-lobby-main-row {
+    flex-direction: column !important;
+    overflow-y: visible !important;
+    gap: 1.5rem !important;
+    height: auto !important;
+  }
+  .boss-lobby-left, .boss-lobby-right {
+    flex: none !important;
+    width: 100% !important;
+    overflow-y: visible !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-panel {
+    margin: 1.5rem auto !important;
+    padding: 1.5rem !important;
+  }
+}
+
+
 
 
 

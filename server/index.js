@@ -1507,8 +1507,8 @@ io.on('connection', (socket) => {
           alertMsg = "洗髓成功！你身上的常规分配点数已全部归零重置并全额返还，仙药加点正常保留。";
           feedbackDialogue = "伐毛洗髓，脱胎换骨！大侠现在可以重新划分你的武学潜能点数了！";
        } else if (itemId === 'item_heaven_token') {
-          p.secretRealmAttempts = Math.max(0, (p.secretRealmAttempts || 0) - 5);
-          alertMsg = "你出示了通天令牌，今日秘境探索已扣减 5 次使用记录（相当于获得 5 次额外秘境机会）！";
+          p.secretRealmAttempts = Math.max(0, (p.secretRealmAttempts || 0) - 3);
+          alertMsg = "你出示了通天令牌，今日秘境探索已扣减 3 次使用记录（相当于获得 3 次额外秘境机会）！";
           feedbackDialogue = "令出福地开，拿着令牌去找探索长老吧，祝大侠满载而归！";
        } else if (itemId === 'item_peach_nectar') {
           let newExp = (p.exp || 0) + 1000;

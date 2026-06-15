@@ -44,7 +44,7 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "3ac1Xd0hzCuFOwfqAAAB",
+    "id": "1hRaXB_-pSBhRwrDAAAD",
     "isBattling": false,
     "rankIndex": 20,
     "lastTaskDate": "Mon Jun 15 2026",
@@ -13496,14 +13496,14 @@
   },
   {
     "name": "AlexNewHero",
-    "title": "",
+    "title": "摸鱼小虾",
     "level": 1,
     "exp": 0,
     "maxExp": 165,
     "freePoints": 0,
     "taskCount": 0,
     "encountersToday": 0,
-    "lastTaskDate": "Mon Jun 08 2026",
+    "lastTaskDate": "Mon Jun 15 2026",
     "secretRealmAttempts": 0,
     "dailyDebuffs": [],
     "silver": 0,
@@ -13557,10 +13557,13 @@
       "poisonRate": 0
     },
     "password": "password123",
-    "id": "E-Ktc05k-HBIPCr9AAAF",
+    "id": "3E8xNz222zynmAf6AAAF",
     "isBattling": false,
     "rankIndex": 10061,
-    "lastLoginTime": 1780928024686
+    "lastLoginTime": 1781537070739,
+    "dailySilverAdd": 0,
+    "lastResetDate": "Mon Jun 15 2026",
+    "dailyActivity": 0
   },
   {
     "name": "q q",

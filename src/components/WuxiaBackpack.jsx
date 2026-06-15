@@ -162,7 +162,7 @@ export default function WuxiaBackpack({ onClose }) {
       zIndex: 9999,
       animation: 'fadeIn 0.25s ease-out'
     }}>
-      <div className="glass-panel" style={{
+      <div className="glass-panel backpack-modal" style={{
         width: '90%',
         maxWidth: '850px',
         height: '75vh',
@@ -216,8 +216,7 @@ export default function WuxiaBackpack({ onClose }) {
           </button>
         </div>
 
-        {/* 主内容区域 */}
-        <div style={{
+        <div className="wuxia-backpack-grid" style={{
           flex: 1,
           display: 'grid',
           gridTemplateColumns: (activeTab === 'materials' || Object.keys(inventory).length > 0) ? '1.2fr 1fr' : '1fr',

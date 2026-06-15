@@ -249,14 +249,27 @@ export default function MainMenu() {
         </div>
 
         {showBlackMarket && <BlackMarket onClose={() => setShowBlackMarket(false)} />}
+        
+        {showSkillsBook && (
+          <WuxiaSkillsBook
+            initialFilter={skillsBookFilter}
+            onClose={() => setShowSkillsBook(false)}
+          />
+        )}
+        
+        {showBackpack && (
+          <WuxiaBackpack
+            onClose={() => setShowBackpack(false)}
+          />
+        )}
 
         {/* 黑市按钮 - 极致暗黑异形纹理令牌 */}
         <button 
           onClick={() => setShowBlackMarket(true)} 
           className="black-market-token-alien-img-btn" 
           style={{
-            position: 'fixed', bottom: '20px', right: '20px', zIndex: 8000,
-            width: '85px', height: '85px'
+            position: 'fixed', bottom: '15px', right: '15px', zIndex: 8000,
+            width: '55px', height: '55px'
           }}
           title="进入黑市"
         >
@@ -271,8 +284,8 @@ export default function MainMenu() {
           onClick={() => setActiveTab('boss')} 
           className="black-market-token-alien-img-btn" 
           style={{
-            position: 'fixed', bottom: '105px', right: '20px', zIndex: 8000,
-            width: '85px', height: '85px'
+            position: 'fixed', bottom: '75px', right: '15px', zIndex: 8000,
+            width: '55px', height: '55px'
           }}
           title="进入世界Boss"
         >
@@ -287,8 +300,8 @@ export default function MainMenu() {
           onClick={() => setActiveTab('furnace')} 
           className="black-market-token-alien-img-btn" 
           style={{
-            position: 'fixed', bottom: '190px', right: '20px', zIndex: 8000,
-            width: '85px', height: '85px'
+            position: 'fixed', bottom: '135px', right: '15px', zIndex: 8000,
+            width: '55px', height: '55px'
           }}
           title="进入太上神炉"
         >

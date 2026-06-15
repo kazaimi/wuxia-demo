@@ -827,7 +827,7 @@ export default function WorldBossArena() {
   };
 
   return (
-    <div className={`glass-panel animate-slide-up ${isScreenShaking ? 'arena-shake' : ''}`} style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #09090b 0%, #030303 100%)', color: '#eaeaea', border: '1px solid rgba(239, 68, 68, 0.25)', position: 'relative', overflow: 'hidden' }}>
+    <div className={`glass-panel boss-arena-main-panel animate-slide-up ${isScreenShaking ? 'arena-shake' : ''}`} style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #09090b 0%, #030303 100%)', color: '#eaeaea', border: '1px solid rgba(239, 68, 68, 0.25)', position: 'relative', overflow: 'hidden' }}>
 
       {/* 水墨刀光特效层 */}
       <div className="water-ink-bg" style={{
@@ -851,7 +851,7 @@ export default function WorldBossArena() {
       )}
 
       {/* 顶部标题 */}
-      <div style={{ 
+      <div className="boss-arena-title-row" style={{ 
          display: 'flex', 
          justifyContent: 'space-between', 
          alignItems: 'center', 
@@ -899,7 +899,7 @@ export default function WorldBossArena() {
                </p>
             </div>
          </div>
-         <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', zIndex: 2 }}>
+          <div className="boss-arena-title-indicators" style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', zIndex: 2 }}>
             <span style={{ fontSize: '0.95rem', color: '#fbbf24', background: 'rgba(251, 191, 36, 0.1)', padding: '0.4rem 1rem', borderRadius: '4px', border: '1px solid rgba(251, 191, 36, 0.3)' }}>
                武道精魂: <strong>{player.essence || 0} / 500</strong>
             </span>
@@ -914,7 +914,7 @@ export default function WorldBossArena() {
          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginTop: '1.5rem', zIndex: 1, overflow: 'hidden' }}>
             
             {/* 双方血量槽 */}
-            <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
+            <div className="boss-battle-health-row" style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
                <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85rem' }}>
                      <span>你的气血: {curUserHp} / {player.maxHp}</span>
@@ -960,7 +960,7 @@ export default function WorldBossArena() {
             </div>
 
             {/* 双雄对局立绘展示区 */}
-            <div style={{
+            <div className="boss-battle-vs-row" style={{
                display: 'flex',
                justifyContent: 'space-between',
                alignItems: 'center',
@@ -1149,10 +1149,10 @@ export default function WorldBossArena() {
          </div>
       ) : (
          /* 大厅普通展示 */
-         <div style={{ flex: 1, display: 'flex', gap: '2rem', marginTop: '1.5rem', zIndex: 1, overflow: 'hidden' }}>
+          <div className="boss-lobby-main-row" style={{ flex: 1, display: 'flex', gap: '2rem', marginTop: '1.5rem', zIndex: 1, overflow: 'hidden' }}>
             
             {/* 左侧 Boss 状态面板 */}
-            <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', paddingRight: '8px' }}>
+             <div className="boss-lobby-left" style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '1.5rem', overflowY: 'auto', paddingRight: '8px' }}>
                
                {/* Boss 状态卡 */}
                <div className="wuxia-card" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', position: 'relative' }}>
@@ -1314,7 +1314,7 @@ export default function WorldBossArena() {
             </div>
 
             {/* 右侧 并肩作战/输出排行 看板 */}
-            <div style={{ flex: 1.2, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflow: 'hidden' }}>
+             <div className="boss-lobby-right" style={{ flex: 1.2, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflow: 'hidden' }}>
                <h3 style={{ fontSize: '1.2rem', fontFamily: '"Ma Shan Zheng", cursive', color: 'var(--crimson)', borderBottom: '1px dashed rgba(255,255,255,0.1)', paddingBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Users size={18} /> 并肩御敌榜
                </h3>

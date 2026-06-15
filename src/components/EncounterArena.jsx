@@ -2139,7 +2139,7 @@ export default function EncounterArena() {
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {/* 角色立绘区域 */}
-          <div style={{
+          <div className="encounter-vs-container" style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -2158,7 +2158,7 @@ export default function EncounterArena() {
               alignItems: 'center',
               gap: '8px',
             }}>
-              <div style={{
+              <div className="encounter-vs-text" style={{
                 fontSize: '2rem',
                 color: 'var(--warn)',
                 fontFamily: '"Outfit", "Ma Shan Zheng", sans-serif',
