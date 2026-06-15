@@ -3735,23 +3735,23 @@
     "name": "天机子",
     "title": "肝帝真仙",
     "level": 56,
-    "exp": 1844,
+    "exp": 14823,
     "maxExp": 23929,
     "freePoints": 0,
-    "taskCount": 4,
+    "taskCount": 35,
     "encountersToday": 0,
     "lastTaskDate": "Mon Jun 15 2026",
-    "secretRealmAttempts": 0,
+    "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 914,
-    "hp": 940,
-    "maxHp": 940,
+    "silver": 1031,
+    "hp": 1340,
+    "maxHp": 1340,
     "attributes": {
-      "con": 0,
-      "str": 0,
-      "int": 0,
-      "agi": 0,
-      "luk": 175
+      "con": 40,
+      "str": 40,
+      "int": 40,
+      "agi": 40,
+      "luk": 15
     },
     "permanentAttributes": {
       "con": 0,
@@ -3854,7 +3854,10 @@
       "t10",
       "t7",
       "t5",
-      "t1"
+      "t1",
+      "t9",
+      "t13",
+      "t12"
     ],
     "equippedSkills": {
       "inner": "s_xixing",
@@ -3863,21 +3866,21 @@
       "ultimate": "s_shengxin"
     },
     "equippedTreasure": "t7",
-    "id": "2-_hniSd2du60vDfAAJG",
+    "id": "kESwCf2vKGNqGe2vAAJW",
     "isBattling": false,
     "rankIndex": 21,
-    "dailyActivity": 1080,
+    "dailyActivity": 1255,
     "password": "123456",
     "essence": 500,
     "inventoryMaterials": {
       "anomalyDust": 0,
       "soulAshes": 0,
       "anomalyCrystal": 0,
-      "goldSand": 46,
-      "woodHerb": 58,
-      "waterFluid": 56,
-      "fireMarrow": 43,
-      "earthEssence": 41
+      "goldSand": 48,
+      "woodHerb": 62,
+      "waterFluid": 57,
+      "fireMarrow": 49,
+      "earthEssence": 52
     },
     "equippedTreasureAttrs": {
       "extraStr": 0,
@@ -3890,7 +3893,7 @@
       "stunRate": 0,
       "poisonRate": 0
     },
-    "lastLoginTime": 1781501090046,
+    "lastLoginTime": 1781508521685,
     "dailySilverAdd": 0,
     "lastResetDate": "Mon Jun 15 2026",
     "skillMastery": {
@@ -8821,7 +8824,8 @@
     ],
     "treasures": [
       "t8",
-      "t3"
+      "t3",
+      "t4"
     ],
     "equippedSkills": {
       "inner": "s5",
