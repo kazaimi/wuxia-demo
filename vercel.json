@@ -4,8 +4,8 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/socket.io/:path*",
-      "destination": "http://frp-can.com:28074/socket.io/:path*"
+      "source": "/socket.io/:match*",
+      "destination": "http://frp-can.com:28074/socket.io/:match*"
     }
   ]
 }
