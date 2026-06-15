@@ -3770,7 +3770,8 @@
       "s_shengxin",
       "s_yijin",
       "s_liumai",
-      "s_xianglong"
+      "s_xianglong",
+      "s_taiji_deg1"
     ],
     "treasures": [
       "t2",
@@ -4511,7 +4512,7 @@
     "lastTaskDate": "Mon Jun 15 2026",
     "secretRealmAttempts": 3,
     "dailyDebuffs": [],
-    "silver": 1050,
+    "silver": 1052,
     "hp": 850,
     "maxHp": 850,
     "attributes": {
