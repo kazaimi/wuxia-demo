@@ -1306,7 +1306,7 @@ export default function WorldBossArena() {
                {/* 玩法说明 */}
                <div className="wuxia-card" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '0.85rem', lineHeight: '1.7' }}>
                   <h4 style={{ color: 'var(--gold)', marginBottom: '6px', fontSize: '0.95rem' }}>讨伐魔尊战纪规诫</h4>
-                  <p>1. **请战登记**：周五中午 12:00 至晚上 19:00。Boss HP 以实际登记人数为准（平滑公式，杜绝死号撑血）。中途参战亦可但血上限不再增加。</p>
+                  <p>1. **请战登记**：周四中午 12:00 至周五晚上 19:00。Boss HP 以实际登记人数为准（平滑公式，杜绝死号撑血）。中途参战亦可但血上限不再增加。</p>
                   <p>2. **克制克制**：Boss 默认拥有 80% 的受创减免，宝物上的【破魔】词条可以直接刺破该护体！</p>
                   <p>3. **击晕特化**：Boss 免疫眩晕，但受击晕影响时触发“破招威压”，其本回合反噬攻击降低 50%。</p>
                   <p>4. **分红机制**：剿灭魔罗后，爆出的神物将在 23:00 公开竞拍。流拍则由商会以 100 银两强行回收。除去 10% 税收，所得 90% 银两全员按输出百分比派发大分红！</p>

@@ -397,46 +397,44 @@ const processBossStanceUpdate = (playerName, level, runData) => {
 // 周五时钟轮转判定
 const checkWorldBossSchedule = () => {
    const now = new Date();
-   const day = now.getDay(); // 0:周日, 5:周五
+   const day = now.getDay(); // 0:周日, 4:周四, 5:周五
    const hour = now.getHours();
 
-   if (day === 5) {
-      if (hour >= 12 && hour < 19) {
-         if (!worldBossState.signupOpen && !worldBossState.active && !worldBossState.auctionActive) {
-            worldBossState.signupOpen = true;
-            worldBossState.active = false;
-            io.emit('world_boss_state_change', worldBossState);
-            io.emit('broadcast_message', `*【天地异变】请战帖已开启投递！诸位大侠速往世界大厅登记参战！*`);
-         }
-      } else if (hour >= 19 && hour < 23) {
-         if (worldBossState.signupOpen || !worldBossState.active) {
-            worldBossState.signupOpen = false;
-            worldBossState.active = true;
-            const N = Math.max(1, worldBossState.signups.length);
-            worldBossState.maxHp = 500000 + N * 800000;
-            worldBossState.hp = worldBossState.maxHp;
-            worldBossState.fighters = {};
-            worldBossState.lastHitBy = null;
-            worldBossState.stance = 'normal';
-            worldBossState.stanceRemainingHp = 0;
-            io.emit('world_boss_state_change', worldBossState);
-            io.emit('broadcast_message', `*【天劫降临】太古噬魂魔罗已降临魔殿！全服血量锁定为 ${worldBossState.maxHp}，速往讨伐！*`);
-            startNpcChallengeSimulator();
-         }
-      } else if (hour >= 23 && hour < 24) {
-         if (worldBossState.active) {
-            worldBossState.active = false;
-            stopNpcChallengeSimulator();
-            startWorldBossAuction();
-         }
-      } else {
-         if (worldBossState.signupOpen || worldBossState.active || worldBossState.auctionActive) {
-            resetWorldBossState();
-         }
+   const isThursdaySignup = (day === 4 && hour >= 12);
+   const isFridaySignup = (day === 5 && hour < 19);
+   const isSignupPeriod = isThursdaySignup || isFridaySignup;
+
+   if (isSignupPeriod) {
+      if (!worldBossState.signupOpen && !worldBossState.active && !worldBossState.auctionActive) {
+         worldBossState.signupOpen = true;
+         worldBossState.active = false;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【天地异变】请战帖已开启投递！诸位大侠速往世界大厅登记参战！*`);
+      }
+   } else if (day === 5 && hour >= 19 && hour < 23) {
+      if (worldBossState.signupOpen || !worldBossState.active) {
+         worldBossState.signupOpen = false;
+         worldBossState.active = true;
+         const N = Math.max(1, worldBossState.signups.length);
+         worldBossState.maxHp = 500000 + N * 800000;
+         worldBossState.hp = worldBossState.maxHp;
+         worldBossState.fighters = {};
+         worldBossState.lastHitBy = null;
+         worldBossState.stance = 'normal';
+         worldBossState.stanceRemainingHp = 0;
+         io.emit('world_boss_state_change', worldBossState);
+         io.emit('broadcast_message', `*【天劫降临】太古噬魂魔罗已降临魔殿！全服血量锁定为 ${worldBossState.maxHp}，速往讨伐！*`);
+         startNpcChallengeSimulator();
+      }
+   } else if (day === 5 && hour >= 23 && hour < 24) {
+      if (worldBossState.active) {
+         worldBossState.active = false;
+         stopNpcChallengeSimulator();
+         startWorldBossAuction();
       }
    } else {
-      if (worldBossState.active || worldBossState.signupOpen || worldBossState.auctionActive) {
-         // 正常周期不做自动重置，保留通过开发者工具强行开启的对决测试，如果报名存在才判定
+      if (worldBossState.signupOpen || worldBossState.active || worldBossState.auctionActive) {
+         resetWorldBossState();
       }
    }
 };
