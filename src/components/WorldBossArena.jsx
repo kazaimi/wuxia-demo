@@ -15,7 +15,7 @@ export default function WorldBossArena() {
     worldBossState.stance === 'shielded' ? '/boss_mola_shielded.png' :
     '/boss_mola_portrait.png';
   const cleanBossPic = useCleanImage(bossPicSrc, 20, 20);
-  const cleanBossHeaderPic = cleanBossPic;
+  const cleanBossHeaderPic = useCleanImage('/world_boss_header.png', 25, 20);
   const cleanDemonSword = useCleanImage('/demon_sword.png', 20, 20);
   const fetchWorldBossState = useGameStore(state => state.fetchWorldBossState);
   const signupWorldBoss = useGameStore(state => state.signupWorldBoss);
