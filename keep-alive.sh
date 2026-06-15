@@ -1,7 +1,7 @@
 #!/bin/bash
-# wuxia-demo keep-alive (SakuraFrp版)
+# wuxia-demo keep-alive (SakuraFrp版 v2)
 # 功能：确保后端 + frpc隧道 存活，db.json定时备份
-# SakuraFrp TCP隧道地址固定(frp-can.com:61124)，无需每次推送GitHub
+# 隧道: 27722385 (TCP+自动HTTPS, api.rhdm69ccb.nyat.app:28074)
 
 FRPC=~/bin/frpc
 TOKEN="8qjuiy6uhqv9hoxuptw0r7tpllm8hxbh"
@@ -21,9 +21,9 @@ while true; do
     fi
 
     # 2. 确保frpc隧道运行
-    if ! pgrep -f "frpc -f" >/dev/null 2>&1; then
+    if ! pgrep -f "frpc -f.*${TUNNEL_ID}" >/dev/null 2>&1; then
         nohup "$FRPC" -f "${TOKEN}:${TUNNEL_ID}" >> /tmp/frpc.log 2>&1 &
-        echo "$(date) frpc重启" >> $LOG
+        echo "$(date) frpc隧道${TUNNEL_ID}重启" >> $LOG
         sleep 5
     fi
 
