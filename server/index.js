@@ -931,10 +931,30 @@ io.on('connection', (socket) => {
                 }
              }
 
-             // 6. 技能列表强校验（不允许客户端自定义塞入新技能）
+             // 6. 技能列表安全增量校验（仅允许通过江湖奇遇获取的限定绝世功法）
              if (data.skills) {
-                data.skills = dbPlayer.skills || ['s1'];
-             }
+                 const oldSkills = dbPlayer.skills || ['s1'];
+                 const newSkills = data.skills;
+                 
+                 // 允许的奇遇结算奖励技能列表
+                  const allowedRewardSkills = [
+                     's_kuihua', 's_xianglong', 's_dugu', 's_liumai', 's_shengxin', 's_yijin', 's_xixing', 's_taiji', 's_anran',
+                     's5', 's_tiyun', 's_shenxing', 's3', 's4', 's_kuangfeng', 's_shihou'
+                  ];
+                 
+                 // 找出客户端上传的、在服务端不存在的新增技能
+                 const addedSkills = newSkills.filter(sk => !oldSkills.includes(sk));
+                 
+                 // 校验新增技能：必须都在 allowedRewardSkills 中，且每次最多只允许学一个新技能 (防刷技能)
+                 const isValidAddition = addedSkills.length <= 1 && addedSkills.every(sk => allowedRewardSkills.includes(sk));
+                 
+                 if (newSkills.length > oldSkills.length && !isValidAddition) {
+                    console.warn(`[防作弊警报] 玩家 ${data.name} 尝试非法添加技能列表 ${addedSkills.join(', ')}，已被拦截！`);
+                    data.skills = [...oldSkills];
+                 } else {
+                    dbPlayer.skills = [...newSkills];
+                 }
+              }
 
              // 7. 宝物列表增量合理性审查 (仅允许奇遇战通关增量，且数量≤3，ID合法)
              if (data.treasures) {
@@ -1982,9 +2002,19 @@ io.on('connection', (socket) => {
                actionData.log += `\n[系统广播] 震古烁今！${attacker.name} 战胜了 ${target.name}，成功夺取了江湖第 ${newRank} 席！`;
              }
              
-             if (target.isMock && target.signatureSkill && Math.random() > 0.50) {
-                socket.emit('system_reward', { skillId: target.signatureSkill });
-             }
+              if (target.isMock && target.signatureSkill && Math.random() > 0.50) {
+                 const p = realPlayersDB.find(pl => pl.name === attacker.name);
+                 if (p) {
+                    if (!p.skills) p.skills = ['s1'];
+                    if (!p.skills.includes(target.signatureSkill)) {
+                       p.skills.push(target.signatureSkill);
+                       saveDB();
+                       socket.emit('update_player_success', p);
+                       console.log(`[天梯奖励] 玩家 ${p.name} 成功习得天梯爆出的招式: ${target.signatureSkill}`);
+                    }
+                 }
+                 socket.emit('system_reward', { skillId: target.signatureSkill });
+              }
            }
            
            setTimeout(() => {
