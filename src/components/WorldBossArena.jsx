@@ -645,7 +645,7 @@ export default function WorldBossArena() {
                   setSkillCast({ characterName: player.name, skillName: skill.name, skillId: skill.id, skillDesc: skill.desc || '招式神妙，威力骇人', position: 'left' });
                   setTimeout(() => {
                      addEffect('ultimateBurst', 'right', isCrit ? 2.5 : 1.5, skill.name, skill.id);
-                     addDamageNumber(damageToBoss, 'right');
+                     addDamageNumber(damageToBoss, 'right', false, isCrit ? 'critical' : 'damage');
                   }, 580);
                } else {
                   let delay = 0;
@@ -654,10 +654,10 @@ export default function WorldBossArena() {
                   addEffect(effectType, 'right', isCrit ? 2 : 1, skill.name, skill.id);
                   if (delay > 0) {
                      setTimeout(() => {
-                        addDamageNumber(damageToBoss, 'right');
+                        addDamageNumber(damageToBoss, 'right', false, isCrit ? 'critical' : 'damage');
                      }, delay);
                   } else {
-                     addDamageNumber(damageToBoss, 'right');
+                     addDamageNumber(damageToBoss, 'right', false, isCrit ? 'critical' : 'damage');
                   }
                }
 
@@ -1090,6 +1090,7 @@ export default function WorldBossArena() {
                      damage={d.damage}
                      position={d.position}
                      isHeal={d.isHeal}
+                     type={d.type}
                      onComplete={() => removeDamageNumber(d.id)}
                   />
                ))}

@@ -118,9 +118,9 @@ export default function BattleArena() {
   };
 
   // 添加伤害数字
-  const addDamageNumber = (damage, position, isHeal = false) => {
+  const addDamageNumber = (damage, position, isHeal = false, type = 'damage') => {
     const id = Date.now() + Math.random();
-    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal }]);
+    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal, type }]);
   };
 
   // 移除动效
@@ -210,7 +210,10 @@ export default function BattleArena() {
           }
 
           const triggerDamage = (pos) => {
-            addDamageNumber(damage, pos);
+            const isCritLog = lastLog.includes('暴击') || lastLog.includes('重创');
+            const isPoisonLog = lastLog.includes('毒发') || lastLog.includes('骨髓俱损');
+            const type = isCritLog ? 'critical' : (isPoisonLog ? 'poison' : 'damage');
+            addDamageNumber(damage, pos, false, type);
           };
 
           // 播放动作打击音效
@@ -568,12 +571,10 @@ export default function BattleArena() {
                if (dmg > 0 && aTreasure?.effect === 'yiTian') {
                    attacker.hp = Math.min(attacker.maxHp, Math.floor(attacker.hp + dmg * 0.15));
                }
-
-               if (!actionLog.includes('[寂灭]')) {
-                  const actStr = isP1Turn ? '施展绝技' : '使出';
-                  actionLog = `${attacker.name} ${actStr}【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！`;
-               }
-
+                if (!actionLog.includes('[寂灭]')) {
+                   const actStr = isP1Turn ? '施展绝技' : '使出';
+                   actionLog = `${attacker.name} ${actStr}【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！${isCrit ? '（暴击）' : ''}`;
+                }
                if (dmg > 0 && dTreasure?.effect === 'ruanWei') {
                   const rDmg = Math.floor(dmg * 0.15);
                   attacker.hp -= rDmg;
@@ -797,6 +798,7 @@ export default function BattleArena() {
                 damage={d.damage}
                 position={d.position}
                 isHeal={d.isHeal}
+                type={d.type}
                 onComplete={() => removeDamageNumber(d.id)}
               />
             ))}

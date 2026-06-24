@@ -315,9 +315,9 @@ export default function EncounterArena() {
   };
 
   // 添加伤害数字
-  const addDamageNumber = (damage, position, isHeal = false) => {
+  const addDamageNumber = (damage, position, isHeal = false, type = 'damage') => {
     const id = Date.now() + Math.random();
-    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal }]);
+    setDamageNumbers(prev => [...prev, { id, damage, position, isHeal, type }]);
   };
 
   // 移除动效
@@ -933,7 +933,10 @@ export default function EncounterArena() {
           }
 
           const triggerDamage = (pos) => {
-            addDamageNumber(damage, pos);
+            const isCritLog = lastLog.includes('暴击') || lastLog.includes('重创');
+            const isPoisonLog = lastLog.includes('毒发') || lastLog.includes('身中奇毒') || lastLog.includes('剧毒生效');
+            const type = isCritLog ? 'critical' : (isPoisonLog ? 'poison' : 'damage');
+            addDamageNumber(damage, pos, false, type);
           };
 
           if (effectType === 'ultimateBurst') {
@@ -1260,6 +1263,16 @@ export default function EncounterArena() {
                     let finalDef = dDefBase * defMultiplier;
                     let dmg = Math.floor(pAtk + adjustedSkillPwr - finalDef);
                     
+                    // PVE 暴击判定
+                    let critText = '';
+                    const attackerCrit = (aTreasure?.attrs?.crit || 0) + (aAttrs.extraCrit || 0);
+                    const baseCritChance = ((attacker.attributes.luk / (attacker.attributes.luk + 150)) * 0.2) + attackerCrit * 0.01;
+                    const isCrit = Math.random() < baseCritChance;
+                    if (isCrit) {
+                       dmg = Math.floor(dmg * 1.5);
+                       critText = '（暴击）';
+                    }
+                    
                     const tBoostA = isP1Turn ? rogueBuffs.treasureBoostLevel : 0;
                     const tBoostD = isP1Turn ? 0 : rogueBuffs.treasureBoostLevel;
 
@@ -1308,7 +1321,7 @@ export default function EncounterArena() {
                     if (dmg > 0 && aTreasure?.effect === 'yiTian') attacker.hp = Math.min(attacker.maxHp, Math.floor(attacker.hp + dmg * (0.15 + 0.10 * tBoostA)));
 
                     if (!actionLog.includes('[寂灭]')) {
-                       actionLog = `${attacker.name} 使出【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！`;
+                        actionLog = `${attacker.name} 使出【${skill.name}】，对 ${defender.name} 造成了 ${dmg} 点伤害！${critText}`;
                     }
 
                     if (defender.debuffs.silence > 0 && !isP1Turn && rogueBuffs.silenceDamageAmp > 0) {
@@ -2203,6 +2216,7 @@ export default function EncounterArena() {
                 damage={d.damage}
                 position={d.position}
                 isHeal={d.isHeal}
+                type={d.type}
                 onComplete={() => removeDamageNumber(d.id)}
               />
             ))}
