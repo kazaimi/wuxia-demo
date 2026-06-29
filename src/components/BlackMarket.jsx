@@ -92,15 +92,17 @@ export default function BlackMarket({ onClose }) {
      ];
 
      const handleDynamicItems = ({ dynamicItems }) => {
-        const formattedDynamics = (dynamicItems || []).map(item => ({
-           id: item.id,
-           name: item.name,
-           price: item.price,
-           desc: item.desc,
-           icon: <Package size={18} color={item.rarity === '神话' ? '#c084fc' : item.rarity === '传说' ? '#e879f9' : '#818cf8'} />,
-           type: item.type,
-           itemId: item.itemId
-        }));
+        const formattedDynamics = (dynamicItems || [])
+           .filter(item => item && item.id)
+           .map(item => ({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              desc: item.desc,
+              icon: <Package size={18} color={item.rarity === '神话' ? '#c084fc' : item.rarity === '传说' ? '#e879f9' : '#818cf8'} />,
+              type: item.type,
+              itemId: item.itemId || item.id
+           }));
         
         const mergedDynamics = [];
         formattedDynamics.forEach(item => {
