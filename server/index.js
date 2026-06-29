@@ -1106,15 +1106,28 @@ io.on('connection', (socket) => {
                }
             }
 
-            // 4. 属性值防作弊校验
+            // 4. 属性值校验与防作弊防护
             if (data.attributes) {
-               const oldAttrs = dbPlayer.attributes || { con: 0, str: 0, int: 0, agi: 0, luk: 0 };
+               const oldAttrs = dbPlayer.attributes || { con: 10, str: 10, int: 10, agi: 10, luk: 10 };
                const newAttrs = data.attributes;
+               
+               // 安全格式化，防止传入 null/NaN 等坏值损坏数据库
+               if (!newAttrs || typeof newAttrs !== 'object') {
+                  data.attributes = { ...oldAttrs };
+               } else {
+                  const safeAttrs = {};
+                  ['con', 'str', 'int', 'agi', 'luk'].forEach(key => {
+                     const val = parseInt(newAttrs[key], 10);
+                     safeAttrs[key] = isNaN(val) ? (oldAttrs[key] || 10) : val;
+                  });
+                  data.attributes = safeAttrs;
+               }
+
                const level = parseInt(data.level, 10) || dbPlayer.level || 1;
                const permTotal = Object.values(dbPlayer.permanentAttributes || {}).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
                const maxTotal = 10 + (level - 1) * 3 + permTotal;
                
-               const newTotal = Object.values(newAttrs).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0);
+               const newTotal = Object.values(data.attributes).reduce((sum, v) => sum + v, 0);
                if (newTotal > maxTotal) {
                   console.warn(`[防作弊警报] 玩家 ${data.name} 尝试非法篡改属性，总属性点 ${newTotal} 超过上限 ${maxTotal}，已被强制拦截并重置属性！`);
                   data.attributes = { ...oldAttrs };
@@ -1122,7 +1135,13 @@ io.on('connection', (socket) => {
                }
             }
 
-             // 5. 对装备器灵和装备武学防篡改校验 (不能装备自己没有的器灵/武学)
+            // 4.5. 潜能点 freePoints 校验与数值保护，防止写入 null/NaN
+            if (data.freePoints !== undefined) {
+               const val = parseInt(data.freePoints, 10);
+               data.freePoints = isNaN(val) ? (dbPlayer.freePoints || 0) : val;
+            }
+
+            // 5. 对装备器灵和装备武学防篡改校验 (不能装备自己没有的器灵/武学)
              if (data.equippedTreasure) {
                 if (!dbPlayer.treasures || !dbPlayer.treasures.includes(data.equippedTreasure)) {
                    data.equippedTreasure = dbPlayer.equippedTreasure || null;

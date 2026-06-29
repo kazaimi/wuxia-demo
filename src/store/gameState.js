@@ -255,14 +255,6 @@ export const useGameStore = create((set, get) => ({
       });
       
       socket.on('login_success', (playerData) => {
-         // 检测是否为断线重连（即本地已有角色且名字不为空）
-         const isReconnection = get().hasCreatedRole && get().player.name !== '';
-         if (isReconnection) {
-            console.log("[重连同步] 检测到网络重连，正在将本地最新进度同步至服务端...");
-            if (socket) socket.emit('update_player', get().player);
-            set({ loginChecked: true, loginError: null });
-            return;
-         }
 
          if (playerData.attributes && typeof playerData.attributes.hp !== 'undefined') {
             playerData.attributes.con = playerData.attributes.hp;
