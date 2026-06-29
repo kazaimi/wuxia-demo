@@ -98,9 +98,23 @@ export default function BlackMarket({ onClose }) {
            price: item.price,
            desc: item.desc,
            icon: <Package size={18} color={item.rarity === '神话' ? '#c084fc' : item.rarity === '传说' ? '#e879f9' : '#818cf8'} />,
-           type: item.type
+           type: item.type,
+           itemId: item.itemId
         }));
-        setShopItems([...staticItems, ...formattedDynamics]);
+        
+        const mergedDynamics = [];
+        formattedDynamics.forEach(item => {
+           const existing = mergedDynamics.find(m => m.itemId === item.itemId && m.price === item.price);
+           if (existing) {
+              existing.count = (existing.count || 1) + 1;
+           } else {
+              mergedDynamics.push({
+                 ...item,
+                 count: 1
+              });
+           }
+        });
+        setShopItems([...staticItems, ...mergedDynamics]);
      };
 
      const socket = getSocket();
@@ -397,6 +411,21 @@ export default function BlackMarket({ onClose }) {
                                fontSize: '1.1rem', margin: 0
                            }}>
                                {item.icon} {item.name}
+                                {item.count > 1 && (
+                                   <span style={{
+                                      background: 'rgba(184, 134, 11, 0.2)',
+                                      border: '1px solid rgba(184, 134, 11, 0.4)',
+                                      borderRadius: '4px',
+                                      padding: '1px 6px',
+                                      fontSize: '0.75rem',
+                                      color: '#e6c280',
+                                      marginLeft: '8px',
+                                      fontFamily: 'sans-serif',
+                                      fontWeight: 'normal'
+                                   }}>
+                                      存量: {item.count}
+                                   </span>
+                                )}
                            </h4>
                            <p style={{ fontSize: '0.8rem', color: '#a0a0a0', marginTop: '6px', lineHeight: '1.4' }}>
                                {item.desc}
