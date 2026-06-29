@@ -50,6 +50,7 @@ const MATERIALS_INFO = {
     element: '熔炼材料',
     desc: '弥漫着异变气息的奇异碎屑。产自日常任务或大劫世界 Boss 的挑战奖励。是乾坤炉中进行【炼火重铸】时必须消耗的催化材料。',
     emoji: '✨',
+    icon: '/material_anomaly_dust.png',
     rarity: '普通'
   },
   soulAshes: {
@@ -57,6 +58,7 @@ const MATERIALS_INFO = {
     element: '洗炼材料',
     desc: '残留着怨魂微弱执念的余烬。可通过在太尊秘境中击败其他同道留下的怨灵神魂获得。是乾坤炉中进行【器灵洗炼】时用作灵魂洗涤的催化材料。',
     emoji: '🌫️',
+    icon: '/material_soul_ashes.png',
     rarity: '稀有'
   },
   anomalyCrystal: {
@@ -64,6 +66,7 @@ const MATERIALS_INFO = {
     element: '至宝材料',
     desc: '由纯净的虚空异变之力凝聚而成的水晶。极为珍罕，可通过在大劫世界 Boss 的高额排名中获取。是乾坤炉高阶【器灵洗炼】时不可或缺的核心介质。',
     emoji: '💎',
+    icon: '/material_anomaly_crystal.png',
     rarity: '史诗'
   }
 };

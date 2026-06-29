@@ -1,0 +1,47 @@
+[
+  {
+    "id": "bm_worldboss_1782465585798_t9",
+    "itemId": "t9",
+    "name": "【黑市淘金】软猬甲",
+    "price": 120,
+    "desc": "由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。",
+    "rarity": "史诗",
+    "type": "world_boss_treasure"
+  },
+  {
+    "id": "bm_worldboss_1782465585798_t11",
+    "itemId": "t11",
+    "name": "【黑市淘金】屠龙刀",
+    "price": 180,
+    "desc": "由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。",
+    "rarity": "传说",
+    "type": "world_boss_treasure"
+  },
+  {
+    "id": "bm_worldboss_1782465585798_t15",
+    "itemId": "t15",
+    "name": "【黑市淘金】达摩舍利",
+    "price": 300,
+    "desc": "由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。",
+    "rarity": "神话",
+    "type": "world_boss_treasure"
+  },
+  {
+    "id": "bm_worldboss_1782465071975_t8",
+    "itemId": "t8",
+    "name": "【黑市淘金】金蛇剑",
+    "price": 120,
+    "desc": "由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。",
+    "rarity": "史诗",
+    "type": "world_boss_treasure"
+  },
+  {
+    "id": "bm_worldboss_1782465071975_t11",
+    "itemId": "t11",
+    "name": "【黑市淘金】屠龙刀",
+    "price": 180,
+    "desc": "由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。",
+    "rarity": "传说",
+    "type": "world_boss_treasure"
+  }
+]

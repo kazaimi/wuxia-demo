@@ -44,10 +44,10 @@
       "ultimate": "s_dianxue",
       "inner": "s_shihou"
     },
-    "id": "FimrgMP4mlAv0uosAADJ",
+    "id": "VjYRbW-fWPFsZvq0AAAF",
     "isBattling": false,
     "rankIndex": 20,
-    "lastTaskDate": "Wed Jun 17 2026",
+    "lastTaskDate": "Fri Jun 26 2026",
     "treasures": [
       "t3",
       "t5",
@@ -56,6 +56,16 @@
       "t11",
       "t9",
       "t13",
+      "t9",
+      "t15",
+      "t14",
+      "t12",
+      "t9",
+      "t15",
+      "t12",
+      "t8",
+      "t15",
+      "t12",
       "t9"
     ],
     "encountersToday": 0,
@@ -63,7 +73,7 @@
     "dailyDebuffs": [],
     "equippedTreasure": "t13",
     "dailyActivity": 0,
-    "silver": 169,
+    "silver": 712,
     "skillMastery": {
       "s1": 32,
       "s_taiji": 32,
@@ -83,11 +93,11 @@
       "luk": 2
     },
     "password": "636793",
-    "essence": 440,
+    "essence": 410,
     "inventoryMaterials": {
-      "anomalyDust": 7,
+      "anomalyDust": 45,
       "soulAshes": 0,
-      "anomalyCrystal": 0,
+      "anomalyCrystal": 4,
       "goldSand": 0,
       "woodHerb": 0,
       "waterFluid": 3,
@@ -106,9 +116,9 @@
       "poisonRate": 0,
       "bossDamageBoost": 0
     },
-    "lastLoginTime": 1781662426341,
+    "lastLoginTime": 1782466052537,
     "dailySilverAdd": 0,
-    "lastResetDate": "Wed Jun 17 2026"
+    "lastResetDate": "Fri Jun 26 2026"
   },
   {
     "name": "芙蓉女侠",

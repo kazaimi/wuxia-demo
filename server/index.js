@@ -19,8 +19,59 @@ const io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"
 // 使用 __dirname 获取 server 目录的绝对路径
 const DB_FILE = path.join(__dirname, 'db.json');
 const AUCTION_HISTORY_FILE = path.join(__dirname, 'auction_history.json');
+const BLACK_MARKET_FILE = path.join(__dirname, 'blackmarket.json');
 let realPlayersDB = [];
 let auctionHistory = [];
+let lastWorldBossAuctionSummary = null;
+
+const updateLastWorldBossAuctionSummary = () => {
+   const wbRecords = auctionHistory.filter(h => h.type === 'world_boss');
+   if (wbRecords.length > 0) {
+      const latestTime = Math.max(...wbRecords.map(r => r.endTime));
+      const latestRecords = wbRecords.filter(r => r.endTime === latestTime);
+      if (latestRecords.length > 0) {
+         const summaries = latestRecords.map(r => {
+            const isRecycled = r.buyerName === '黑市商会';
+            if (isRecycled) {
+               return `【${r.itemName}】流拍并由黑市商会兜底回收`;
+            } else {
+               return `【${r.itemName}】由 [${r.buyerName}] 以 ${r.finalPrice} 银两拍得`;
+            }
+         });
+         lastWorldBossAuctionSummary = {
+            settledTime: latestTime,
+            summary: summaries.join('；')
+         };
+      }
+   } else {
+      lastWorldBossAuctionSummary = null;
+   }
+};
+let blackMarketGoods = [];
+
+const loadBlackMarket = () => {
+   try {
+      if (fs.existsSync(BLACK_MARKET_FILE)) {
+         blackMarketGoods = JSON.parse(fs.readFileSync(BLACK_MARKET_FILE, 'utf-8'));
+      } else {
+         blackMarketGoods = [];
+      }
+   } catch (e) {
+      console.error("[黑市] 读取流拍商品库失败:", e);
+      blackMarketGoods = [];
+   }
+};
+
+const saveBlackMarket = () => {
+   try {
+      fs.writeFileSync(BLACK_MARKET_FILE, JSON.stringify(blackMarketGoods, null, 2), 'utf-8');
+   } catch (e) {
+      console.error("[黑市] 保存流拍商品库失败:", e);
+   }
+};
+
+// 立即加载黑市
+loadBlackMarket();
 
 const calculateMaxHp = (level, conAttr) => Math.min(7000, 100 + level * 15 + (conAttr || 0) * 10);
 
@@ -97,6 +148,8 @@ if (fs.existsSync(AUCTION_HISTORY_FILE)) {
       auctionHistory = [];
    }
 }
+updateLastWorldBossAuctionSummary();
+
 
 const saveAuctionHistory = () => {
    const tempPath = AUCTION_HISTORY_FILE + '.tmp';
@@ -227,12 +280,12 @@ let worldBossState = {
    fighters: {}, // { name: { damage: 0, count: 0, hpPercent: 1.0 } }
    lastHitBy: null,
    auctionActive: false,
-   highestBid: 0,
-   highestBidder: null,
    auctionEndTime: 0,
-   auctionItem: null,
+   auctions: [],
    stance: 'normal',
-   stanceRemainingHp: 0
+   stanceRemainingHp: 0,
+   defeatedToday: false,
+   isDevForced: false
 };
 
 // NPC 战局模拟器定时器
@@ -408,11 +461,12 @@ const checkWorldBossSchedule = () => {
       if (!worldBossState.signupOpen && !worldBossState.active && !worldBossState.auctionActive) {
          worldBossState.signupOpen = true;
          worldBossState.active = false;
+         worldBossState.defeatedToday = false; // 报名开启重置
          io.emit('world_boss_state_change', worldBossState);
          io.emit('broadcast_message', `*【天地异变】请战帖已开启投递！诸位大侠速往世界大厅登记参战！*`);
       }
    } else if (day === 5 && hour >= 19 && hour < 23) {
-      if (worldBossState.signupOpen || !worldBossState.active) {
+      if (!worldBossState.defeatedToday && (worldBossState.signupOpen || !worldBossState.active)) {
          worldBossState.signupOpen = false;
          worldBossState.active = true;
          const N = Math.max(1, worldBossState.signups.length);
@@ -429,18 +483,20 @@ const checkWorldBossSchedule = () => {
    } else if (day === 5 && hour >= 23 && hour < 24) {
       if (worldBossState.active) {
          worldBossState.active = false;
+         worldBossState.defeatedToday = true; // 截止后标记已击退
          stopNpcChallengeSimulator();
          startWorldBossAuction();
       }
-   } else {
-      if (worldBossState.signupOpen || worldBossState.active || worldBossState.auctionActive) {
-         resetWorldBossState();
-      }
-   }
+    } else {
+       if (!worldBossState.isDevForced && (worldBossState.signupOpen || worldBossState.active || worldBossState.auctionActive)) {
+          resetWorldBossState();
+       }
+    }
 };
 
 const resetWorldBossState = () => {
    stopNpcChallengeSimulator();
+   const prevDefeated = worldBossState.defeatedToday || false;
    worldBossState = {
       active: false,
       signupOpen: false,
@@ -450,12 +506,12 @@ const resetWorldBossState = () => {
       fighters: {},
       lastHitBy: null,
       auctionActive: false,
-      highestBid: 0,
-      highestBidder: null,
       auctionEndTime: 0,
-      auctionItem: null,
+      auctions: [],
       stance: 'normal',
-      stanceRemainingHp: 0
+      stanceRemainingHp: 0,
+      defeatedToday: prevDefeated,
+      isDevForced: false
    };
    worldBossSignups = [];
    saveSignups();
@@ -463,45 +519,196 @@ const resetWorldBossState = () => {
 };
 
 const startWorldBossAuction = () => {
-   const godTreasures = ['t13', 't14', 't15'];
-   const randomTId = godTreasures[Math.floor(Math.random() * godTreasures.length)];
-   const tNames = { t13: '圣火令', t14: '绝世好剑', t15: '达摩舍利' };
-   const tData = { id: randomTId, name: tNames[randomTId] };
+   const godPool = ['t13', 't14', 't15'];
+   const epicPool = ['t10', 't11', 't12']; // 传说
+   const legendPool = ['t7', 't8', 't9']; // 史诗
+   
+   const allNames = {
+      t7: '打狗棒', t8: '金蛇剑', t9: '软猬甲',
+      t10: '倚天剑', t11: '屠龙刀', t12: '玄铁重剑',
+      t13: '圣火令', t14: '绝世好剑', t15: '达摩舍利'
+   };
+   const allRarities = {
+      t7: '史诗', t8: '史诗', t9: '史诗',
+      t10: '传说', t11: '传说', t12: '传说',
+      t13: '神话', t14: '神话', t15: '神话'
+   };
+
+   // 随机挑选 1神话、1传说、1史诗
+   const godId = godPool[Math.floor(Math.random() * godPool.length)];
+   const epicId = epicPool[Math.floor(Math.random() * epicPool.length)];
+   const legendId = legendPool[Math.floor(Math.random() * legendPool.length)];
 
    worldBossState.auctionActive = true;
-   worldBossState.auctionItem = tData;
-   worldBossState.highestBid = 0;
-   worldBossState.highestBidder = null;
-   worldBossState.auctionEndTime = Date.now() + 60 * 60 * 1000; 
+   worldBossState.auctionEndTime = Date.now() + 60 * 60 * 1000; // 1小时
+   worldBossState.defeatedToday = true; // 开启拍卖时置为已被击败
+   
+   worldBossState.auctions = [
+      {
+         item: { id: godId, name: allNames[godId], rarity: allRarities[godId] },
+         highestBid: 0,
+         highestBidder: null
+      },
+      {
+         item: { id: epicId, name: allNames[epicId], rarity: allRarities[epicId] },
+         highestBid: 0,
+         highestBidder: null
+      },
+      {
+         item: { id: legendId, name: allNames[legendId], rarity: allRarities[legendId] },
+         highestBid: 0,
+         highestBidder: null
+      }
+   ];
+
+   // 核心新增点：计算真实玩家伤害前三甲并分发豪华奖励礼包
+   const fighters = Object.entries(worldBossState.fighters || {})
+      .map(([name, f]) => ({ name, damage: f.damage }))
+      .sort((a, b) => b.damage - a.damage);
+      
+   let rankCount = 1;
+   let rankAnnounce = `*【讨伐捷报】本次太古噬魂魔罗剿灭战大捷，伤害输出前三甲名扬天下：*`;
+   
+   for (const f of fighters) {
+      const p = realPlayersDB.find(pl => pl.name === f.name);
+      if (p) { // 仅限真实玩家参与排名发奖
+         if (rankCount === 1) {
+            p.silver = (p.silver || 0) + 300;
+            if (!p.inventoryMaterials) p.inventoryMaterials = {};
+            p.inventoryMaterials.anomalyDust = (p.inventoryMaterials.anomalyDust || 0) + 10;
+            p.inventoryMaterials.anomalyCrystal = (p.inventoryMaterials.anomalyCrystal || 0) + 2;
+            rankAnnounce += `\n*🥇 第一名：[${p.name}] 造成了 ${f.damage} 伤害！斩获 300银两、10个异变之尘、2个异变玄晶！*`;
+         } else if (rankCount === 2) {
+            p.silver = (p.silver || 0) + 200;
+            if (!p.inventoryMaterials) p.inventoryMaterials = {};
+            p.inventoryMaterials.anomalyDust = (p.inventoryMaterials.anomalyDust || 0) + 8;
+            p.inventoryMaterials.anomalyCrystal = (p.inventoryMaterials.anomalyCrystal || 0) + 1;
+            rankAnnounce += `\n*🥈 第二名：[${p.name}] 造成了 ${f.damage} 伤害！斩获 200银两、8个异变之尘、1个异变玄晶！*`;
+         } else if (rankCount === 3) {
+            p.silver = (p.silver || 0) + 100;
+            if (!p.inventoryMaterials) p.inventoryMaterials = {};
+            p.inventoryMaterials.anomalyDust = (p.inventoryMaterials.anomalyDust || 0) + 5;
+            rankAnnounce += `\n*🥉 第三名：[${p.name}] 造成了 ${f.damage} 伤害！斩获 100银两、5个异变之尘！*`;
+         }
+         
+         // 数据推送到在线客户端
+         const onlineP = players.find(pl => pl.name === p.name);
+         if (onlineP) {
+            const socketP = io.sockets.sockets.get(onlineP.id);
+            if (socketP) socketP.emit('update_player_success', p);
+         }
+         rankCount++;
+         if (rankCount > 3) break;
+      }
+   }
+   saveDB();
+
+   // 广播伤害排行
+   io.emit('broadcast_message', `${rankCount > 1 ? rankAnnounce : ''}`);
    io.emit('world_boss_state_change', worldBossState);
-   io.emit('broadcast_message', `*【天尊拍卖】太古噬魂魔罗被击退！爆出神话秘宝【${tData.name}】公开竞拍，出价高者得！*`);
+   io.emit('broadcast_message', `*【天尊拍卖】太古噬魂魔罗被击退！爆出 3 件神兵秘宝（神话【${allNames[godId]}】、传说【${allNames[epicId]}】、史诗【${allNames[legendId]}】）全开放公开竞拍，出价高者得！*`);
 };
 
 const checkWorldBossAuctionEnd = () => {
    if (worldBossState.auctionActive && Date.now() >= worldBossState.auctionEndTime) {
-      const item = worldBossState.auctionItem;
-      let finalPrice = worldBossState.highestBid;
-      let buyer = worldBossState.highestBidder;
-      let isSystemBuy = false;
+      let totalDividendPool = 0;
+      let broadcastMsgs = [];
+      let blackMarketAdded = false;
 
-      if (!buyer || finalPrice <= 0) {
-         buyer = "黑市商会";
-         finalPrice = 100;
-         isSystemBuy = true;
-      }
+      (worldBossState.auctions || []).forEach((auction) => {
+         const item = auction.item;
+         let finalPrice = auction.highestBid;
+         let buyer = auction.highestBidder;
+         let isSystemBuy = false;
 
-      const dividendPool = Math.floor(finalPrice * 0.9);
-      let totalDmg = 0;
-      Object.values(worldBossState.fighters).forEach(f => {
-         totalDmg += f.damage;
+         if (!buyer || finalPrice <= 0) {
+            buyer = "黑市商会";
+            finalPrice = 100;
+            isSystemBuy = true;
+
+            // 流拍兜底回收并上架黑市
+            let shopPrice = 120; // 默认史诗
+            if (item.rarity === '神话') shopPrice = 300;
+            else if (item.rarity === '传说') shopPrice = 180;
+
+            const blackMarketItem = {
+               id: `bm_worldboss_${Date.now()}_${item.id}`,
+               itemId: item.id,
+               name: `【黑市淘金】${item.name}`,
+               price: shopPrice,
+               desc: `由【太古噬魂魔罗】挑战赛流拍流出。商会兜底收纳！原价难得，黑市限时专供。`,
+               rarity: item.rarity,
+               type: 'world_boss_treasure'
+            };
+            blackMarketGoods.unshift(blackMarketItem);
+            blackMarketAdded = true;
+         }
+
+         const dividendPool = Math.floor(finalPrice * 0.9);
+         totalDividendPool += dividendPool;
+
+         if (!isSystemBuy) {
+            const winner = realPlayersDB.find(p => p.name === buyer);
+            if (winner) {
+               if (!winner.treasures) winner.treasures = [];
+               winner.treasures.push(item.id);
+
+               const onlineW = players.find(pl => pl.name === winner.name);
+               if (onlineW) {
+                  onlineW.treasures = winner.treasures;
+                  const socketW = io.sockets.sockets.get(onlineW.id);
+                  if (socketW) {
+                     socketW.emit('update_player_success', winner);
+                     socketW.emit('broadcast_message', `*【夺宝贺电】你以 ${finalPrice} 银两拍得【${item.name}】！已存入储物袋。*`);
+                  }
+               }
+            }
+            broadcastMsgs.push(`【${item.name}】由 [${buyer}] 以 ${finalPrice} 银两拍得`);
+         } else {
+            broadcastMsgs.push(`【${item.name}】流拍并由黑市商会兜底回收`);
+         }
+
+         // 将世界Boss结标历史记录保存并持久化到全服拍卖行历史中
+         let historyRecord = {
+            id: 'world_boss_' + Date.now() + '_' + item.id,
+            itemName: item.name,
+            type: 'world_boss',
+            sellerName: '太古噬魂魔罗',
+            endTime: worldBossState.auctionEndTime,
+            status: isSystemBuy ? 'failed' : 'success',
+            buyerName: buyer,
+            finalPrice: finalPrice
+         };
+         auctionHistory.unshift(historyRecord);
       });
 
-      if (totalDmg > 0 && dividendPool > 0) {
+      if (blackMarketAdded) {
+         saveBlackMarket();
+         io.emit('black_market_items', { dynamicItems: blackMarketGoods });
+         io.emit('broadcast_message', `*【黑市到货】世界拍卖行流拍物品已被黑市商会回收，现已上架【幽冥黑市】供大侠购买！*`);
+      }
+
+      if (auctionHistory.length > 100) {
+         auctionHistory = auctionHistory.slice(0, 100);
+      }
+      saveAuctionHistory();
+      io.emit('auction_history', auctionHistory);
+
+      // 只累加真实玩家的伤害总和，防止NPC参与分红比例造成稀释
+      let totalDmg = 0;
+      realPlayersDB.forEach(p => {
+         const f = worldBossState.fighters[p.name];
+         if (f && f.damage > 0) {
+            totalDmg += f.damage;
+         }
+      });
+
+      if (totalDmg > 0 && totalDividendPool > 0) {
          realPlayersDB.forEach(p => {
             const f = worldBossState.fighters[p.name];
             if (f && f.damage > 0) {
                const ratio = f.damage / totalDmg;
-               const share = Math.max(1, Math.floor(dividendPool * ratio));
+               const share = Math.max(1, Math.floor(totalDividendPool * ratio));
                p.silver = (p.silver || 0) + share;
 
                const onlineP = players.find(pl => pl.name === p.name);
@@ -510,33 +717,24 @@ const checkWorldBossAuctionEnd = () => {
                   const socketP = io.sockets.sockets.get(onlineP.id);
                   if (socketP) {
                      socketP.emit('update_player_success', p);
-                     socketP.emit('broadcast_message', `*【大分红】大魔罗讨伐拍卖结标（成交价:${finalPrice}银两），你分得 ${share} 银两！*`);
+                     socketP.emit('broadcast_message', `*【大分红】大魔罗并行拍卖会结标（总分红池:${totalDividendPool}银两），你分得 ${share} 银两！*`);
                   }
                }
             }
          });
       }
 
-      if (!isSystemBuy) {
-         const winner = realPlayersDB.find(p => p.name === buyer);
-         if (winner) {
-            if (!winner.treasures) winner.treasures = [];
-            winner.treasures.push(item.id);
-
-            const onlineW = players.find(pl => pl.name === winner.name);
-            if (onlineW) {
-               onlineW.treasures = winner.treasures;
-               const socketW = io.sockets.sockets.get(onlineW.id);
-               if (socketW) {
-                  socketW.emit('update_player_success', winner);
-                  socketW.emit('broadcast_message', `*【夺宝贺电】你以 ${finalPrice} 银两拍得神话秘宝【${item.name}】！已存入储物袋。*`);
-               }
-            }
-         }
-      }
-
       saveDB();
-      io.emit('broadcast_message', `*【大结标】竞拍物【${item.name}】由 [${buyer}] 拍得！分红已打入各挑战大侠账户！*`);
+      io.emit('broadcast_message', `*【大结标】本次拍卖结标！结果：${broadcastMsgs.join('；')}。分红已打入各挑战大侠账户！*`);
+      const settledTime = worldBossState.auctionEndTime || Date.now();
+      lastWorldBossAuctionSummary = {
+         settledTime: settledTime,
+         summary: broadcastMsgs.join('；')
+      };
+      io.emit('world_boss_auction_settled', {
+         settledTime: settledTime,
+         summary: broadcastMsgs.join('；')
+      });
       resetWorldBossState();
    }
 };
@@ -728,6 +926,10 @@ io.on('connection', (socket) => {
           }
 
           socket.emit('login_success', dbPlayer);
+          // 登录后推送最新的世界Boss拍卖结标摘要，供前端判断是否需要补发弹窗通知
+          if (lastWorldBossAuctionSummary) {
+             socket.emit('last_world_boss_auction_summary', lastWorldBossAuctionSummary);
+          }
           console.log(`[调试] 已发送 login_success 给 ${username}`);
           io.emit('online_players', getLeaderboardData());
       } else {
@@ -795,6 +997,10 @@ io.on('connection', (socket) => {
           saveDB();
           players.push(data);
           socket.emit('login_success', data);
+          // 新建角色登录后推送最新的世界Boss拍卖结标摘要
+          if (lastWorldBossAuctionSummary) {
+             socket.emit('last_world_boss_auction_summary', lastWorldBossAuctionSummary);
+          }
       } else {
           // 已有同名玩家，但如果是以 player_join 重新加入，需要校验密码
           if (dbPlayer.password && dbPlayer.password !== data.password) {
@@ -822,6 +1028,10 @@ io.on('connection', (socket) => {
           const i = players.findIndex(p => p.name === data.name);
           if (i >= 0) players[i] = dbPlayer; else players.push(dbPlayer);
           socket.emit('login_success', dbPlayer);
+          // 老玩家重新进入后推送最新的世界Boss拍卖结标摘要
+          if (lastWorldBossAuctionSummary) {
+             socket.emit('last_world_boss_auction_summary', lastWorldBossAuctionSummary);
+          }
       }
       io.emit('online_players', getLeaderboardData());
   });
@@ -1104,7 +1314,11 @@ io.on('connection', (socket) => {
       }
 
       p.essence -= 10;
-      const dustAmt = 2 + Math.floor(Math.random() * 2);
+      const dustAmt = 5 + Math.floor(Math.random() * 4); // 5~8个异变之尘
+      let crystalAmt = 0;
+      if (Math.random() < 0.25) { // 25% 概率掉落 1个异变玄晶
+         crystalAmt = 1;
+      }
       if (!p.inventoryMaterials) {
          p.inventoryMaterials = {
             anomalyDust: 0, soulAshes: 0, anomalyCrystal: 0,
@@ -1112,6 +1326,9 @@ io.on('connection', (socket) => {
          };
       }
       p.inventoryMaterials.anomalyDust = (p.inventoryMaterials.anomalyDust || 0) + dustAmt;
+      if (crystalAmt > 0) {
+         p.inventoryMaterials.anomalyCrystal = (p.inventoryMaterials.anomalyCrystal || 0) + crystalAmt;
+      }
       saveDB();
 
       const name = p.name;
@@ -1143,7 +1360,7 @@ io.on('connection', (socket) => {
 
       io.emit('world_boss_state_change', worldBossState);
       socket.emit('update_player_success', p);
-      socket.emit('challenge_world_boss_result', { success: true, damage, dustAmt });
+      socket.emit('challenge_world_boss_result', { success: true, damage, dustAmt, crystalAmt });
       io.emit('online_players', getLeaderboardData());
 
       if (isCrit || damage >= 30000) {
@@ -1160,11 +1377,22 @@ io.on('connection', (socket) => {
 
       if (isKill) {
          io.emit('broadcast_message', `*【天劫破除】太古噬魂魔罗已被大侠 [${name}] 完成最后一击（Last Hit）剿灭！*`);
+         
+         // 增加 Last Hit 专属奖励：200 银两，1 个异变玄晶，50 武道精魂
+         p.silver = (p.silver || 0) + 200;
+         p.essence = Math.min(100, (p.essence || 0) + 50);
+         if (!p.inventoryMaterials) p.inventoryMaterials = {};
+         p.inventoryMaterials.anomalyCrystal = (p.inventoryMaterials.anomalyCrystal || 0) + 1;
+         saveDB();
+         
+         socket.emit('update_player_success', p);
+         socket.emit('broadcast_message', `*【击杀喜报】恭喜你完成了对大魔罗的最后一击，获得了专属奖励：200银两、1个异变玄晶、50武道精魂！*`);
+         
          startWorldBossAuction();
       }
   });
 
-  socket.on('bid_world_boss_auction', ({ price }) => {
+  socket.on('bid_world_boss_auction', ({ itemIndex, price }) => {
       const p = realPlayersDB.find(p => p.name === socket.username);
       if (!p) return;
       if (!worldBossState.auctionActive) {
@@ -1175,19 +1403,25 @@ io.on('connection', (socket) => {
          socket.emit('bid_world_boss_auction_result', { success: false, reason: '拍卖已结标！' });
          return;
       }
+      const auctionsList = worldBossState.auctions || [];
+      const auction = auctionsList[itemIndex];
+      if (!auction) {
+         socket.emit('bid_world_boss_auction_result', { success: false, reason: '未找到竞拍商品！' });
+         return;
+      }
       if (p.silver < price) {
          socket.emit('bid_world_boss_auction_result', { success: false, reason: '大侠所持银两不足！' });
          return;
       }
-      if (price <= worldBossState.highestBid) {
+      if (price <= auction.highestBid) {
          socket.emit('bid_world_boss_auction_result', { success: false, reason: '出价必须高于当前最高竞价！' });
          return;
       }
 
-      if (worldBossState.highestBidder) {
-         const prev = realPlayersDB.find(pl => pl.name === worldBossState.highestBidder);
+      if (auction.highestBidder) {
+         const prev = realPlayersDB.find(pl => pl.name === auction.highestBidder);
          if (prev) {
-            prev.silver += worldBossState.highestBid;
+            prev.silver += auction.highestBid;
             const onlinePrev = players.find(pl => pl.name === prev.name);
             if (onlinePrev) {
                onlinePrev.silver = prev.silver;
@@ -1200,13 +1434,13 @@ io.on('connection', (socket) => {
       p.silver -= price;
       saveDB();
 
-      worldBossState.highestBid = price;
-      worldBossState.highestBidder = p.name;
+      auction.highestBid = price;
+      auction.highestBidder = p.name;
       io.emit('world_boss_state_change', worldBossState);
       io.emit('online_players', getLeaderboardData());
       socket.emit('update_player_success', p);
       socket.emit('bid_world_boss_auction_result', { success: true });
-      io.emit('broadcast_message', `*【天尊竞拍】大侠 [${p.name}] 对神兵叫价：${price} 银两！*`);
+      io.emit('broadcast_message', `*【天尊竞拍】大侠 [${p.name}] 对【${auction.item.name}】叫价：${price} 银两！*`);
   });
 
   socket.on('dev_control_world_boss', ({ action }) => {
@@ -1214,12 +1448,14 @@ io.on('connection', (socket) => {
          worldBossState.signupOpen = true;
          worldBossState.active = false;
          worldBossState.auctionActive = false;
+         worldBossState.isDevForced = true;
          io.emit('world_boss_state_change', worldBossState);
          io.emit('broadcast_message', `*【开发调试】周五 Boss 请战贴登记通道已被开发者强制开启！*`);
       } else if (action === 'spawn_boss') {
          worldBossState.signupOpen = false;
          worldBossState.active = true;
          worldBossState.auctionActive = false;
+         worldBossState.isDevForced = true;
          const N = Math.max(1, worldBossState.signups.length);
          worldBossState.maxHp = 500000 + N * 800000;
          worldBossState.hp = worldBossState.maxHp;
@@ -1233,10 +1469,12 @@ io.on('connection', (socket) => {
       } else if (action === 'trigger_auction') {
          worldBossState.signupOpen = false;
          worldBossState.active = false;
+         worldBossState.isDevForced = true;
          stopNpcChallengeSimulator();
          startWorldBossAuction();
       } else if (action === 'force_auction_end') {
          if (worldBossState.auctionActive) {
+            worldBossState.isDevForced = true;
             worldBossState.auctionEndTime = Date.now() - 1000;
             stopNpcChallengeSimulator();
             checkWorldBossAuctionEnd();
@@ -1444,9 +1682,49 @@ io.on('connection', (socket) => {
       io.emit('online_players', getLeaderboardData());
    });
 
+   socket.on('get_black_market_items', () => {
+       socket.emit('black_market_items', { dynamicItems: blackMarketGoods });
+   });
+
    socket.on('buy_black_market_item', ({ itemId }) => {
        const p = realPlayersDB.find(pl => pl.name === socket.username);
        if (!p) return;
+
+       if (itemId && itemId.startsWith('bm_worldboss_')) {
+          const goodIndex = blackMarketGoods.findIndex(g => g.id === itemId);
+          if (goodIndex === -1) {
+             socket.emit('buy_black_market_item_result', { success: false, reason: '商品已被捷足先登！' });
+             return;
+          }
+          const good = blackMarketGoods[goodIndex];
+          if ((p.silver || 0) < good.price) {
+             socket.emit('buy_black_market_item_result', { success: false, reason: '银两不足！' });
+             return;
+          }
+          
+          p.silver -= good.price;
+          if (!p.treasures) p.treasures = [];
+          p.treasures.push(good.itemId);
+          
+          blackMarketGoods.splice(goodIndex, 1);
+          saveBlackMarket();
+          saveDB();
+          
+          const onlineP = players.find(pl => pl.name === p.name);
+          if (onlineP) Object.assign(onlineP, p);
+          
+          socket.emit('update_player_success', p);
+          socket.emit('buy_black_market_item_result', {
+             success: true,
+             itemId,
+             alertMsg: `成功以 ${good.price} 银两淘得神兵【${good.name}】！已存入储物袋。`,
+             feedbackDialogue: `这把神兵来路不凡，乃大魔罗竞买流标遗物。大侠好生利用！`
+          });
+          
+          io.emit('online_players', getLeaderboardData());
+          io.emit('black_market_items', { dynamicItems: blackMarketGoods });
+          return;
+       }
        
        const prices = {
           item_coffee: 99,

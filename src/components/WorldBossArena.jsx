@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore, getSocket, SKILLS_DB, TREASURES_DB, getSkillInfo } from '../store/gameState';
-import { Sword, Users, ShieldAlert, Award, Play, Shield, FlaskConical } from 'lucide-react';
+import { Sword, Users, ShieldAlert, Award, Play, Shield, FlaskConical, History } from 'lucide-react';
 import { SoundManager } from '../utils/SoundManager';
 import EnhancedWarriorAvatar from './EnhancedWarriorAvatar';
 import BattleEffects, { DamageFloatNumber, MangaSkillPop, ClashParticles } from './BattleEffects';
@@ -9,6 +9,7 @@ import { useCleanImage } from '../utils/imageProcess';
 export default function WorldBossArena() {
   const player = useGameStore(state => state.player);
   const worldBossState = useGameStore(state => state.worldBossState);
+  const auctionHistory = useGameStore(state => state.auctionHistory);
   const bossPicSrc = 
     worldBossState.stance === 'weakened' ? '/boss_mola_weakened.png' :
     worldBossState.stance === 'frenzied' ? '/boss_mola_frenzied.png' :
@@ -34,6 +35,7 @@ export default function WorldBossArena() {
   
   // 拍卖出价
   const [bidPrice, setBidPrice] = useState(0);
+  const [bidPrices, setBidPrices] = useState({});
   
   // 滚动日志和 Toast
   const [strikeToast, setStrikeToast] = useState(null);
@@ -153,9 +155,12 @@ export default function WorldBossArena() {
      setBattleLogs(logs);
 
      let turn = 1;
-     let userHp = player.maxHp;
-     let bossHp = worldBossState.hp;
-     let accumulatedDmg = 0;
+      let userHp = player.maxHp;
+      let bossHp = worldBossState.hp;
+      let accumulatedDmg = 0;
+      let isBossSilencedNextTurn = false;
+      let isBossStunnedNextTurn = false;
+      let isBossWounded = 0;
 
      const interval = setInterval(() => {
         if (turn > 30 || userHp <= 0 || bossHp <= 0) {
@@ -218,8 +223,13 @@ export default function WorldBossArena() {
         }));
 
         // 1. Boss 攻击前戏与技能施放轴
-        if (turn === 3 || turn === 8) {
-           if (activeStance === 'weakened') {
+         if (turn === 3 || turn === 8) {
+            if (isBossSilencedNextTurn || isBossStunnedNextTurn) {
+               const ctrlType = isBossStunnedNextTurn ? '眩晕' : '封穴';
+               turnLog += `👹 魔罗本欲施展秘法，因受【${ctrlType}】影响陷入僵直，秘法直接被打断！\n`;
+               isBossSilencedNextTurn = false;
+               isBossStunnedNextTurn = false;
+            } else if (activeStance === 'weakened') {
               turnLog += `👹 魔罗魔眼暗淡，本欲施展功法，奈何因【封印虚弱】真气难提，此招直接落空！你毫发无损。\n`;
            } else if (activeStance === 'frenzied') {
               turnLog += `👹 魔罗双眼怒绽血光，在狂暴下施展了【混沌魔蚀】重创于你！`;
@@ -263,12 +273,27 @@ export default function WorldBossArena() {
               setSkillCast({ characterName: '太古魔罗', skillName: '魔罗乱神', skillId: 'boss_chaos', skillDesc: '太古怨魂直透识海，心魔纷扰导致施法几率大幅下降。', position: 'right' });
               setTimeout(() => {
                  addEffect('ultimateBurst', 'left', 1.5, '魔罗乱神', 'boss_chaos');
-                 addEffect('debuff', 'left', 1.0);
-              }, 500);
-           }
-        }
-        else if (turn === 5 || turn === 12) {
-           if (activeStance === 'weakened') {
+                  addEffect('debuff', 'left', 1.0);
+               }, 500);
+            }
+            if (player.equippedTreasure === 't17' && Math.random() < 0.25) {
+               const healAmt = Math.floor(player.maxHp * 0.08);
+               userHp = Math.min(player.maxHp, userHp + healAmt);
+               totalHeal += healAmt;
+               turnLog += `✦ 【真武圣剑】受击激发回复，恢复了 ${healAmt} 点气血！\n`;
+               setTimeout(() => {
+                  addEffect('heal', 'left', 1.0);
+                  addDamageNumber(healAmt, 'left', true);
+               }, 300);
+            }
+         }
+         else if (turn === 5 || turn === 12) {
+            if (isBossSilencedNextTurn || isBossStunnedNextTurn) {
+               const ctrlType = isBossStunnedNextTurn ? '眩晕' : '封穴';
+               turnLog += `👹 魔罗本欲施展秘法，因受【${ctrlType}】影响陷入僵直，秘法直接被打断！\n`;
+               isBossSilencedNextTurn = false;
+               isBossStunnedNextTurn = false;
+            } else if (activeStance === 'weakened') {
               turnLog += `👹 魔罗浑身煞气溃散，施展了虚弱的【残喘挣扎】！`;
               const dot = Math.floor(player.maxHp * 0.03);
               userHp = Math.max(0, userHp - dot);
@@ -337,13 +362,28 @@ export default function WorldBossArena() {
               setSkillCast({ characterName: '太古魔罗', skillName: '邪煞夺魄', skillId: 'boss_shadow', skillDesc: '周身煞气暴涨，掠夺气血！染上腐骨魔毒，并张开本命血盾', position: 'right' });
               setTimeout(() => {
                  addEffect('ultimateBurst', 'left', 2.0, '邪煞夺魄', 'boss_shadow');
-                 addEffect('buff', 'right', 1.5);
-                 addDamageNumber(dot, 'left');
-              }, 500);
-           }
-        }
-        else if (turn === 7 || turn === 14) {
-           if (activeStance === 'weakened') {
+                  addEffect('buff', 'right', 1.5);
+                  addDamageNumber(dot, 'left');
+               }, 500);
+            }
+            if (player.equippedTreasure === 't17' && Math.random() < 0.25) {
+               const healAmt = Math.floor(player.maxHp * 0.08);
+               userHp = Math.min(player.maxHp, userHp + healAmt);
+               totalHeal += healAmt;
+               turnLog += `✦ 【真武圣剑】受击激发回复，恢复了 ${healAmt} 点气血！\n`;
+               setTimeout(() => {
+                  addEffect('heal', 'left', 1.0);
+                  addDamageNumber(healAmt, 'left', true);
+               }, 300);
+            }
+         }
+         else if (turn === 7 || turn === 14) {
+            if (isBossSilencedNextTurn || isBossStunnedNextTurn) {
+               const ctrlType = isBossStunnedNextTurn ? '眩晕' : '封穴';
+               turnLog += `👹 魔罗本欲施展秘法，因受【${ctrlType}】影响陷入僵直，秘法直接被打断！\n`;
+               isBossSilencedNextTurn = false;
+               isBossStunnedNextTurn = false;
+            } else if (activeStance === 'weakened') {
               turnLog += `👹 魔罗发出了虚无苍白的【残喘咆哮】，根本无法震慑你的心神，你气势如虹！\n`;
               setSkillCast({ characterName: '太古魔罗', skillName: '残喘咆哮', skillId: 'boss_roar', skillDesc: '虚弱衰退下的嘶吼，音波孱弱。', position: 'right' });
               setTimeout(() => {
@@ -430,14 +470,30 @@ export default function WorldBossArena() {
               setSkillCast({ characterName: '太古魔罗', skillName: '太古魔啸', skillId: 'boss_roar', skillDesc: '魔心力啸震天，撕裂气脉！狂暴邪声震耳，令敌眩晕失守', position: 'right' });
               setTimeout(() => {
                  addEffect('ultimateBurst', 'left', 2.0, '太古魔啸', 'boss_roar');
-                 if (isStunned) {
-                    addEffect('debuff', 'left', 1.0);
-                 }
-              }, 500);
-           }
-        }
-        else if (turn === 30) {
-           turnLog += `👹 【诸神寂灭】！！魔罗在第 30 回合爆发灭世神雷，对你造成 99,999 点真实伤害，你瞬间失去知觉！\n`;
+                  if (isStunned) {
+                     addEffect('debuff', 'left', 1.0);
+                  }
+               }, 500);
+            }
+            if (player.equippedTreasure === 't17' && Math.random() < 0.25) {
+               const healAmt = Math.floor(player.maxHp * 0.08);
+               userHp = Math.min(player.maxHp, userHp + healAmt);
+               totalHeal += healAmt;
+               turnLog += `✦ 【真武圣剑】受击激发回复，恢复了 ${healAmt} 点气血！\n`;
+               setTimeout(() => {
+                  addEffect('heal', 'left', 1.0);
+                  addDamageNumber(healAmt, 'left', true);
+               }, 300);
+            }
+         }
+         else if (turn === 30) {
+            if (isBossSilencedNextTurn || isBossStunnedNextTurn) {
+               const ctrlType = isBossStunnedNextTurn ? '眩晕' : '封穴';
+               turnLog += `👹 魔罗本欲爆发出灭世神雷【诸神寂灭】，因受【${ctrlType}】影响陷入僵直，灭世神雷被打散了！\n`;
+               isBossSilencedNextTurn = false;
+               isBossStunnedNextTurn = false;
+            } else {
+               turnLog += `👹 【诸神寂灭】！！魔罗在第 30 回合爆发灭世神雷，对你造成 99,999 点真实伤害，你瞬间失去知觉！\n`;
            userHp = 0;
            setActiveVfx('extinction');
            SoundManager.play('sfx_magic', 0.35);
@@ -450,8 +506,9 @@ export default function WorldBossArena() {
            setTimeout(() => {
               addEffect('ultimateBurst', 'left', 3.0, '诸神寂灭', 'boss_extinction');
               addDamageNumber(99999, 'left');
-           }, 580);
-        }
+            }, 580);
+            }
+         }
 
          // 2. 玩家出手
          if (!isStunned && userHp > 0) {
@@ -550,15 +607,27 @@ export default function WorldBossArena() {
                let damageToBoss = Math.floor(baseDmg);
                
                // 根据相态修正玩家造成的伤害
-               if (activeStance === 'weakened') {
-                  damageToBoss = damageToBoss * 2;
-               } else if (activeStance === 'frenzied') {
-                  damageToBoss = Math.floor(damageToBoss * 1.3);
-               } else if (activeStance === 'shielded') {
-                  damageToBoss = Math.floor(damageToBoss * 0.6);
-               }
+                if (activeStance === 'weakened') {
+                   damageToBoss = damageToBoss * 2;
+                } else if (activeStance === 'frenzied') {
+                   damageToBoss = Math.floor(damageToBoss * 1.3);
+                } else if (activeStance === 'shielded') {
+                   damageToBoss = Math.floor(damageToBoss * 0.6);
+                }
 
-               if (isCrit) isCritOccurred = true;
+                // t18 (打狗神棒) 自身气血低于 35% 时增伤 50%
+                if (player.equippedTreasure === 't18' && userHp < player.maxHp * 0.35) {
+                   damageToBoss = Math.floor(damageToBoss * 1.5);
+                   turnLog += `✦ 【打狗神棒】残血绝境爆发，伤害提升 50%！\n`;
+                }
+
+                // t19 (玄铁重剑内伤) 期间增伤 30%
+                if (isBossWounded > 0) {
+                   damageToBoss = Math.floor(damageToBoss * 1.3);
+                   turnLog += `✦ 魔罗因身负【内伤】，受到的伤害额外提升 30%！\n`;
+                }
+
+                if (isCrit) isCritOccurred = true;
                if (damageToBoss > maxSingleHit) maxSingleHit = damageToBoss;
                if (skill.type === 'ultimate') {
                   if (!castSkillsList.includes('ultimate')) castSkillsList.push('ultimate');
@@ -573,12 +642,17 @@ export default function WorldBossArena() {
                else if (activeStance === 'frenzied') stanceLabel = '(狂暴加成 x1.3)';
                else if (activeStance === 'shielded') stanceLabel = '(法盾免伤 x0.6)';
 
-               if (!isPoMa) {
-                  damageToBoss = Math.floor(damageToBoss * 0.2);
-                  turnLog += `你 施展【${skill.name}】狂轰而去，但魔罗周身【九重邪光】闪烁，抵消了80%受创，造成了 ${damageToBoss} 点伤害。${isCrit ? '(暴击!)' : ''} ${stanceLabel}\n`;
-               } else {
-                  turnLog += `你 激发【破魔】威能催动【${skill.name}】，无视防御重创魔罗，造成了 ${damageToBoss} 点伤害！${isCrit ? '(暴击!)' : ''} ${stanceLabel}\n`;
-               }
+               const isPoMaAwaked = isPoMa || player.equippedTreasure === 't19'; // t19 装备玄铁重剑自带破魔
+                if (!isPoMaAwaked) {
+                   damageToBoss = Math.floor(damageToBoss * 0.2);
+                   turnLog += `你 施展【${skill.name}】狂轰而去，但魔罗周身【九重邪光】闪烁，抵消了80%受创，造成了 ${damageToBoss} 点伤害。${isCrit ? '(暴击!)' : ''} ${stanceLabel}\n`;
+                } else {
+                   if (player.equippedTreasure === 't19') {
+                      turnLog += `你 装备【玄铁重剑·传承】万钧剑威爆发，剑锋所指直接撕裂九重邪光重创魔罗，造成了 ${damageToBoss} 点伤害！${isCrit ? '(暴击!)' : ''} ${stanceLabel}\n`;
+                   } else {
+                      turnLog += `你 激发【破魔】威能催动【${skill.name}】，无视防御重创魔罗，造成了 ${damageToBoss} 点伤害！${isCrit ? '(暴击!)' : ''} ${stanceLabel}\n`;
+                   }
+                }
 
                setIsBossHit(true);
                setTimeout(() => setIsBossHit(false), 200);
@@ -601,8 +675,36 @@ export default function WorldBossArena() {
                   }, 200);
                }
 
-               // 吸星大法吸血判定
-               if (skill.id === 's_xixing') {
+               // 荒古神兵命中触发特效
+                if (player.equippedTreasure === 't17' && Math.random() < 0.25) {
+                   isBossSilencedNextTurn = true;
+                   turnLog += `✦ 【真武圣剑】圣光显现！你有 25% 概率对魔罗造成封穴，下回合魔罗将无法行动！\n`;
+                }
+                if (player.equippedTreasure === 't18' && Math.random() < 0.30) {
+                   isBossStunnedNextTurn = true;
+                   turnLog += `✦ 【打狗神棒】棒打双犬！你有 30% 概率击晕魔罗，下回合魔罗将无法行动！\n`;
+                }
+                if (player.equippedTreasure === 't19' && Math.random() < 0.25) {
+                   isBossWounded = 2;
+                   turnLog += `✦ 【玄铁重剑】重剑无锋！你触发了内伤，使魔罗在接下来的 2 回合受到的伤害提升 30%！\n`;
+                }
+                if (player.equippedTreasure === 't20') {
+                   const t20Dmg = Math.min(1000, Math.max(10, Math.floor(bossHp * 0.01)));
+                   bossHp = Math.max(0, bossHp - t20Dmg);
+                   accumulatedDmg += t20Dmg;
+                   turnLog += `✦ 【乾坤绣花针】金针度劫！攻击附带魔罗当前气血 1% 的真实穿透伤害，额外造成了 ${t20Dmg} 点穿透伤害！\n`;
+                   setTimeout(() => {
+                      addEffect('heavyHit', 'right', 1.0);
+                      addDamageNumber(t20Dmg, 'right', false);
+                   }, 300);
+                }
+                if (player.equippedTreasure === 't21' && Math.random() < 0.40) {
+                   isBossSilencedNextTurn = true;
+                   turnLog += `✦ 【玉箫神剑】箫声袅袅！你攻击后有 40% 概率对魔罗造成封穴，下回合魔罗将无法行动！\n`;
+                }
+
+                // 吸星大法吸血判定
+                if (skill.id === 's_xixing') {
                   const drainAmt = Math.floor(damageToBoss * 0.8);
                   userHp = Math.min(player.maxHp, userHp + drainAmt);
                   totalHeal += drainAmt;
@@ -664,29 +766,33 @@ export default function WorldBossArena() {
                setCurrentBattleState({ attacker: player.name, lastHit: '太古噬魂魔罗', effectType });
 
                // 反伤护盾 (幽冥法盾 / 本地回合反弹)
-               if (activeStance === 'shielded') {
-                  const reflect = Math.max(1, Math.floor(damageToBoss * 0.2));
-                  userHp = Math.max(0, userHp - reflect);
-                  turnLog += `✦ 幽冥法盾反震！你受到了 ${reflect} 点反噬伤害！\n`;
-                  setIsPlayerHit(true);
-                  setTimeout(() => setIsPlayerHit(false), 200);
+                if (activeStance === 'shielded' && player.equippedTreasure !== 't19') {
+                   const reflect = Math.max(1, Math.floor(damageToBoss * 0.2));
+                   userHp = Math.max(0, userHp - reflect);
+                   turnLog += `✦ 幽冥法盾反震！你受到了 ${reflect} 点反噬伤害！\n`;
+                   setIsPlayerHit(true);
+                   setTimeout(() => setIsPlayerHit(false), 200);
 
-                  setTimeout(() => {
-                     addEffect('heavyHit', 'left', 1.0);
-                     addDamageNumber(reflect, 'left');
-                  }, 150);
-               } else if (turn === 5 || turn === 12) {
-                  const reflect = Math.floor(damageToBoss * 0.2);
-                  userHp = Math.max(0, userHp - reflect);
-                  turnLog += `你被魔罗的【血魂护盾】反弹了 ${reflect} 点伤害！\n`;
-                  setIsPlayerHit(true);
-                  setTimeout(() => setIsPlayerHit(false), 200);
+                   setTimeout(() => {
+                      addEffect('heavyHit', 'left', 1.0);
+                      addDamageNumber(reflect, 'left');
+                   }, 150);
+                } else if (activeStance === 'shielded' && player.equippedTreasure === 't19') {
+                   turnLog += `✦ 玄铁重剑无视幽冥法盾，完美免疫反震！\n`;
+                } else if ((turn === 5 || turn === 12) && player.equippedTreasure !== 't19') {
+                   const reflect = Math.floor(damageToBoss * 0.2);
+                   userHp = Math.max(0, userHp - reflect);
+                   turnLog += `你被魔罗的【血魂护盾】反弹了 ${reflect} 点伤害！\n`;
+                   setIsPlayerHit(true);
+                   setTimeout(() => setIsPlayerHit(false), 200);
 
-                  setTimeout(() => {
-                     addEffect('heavyHit', 'left', 1.0);
-                     addDamageNumber(reflect, 'left');
-                  }, 150);
-               }
+                   setTimeout(() => {
+                      addEffect('heavyHit', 'left', 1.0);
+                      addDamageNumber(reflect, 'left');
+                   }, 150);
+                } else if ((turn === 5 || turn === 12) && player.equippedTreasure === 't19') {
+                   turnLog += `✦ 玄铁重剑无视血魂护盾，完美免疫反弹！\n`;
+                }
 
    
 
@@ -709,8 +815,14 @@ export default function WorldBossArena() {
          }
 
          // 3. Boss 普通反击 (非30回合秒杀且未死)
-         if (bossHp > 0 && userHp > 0 && turn < 30) {
-            const playerDef = (player.attributes.con || 0) * 2 + player.level * 2 + (playerTreasure?.attrs?.def || 0) + (attrs.extraDef || 0);
+          if (bossHp > 0 && userHp > 0 && turn < 30) {
+             if (isBossSilencedNextTurn || isBossStunnedNextTurn) {
+                const ctrlType = isBossStunnedNextTurn ? '眩晕' : '封穴';
+                turnLog += `👹 魔罗因受【${ctrlType}】影响陷入僵直，无法发起反击！`;
+                isBossSilencedNextTurn = false;
+                isBossStunnedNextTurn = false;
+             } else {
+             const playerDef = (player.attributes.con || 0) * 2 + player.level * 2 + (playerTreasure?.attrs?.def || 0) + (attrs.extraDef || 0);
             let bossBaseDmg = 120 + turn * 20 - playerDef * 0.8;
             bossBaseDmg = Math.max(40, Math.floor(bossBaseDmg));
 
@@ -726,11 +838,17 @@ export default function WorldBossArena() {
             bossBaseDmg = Math.max(10, bossBaseDmg);
 
             if (playerDodgeTurn) {
-               turnLog += `魔罗 紧接着对你轰出一记邪灵煞气，但你运转闪避身法，身轻如燕巧妙躲开！`;
-               SoundManager.play('sfx_dodge');
-               addEffect('dodge', 'left', 1.0);
-               setCurrentBattleState({ attacker: '太古噬魂魔罗', lastHit: null, dodger: player.name, effectType: 'dodge' });
-            } else {
+                turnLog += `魔罗 紧接着对你轰出一记邪灵煞气，但你运转闪避身法，身轻如燕巧妙躲开！`;
+                SoundManager.play('sfx_dodge');
+                addEffect('dodge', 'left', 1.0);
+                setCurrentBattleState({ attacker: '太古噬魂魔罗', lastHit: null, dodger: player.name, effectType: 'dodge' });
+
+                // t21 闪避封穴
+                if (player.equippedTreasure === 't21' && Math.random() < 0.40) {
+                   isBossSilencedNextTurn = true;
+                   turnLog += `✦ 【玉箫神剑】身法御音！你成功闪避后触发 40% 几率封穴，下回合魔罗将无法行动！`;
+                }
+             } else {
                userHp = Math.max(0, userHp - bossBaseDmg);
                turnLog += `魔罗 对你发出一记邪灵煞气，造成了 ${bossBaseDmg} 点反伤创击。(剩余HP: ${userHp}/${player.maxHp})`;
                
@@ -744,9 +862,25 @@ export default function WorldBossArena() {
                addEffect('heavyHit', 'left', 1.2);
                addDamageNumber(bossBaseDmg, 'left');
                setCurrentBattleState({ attacker: '太古噬魂魔罗', lastHit: player.name, effectType: 'heavyHit' });
-            }
-         }
-        setCurBossHp(bossHp);
+
+                // t17 check
+                if (player.equippedTreasure === 't17' && Math.random() < 0.25) {
+                   const healAmt = Math.floor(player.maxHp * 0.08);
+                   userHp = Math.min(player.maxHp, userHp + healAmt);
+                   totalHeal += healAmt;
+                   turnLog += `\n✦ 【真武圣剑】受击激发回复，恢复了 ${healAmt} 点气血！`;
+                   setTimeout(() => {
+                      addEffect('heal', 'left', 1.0);
+                      addDamageNumber(healAmt, 'left', true);
+                   }, 300);
+                }
+             }
+             }
+          }
+          if (isBossWounded > 0) {
+             isBossWounded--;
+          }
+         setCurBossHp(bossHp);
         setCurUserHp(userHp);
         setBattleDmg(accumulatedDmg);
         setBattleLogs(prev => [...prev, turnLog]);
@@ -755,17 +889,22 @@ export default function WorldBossArena() {
   };
 
   // 出价处理
-  const handleBid = () => {
-     if (bidPrice <= worldBossState.highestBid) {
+  const handleBid = (index) => {
+     const bidVal = bidPrices[index] || 0;
+     const auctions = worldBossState.auctions || [];
+     const auction = auctions[index];
+     if (!auction) return;
+
+     if (bidVal <= auction.highestBid) {
         alert("出价必须高于当前最高竞拍价格！");
         return;
      }
-     if (player.silver < bidPrice) {
+     if (player.silver < bidVal) {
         alert("你的银两不足！");
         return;
      }
      SoundManager.play('sfx_click');
-     bidWorldBossAuction(bidPrice);
+     bidWorldBossAuction(index, bidVal);
   };
 
   // 请战帖登记
@@ -1267,34 +1406,50 @@ export default function WorldBossArena() {
                         </div>
                      </div>
                   ) : worldBossState.auctionActive ? (
-                     <div style={{ marginTop: '1rem' }}>
-                        <p style={{ color: '#c084fc', fontSize: '1.2rem', fontFamily: '"Ma Shan Zheng", cursive' }}>
-                           ⚖ 神话秘宝限时竞拍中！
+                     <div style={{ marginTop: '1rem', width: '100%' }}>
+                        <p style={{ color: '#c084fc', fontSize: '1.2rem', fontFamily: '"Ma Shan Zheng", cursive', marginBottom: '1rem' }}>
+                           ⚖ 太古魔罗遗珍拍卖中！(多宝物同时开启竞标，价高者得)
                         </p>
-                        <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(192, 132, 252, 0.3)', borderRadius: '8px', marginTop: '1rem', display: 'inline-block', minWidth: '300px' }}>
-                           <h4 style={{ color: 'var(--gold)', fontSize: '1.2rem' }}>【{worldBossState.auctionItem?.name}】</h4>
-                           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>物品等阶: 神话本命宝物</p>
-                           <p style={{ fontSize: '1.1rem', marginTop: '8px' }}>
-                              当前最高出价: <strong style={{ color: 'var(--gold)' }}>{worldBossState.highestBid || 100}</strong> 银两
-                           </p>
-                           <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                              最高出价者: {worldBossState.highestBidder || '黑市商会 (系统保底回购)'}
-                           </p>
-                           <p style={{ fontSize: '0.85rem', color: 'var(--crimson)', marginTop: '6px' }}>
-                              倒计时: {formatTime(worldBossState.auctionEndTime)}
-                           </p>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '1.5rem' }}>
-                           <input 
-                              type="number" 
-                              value={bidPrice}
-                              onChange={(e) => setBidPrice(parseInt(e.target.value) || 0)}
-                              placeholder={`起拍价 > ${worldBossState.highestBid}`}
-                              style={{ width: '130px', padding: '0.5rem', background: '#111', border: '1px solid #c084fc', borderRadius: '4px', color: '#fff', textAlign: 'center' }}
-                           />
-                           <button className="btn-primary" onClick={handleBid} style={{ padding: '0.5rem 2rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)' }}>
-                              加价出资
-                           </button>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
+                           {(worldBossState.auctions || []).map((auction, idx) => (
+                              <div key={idx} style={{ 
+                                 flex: '1 1 240px',
+                                 maxWidth: '280px',
+                                 padding: '1rem', 
+                                 background: 'rgba(255,255,255,0.02)', 
+                                 border: '1px dashed rgba(192, 132, 252, 0.3)', 
+                                 borderRadius: '8px',
+                                 display: 'flex',
+                                 flexDirection: 'column',
+                                 alignItems: 'center',
+                                 textAlign: 'center'
+                              }}>
+                                 <h4 style={{ color: 'var(--gold)', fontSize: '1.1rem' }}>【{auction.item?.name}】</h4>
+                                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>物品等阶: {auction.item?.rarity || '本命宝物'}</p>
+                                 <p style={{ fontSize: '1rem', marginTop: '8px' }}>
+                                    当前最高出价: <strong style={{ color: 'var(--gold)' }}>{auction.highestBid || 0}</strong> 银两
+                                 </p>
+                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                    最高出价者: {auction.highestBidder || '暂无 (流拍后由商会 100 两强收)'}
+                                 </p>
+                                 <p style={{ fontSize: '0.8rem', color: 'var(--crimson)', marginTop: '6px', marginBottom: '12px' }}>
+                                    倒计时: {formatTime(worldBossState.auctionEndTime)}
+                                 </p>
+                                 
+                                 <div style={{ display: 'flex', gap: '6px', width: '100%', marginTop: 'auto' }}>
+                                    <input 
+                                       type="number" 
+                                       value={bidPrices[idx] !== undefined ? bidPrices[idx] : ''}
+                                       onChange={(e) => setBidPrices(prev => ({ ...prev, [idx]: parseInt(e.target.value) || 0 }))}
+                                       placeholder={`起拍价 > ${auction.highestBid}`}
+                                       style={{ flex: 1, padding: '0.4rem', background: '#111', border: '1px solid #c084fc', borderRadius: '4px', color: '#fff', textAlign: 'center', fontSize: '0.85rem' }}
+                                    />
+                                    <button className="btn-primary" onClick={() => handleBid(idx)} style={{ padding: '0.4rem 1rem', background: 'linear-gradient(135deg, #c084fc, #7c3aed)', fontSize: '0.85rem' }}>
+                                       加价
+                                    </button>
+                                 </div>
+                              </div>
+                           ))}
                         </div>
                      </div>
                   ) : (
@@ -1312,6 +1467,60 @@ export default function WorldBossArena() {
                   <p>3. **击晕特化**：Boss 免疫眩晕，但受击晕影响时触发“破招威压”，其本回合反噬攻击降低 50%。</p>
                   <p>4. **分红机制**：剿灭魔罗后，爆出的神物将在 23:00 公开竞拍。流拍则由商会以 100 银两强行回收。除去 10% 税收，所得 90% 银两全员按输出百分比派发大分红！</p>
                </div>
+
+                {/* 太古魔罗遗珍拍卖历史 */}
+                <div className="wuxia-card" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(162, 28, 175, 0.2)', borderRadius: '8px', fontSize: '0.85rem' }}>
+                   <h4 style={{ color: '#c084fc', marginBottom: '10px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <History size={16} /> 太古魔罗遗珍拍卖历史
+                   </h4>
+                   {(() => {
+                      const wbHistory = (auctionHistory || []).filter(h => h.type === 'world_boss');
+                      if (wbHistory.length === 0) {
+                         return <div style={{ textAlign: 'center', color: '#555', padding: '1rem 0' }}>暂无魔罗遗珍拍卖记录。</div>;
+                      }
+                      return (
+                         <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
+                            {wbHistory.map(record => {
+                               const isRecycled = record.buyerName === '黑市商会';
+                               const isSuccess = record.status === 'success';
+                               const endDate = new Date(record.endTime);
+                               const dateStr = endDate.toLocaleDateString() + ' ' + endDate.toLocaleTimeString();
+                               const rarityColor = record.itemName && (record.itemName.includes('圣火令') || record.itemName.includes('绝世好剑') || record.itemName.includes('达摩舍利')) ? '#ff6b6b' :
+                                                   record.itemName && (record.itemName.includes('倚天剑') || record.itemName.includes('屠龙刀') || record.itemName.includes('玄铁重剑')) ? '#c084fc' : '#fcd34d';
+                               return (
+                                  <div key={record.id} style={{
+                                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                     padding: '0.6rem 0.8rem', marginBottom: '6px',
+                                     background: 'rgba(255,255,255,0.015)',
+                                     border: '1px solid rgba(255,255,255,0.04)',
+                                     borderRadius: '6px'
+                                  }}>
+                                     <div style={{ flex: 1 }}>
+                                        <span style={{ color: rarityColor, fontWeight: 'bold', fontSize: '0.9rem' }}>{record.itemName}</span>
+                                        <div style={{ fontSize: '0.75rem', color: '#777', marginTop: '2px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                           {isRecycled ? (
+                                              <span style={{ color: '#c084fc' }}>买家: 黑市商会 (兜底回收)</span>
+                                           ) : isSuccess ? (
+                                              <span>买家: <strong style={{ color: '#22c55e' }}>{record.buyerName}</strong></span>
+                                           ) : (
+                                              <span style={{ color: '#666' }}>流拍</span>
+                                           )}
+                                           <span style={{ color: (isSuccess || isRecycled) ? '#fff' : '#666' }}>
+                                              成交: {(isSuccess || isRecycled) ? `${record.finalPrice} 银两` : '无人出价'}
+                                           </span>
+                                           <span style={{ color: '#444' }}>{dateStr}</span>
+                                        </div>
+                                     </div>
+                                     {record.buyerName === player.name && (
+                                        <div style={{ padding: '2px 6px', borderRadius: '3px', fontSize: '0.7rem', background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', whiteSpace: 'nowrap' }}>我拍得</div>
+                                     )}
+                                  </div>
+                               );
+                            })}
+                         </div>
+                      );
+                   })()}
+                </div>
             </div>
 
             {/* 右侧 并肩作战/输出排行 看板 */}

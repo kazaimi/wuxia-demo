@@ -302,6 +302,7 @@ export default function AuctionHouse() {
             ) : (
                auctionHistory.map(record => {
                   const isSuccess = record.status === 'success';
+                  const isRecycled = record.buyerName === '黑市商会';
                   const endDate = new Date(record.endTime);
                   const dateStr = endDate.toLocaleDateString() + ' ' + endDate.toLocaleTimeString();
                   return (
@@ -312,18 +313,18 @@ export default function AuctionHouse() {
                      }}>
                         <div>
                            <h4 style={{ 
-                              color: isSuccess ? '#fcd34d' : '#666', 
+                              color: (isSuccess || isRecycled) ? '#fcd34d' : '#666', 
                               fontSize: '1.1rem', marginBottom: '4px',
                               display: 'flex', alignItems: 'center', gap: '6px'
                            }}>
-                              {isSuccess ? <CheckCircle2 size={16} color="#fcd34d" /> : <XCircle size={16} color="#666" />}
+                              {(isSuccess || isRecycled) ? <CheckCircle2 size={16} color={isRecycled ? "#c084fc" : "#fcd34d"} /> : <XCircle size={16} color="#666" />}
                               {record.itemName}
                            </h4>
                            <div style={{ fontSize: '0.8rem', color: '#888', display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
                               <span>卖家: {record.sellerName}</span>
-                              {isSuccess && <span>买家: {record.buyerName}</span>}
-                              <span>成交价: <strong style={{ color: isSuccess ? '#fff' : '#666' }}>
-                                 {isSuccess ? `${record.finalPrice} 银两` : '流拍'}
+                              {(isSuccess || isRecycled) && <span>买家: {isRecycled ? "黑市商会 (兜底回收)" : record.buyerName}</span>}
+                              <span>成交价: <strong style={{ color: (isSuccess || isRecycled) ? '#fff' : '#666' }}>
+                                 {(isSuccess || isRecycled) ? `${record.finalPrice} 银两` : '流拍'}
                               </strong></span>
                               <span style={{ color: '#555' }}>{dateStr}</span>
                            </div>

@@ -79,7 +79,7 @@ export default function BlackMarket({ onClose }) {
   }, []);
 
   useEffect(() => {
-     const items = [
+     const staticItems = [
        { id: 'item_coffee', name: '【特供】橙C美式', price: 99, desc: '大口痛饮，洗涤所有疲劳！立即重置当天的悬赏、奇遇、秘境次数到满状态！', icon: <Coffee size={18} color="#f97316" />, type: 'coffee' },
        { id: 'item_purify', name: '【圣物】净心符', price: 55, desc: '焚香沐浴，驱散所有恶兆缠身，恢复清明心智！', icon: <Sparkles size={18} color="#c084fc" />, type: 'purify' },
        { id: 'item_box1', name: '破旧的残卷箱', price: 8, desc: '随机获得一本入门外功或内功(必定非绝学)。', icon: <Package size={18} color="#a1a1aa" />, type: 'skill_box1' },
@@ -90,8 +90,33 @@ export default function BlackMarket({ onClose }) {
        { id: 'item_heaven_scroll', name: '【秘宝】天书密卷', price: 150, desc: '金光笼罩的神秘竹简，记载了震古烁今的武学奥秘，购买后随机领悟一本【绝学】级强力武功！', icon: <BookOpen size={18} color="#f59e0b" />, type: 'heaven_scroll' },
        { id: 'item_box2', name: '传说的盲盒', price: 100, desc: '随机获得一件史诗或传说宝具！', icon: <Package size={18} color="#e879f9" />, type: 'treasure_box' },
      ];
-     setShopItems(items);
-  }, []);
+
+     const handleDynamicItems = ({ dynamicItems }) => {
+        const formattedDynamics = (dynamicItems || []).map(item => ({
+           id: item.id,
+           name: item.name,
+           price: item.price,
+           desc: item.desc,
+           icon: <Package size={18} color={item.rarity === '神话' ? '#c084fc' : item.rarity === '传说' ? '#e879f9' : '#818cf8'} />,
+           type: item.type
+        }));
+        setShopItems([...staticItems, ...formattedDynamics]);
+     };
+
+     const socket = getSocket();
+     if (socket) {
+        socket.on('black_market_items', handleDynamicItems);
+        socket.emit('get_black_market_items');
+     } else {
+        setShopItems(staticItems);
+     }
+
+     return () => {
+        if (socket) {
+           socket.off('black_market_items', handleDynamicItems);
+        }
+     };
+  }, [player]);
 
   const handleBuy = (item) => {
      if ((player.silver || 0) < item.price) {

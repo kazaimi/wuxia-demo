@@ -515,7 +515,7 @@ export default function BattleArena() {
             attacker.buffs.dodge = 2;
             actionLog = `${attacker.name} 施展【${skill.name}】，气势如虹！`;
          } else {
-             let canDodge = aTreasure?.effect !== 'xuanTie' && defender.debuffs.stun === 0;
+              let canDodge = aTreasure?.effect !== 'xuanTie' && aTreasure?.effect !== 'xuanTieAwaked' && defender.debuffs.stun === 0;
              let isDodge = false;
              if (canDodge) {
                 const defenderDodge = (dTreasure?.attrs?.dodge || 0) + (dAttrs.extraDodge || 0);
@@ -525,6 +525,10 @@ export default function BattleArena() {
 
             if (isDodge) {
                actionLog = `${attacker.name} 施展【${skill.name}】，却被 ${defender.name} 巧妙躲开！`;
+               if (dTreasure?.effect === 'yuXiao' && Math.random() <= 0.40 && attacker.debuffs.silence <= 0) {
+                  attacker.debuffs.silence = 1;
+                  actionLog += ` \n[玉箫封穴] ${defender.name} 身形闪过顺势横箫，箫音回荡，封印了 ${attacker.name} 的气血经脉！`;
+               }
             } else {
                let finalDef = dDefBase * 1;
                if (defender.buffs.defUp > 0) finalDef *= 3;
@@ -543,6 +547,7 @@ export default function BattleArena() {
                if (aTreasure?.effect === 'yiTian') dmg = Math.floor(dmg * 1.2);
                if (aTreasure?.effect === 'tuLong' && (attacker.hp / attacker.maxHp) < 0.4) dmg = Math.floor(dmg * 1.5);
                if (aTreasure?.effect === 'shengHuo') dmg += Math.floor(defender.hp * 0.05);
+               if (aTreasure?.effect === 'daGouAwaked' && (attacker.hp / attacker.maxHp) < 0.35) dmg = Math.floor(dmg * 1.5);
 
                if (dTreasure?.effect === 'qingQiao') dmg -= 30;
                if (dTreasure?.effect === 'tuLong' && (defender.hp / defender.maxHp) < 0.4) dmg = Math.floor(dmg * 0.8);
@@ -554,7 +559,7 @@ export default function BattleArena() {
                    actionLog = `[寂灭] ${attacker.name} 的【绝世好剑】闪烁黑芒，直接斩去 ${defender.name} ${dmg} 气血！ `;
                }
 
-               if (defender.buffs.shield > 0) {
+               if (defender.buffs.shield > 0 && aTreasure?.effect !== 'xuanTieAwaked') {
                    if (defender.buffs.shield >= dmg) {
                       defender.buffs.shield -= dmg;
                       dmg = 0;
@@ -593,7 +598,36 @@ export default function BattleArena() {
                    actionLog += ` \n[吸星大法] ${attacker.name} 夺取了 ${drainAmt} 点气血化为己用！`;
                }
 
-               if (defender.hp > 0) {
+                // === 荒古传承神兵特性触发 ===
+                if (dmg > 0 && aTreasure?.effect === 'xiuHua' && defender.hp > 0) {
+                    const extraTrueDmg = Math.min(400, Math.floor(defender.hp * 0.10));
+                    defender.hp = Math.max(0, defender.hp - extraTrueDmg);
+                    actionLog += ` \n[金针真伤] 【乾坤绣花针】透甲见血，额外对 ${defender.name} 造成了 ${extraTrueDmg} 点穿透伤害！`;
+                }
+
+                if (dmg > 0 && dTreasure?.effect === 'zhenWu' && defender.hp > 0 && Math.random() <= 0.25) {
+                    const recoverAmt = Math.floor(defender.maxHp * 0.08);
+                    defender.hp = Math.min(defender.maxHp, defender.hp + recoverAmt);
+                    actionLog += ` \n[真武护体] 【真武圣剑】太极灵光逆转伤势，为 ${defender.name} 恢复了 ${recoverAmt} 点气血！`;
+                }
+
+                if (defender.hp > 0) {
+                    if (aTreasure?.effect === 'yuXiao' && Math.random() <= 0.40 && !checkImmune(defender, dTreasure, 'silence')) {
+                        defender.debuffs.silence = 1;
+                        actionLog += ` \n[玉箫封穴] 【玉箫神剑】剑影如流光拂过，封印了 ${defender.name} 的经脉穴位！`;
+                    }
+                    if (aTreasure?.effect === 'zhenWu' && Math.random() <= 0.25 && !checkImmune(defender, dTreasure, 'silence')) {
+                       defender.debuffs.silence = 2;
+                       actionLog += ` \n[圣剑封脉] 【真武圣剑】浩然剑气拂穴，封印了 ${defender.name} 的技能！`;
+                   }
+                   if (aTreasure?.effect === 'daGouAwaked' && Math.random() <= 0.30 && !checkImmune(defender, dTreasure, 'stun')) {
+                       defender.debuffs.stun = 1;
+                       actionLog += ` \n[神棒重击] 【打狗神棒】当头砸下，震得 ${defender.name} 眩晕跌倒！`;
+                   }
+                   if (aTreasure?.effect === 'xuanTieAwaked' && Math.random() <= 0.25 && !checkImmune(defender, dTreasure, 'internalWound')) {
+                       defender.debuffs.internalWound = 2;
+                       actionLog += ` \n[重剑内伤] 【玄铁重剑·传承】万钧力道，震得 ${defender.name} 五脏剧烈内伤！`;
+                   }
                   if (skill.id === 's_du' && !checkImmune(defender, dTreasure, 'poison')) {
                       defender.debuffs.poison = 999;
                       defender.debuffs.poisonPercent = 0.07;

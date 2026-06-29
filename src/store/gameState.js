@@ -43,6 +43,12 @@ export const TREASURES_DB = [
   { id: 't13', name: '圣火令', rarity: '神话', attrs: { atk: 60, dodge: 15 }, effect: 'shengHuo', desc: '【威压】开局沉默对手2回合，攻击附带5%当前HP伤害' },
   { id: 't14', name: '绝世好剑', rarity: '神话', attrs: { hp: 150, atk: 45, def: 30, dodge: 10, crit: 10 }, effect: 'jiMie', desc: '【寂灭】5%概率直接削减目标50%HP，免疫所有异常' },
   { id: 't15', name: '达摩舍利', rarity: '神话', attrs: { hp: 300, def: 60, crit: 15 }, effect: 'niePan', desc: '【涅槃】死亡时保留1血并恢复50%HP(1场1次)' },
+  { id: 't16', name: '掌门信物', rarity: '传说', attrs: { hp: 100, def: 10 }, effect: 'zhangMen', desc: '【门派】掌门身份的象征信物' },
+  { id: 't17', name: '真武圣剑', rarity: '荒古传承', attrs: { atk: 120, hp: 400, def: 50 }, effect: 'zhenWu', desc: '【传承】太玄道宗神兵。25%致盲；受击25%回复自身气血8%' },
+  { id: 't18', name: '打狗神棒', rarity: '荒古传承', attrs: { atk: 150, hp: 300, dodge: 15 }, effect: 'daGouAwaked', desc: '【传承】天义盟神兵。30%概率击晕敌；自身血量低于35%时伤害提升50%' },
+  { id: 't19', name: '玄铁重剑·传承', rarity: '荒古传承', attrs: { atk: 180, hp: 200, def: 80, dodge: -10 }, effect: 'xuanTieAwaked', desc: '【传承】寒锋剑阁神兵。绝对必中且无视护盾，附带25%概率内伤' },
+  { id: 't20', name: '乾坤绣花针', rarity: '荒古传承', attrs: { atk: 100, hp: 200, dodge: 30, crit: 20 }, effect: 'xiuHua', desc: '【传承】幽冥邪教神兵。闪避提升20%，且攻击附带10%当前生命真伤' },
+  { id: 't21', name: '玉箫神剑', rarity: '荒古传承', attrs: { atk: 110, hp: 350, dodge: 25 }, effect: 'yuXiao', desc: '【传承】风月逍遥派神兵。攻击或闪避后40%概率封穴敌方1回合' }
 ];
 
 export const ATTR_MAP = { con: '体质', str: '力量', int: '智慧', agi: '敏捷', luk: '幸运' };
@@ -351,12 +357,33 @@ export const useGameStore = create((set, get) => ({
          set({ activeAuctions: cleanAuctions });
       });
       socket.on('auction_history', (history) => {
-         const cleanHistory = (history || []).filter(h => h.sellerName !== '清风' && h.buyer !== '清风');
+         const cleanHistory = (history || []).filter(h => h.sellerName !== '清风' && h.buyerName !== '清风');
          set({ auctionHistory: cleanHistory });
       });
       socket.on('broadcast_message', (msg) => {
          if (msg && (msg.includes('清风') || msg.includes('清风大侠'))) return;
          set(state => ({ broadcastQueue: [...state.broadcastQueue, {id: Date.now()+Math.random(), msg}] }));
+      });
+      socket.on('world_boss_auction_settled', (res) => {
+         // 在线时收到结标广播，更新已读时间戳防止登录时重复弹窗
+         if (res.settledTime) {
+            try { localStorage.setItem('last_seen_world_boss_auction_time', String(res.settledTime)); } catch(e) {}
+         }
+         alert(`*【大劫结标】*\n${res.summary}\n分红银两已实时打入大侠账户！请前往拍卖行【历史记录】中查看详细流向。`);
+      });
+      // 登录后补发：离线期间错过的世界Boss拍卖结标通知
+      socket.on('last_world_boss_auction_summary', (res) => {
+         if (!res || !res.settledTime) return;
+         try {
+            const lastSeen = parseInt(localStorage.getItem('last_seen_world_boss_auction_time') || '0', 10);
+            if (res.settledTime > lastSeen) {
+               localStorage.setItem('last_seen_world_boss_auction_time', String(res.settledTime));
+               // 延迟弹窗，避免登录时多个弹窗叠加
+               setTimeout(() => {
+                  alert(`*【大劫结标·补发公告】*\n${res.summary}\n分红银两已实时打入大侠账户！请前往拍卖行【历史记录】中查看详细流向。`);
+               }, 1500);
+            }
+         } catch(e) {}
       });
       socket.on('realm_ghosts_list', (ghosts) => {
          const cleanGhosts = (ghosts || []).filter(g => g.creatorName !== '清风');
@@ -861,8 +888,8 @@ export const useGameStore = create((set, get) => ({
          }
       }
   },
-  bidWorldBossAuction: (price) => {
-      if (socket) socket.emit('bid_world_boss_auction', { price });
+  bidWorldBossAuction: (itemIndex, price) => {
+      if (socket) socket.emit('bid_world_boss_auction', { itemIndex, price });
   },
   devControlWorldBoss: (action) => {
       if (socket) socket.emit('dev_control_world_boss', { action });
