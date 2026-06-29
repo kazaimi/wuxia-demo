@@ -1008,7 +1008,16 @@ io.on('connection', (socket) => {
              return;
           }
           socket.username = data.name; // 保存当前连接的玩家名号
+          const serverFreePoints = dbPlayer.freePoints; // 保存服务器端的自由属性点
+          const serverAttributes = dbPlayer.attributes ? { ...dbPlayer.attributes } : null;
           Object.assign(dbPlayer, data);
+          // 防止前端旧数据覆盖服务器端的属性分配
+          if (serverFreePoints != null && typeof serverFreePoints === 'number') {
+             dbPlayer.freePoints = serverFreePoints;
+          }
+          if (serverAttributes) {
+             dbPlayer.attributes = serverAttributes;
+          }
           if (typeof dbPlayer.silver === 'undefined') dbPlayer.silver = 0;
           dbPlayer.id = socket.id;
           dbPlayer.lastLoginTime = Date.now();
